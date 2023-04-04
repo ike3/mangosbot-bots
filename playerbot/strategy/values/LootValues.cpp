@@ -6,13 +6,13 @@
 
 using namespace ai;
 
-vector<LootItem> LootAccess::GetLootContentFor(Player* player) const
+vector<LootItem*> LootAccess::GetLootContentFor(Player* player) const
 {
-	vector<LootItem> retvec;
+	vector<LootItem*> retvec;
 
 	for (LootItemList::const_iterator lootItemItr = m_lootItems.begin(); lootItemItr != m_lootItems.end(); ++lootItemItr)
 	{
-		retvec.push_back(**lootItemItr);
+		retvec.push_back(*lootItemItr);
 	}
 
 	return retvec;
@@ -282,14 +282,14 @@ bool ShouldLootObject::Calculate()
 	if (lootAccess->m_lootMethod != NOT_GROUP_TYPE_LOOT && !lootAccess->m_isChecked) //Open loot once to start rolls.
 		return true;
 
-	for (auto lItem : lootAccess->GetLootContentFor(bot))
+	for (auto& lItem : lootAccess->GetLootContentFor(bot))
 	{
-		if (!lItem.itemId)
+		if (!lItem->itemId)
 			continue;
 
-		uint32 canLootAmount = AI_VALUE2(uint32, "stack space for item", lItem.itemId);
+		uint32 canLootAmount = AI_VALUE2(uint32, "stack space for item", lItem->itemId);
 
-		if (canLootAmount < lItem.count)
+		if (canLootAmount < lItem->count)
 			continue;
 
 		ItemQualifier ltemQualifier(lItem);

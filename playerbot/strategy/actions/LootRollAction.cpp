@@ -127,7 +127,7 @@ ItemQualifier RollAction::GetRollItem(ObjectGuid lootGuid, uint32 slot)
     if (!item)
         return ItemQualifier();
 
-    return ItemQualifier(*item);
+    return ItemQualifier(item);
 }
 
 RollVote RollAction::CalculateRollVote(ItemQualifier& itemQualifier)

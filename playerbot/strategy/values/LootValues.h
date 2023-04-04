@@ -22,7 +22,7 @@ namespace ai
         friend class GroupLootRoll;
         friend class LootMgr;
 
-        vector<LootItem> GetLootContentFor(Player* player) const;
+        vector<LootItem*> GetLootContentFor(Player* player) const;
         uint32 GetLootStatusFor(Player const* player) const;
         bool IsLootedFor(Player const* player) const;
         bool IsLootedForAll() const;
