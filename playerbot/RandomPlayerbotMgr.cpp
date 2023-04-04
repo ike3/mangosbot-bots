@@ -1639,6 +1639,8 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 			currentBots.remove(bot);
 			if (player) LogoutPlayerBot(bot);
 		}
+        else if (player->GetGroup())
+            SetEventValue(bot, "add", 1, 120);
         return false;
     }
 
