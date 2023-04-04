@@ -41,53 +41,60 @@ void TravelNodePath::calculateCost(bool distanceOnly)
     if (calculated)
         return;
 
-    distance = 0.1f;
-    maxLevelCreature = { 0,0,0 };
-    swimDistance = 0;
-
-    WorldPosition lastPoint = WorldPosition();
-    for (auto& point : path)
+    try
     {
-        if (!distanceOnly)
-            for (auto& creaturePair : point.getCreaturesNear(50)) //Agro radius + 5
-            {
-                CreatureData const cData = creaturePair->second;
-                CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(cData.id);
 
-                if (cInfo)
+        distance = 0.1f;
+        maxLevelCreature = { 0,0,0 };
+        swimDistance = 0;
+
+        WorldPosition lastPoint = WorldPosition();
+        for (auto& point : path)
+        {
+            if (!distanceOnly)
+                for (auto& creaturePair : point.getCreaturesNear(50)) //Agro radius + 5
                 {
-                    FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
+                    CreatureData const cData = creaturePair->second;
+                    CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(cData.id);
 
-                    if (aReact.find(factionEntry) == aReact.end())
-                        aReact.insert(make_pair(factionEntry, PlayerbotAI::friendToAlliance(factionEntry)));
-                    aFriend = aReact.find(factionEntry)->second;
+                    if (cInfo)
+                    {
+                        FactionTemplateEntry const* factionEntry = sFactionTemplateStore.LookupEntry(cInfo->Faction);
 
-                    if (hReact.find(factionEntry) == hReact.end())
-                        hReact.insert(make_pair(factionEntry, PlayerbotAI::friendToHorde(factionEntry)));
-                    hFriend = hReact.find(factionEntry)->second;
+                        if (aReact.find(factionEntry) == aReact.end())
+                            aReact.insert(make_pair(factionEntry, PlayerbotAI::friendToAlliance(factionEntry)));
+                        aFriend = aReact.find(factionEntry)->second;
 
-                    if (maxLevelCreature[0] < cInfo->MaxLevel && !aFriend && !hFriend)
-                        maxLevelCreature[0] = cInfo->MaxLevel;
-                    if (maxLevelCreature[1] < cInfo->MaxLevel && aFriend && !hFriend)
-                        maxLevelCreature[1] = cInfo->MaxLevel;
-                    if (maxLevelCreature[2] < cInfo->MaxLevel && !aFriend && hFriend)
-                        maxLevelCreature[2] = cInfo->MaxLevel;
+                        if (hReact.find(factionEntry) == hReact.end())
+                            hReact.insert(make_pair(factionEntry, PlayerbotAI::friendToHorde(factionEntry)));
+                        hFriend = hReact.find(factionEntry)->second;
+
+                        if (maxLevelCreature[0] < cInfo->MaxLevel && !aFriend && !hFriend)
+                            maxLevelCreature[0] = cInfo->MaxLevel;
+                        if (maxLevelCreature[1] < cInfo->MaxLevel && aFriend && !hFriend)
+                            maxLevelCreature[1] = cInfo->MaxLevel;
+                        if (maxLevelCreature[2] < cInfo->MaxLevel && !aFriend && hFriend)
+                            maxLevelCreature[2] = cInfo->MaxLevel;
+                    }
                 }
+
+            if (lastPoint && point.getMapId() == lastPoint.getMapId())
+            {
+                if (!distanceOnly && (point.isInWater() || lastPoint.isInWater()))
+                    swimDistance += point.distance(lastPoint);
+
+                distance += point.distance(lastPoint);
             }
 
-        if (lastPoint && point.getMapId() == lastPoint.getMapId())
-        {
-            if (!distanceOnly && (point.isInWater() || lastPoint.isInWater()))
-                swimDistance += point.distance(lastPoint);
-
-            distance += point.distance(lastPoint);
+            lastPoint = point;
         }
 
-        lastPoint = point;
+        if (!distanceOnly)
+            calculated = true;
     }
-
-    if (!distanceOnly)
-        calculated = true;
+    catch (...)
+    {
+    }
 }
 
 //The cost to travel this path. 
@@ -2163,6 +2170,81 @@ void TravelNodeMap::generateWalkPathMap(uint32 mapId)
     }
 }
 
+void TravelNodeMap::generateHelperNodes()
+{
+    vector<TravelNode*> startNodes = m_nodes;
+    vector<TravelNode*> newNodes;
+
+    vector<WorldPosition> places_to_reach;
+
+    for (auto& node : startNodes)
+    {
+        places_to_reach.push_back(*node->getPosition());
+    }
+    /*
+    for (auto& obj : WorldPosition().getCreaturesNear())
+    {
+        places_to_reach.push_back(obj);
+    }
+
+    for (auto& obj : WorldPosition().getGameObjectsNear())
+    {
+        places_to_reach.push_back(obj);
+    }
+    */
+
+    BarGoLink bar(places_to_reach.size());
+
+    for (auto& pos : places_to_reach)
+    {
+        std::partial_sort(startNodes.begin(), startNodes.begin() + 5, startNodes.end(), [pos](TravelNode* i, TravelNode* j) {return i->fDist(pos) < j->fDist(pos); });
+
+        for (uint8 i = 0; i < 5; i++)
+        {
+            TravelNode* node = startNodes[i];
+            if (node->getPosition()->canPathStepTo(pos, nullptr))
+                break;
+
+            bool found = false;
+
+            for (auto& path : *node->getPaths())
+            {
+                for (auto& ppoint : path.second.getPath())
+                {
+                    if (!ppoint.canPathStepTo(pos, nullptr))
+                        continue;
+
+                    string name = node->getName();
+                    uint32 count = 0;
+                    for (auto& nameNode : m_nodes)
+                        if (nameNode->getName().find(name) == 0)
+                            count++;
+
+                    name += to_string(count);
+
+                    sTravelNodeMap.addNode(ppoint, name, false, true);
+                    startNodes = m_nodes;
+
+                    break;
+                }
+
+                if (found)
+                    break;
+            }
+
+            if (found)
+            {
+                sTravelNodeMap.generateWalkPathMap(pos.getMapId());
+                break;
+            }
+        }
+
+        bar.step();
+    }
+
+    sLog.outString(">> Checked for new nodes needed to reach " SIZEFMTD " places.", places_to_reach.size());
+}
+
 void TravelNodeMap::generateTaxiPaths()
 {
     for (uint32 i = 0; i < sTaxiPathStore.GetNumRows(); ++i)
@@ -2343,6 +2425,10 @@ void TravelNodeMap::generatePaths()
 {
     sLog.outString("-Calculating walkable paths");
     generateWalkPaths();
+
+    //sLog.outString("-Generating helper nodes");
+    //generateHelperNodes();
+
     sLog.outString("-Removing useless nodes");
     removeLowNodes();
     sLog.outString("-Removing useless paths");

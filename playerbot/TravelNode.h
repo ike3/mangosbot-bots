@@ -396,6 +396,7 @@ namespace ai
         void generatePortalNodes();
 
         void generateWalkPaths();
+        void generateHelperNodes();
         void generateWalkPathMap(uint32 mapId);
         void removeLowNodes();
         void removeUselessPaths();
