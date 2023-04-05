@@ -41,6 +41,11 @@ void PlayerbotHolder::UpdateSessions(uint32 elapsed)
         {
             bot->GetSession()->HandleBotPackets();
         }
+
+        if (bot->GetPlayerbotAI()->GetShouldLogOut() && !bot->IsStunnedByLogout() && !bot->GetSession()->isLogingOut())
+        {
+            LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
+        }
     }
 }
 
