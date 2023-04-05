@@ -1007,24 +1007,22 @@ bool BGLeaveAction::Execute(Event& event)
 #endif
 
     uint32 queueType = AI_VALUE(uint32, "bg type");
-    if (!queueType)
+    if (!queueType && event.getSource().empty())
         return false;
 
     sLog.outDetail("Bot #%d %s:%d <%s> leaves %s queue", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), isArena ? "Arena" : "BG");
 
-    WorldPacket packet(CMSG_BATTLEFIELD_PORT, 20);
-#ifdef MANGOSBOT_ZERO
+    WorldPacket packet(CMSG_BATTLEFIELD_PORT, 4);
     uint32 mapId = GetBattleGrounMapIdByTypeId(_bgTypeId);
     packet << mapId << uint8(0);
-#else
-    packet << type << unk2 << (uint32)_bgTypeId << unk << uint8(0);
-#endif
-#ifdef MANGOS
-    bot->GetSession()->HandleBattleFieldPortOpcode(packet);
-#endif
-#ifdef CMANGOS
-    bot->GetSession()->HandleBattlefieldPortOpcode(packet);
-#endif
+
+    if (!event.getSource().empty())
+    {
+        bot->GetSession()->HandleLeaveBattlefieldOpcode(packet);
+    }
+    else
+        bot->GetSession()->HandleBattlefieldPortOpcode(packet);
+
     if (sRandomPlayerbotMgr.IsFreeBot(bot))
         ai->SetMaster(NULL);
 
