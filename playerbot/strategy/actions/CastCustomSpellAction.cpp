@@ -45,7 +45,8 @@ bool CastCustomSpellAction::Execute(Event& event)
             if (!target)
                 target = ai->GetUnit(go);
 
-            chat->eraseAllSubStr(text, chat->formatWorldobject(ai->GetUnit(go)));
+            if(target)
+                chat->eraseAllSubStr(text, chat->formatWorldobject(target));
         }
 
         ltrim(text);
