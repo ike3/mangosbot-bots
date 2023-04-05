@@ -69,12 +69,18 @@ bool AutoShareQuestAction::Execute(Event& event)
             if (!pPlayer->CanTakeQuest(quest, false))
                 continue;
 
-
             if (!pPlayer->SatisfyQuestLog(false))
                 continue;
 
             if (pPlayer->GetDividerGuid())
                 continue;
+
+            if (pPlayer->GetPlayerbotAI())
+            {
+                WorldPacket packet(CMSG_PUSHQUESTTOPARTY, 20);
+                packet << logQuest;
+                pPlayer->GetPlayerbotAI()->HandleMasterOutgoingPacket(packet);
+            }
 
             partyNeedsQuest = true;
 
