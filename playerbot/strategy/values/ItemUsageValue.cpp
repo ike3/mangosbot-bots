@@ -143,6 +143,16 @@ ItemUsage ItemUsageValue::Calculate()
         }
     }
 
+    if (proto->Class == ITEM_CLASS_REAGENT && IsItemNeededForUsefullSpell(proto, false, false))
+    {
+        float stacks = CurrentStacks(ai, proto);
+
+        if (stacks < 1)
+            return ITEM_USAGE_USE;
+        else if (stacks < 2)
+            return ITEM_USAGE_KEEP;
+    }
+
     if (bot->GetGuildId() && sGuildTaskMgr.IsGuildTaskItem(itemId, bot->GetGuildId()))
         return ITEM_USAGE_GUILD_TASK;
 
@@ -562,9 +572,9 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const* proto)
     return false;
 }
 
-bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, bool checkAllReagents)
+bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, bool checkAllReagents, bool tradeSkill)
 {    
-    for (auto spellId : SpellsUsingItem(proto->ItemId, bot))
+    for (auto spellId : SpellsUsingItem(proto->ItemId, bot, tradeSkill))
     {
         const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
 
@@ -574,20 +584,24 @@ bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, boo
         if (checkAllReagents && !HasItemsNeededForSpell(spellId, proto, bot))
             continue;
 
-        if (SpellGivesSkillUp(spellId, bot))
-            return true;
-
-        uint32 newItemId = *pSpellInfo->EffectItemType;
-
-        if (newItemId && newItemId != proto->ItemId)
+        if (tradeSkill)
         {
-            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", newItemId);
+            if (SpellGivesSkillUp(spellId, bot))
+                return true;
 
-            if (usage != ITEM_USAGE_REPLACE && usage != ITEM_USAGE_EQUIP && usage != ITEM_USAGE_AMMO && usage != ITEM_USAGE_QUEST && usage != ITEM_USAGE_SKILL && usage != ITEM_USAGE_USE)
-                continue;
+            uint32 newItemId = *pSpellInfo->EffectItemType;
 
-            return true;
+            if (newItemId && newItemId != proto->ItemId)
+            {
+                ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", newItemId);
+
+                if (usage != ITEM_USAGE_REPLACE && usage != ITEM_USAGE_EQUIP && usage != ITEM_USAGE_AMMO && usage != ITEM_USAGE_QUEST && usage != ITEM_USAGE_SKILL && usage != ITEM_USAGE_USE)
+                    continue;
+
+                return true;
+            }
         }
+        return true;
     }
 
     return false;
@@ -686,7 +700,7 @@ float ItemUsageValue::BetterStacks(ItemPrototype const* proto, string itemType)
 }
 
 
-vector<uint32> ItemUsageValue::SpellsUsingItem(uint32 itemId, Player* bot)
+vector<uint32> ItemUsageValue::SpellsUsingItem(uint32 itemId, Player* bot, bool tradeSkill)
 {
     vector<uint32> retSpells;
 
@@ -703,7 +717,7 @@ vector<uint32> ItemUsageValue::SpellsUsingItem(uint32 itemId, Player* bot)
         if (!pSpellInfo)
             continue;
 
-        if (pSpellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM)
+        if (tradeSkill && pSpellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM)
             continue;
 
         for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
