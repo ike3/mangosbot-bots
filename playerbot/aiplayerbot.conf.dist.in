@@ -700,9 +700,11 @@ AiPlayerbot.PerfMonEnabled = 0
 
 
 # Allowed log files. See SPP_MAP for more information
-# https://drive.google.com/file/d/1XCEdLejlnlp1gCb_cbss52XnibIcVQ2d/view?usp=sharing
+# https://github.com/mostlikely4r/spp-map
 # AiPlayerbot.AllowedLogFiles = 
 
+# Filters certain actions from showing up in 'nc +debug' and 'nc +debug action'
+# AiPlayerbot.DebugFilter = add gathering loot,check values,emote,check mount state
 
 # Random password: Randombot accounts get created with a randompassword instead of equal to their account name.
 # AiPlayerbot.RandomBotRandomPassword = 1

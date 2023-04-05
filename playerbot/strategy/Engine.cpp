@@ -155,7 +155,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
 
             if (!action)
             {
-                if (ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT))
+                if (ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT) && sPlayerbotAIConfig.CanLogAction(actionNode->getName()))
                 {
                     ostringstream out;
                     out << "try: ";
@@ -238,7 +238,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
                     }
                     else
                     {
-                        if (ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT))
+                        if (ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT) && sPlayerbotAIConfig.CanLogAction(actionNode->getName()))
                         {
                             ostringstream out;
                             out << "try: ";
@@ -259,7 +259,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
                 }
                 else
                 {
-                    if (ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT))
+                    if (ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT) && sPlayerbotAIConfig.CanLogAction(actionNode->getName()))
                     {
                         ostringstream out;
                         out << "try: ";
@@ -658,7 +658,7 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
         }
     }
 
-    if (ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
+    if (ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT) && sPlayerbotAIConfig.CanLogAction(action->getName()))
     {
         ostringstream out;
         out << "do: ";
