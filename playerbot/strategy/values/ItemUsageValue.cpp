@@ -88,7 +88,13 @@ ItemUsage ItemUsageValue::Calculate()
         bool needItem = false;
 
         if (IsItemNeededForSkill(proto))
-            needItem = true;
+        {
+            float stacks = CurrentStacks(ai, proto);
+            if (stacks < 1)
+                return ITEM_USAGE_SKILL; //Buy more.
+            else if (stacks == 1)
+                return ITEM_USAGE_KEEP; //Keep in inventory.
+        }
         else
         {
             bool lowBagSpace = AI_VALUE(uint8, "bag space") > 50;
@@ -109,6 +115,8 @@ ItemUsage ItemUsageValue::Calculate()
             float stacks = CurrentStacks(ai, proto);
             if (stacks < 2)
                 return ITEM_USAGE_SKILL; //Buy more.
+            else if (stacks == 2)
+                return ITEM_USAGE_KEEP; //Buy more.
         }
     }
 
