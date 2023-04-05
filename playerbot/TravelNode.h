@@ -406,7 +406,7 @@ namespace ai
         void removeUselessPathMap(uint32 mapId);
         void calculatePathCosts();
         void generateTaxiPaths();
-        void generatePaths();
+        void generatePaths(bool helpers = true);
 
         void generateAll();
 

@@ -1054,7 +1054,7 @@ bool DebugAction::Execute(Event& event)
         return true;
     }
     else if (text.find("gen path") == 0) {
-    sTravelNodeMap.generatePaths();
+    sTravelNodeMap.generatePaths(false);
     return true;
     }
     else if (text.find("crop path") == 0) {

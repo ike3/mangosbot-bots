@@ -2229,7 +2229,12 @@ void TravelNodeMap::generateHelperNodes(uint32 mapId)
     if (places_to_reach.empty() || startNodes.empty())
         return;
 
-    BarGoLink bar(places_to_reach.size());
+    //BarGoLink* bar;    
+    //if (mapId == 0)
+    //    bar = new BarGoLink(places_to_reach.size());
+
+    uint32 cur = 0;
+
     for (auto& pos : places_to_reach)
     {
         startNodes = getNodes(WorldPosition(mapId, 1, 1));
@@ -2273,7 +2278,11 @@ void TravelNodeMap::generateHelperNodes(uint32 mapId)
             string name = pos.second;
             sTravelNodeMap.addNode(pos.first, name, false, true);
         }
-        bar.step();
+
+        //if (mapId == 0)
+        //    bar->step();
+        cur++;
+        sLog.outString("\r [map: %d %d%%] \r\x3D",mapId, (uint32)((cur*100)/places_to_reach.size()));
     }
 
     for (auto& node : startNodes)
@@ -2282,6 +2291,9 @@ void TravelNodeMap::generateHelperNodes(uint32 mapId)
     }
 
     sTravelNodeMap.generateWalkPathMap(mapId);
+
+    //if (mapId == 0 && bar)
+    //    delete bar;
 }
 
 void TravelNodeMap::generateTaxiPaths()
@@ -2460,13 +2472,16 @@ void TravelNodeMap::calculatePathCosts()
     sLog.outString(">> Calculated path cost for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
 }
 
-void TravelNodeMap::generatePaths()
+void TravelNodeMap::generatePaths(bool helpers)
 {
     sLog.outString("-Calculating walkable paths");
     generateWalkPaths();
 
-    sLog.outString("-Generating helper nodes");
-    generateHelperNodes();
+    if (helpers)
+    {
+        sLog.outString("-Generating helper nodes");
+        generateHelperNodes();
+    }
 
 
 
