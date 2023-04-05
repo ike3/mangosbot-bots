@@ -788,6 +788,17 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     return false;
                 }
             }
+            else
+            {
+                if (sServerFacade.IsSpellReady(bot, entry) && (!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f))
+                    if (ai->DoSpecificAction("cast custom spell", Event("rpg action", to_string(entry)), true))
+                        return true;
+
+                movePath.clear();
+                AI_VALUE(LastMovement&, "last movement").setPath(movePath);
+                return false;
+
+            }
         }
 
         if (pathType == TravelNodePathType::walk && movePath.getPath().begin()->type != PathNodeType::NODE_FLIGHTPATH)

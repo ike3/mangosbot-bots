@@ -313,7 +313,7 @@ namespace ai
     {
     public:
         TravelNodeRoute() {}
-        TravelNodeRoute(vector<TravelNode*> nodes1, TravelNode* tempNode = nullptr) { nodes = nodes1; if (tempNode) addTempNode(tempNode); }
+        TravelNodeRoute(vector<TravelNode*> nodes1, vector<TravelNode*> tempNodes) { nodes = nodes1; if (tempNodes.size()) addTempNodes(tempNodes); }
 
         bool isEmpty() { return nodes.empty(); }
 
@@ -323,7 +323,7 @@ namespace ai
         void setNodes(vector<TravelNode*> nodes1) { nodes = nodes1; }
         vector<TravelNode*> getNodes() { return nodes; }
 
-        void addTempNode(TravelNode* node) { tempNodes.push_back(node); }
+        void addTempNodes(vector<TravelNode*> nodes) { tempNodes.insert(tempNodes.end(), nodes.begin(), nodes.end()); }
         void cleanTempNodes() { for (auto node : tempNodes) delete node; }
 
         TravelPath buildPath(vector<WorldPosition> pathToStart = {}, vector<WorldPosition> pathToEnd = {}, Unit* bot = nullptr);

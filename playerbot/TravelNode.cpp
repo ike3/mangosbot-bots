@@ -823,7 +823,7 @@ bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePo
     //We are using a hearthstone.
     if (p->type == PathNodeType::NODE_TELEPORT && nextP->type == PathNodeType::NODE_TELEPORT && p->entry == nextP->entry)
     {
-        return false; //Move to teleport and activate area trigger.
+        return false; //Use the teleport
     }
 
     //We are almost at a transport node. Move to the node before this.
@@ -922,7 +922,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
     }
 
     //We are using a hearthstone
-    if (startP->type == PathNodeType::NODE_TELEPORT)
+    if (nextP->type == PathNodeType::NODE_TELEPORT)
     {
         pathType = TravelNodePathType::teleportSpell;
         entry = startP->entry;
@@ -1295,11 +1295,12 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
 
     std::vector<TravelNodeStub*> open, closed;
 
-    PortalNode* portNode = nullptr;
+    std::vector<TravelNode*> portNodes;
 
     if (bot)
     {
         PlayerbotAI* ai = bot->GetPlayerbotAI();
+        AiObjectContext* context = ai->GetAiObjectContext();
         if (ai)
         {
             if (ai->HasCheat(BotCheatMask::gold))
@@ -1314,30 +1315,66 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
 
         if (sServerFacade.IsSpellReady(bot, 8690) && bot->IsAlive())
         {
-            AiObjectContext* context = ai->GetAiObjectContext();
-
             TravelNode* homeNode = sTravelNodeMap.getNode(AI_VALUE(WorldPosition, "home bind"), nullptr, 10.0f);
             if (homeNode)
             {
-                portNode = new PortalNode(start);
+                PortalNode* portNode = new PortalNode(start);
                 portNode->SetPortal(start, homeNode, 8690);
 
                 childNode = &m_stubs.insert(make_pair(portNode, TravelNodeStub(portNode))).first->second;
 
-                childNode->m_g = std::min((uint32)0, (10- AI_VALUE(uint32, "death count")) * MINUTE);
+                childNode->m_g = std::max((uint32)2, (10- AI_VALUE(uint32, "death count")) * MINUTE); //If we can walk there in 10 minutes, walk instead.
                 childNode->m_h = childNode->dataNode->fDist(goal) / botSpeed;
                 childNode->m_f = childNode->m_g + childNode->m_h;
-                //childNode->parent = startStub;
 
                 open.push_back(childNode);
                 std::push_heap(open.begin(), open.end(), [](TravelNodeStub* i, TravelNodeStub* j) {return i->m_f < j->m_f; });
                 childNode->open = true;
+                portNodes.push_back(portNode);
             }
+        }
+
+        vector<uint32> teleSpells = { 3561,3562,3563,3565,3566,3567,18960 };
+
+        for (auto spellId : teleSpells)
+        {
+            if (!bot->IsAlive())
+                continue;
+
+            if (!sServerFacade.IsSpellReady(bot, spellId))
+                continue;
+
+            if (!sSpellMgr.GetSpellTargetPosition(spellId))
+                continue;
+
+            WorldPosition telePos(sSpellMgr.GetSpellTargetPosition(spellId));
+
+            TravelNode* homeNode = sTravelNodeMap.getNode(telePos, nullptr, 10.0f);
+
+            if (!homeNode)
+                continue;
+
+            PortalNode* portNode = new PortalNode(start);
+            portNode->SetPortal(start, homeNode, spellId);
+
+            childNode = &m_stubs.insert(make_pair(portNode, TravelNodeStub(portNode))).first->second;
+
+            childNode->m_g = MINUTE; //If we can walk there in a minute. Walk instead.
+            childNode->m_h = childNode->dataNode->fDist(goal) / botSpeed;
+            childNode->m_f = childNode->m_g + childNode->m_h;
+
+            open.push_back(childNode);
+            std::push_heap(open.begin(), open.end(), [](TravelNodeStub* i, TravelNodeStub* j) {return i->m_f < j->m_f; });
+            childNode->open = true;
+            portNodes.push_back(portNode);
         }
     }
 
     if (open.size() == 0 && !start->hasRouteTo(goal))
+    {
+        for (auto node : portNodes) delete node;
         return TravelNodeRoute();
+    }
 
     std::make_heap(open.begin(), open.end(), [](TravelNodeStub* i, TravelNodeStub* j) {return i->m_f < j->m_f; });
 
@@ -1374,7 +1411,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
 
             reverse(path.begin(), path.end());
 
-            return TravelNodeRoute(path, portNode);
+            return TravelNodeRoute(path, portNodes);
         }
 
         for (const auto& link : *currentNode->dataNode->getLinks())// for each successor n' of n
@@ -1412,6 +1449,8 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
             }
         }
     }
+
+    for (auto node : portNodes) delete node;
 
     return TravelNodeRoute();
 }
@@ -1475,7 +1514,7 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
         {
             TravelNode* endNode = endNodes[endI];
             TravelNodeRoute route = getRoute(botNode, endNode, bot);
-            route.addTempNode(botNode);
+            route.addTempNodes({ botNode });
 
             if (!route.isEmpty())
                 return route;
@@ -1854,6 +1893,7 @@ void TravelNodeMap::generateAreaTriggerNodes()
 
 void TravelNodeMap::generatePortalNodes()
 {
+    //Static portals.
     for (auto goData : WorldPosition().getGameObjectsNear(0, 0))
     {
         GuidPosition go(goData);
@@ -1888,6 +1928,33 @@ void TravelNodeMap::generatePortalNodes()
         TravelNodePath travelPath(0.1f, 3.0f, (uint8)TravelNodePathType::staticPortal, go.GetEntry(), true);
         travelPath.setPath({ *inNode->getPosition(), *outNode->getPosition() });
         inNode->setPathTo(outNode, travelPath); 
+    }
+
+    //Portal spell destinations.
+    for (uint32 i = 0; i < GetSpellStore()->GetMaxEntry(); ++i)
+    {
+        const SpellEntry* pSpellInfo = GetSpellStore()->LookupEntry<SpellEntry>(i);
+
+        if (!pSpellInfo)
+            continue;
+
+        if (pSpellInfo->EffectTriggerSpell[0])
+            pSpellInfo = sServerFacade.LookupSpellInfo(pSpellInfo->EffectTriggerSpell[0]);
+
+        if (!pSpellInfo)
+            continue;
+
+        if (pSpellInfo->Effect[0] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[1] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[2] != SPELL_EFFECT_TELEPORT_UNITS)
+            continue;
+
+        SpellTargetPosition const* pos = sSpellMgr.GetSpellTargetPosition(pSpellInfo->Id);
+
+        if (!pos)
+            continue;
+
+        WorldPosition outPos(pos);
+
+        TravelNode* destNode = sTravelNodeMap.addNode(outPos, pSpellInfo->SpellName[0], true, true);
     }
 }
 
