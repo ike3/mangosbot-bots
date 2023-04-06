@@ -162,7 +162,7 @@ void PlayerbotFactory::Prepare()
     }
 }
 
-void PlayerbotFactory::Randomize(bool incremental)
+void PlayerbotFactory::Randomize(bool incremental, bool syncWithMaster)
 {
     sLog.outDetail("Preparing to %s randomize...", (incremental ? "incremental" : "full"));
     Prepare();
@@ -256,7 +256,7 @@ void PlayerbotFactory::Randomize(bool incremental)
         if (pmo) pmo->finish();
     }
 
-    InitEquipment(incremental);
+    InitEquipment(incremental, syncWithMaster);
     InitGems();
     if (pmo) pmo->finish();
 
@@ -1271,8 +1271,15 @@ bool PlayerbotFactory::CanEquipItem(ItemPrototype const* proto, uint32 desiredQu
     return true;
 }
 
-void PlayerbotFactory::InitEquipment(bool incremental)
+void PlayerbotFactory::InitEquipment(bool incremental, bool syncWithMaster)
 {
+    uint32 oldGS = ai->GetEquipGearScore(bot, false, false);
+    uint32 masterGS = 0;
+    if(syncWithMaster && ai->GetMaster())
+    {
+        masterGS = ai->GetEquipGearScore(ai->GetMaster(), false, false);
+    }
+
     bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(bot) && bot->GetPlayerbotAI() && !bot->GetPlayerbotAI()->HasRealPlayerMaster() && !bot->GetPlayerbotAI()->IsInRealGuild();
     if (!incremental)
     {
@@ -1356,9 +1363,6 @@ void PlayerbotFactory::InitEquipment(bool incremental)
     //    }
     //}
 
-    uint32 oldGS = ai->GetEquipStatsValue(bot);
-    uint32 newGS = 0;
-
     // unavailable legendaries list
     vector<uint32> lockedItems;
     lockedItems.push_back(30311); // Warp Slicer
@@ -1389,80 +1393,93 @@ void PlayerbotFactory::InitEquipment(bool incremental)
         /*if (incremental && upgradeSlots.size() && upgradeSlots[slot] != true && !(slot == EQUIPMENT_SLOT_TRINKET1 || slot == EQUIPMENT_SLOT_TRINKET2))
             continue;*/
 
-        bool found = false;
+        uint32 searchLevel = level;
         uint32 quality = ITEM_QUALITY_POOR;
+        uint32 maxItemLevel = sPlayerbotAIConfig.randomGearMaxLevel;
         bool progressiveGear = sPlayerbotAIConfig.randomGearProgression;
-        if (progressiveGear)
+        if(syncWithMaster && ai->GetMaster())
         {
-            if (!incremental)
+            maxItemLevel = masterGS + sPlayerbotAIConfig.randomGearMaxDiff;
+            progressiveGear = false;
+            if (bot->GetLevel() != searchLevel)
             {
-                if (level < 10)
-                    quality = urand(ITEM_QUALITY_POOR, ITEM_QUALITY_UNCOMMON);
-                else if (level < 20)
-                    quality = urand(ITEM_QUALITY_NORMAL, ITEM_QUALITY_UNCOMMON);
-                else if (level < 40)
-                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
-                else if (level < 60)
-#ifdef MANGOSBOT_ZERO
-                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
-                else if (level < 70)
-                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
-#endif
-#ifdef MANGOSBOT_ONE
-                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
-                else if (level < 70)
-                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
-                else if (level < 80)
-                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
-#endif
-#ifdef MANGOSBOT_TWO
-                quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
-                else if (level < 70)
-                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
-                else if (level < 80)
-                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
-                else
-                    quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
-#endif
-            }
-            else
-            {
-                if (level < 10)
-                    quality = ITEM_QUALITY_POOR;
-                else if (level < 20)
-                    quality = ITEM_QUALITY_NORMAL;
-                else if (level < 40)
-                    quality = ITEM_QUALITY_UNCOMMON;
-                else if (level < 60)
-#ifdef MANGOSBOT_ZERO
-                    quality = ITEM_QUALITY_UNCOMMON;
-                else if (level < 70)
-                    quality = ITEM_QUALITY_RARE;
-#endif
-#ifdef MANGOSBOT_ONE
-                    quality = ITEM_QUALITY_UNCOMMON;
-                else if (level < 70)
-                    quality = ITEM_QUALITY_UNCOMMON;
-                else if (level < 80)
-                    quality = ITEM_QUALITY_RARE;
-#endif
-#ifdef MANGOSBOT_TWO
-                    quality = ITEM_QUALITY_UNCOMMON;
-                else if (level < 70)
-                    quality = ITEM_QUALITY_UNCOMMON;
-                else if (level < 80)
-                    quality = ITEM_QUALITY_UNCOMMON;
-                else
-                    quality = ITEM_QUALITY_RARE;
-#endif
+                searchLevel = bot->GetLevel();
             }
         }
-        if (progressiveGear && !incremental && urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && quality > ITEM_QUALITY_NORMAL) {
-            quality--;
+        else
+        {
+            if (progressiveGear)
+            {
+                if (!incremental)
+                {
+                    if (level < 10)
+                        quality = urand(ITEM_QUALITY_POOR, ITEM_QUALITY_UNCOMMON);
+                    else if (level < 20)
+                        quality = urand(ITEM_QUALITY_NORMAL, ITEM_QUALITY_UNCOMMON);
+                    else if (level < 40)
+                        quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                    else if (level < 60)
+#ifdef MANGOSBOT_ZERO
+                        quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                    else if (level < 70)
+                        quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+#endif
+#ifdef MANGOSBOT_ONE
+                        quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                    else if (level < 70)
+                        quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                    else if (level < 80)
+                        quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+#endif
+#ifdef MANGOSBOT_TWO
+                    quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                    else if (level < 70)
+                        quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                    else if (level < 80)
+                        quality = urand(ITEM_QUALITY_UNCOMMON, ITEM_QUALITY_RARE);
+                    else
+                        quality = urand(ITEM_QUALITY_RARE, ITEM_QUALITY_EPIC);
+#endif
+                }
+                else
+                {
+                    if (level < 10)
+                        quality = ITEM_QUALITY_POOR;
+                    else if (level < 20)
+                        quality = ITEM_QUALITY_NORMAL;
+                    else if (level < 40)
+                        quality = ITEM_QUALITY_UNCOMMON;
+                    else if (level < 60)
+#ifdef MANGOSBOT_ZERO
+                        quality = ITEM_QUALITY_UNCOMMON;
+                    else if (level < 70)
+                        quality = ITEM_QUALITY_RARE;
+#endif
+#ifdef MANGOSBOT_ONE
+                        quality = ITEM_QUALITY_UNCOMMON;
+                    else if (level < 70)
+                        quality = ITEM_QUALITY_UNCOMMON;
+                    else if (level < 80)
+                        quality = ITEM_QUALITY_RARE;
+#endif
+#ifdef MANGOSBOT_TWO
+                        quality = ITEM_QUALITY_UNCOMMON;
+                    else if (level < 70)
+                        quality = ITEM_QUALITY_UNCOMMON;
+                    else if (level < 80)
+                        quality = ITEM_QUALITY_UNCOMMON;
+                    else
+                        quality = ITEM_QUALITY_RARE;
+#endif
+                }
+            }
+            if (progressiveGear && !incremental && urand(0, 100) < 100 * sPlayerbotAIConfig.randomGearLoweringChance && quality > ITEM_QUALITY_NORMAL) {
+                quality--;
+            }
         }
 
+        bool found = false;
         uint32 attempts = 0;
-        uint32 searchLevel = level;
         do
         {
             // pick random shirt
@@ -1520,11 +1537,11 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                 vector<uint32> ids;
                 for (uint32 q = quality; q < ITEM_QUALITY_ARTIFACT; ++q)
                 {
-                    uint32 searchLevel = level;
+                    uint32 currSearchLevel = searchLevel;
                     bool hasProperLevel = false;
-                    while (!hasProperLevel && searchLevel > 0)
+                    while (!hasProperLevel && currSearchLevel > 0)
                     {
-                        vector<uint32> newItems = sRandomItemMgr.Query(searchLevel, bot->getClass(), uint8(specId), slot, q);
+                        vector<uint32> newItems = sRandomItemMgr.Query(currSearchLevel, bot->getClass(), uint8(specId), slot, q);
                         if (newItems.size())
                             ids.insert(ids.begin(), newItems.begin(), newItems.end());
 
@@ -1532,7 +1549,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                         {
                             ItemPrototype const* proto = sObjectMgr.GetItemPrototype(id);
 
-                            if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
+                            if (proto->ItemLevel > maxItemLevel)
                                 continue;
 
                             hasProperLevel = true;
@@ -1542,7 +1559,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                         if (!hasProperLevel)
                         {
                             ids.clear();
-                            searchLevel--;
+                            currSearchLevel--;
                         }
                     }
 
@@ -1614,7 +1631,7 @@ void PlayerbotFactory::InitEquipment(bool incremental)
                     if (proto->MaxCount && bot->HasItemCount(proto->ItemId, proto->MaxCount))
                         continue;
 
-                    if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
+                    if (proto->ItemLevel > maxItemLevel)
                         continue;
 
                     // filter tank weapons
@@ -1756,6 +1773,14 @@ void PlayerbotFactory::InitEquipment(bool incremental)
     // Update stats here so the bots will benefit from the new equipped items' stats
     bot->InitStatsForLevel(true);
     bot->UpdateAllStats();
+
+    if(syncWithMaster && ai->GetMaster())
+    {
+        uint32 newGS = ai->GetEquipGearScore(bot, false, false);
+        std::stringstream message;
+        message << "Synced gear with master. Old GS: " << oldGS << " New GS: " << newGS << " Master GS: " << masterGS;
+        ai->TellMasterNoFacing(message.str());
+    }
 }
 
 bool PlayerbotFactory::IsDesiredReplacement(uint32 itemId)

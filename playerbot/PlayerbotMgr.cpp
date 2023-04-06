@@ -485,10 +485,11 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
                 factory.EquipGear();
                 return "random gear equipped";
             }
-            if (cmd == "equip=upgrade" || cmd == "gear=upgrade" || cmd == "upgrade")
+            if (cmd == "equip=upgrade" || cmd == "gear=upgrade" || cmd == "upgrade" || cmd == "equip=sync")
             {
+                const bool syncWithMaster = cmd == "equip=sync";
                 PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
-                factory.UpgradeGear();
+                factory.UpgradeGear(syncWithMaster);
                 return "gear upgraded";
             }
             if (cmd == "train" || cmd == "learn")
@@ -531,37 +532,43 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
             if (cmd == "init")
             {
                 PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
-                factory.Randomize(true);
+                factory.Randomize(true, false);
                 return "ok";
             }
             if (cmd == "init=white" || cmd == "init=common")
             {
                 PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_NORMAL);
-                factory.Randomize(false);
+                factory.Randomize(false, false);
                 return "ok";
             }
             else if (cmd == "init=green" || cmd == "init=uncommon")
             {
                 PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_UNCOMMON);
-                factory.Randomize(false);
+                factory.Randomize(false, false);
                 return "ok";
             }
             else if (cmd == "init=blue" || cmd == "init=rare")
             {
                 PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_RARE);
-                factory.Randomize(false);
+                factory.Randomize(false, false);
                 return "ok";
             }
             else if (cmd == "init=epic" || cmd == "init=purple")
             {
                 PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_EPIC);
-                factory.Randomize(false);
+                factory.Randomize(false, false);
                 return "ok";
             }
             else if (cmd == "init=legendary" || cmd == "init=yellow")
             {
                 PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_LEGENDARY);
-                factory.Randomize(false);
+                factory.Randomize(false, false);
+                return "ok";
+            }
+            else if (cmd == "init=sync")
+            {
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_LEGENDARY);
+                factory.Randomize(false, true);
                 return "ok";
             }
         }
@@ -569,7 +576,7 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
         if (cmd == "levelup" || cmd == "level")
         {
             PlayerbotFactory factory(bot, bot->GetLevel());
-            factory.Randomize(true);
+            factory.Randomize(true, false);
             return "ok";
         }
         else if (cmd == "refresh")
