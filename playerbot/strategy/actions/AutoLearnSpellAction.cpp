@@ -184,7 +184,6 @@ void AutoLearnSpellAction::LearnSpell(uint32 spellId, ostringstream* out)
     if (!proto)
         return;
 
-#ifdef CMANGOS
     bool learned = false;
     for (int j = 0; j < 3; ++j)
     {
@@ -201,31 +200,9 @@ void AutoLearnSpellAction::LearnSpell(uint32 spellId, ostringstream* out)
             learned = true;
         }
     }
-#endif
 
-#ifdef MANGOS
-    bool learned = false;
-    for (int j = 0; j < 3; ++j)
-    {
-        if (proto->Effect[j] == SPELL_EFFECT_LEARN_SPELL)
-        {
-            uint32 learnedSpell = proto->EffectTriggerSpell[j];
-
-            if (!bot->HasSpell(learnedSpell))
-            {
-                bot->learnSpell(learnedSpell, false);
-                SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(learnedSpell);
-                *out << formatSpell(spellInfo) << ", ";
-            }
-            learned = true;
-        }
+    if (!learned && !bot->HasSpell(spellId)) {
+        bot->learnSpell(spellId, false);
+        *out << formatSpell(proto) << ", ";
     }
-    if (!learned) {
-        if (!bot->HasSpell(spellId))
-        {
-            bot->learnSpell(spellId, false);
-            *out << formatSpell(proto) << ", ";
-        }
-    }
-#endif
 }
