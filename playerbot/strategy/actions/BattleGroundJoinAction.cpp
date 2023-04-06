@@ -1012,9 +1012,13 @@ bool BGLeaveAction::Execute(Event& event)
 
     sLog.outDetail("Bot #%d %s:%d <%s> leaves %s queue", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), isArena ? "Arena" : "BG");
 
-    WorldPacket packet(CMSG_BATTLEFIELD_PORT, 4);
+    WorldPacket packet(CMSG_BATTLEFIELD_PORT, 20);
+#ifdef MANGOSBOT_ZERO
     uint32 mapId = GetBattleGrounMapIdByTypeId(_bgTypeId);
     packet << mapId << uint8(0);
+#else
+    packet << type << unk2 << (uint32)_bgTypeId << unk << uint8(0);
+#endif
 
     if (!event.getSource().empty())
     {
