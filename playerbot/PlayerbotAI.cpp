@@ -4063,6 +4063,7 @@ void PlayerbotAI::_fillGearScoreData(Player *player, Item* item, std::vector<uin
             break;
         case INVTYPE_SHIELD:
         case INVTYPE_WEAPONOFFHAND:
+        case INVTYPE_HOLDABLE:
             (*gearScore)[EQUIPMENT_SLOT_OFFHAND] = std::max((*gearScore)[EQUIPMENT_SLOT_OFFHAND], level);
             break;
         case INVTYPE_THROWN:
@@ -4085,6 +4086,7 @@ void PlayerbotAI::_fillGearScoreData(Player *player, Item* item, std::vector<uin
             (*gearScore)[EQUIPMENT_SLOT_BODY] = std::max((*gearScore)[EQUIPMENT_SLOT_BODY], level);
             break;
         case INVTYPE_CHEST:
+        case INVTYPE_ROBE:
             (*gearScore)[EQUIPMENT_SLOT_CHEST] = std::max((*gearScore)[EQUIPMENT_SLOT_CHEST], level);
             break;
         case INVTYPE_WAIST:
@@ -4100,7 +4102,7 @@ void PlayerbotAI::_fillGearScoreData(Player *player, Item* item, std::vector<uin
             (*gearScore)[EQUIPMENT_SLOT_WRISTS] = std::max((*gearScore)[EQUIPMENT_SLOT_WRISTS], level);
             break;
         case INVTYPE_HANDS:
-            (*gearScore)[EQUIPMENT_SLOT_HEAD] = std::max((*gearScore)[EQUIPMENT_SLOT_HEAD], level);
+            (*gearScore)[EQUIPMENT_SLOT_HANDS] = std::max((*gearScore)[EQUIPMENT_SLOT_HANDS], level);
             break;
         // equipped gear score check uses both rings and trinkets for calculation, assume that for bags/banks it is the same
         // with keeping second highest score at second slot

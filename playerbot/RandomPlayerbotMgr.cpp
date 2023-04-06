@@ -2326,7 +2326,6 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
     }
     else
     {
-
         UpdateGearSpells(bot);
         sLog.outBasic("Bot #%d %s:%d <%s>: gear upgraded", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
     }
@@ -2345,7 +2344,7 @@ void RandomPlayerbotMgr::UpdateGearSpells(Player* bot)
     uint32 lastLevel = GetValue(bot, "level");
     uint32 level = bot->GetLevel();
     PlayerbotFactory factory(bot, level);
-    factory.Randomize(true);
+    factory.Randomize(true, false);
 
     if (lastLevel != level)
         SetValue(bot, "level", level);
@@ -2398,7 +2397,7 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
 
     SetValue(bot, "level", level);
     PlayerbotFactory factory(bot, level);
-    factory.Randomize(false);
+    factory.Randomize(false, false);
 	
     // schedule randomise
     uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);

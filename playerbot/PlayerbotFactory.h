@@ -52,13 +52,13 @@ public:
     static ObjectGuid GetRandomBot();
     static void Init();
     void Refresh();
-    void Randomize(bool incremental);
+    void Randomize(bool incremental, bool syncWithMaster);
     static list<uint32> classQuestIds;
     static list<uint32> specialQuestIds;
     void InitSkills();
     static void EnchantEquipment(Player* bot);
-    void EquipGear() { return InitEquipment(false); }
-    void UpgradeGear() { return InitEquipment(true); }
+    void EquipGear() { return InitEquipment(false, false); }
+    void UpgradeGear(bool syncWithMaster) { return InitEquipment(!syncWithMaster, syncWithMaster); }
     void AddReagents() { return InitReagents(); }
     void AddPotions() { return InitPotions(); }
     void AddConsumes() { return AddConsumables(); }
@@ -67,7 +67,7 @@ public:
 private:
     void Prepare();
     void InitSecondEquipmentSet();
-    void InitEquipment(bool incremental);
+    void InitEquipment(bool incremental, bool syncWithMaster);
     void InitEquipmentNew(bool incremental);
     bool CanEquipItem(ItemPrototype const* proto, uint32 desiredQuality);
     bool CanEquipUnseenItem(uint8 slot, uint16 &dest, uint32 item);
