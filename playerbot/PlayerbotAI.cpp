@@ -1012,7 +1012,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
                 TellMaster(BOT_TEXT("logout_start"));
 
             if (master && master->GetPlayerbotMgr())
-                master->GetPlayerbotMgr()->LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
+                SetShouldLogOut(true);
         }
     }
     else if (filtered == "logout cancel")
@@ -1024,6 +1024,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
 
             WorldPacket p;
             bot->GetSession()->HandleLogoutCancelOpcode(p);
+            SetShouldLogOut(false);
         }
     }
     else if ((filtered.size() > 5) && (filtered.substr(0, 5) == "wait ") && (filtered.find("wait for attack") == std::string::npos))

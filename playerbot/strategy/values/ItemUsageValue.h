@@ -84,7 +84,7 @@ namespace ai
         bool IsItemUsefulForQuest(Player* player, ItemPrototype const* proto, bool ignoreInventory = false);
         bool IsItemNeededForSkill(ItemPrototype const* proto);
         bool IsItemUsefulForSkill(ItemPrototype const * proto);
-        bool IsItemNeededForUsefullSpell(ItemPrototype const* proto, bool checkAllReagents = false);
+        bool IsItemNeededForUsefullSpell(ItemPrototype const* proto, bool checkAllReagents = false, bool tradeSkill = true);
         Item* CurrentItem(ItemPrototype const* proto);
         float BetterStacks(ItemPrototype const* proto, string usageType = "");
 #ifdef GenerateBotHelp
@@ -99,7 +99,7 @@ namespace ai
     public:
         static float CurrentStacks(PlayerbotAI* ai, ItemPrototype const* proto);
         static bool HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto, Player* bot);
-        static vector<uint32> SpellsUsingItem(uint32 itemId, Player* bot);
+        static vector<uint32> SpellsUsingItem(uint32 itemId, Player* bot, bool tradeSkill = true);
         static bool SpellGivesSkillUp(uint32 spellId, Player* bot);
 
         static string GetConsumableType(ItemPrototype const* proto, bool hasMana);

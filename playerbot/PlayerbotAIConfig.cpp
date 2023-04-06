@@ -317,6 +317,7 @@ bool PlayerbotAIConfig::Initialize()
 
 
     LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.AllowedLogFiles", ""), allowedLogFiles);
+    LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.DebugFilter", "add gathering loot,check values,emote,check mount state"), debugFilter);
 
     worldBuffs.clear();
     

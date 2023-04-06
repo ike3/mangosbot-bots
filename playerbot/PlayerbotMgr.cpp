@@ -41,6 +41,11 @@ void PlayerbotHolder::UpdateSessions(uint32 elapsed)
         {
             bot->GetSession()->HandleBotPackets();
         }
+
+        if (bot->GetPlayerbotAI()->GetShouldLogOut() && !bot->IsStunnedByLogout() && !bot->GetSession()->isLogingOut())
+        {
+            LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
+        }
     }
 }
 
@@ -776,7 +781,12 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
     if (command.find("debug ") != std::string::npos)
     {
         bool hasBot = false;
-        PlayerbotAI* ai = master->GetPlayerbotAI();
+
+        if (!master)
+            master = GetPlayerBotsBegin()->second;
+
+        PlayerbotAI* ai = master->GetPlayerbotAI();      
+            
         if (ai)
             hasBot = true;
         else

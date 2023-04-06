@@ -96,6 +96,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("ah");
     supported.push_back("ah bid");
     supported.push_back("keep");
+    supported.push_back("bg free");
 }
 
 void ChatCommandHandlerStrategy::InitReactionTriggers(std::list<TriggerNode*> &triggers)

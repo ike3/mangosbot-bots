@@ -38,9 +38,7 @@ bool XpGainAction::Execute(Event& event)
     {
         Creature* creature = ai->GetCreature(guid); 
 
-        uint32 expansionMaxLevel = DEFAULT_MAX_LEVEL;
-
-        if (creature && ((creature->IsElite() && !creature->GetMap()->IsDungeon()) || creature->IsWorldBoss() || creature->GetLevel() > expansionMaxLevel + 1 || creature->GetLevel() > bot->GetLevel() + 4))
+        if (creature && ((creature->IsElite() && !creature->GetMap()->IsDungeon()) || creature->IsWorldBoss() || creature->GetLevel() > DEFAULT_MAX_LEVEL + 1 || creature->GetLevel() > bot->GetLevel() + 4))
         {
             Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
 

@@ -17,7 +17,7 @@ using namespace ai;
 bool DebugAction::Execute(Event& event)
 {
     
-    if (!event.getOwner() || !event.getOwner()->GetSession() || event.getOwner()->GetSession()->GetSecurity() < SEC_MODERATOR)
+    if (event.getSource() != ".bot" && (!event.getOwner() || !event.getOwner()->GetSession() || event.getOwner()->GetSession()->GetSecurity() < SEC_MODERATOR))
         return false;
 
     Player* master = GetMaster();
@@ -1054,7 +1054,7 @@ bool DebugAction::Execute(Event& event)
         return true;
     }
     else if (text.find("gen path") == 0) {
-    sTravelNodeMap.generatePaths();
+    sTravelNodeMap.generatePaths(false);
     return true;
     }
     else if (text.find("crop path") == 0) {

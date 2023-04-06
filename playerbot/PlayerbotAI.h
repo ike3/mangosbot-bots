@@ -507,6 +507,10 @@ public:
 
     void SetMoveToTransport(bool flag = true) { isMovingToTransport = flag; }
     bool GetMoveToTransport() { return isMovingToTransport; }
+
+
+    void SetShouldLogOut(bool val = true) { shouldLogOut = val; }
+    bool GetShouldLogOut() { return shouldLogOut; }
     
 private:
     bool UpdateAIReaction(uint32 elapsed, bool minimal, bool isStunned);
@@ -542,6 +546,7 @@ protected:
     uint32 faceTargetUpdateDelay;
     bool isPlayerFriend = false;
     bool isMovingToTransport = false;
+    bool shouldLogOut = false;
 };
 
 template<typename T>

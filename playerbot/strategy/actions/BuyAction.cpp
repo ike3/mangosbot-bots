@@ -5,6 +5,7 @@
 #include "../values/ItemCountValue.h"
 #include "../values/ItemUsageValue.h"
 #include "../values/BudgetValues.h"
+#include "AuctionHouseBot/AuctionHouseBot.h"
 
 using namespace ai;
 
@@ -83,7 +84,11 @@ bool BuyAction::Execute(Event& event)
                     freeMoney[ITEM_USAGE_SKILL] = (uint32)NeedMoneyFor::tradeskill;
                     freeMoney[ITEM_USAGE_AMMO] =  (uint32)NeedMoneyFor::ammo;
                     freeMoney[ITEM_USAGE_QUEST] = freeMoney[ITEM_USAGE_FORCE] = (uint32)NeedMoneyFor::anything;
-
+                    
+                    AuctionHouseBotItemData itemInfo = sAuctionHouseBot.GetItemData(proto->ItemId);
+                    if (itemInfo.Value > ((int32)proto->BuyPrice) * 1.1f)
+                        freeMoney[ITEM_USAGE_AH] = (uint32)NeedMoneyFor::ah;
+                
                     if (freeMoney.find(usage) == freeMoney.end())
                         continue;
 
