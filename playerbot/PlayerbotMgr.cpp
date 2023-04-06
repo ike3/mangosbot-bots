@@ -774,7 +774,12 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
     if (command.find("debug ") != std::string::npos)
     {
         bool hasBot = false;
-        PlayerbotAI* ai = master->GetPlayerbotAI();
+
+        if (!master)
+            master = GetPlayerBotsBegin()->second;
+
+        PlayerbotAI* ai = master->GetPlayerbotAI();      
+            
         if (ai)
             hasBot = true;
         else

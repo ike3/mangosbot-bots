@@ -17,7 +17,7 @@ using namespace ai;
 bool DebugAction::Execute(Event& event)
 {
     
-    if (!event.getOwner() || !event.getOwner()->GetSession() || event.getOwner()->GetSession()->GetSecurity() < SEC_MODERATOR)
+    if (event.getSource() != ".bot" && (!event.getOwner() || !event.getOwner()->GetSession() || event.getOwner()->GetSession()->GetSecurity() < SEC_MODERATOR))
         return false;
 
     Player* master = GetMaster();
