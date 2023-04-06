@@ -615,7 +615,6 @@ bool TravelNode::cropUselessLinks()
         */
 }
 
-
 bool TravelNode::isEqual(TravelNode* compareNode)
 {
     if (!hasLinkTo(compareNode))
@@ -1786,7 +1785,6 @@ void TravelNodeMap::generateNpcNodes()
     }
 }
 
-
 void TravelNodeMap::generateStartNodes()
 {
     map<uint8, string> startNames;
@@ -2183,6 +2181,31 @@ void TravelNodeMap::generateNodes()
     generatePortalNodes();
 }
 
+void TravelNodeMap::generateWalkPathMap(uint32 mapId)
+{
+    for (auto& startNode : sTravelNodeMap.getNodes(WorldPosition(mapId, 1, 1)))
+    {
+        if (startNode->isLinked())
+            continue;
+
+        for (auto& endNode : sTravelNodeMap.getNodes(*startNode->getPosition(), 2000.0f))
+        {
+            if (startNode == endNode)
+                continue;
+
+            if (startNode->hasCompletePathTo(endNode))
+                continue;
+
+            if (startNode->getMapId() != endNode->getMapId())
+                continue;
+
+            startNode->buildPath(endNode, nullptr, false);
+        }
+
+        startNode->setLinked(true);
+    }
+}
+
 void TravelNodeMap::generateWalkPaths()
 {
     //Pathfinder
@@ -2215,74 +2238,18 @@ void TravelNodeMap::generateWalkPaths()
     sLog.outString(">> Generated paths for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
 }
 
-void TravelNodeMap::generateWalkPathMap(uint32 mapId)
-{
-    for (auto& startNode : sTravelNodeMap.getNodes(WorldPosition(mapId, 1, 1)))
-    {
-        if (startNode->isLinked())
-            continue;
-
-        for (auto& endNode : sTravelNodeMap.getNodes(*startNode->getPosition(), 2000.0f))
-        {
-            if (startNode == endNode)
-                continue;
-
-            if (startNode->hasCompletePathTo(endNode))
-                continue;
-
-            if (startNode->getMapId() != endNode->getMapId())
-                continue;                                 
-
-            startNode->buildPath(endNode, nullptr, false);
-        }
-
-        startNode->setLinked(true);
-    }
-}
-
-void TravelNodeMap::generateHelperNodes()
-{
-    //Pathfinder
-    vector<WorldPosition> ppath;
-
-    map<uint32, bool> nodeMaps;
-
-    uint32 old = sTravelNodeMap.getNodes().size();
-
-    for (auto& startNode : sTravelNodeMap.getNodes())
-    {
-        nodeMaps[startNode->getMapId()] = true;
-    }
-
-    vector<std::future<void>> calculations;
-
-    BarGoLink bar(nodeMaps.size());
-    for (auto& map : nodeMaps)
-    {
-        uint32 mapId = map.first;
-        calculations.push_back(std::async([this, mapId] { generateHelperNodes(mapId); }));
-        bar.step();
-    }
-
-    for (uint32 i = 0; i < calculations.size(); i++)
-    {
-        calculations[i].wait();
-    }
-
-    sLog.outString(">> Generated " SIZEFMTD " helpdernodes.", sTravelNodeMap.getNodes().size()-old);
-}
-
 void TravelNodeMap::generateHelperNodes(uint32 mapId)
 {
-    vector<TravelNode*> startNodes = getNodes(WorldPosition(mapId, 1, 1));   
+    vector<TravelNode*> startNodes = getNodes(WorldPosition(mapId, 1, 1));
 
     vector<std::pair<WorldPosition, string>> places_to_reach;
 
+    //Find all places we might want to reach.
     for (auto& node : startNodes)
     {
-        places_to_reach.push_back(make_pair(GuidPosition(0,*node->getPosition()), node->getName()));
+        places_to_reach.push_back(make_pair(GuidPosition(0, *node->getPosition()), node->getName()));
     }
-    
+
     for (auto& obj : WorldPosition().getCreaturesNear(WorldPosition(mapId, 1, 1)))
     {
         places_to_reach.push_back(make_pair(obj, sObjectMgr.GetCreatureTemplate(obj->second.id)->Name));
@@ -2296,16 +2263,15 @@ void TravelNodeMap::generateHelperNodes(uint32 mapId)
     if (places_to_reach.empty() || startNodes.empty())
         return;
 
-    //BarGoLink* bar;    
-    //if (mapId == 0)
-    //    bar = new BarGoLink(places_to_reach.size());
-
-    uint32 cur = 0;
+    m_nMapMtx.lock();
+    BarGoLink bar(places_to_reach.size());
+    m_nMapMtx.unlock();
 
     for (auto& pos : places_to_reach)
     {
         startNodes = getNodes(WorldPosition(mapId, 1, 1));
 
+        //Find closest 5 nodes.
         std::partial_sort(startNodes.begin(), startNodes.begin() + std::min(int(startNodes.size()), 5), startNodes.end(), [pos](TravelNode* i, TravelNode* j) {return i->fDist(pos.first) < j->fDist(pos.first); });
 
         bool found = false;
@@ -2313,7 +2279,7 @@ void TravelNodeMap::generateHelperNodes(uint32 mapId)
         for (uint8 i = 0; i < std::min(int(startNodes.size()), 5); i++)
         {
             TravelNode* node = startNodes[i];
-            if (node->getPosition()->canPathTo(pos.first, nullptr))
+            if (node->getPosition()->canPathTo(pos.first, nullptr)) //
                 continue;
 
             for (auto& path : *node->getPaths())
@@ -2346,10 +2312,11 @@ void TravelNodeMap::generateHelperNodes(uint32 mapId)
             sTravelNodeMap.addNode(pos.first, name, false, true);
         }
 
-        //if (mapId == 0)
-        //    bar->step();
-        cur++;
-        sLog.outString("\r [map: %d %d%%] \r\x3D",mapId, (uint32)((cur*100)/places_to_reach.size()));
+        m_nMapMtx.lock();
+        bar.step();
+        printf("\r%d", mapId);
+        fflush(stdout);
+        m_nMapMtx.unlock();
     }
 
     for (auto& node : startNodes)
@@ -2359,8 +2326,41 @@ void TravelNodeMap::generateHelperNodes(uint32 mapId)
 
     sTravelNodeMap.generateWalkPathMap(mapId);
 
-    //if (mapId == 0 && bar)
-    //    delete bar;
+    m_nMapMtx.lock();
+    bar.SetOutputState(false);
+    m_nMapMtx.unlock();
+}
+
+void TravelNodeMap::generateHelperNodes()
+{
+    //Pathfinder
+    vector<WorldPosition> ppath;
+
+    map<uint32, bool> nodeMaps;
+
+    uint32 old = sTravelNodeMap.getNodes().size();
+
+    for (auto& startNode : sTravelNodeMap.getNodes())
+    {
+        nodeMaps[startNode->getMapId()] = true;
+    }
+
+    vector<std::future<void>> calculations;
+
+    BarGoLink bar(nodeMaps.size());
+    for (auto& map : nodeMaps)
+    {
+        uint32 mapId = map.first;
+        calculations.push_back(std::async([this, mapId] { generateHelperNodes(mapId); }));
+        bar.step();
+    }
+
+    for (uint32 i = 0; i < calculations.size(); i++)
+    {
+        calculations[i].wait();
+    }
+
+    sLog.outString(">> Generated " SIZEFMTD " helpdernodes.", sTravelNodeMap.getNodes().size()-old);
 }
 
 void TravelNodeMap::generateTaxiPaths()
@@ -2437,36 +2437,6 @@ void TravelNodeMap::removeLowNodes()
         sTravelNodeMap.removeNode(node);
 }
 
-void TravelNodeMap::removeUselessPaths()
-{
-    //Pathfinder
-    vector<WorldPosition> ppath;
-
-    map<uint32, bool> nodeMaps;
-
-    for (auto& startNode : sTravelNodeMap.getNodes())
-    {
-        nodeMaps[startNode->getMapId()] = true;
-    }
-
-    vector<std::future<void>> calculations;
-
-    BarGoLink bar(nodeMaps.size());
-    for (auto& map : nodeMaps)
-    {
-        uint32 mapId = map.first;
-        calculations.push_back(std::async([this, mapId] { removeUselessPathMap(mapId); }));
-        bar.step();
-    }
-
-    BarGoLink bar2(calculations.size());
-    for (uint32 i = 0; i < calculations.size(); i++)
-    {
-        calculations[i].wait();
-        bar2.step();
-    }
-}
-
 void TravelNodeMap::removeUselessPathMap(uint32 mapId)
 {
     //Clean up node links
@@ -2503,6 +2473,36 @@ void TravelNodeMap::removeUselessPathMap(uint32 mapId)
     }
 }
 
+void TravelNodeMap::removeUselessPaths()
+{
+    //Pathfinder
+    vector<WorldPosition> ppath;
+
+    map<uint32, bool> nodeMaps;
+
+    for (auto& startNode : sTravelNodeMap.getNodes())
+    {
+        nodeMaps[startNode->getMapId()] = true;
+    }
+
+    vector<std::future<void>> calculations;
+
+    BarGoLink bar(nodeMaps.size());
+    for (auto& map : nodeMaps)
+    {
+        uint32 mapId = map.first;
+        calculations.push_back(std::async([this, mapId] { removeUselessPathMap(mapId); }));
+        bar.step();
+    }
+
+    BarGoLink bar2(calculations.size());
+    for (uint32 i = 0; i < calculations.size(); i++)
+    {
+        calculations[i].wait();
+        bar2.step();
+    }
+}
+
 void TravelNodeMap::calculatePathCosts()
 {   
     BarGoLink bar(sTravelNodeMap.getNodes().size());
@@ -2523,8 +2523,6 @@ void TravelNodeMap::calculatePathCosts()
             if (nodePath->getCalculated())
                 continue;
 
-            //nodePath->calculateCost();
-
             calculations.push_back(std::async([nodePath] {nodePath->calculateCost(); }));
         }
     }
@@ -2536,7 +2534,10 @@ void TravelNodeMap::calculatePathCosts()
         calculations[i].wait();
     }
 
-    sLog.outString(">> Calculated path cost for " SIZEFMTD " nodes.", sTravelNodeMap.getNodes().size());
+    sLog.outString(">> Calculated cost for " SIZEFMTD " paths.", calculations.size());
+
+    if (calculations.size()) //Repeat until we have all paths calculated.
+        calculatePathCosts();
 }
 
 void TravelNodeMap::generatePaths(bool helpers)
@@ -2549,8 +2550,6 @@ void TravelNodeMap::generatePaths(bool helpers)
         sLog.outString("-Generating helper nodes");
         generateHelperNodes();
     }
-
-
 
     sLog.outString("-Removing useless nodes");
     removeLowNodes();

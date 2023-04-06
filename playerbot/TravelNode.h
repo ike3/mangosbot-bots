@@ -25,23 +25,8 @@
 // Path: the waypointpath returned by the standard pathfinder to move from one node (or position) to another. A path can be imcomplete or empty which means there is no link.
 // Route: the list of nodes that give the shortest route from a node to a distant node. Routes are calculated using a standard A* search based on links.
 // 
-// On server start saved nodes and links are loaded. Paths and routes are calculated on the fly but saved for future use.
-// Nodes can be added and removed realtime however because bots access the nodes from different threads this requires a locking mechanism.
-// 
-// Initially the current nodes have been made:
-// Flightmasters and Inns (Bots can use these to fast-travel so eventually they will be included in the route calculation)
-// WorldBosses and Unique bosses in instances (These are a logical places bots might want to go in instances)
-// Player start spawns (Obviously all lvl1 bots will spawn and move from here)
-// Area triggers locations with teleport and their teleport destinations (These used to travel in or between maps)
-// Transports including elevators (Again used to travel in and in maps)
-// (sub)Zone means (These are the center most point for each sub-zone which is good for global coverage)
-// 
-// To increase coverage/linking extra nodes can be automatically be created.
-// Current implentation places nodes on paths (including complete) at sub-zone transitions or randomly.
-// After calculating possible links the node is removed if it does not create local coverage.
-//
-
-    
+// Nodes, links and paths are stored in db tables but will be generated if they are empty. See TravelNodeMap for more information about the generation proces.
+  
 enum class TravelNodePathType : uint8
 {
     none = 0,
@@ -387,28 +372,32 @@ namespace ai
         void setHasToGen() { hasToGen = true; }
         bool gethasToGen() { return hasToGen || hasToFullGen; }
 
-        void generateNpcNodes();
-        void generateStartNodes();
-        void generateAreaTriggerNodes();
-        void generateNodes();
-        void generateTransportNodes();
-        void generateZoneMeanNodes();
-        void generatePortalNodes();
+        //Below are the steps to creating the content stored in the node, link and path tables. 
+        //Nodes are placed based on key locations based on objects/creatures in the world and paths are generated using the standardpathfinder.
 
-        void generateWalkPaths();
-        void generateWalkPathMap(uint32 mapId);
+        void generateNpcNodes();                  //Creates node at innkeepers, flightmasters, spirithealers and bosses.
+        void generateStartNodes();                //Create node at lvl1 players spawn.
+        void generateAreaTriggerNodes();          //Create node at area trigger (dungeon portals/teleports) and also link the entry and exit.
+        void generateTransportNodes();            //Create node at transport (boats/zepelins/elevators) and also create the path they move.
+        void generateZoneMeanNodes();             //Create node at zone mean (the avg location of all objects and creatures of a certain area/zone)
+        void generatePortalNodes();               //Create node at static portal (ie. dalaran->ironforge) and the desination of teleport spell (ie. teleport to ironforge)
+        void generateNodes();                     //Call all above methods.
 
-        void generateHelperNodes();
-        void generateHelperNodes(uint32 mapId);
+        void generateWalkPathMap(uint32 mapId);   //Pathfind from all nodes to all nodes in a specific map. Create a path for all attemps and a link for all paths that actually reach the end node.
+        void generateWalkPaths();                 //Call above method for all maps async.
 
-        void removeLowNodes();
-        void removeUselessPaths();
-        void removeUselessPathMap(uint32 mapId);
-        void calculatePathCosts();
-        void generateTaxiPaths();
-        void generatePaths(bool helpers = true);
+        //Helper nodes take a long time to generate and have limited impact. Disable is generation time becomes an issue. It does make some places connected to the network though like some caves and tauren start.
+        void generateHelperNodes(uint32 mapId);   //For all nodes, objects and creatures, that can't be directly reached from one of the 5 nearby nodes, place a node on one of the paths of the nearby nodes so they can be reached or else place a node at the object. Also generate walkPaths for each node and the entire map again afterwards.
+        void generateHelperNodes();               //Call above method for all maps async.
 
-        void generateAll();
+        void removeLowNodes();                    //Remove any node in the overworld that can reach less than 4 nodes directly or indirectly.
+        void removeUselessPathMap(uint32 mapId);  //Remove any path which can be replaced by multiple paths of combined equivalent or shorter length. (Single paths get a 10% length increase to make it prefer multiple paths with a slight detour) 
+        void removeUselessPaths();                //Call above method for all maps async.
+        void calculatePathCosts();                //Calculate distance, swim distance and expected max alliance, horde and mob level along the path.
+        void generateTaxiPaths();                 //Create paths and links from all flightmasters along their taxi routes.
+        void generatePaths(bool helpers = true);  //Call above methods.
+
+        void generateAll();                       //Generate nodes, paths when needed. Map-offsets,transfers and node coverage is also calculated.
 
         void printMap();
 
@@ -420,7 +409,7 @@ namespace ai
         TravelNode* addZoneLinkNode(TravelNode* startNode);
         TravelNode* addRandomExtNode(TravelNode* startNode);
 
-        void calcMapOffset();
+        void calcMapOffset();                      
         WorldPosition getMapOffset(uint32 mapId);
 
         std::shared_timed_mutex m_nMapMtx;
