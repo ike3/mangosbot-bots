@@ -108,6 +108,7 @@ namespace ai
                 creators["polymorph"] = &TriggerFactoryInternal::polymorph;
                 creators["spellsteal"] = &TriggerFactoryInternal::spellsteal;
                 creators["hot streak"] = &TriggerFactoryInternal::hot_streak;
+                creators["no improved scorch"] = &TriggerFactoryInternal::no_improved_scorch;
                 creators["living bomb"] = &TriggerFactoryInternal::living_bomb;
                 creators["missile barrage"] = &TriggerFactoryInternal::missile_barrage;
                 creators["arcane blast"] = &TriggerFactoryInternal::arcane_blast;
@@ -132,6 +133,7 @@ namespace ai
             static Trigger* presence_of_mind(PlayerbotAI* ai) { return new PresenceOfMindTrigger(ai); }
             static Trigger* arcane_power(PlayerbotAI* ai) { return new ArcanePowerTrigger(ai); }
             static Trigger* hot_streak(PlayerbotAI* ai) { return new HotStreakTrigger(ai); }
+            static Trigger* no_improved_scorch(PlayerbotAI* ai) { return new NoImprovedScorchDebuffTrigger(ai); }
             static Trigger* fireball(PlayerbotAI* ai) { return new FireballTrigger(ai); }
             static Trigger* pyroblast(PlayerbotAI* ai) { return new PyroblastTrigger(ai); }
             static Trigger* combustion(PlayerbotAI* ai) { return new CombustionTrigger(ai); }

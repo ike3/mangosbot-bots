@@ -24,3 +24,11 @@ bool IceLanceTrigger::IsActive()
     Unit* target = GetTarget();
     return target && ai->HasAnyAuraOf(target, "frost nova", "frostbite", NULL);
 }
+
+bool NoImprovedScorchDebuffTrigger::IsActive()
+{
+    Unit* target = GetTarget();
+    return target
+        && (bot->HasSpell(11095) || bot->HasSpell(12872) || bot->HasSpell(12873))
+        && !ai->HasAura("improved scorch", target);
+}

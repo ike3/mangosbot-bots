@@ -137,4 +137,5 @@ namespace ai
     };
 
     DEBUFF_TRIGGER_A(IceLanceTrigger, "ice lance");
+    DEBUFF_TRIGGER_A(NoImprovedScorchDebuffTrigger, "no improved scorch");
 }
