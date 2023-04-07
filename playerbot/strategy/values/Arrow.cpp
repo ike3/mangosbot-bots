@@ -19,7 +19,7 @@ WorldLocation ArrowFormation::GetLocationInternal()
     float range = ai->GetRange("follow");
 
     Player* master = ai->GetMaster();
-    if (!master)
+    if (!ai->IsSafe(master))
         return Formation::NullLocation;
 
     float orientation = master->GetOrientation();
