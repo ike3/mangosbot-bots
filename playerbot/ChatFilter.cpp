@@ -180,35 +180,35 @@ public:
         Player* bot = ai->GetBot();
 
         bool tank = message.find("@tank") == 0;
-        if (tank && !ai->IsTank(bot))
+        if (tank && !ai->IsTank(bot, false))
             return "";
 
         bool dps = message.find("@dps") == 0;
-        if (dps && (ai->IsTank(bot) || ai->IsHeal(bot)))
+        if (dps && (ai->IsTank(bot, false) || ai->IsHeal(bot, false)))
             return "";
 
         bool heal = message.find("@heal") == 0;
-        if (heal && !ai->IsHeal(bot))
+        if (heal && !ai->IsHeal(bot, false))
             return "";
 
         bool notank = message.find("@notank") == 0;
-        if (notank && ai->IsTank(bot))
+        if (notank && ai->IsTank(bot, false))
             return "";
 
         bool nodps = message.find("@nodps") == 0;
-        if (nodps && !ai->IsTank(bot) && !ai->IsHeal(bot))
+        if (nodps && !ai->IsTank(bot, false) && !ai->IsHeal(bot, false))
             return "";
 
         bool noheal = message.find("@noheal") == 0;
-        if (noheal && ai->IsHeal(bot))
+        if (noheal && ai->IsHeal(bot, false))
             return "";
 
         bool ranged = message.find("@ranged") == 0;
-        if (ranged && !ai->IsRanged(bot))
+        if (ranged && !ai->IsRanged(bot, false))
             return "";
 
         bool melee = message.find("@melee") == 0;
-        if (melee && ai->IsRanged(bot))
+        if (melee && ai->IsRanged(bot, false))
             return "";
 
         if (tank || dps || heal || ranged || melee || noheal || nodps || nodps)
@@ -315,16 +315,16 @@ public:
                 break;
 
             case CLASS_DRUID:
-                if (ranged && ai->IsTank(bot))
+                if (ranged && ai->IsTank(bot,false))
                     return "";
-                if (melee && !ai->IsTank(bot))
+                if (melee && !ai->IsTank(bot, false))
                     return "";
                 break;
 
             case CLASS_SHAMAN:
-                if (melee && ai->IsHeal(bot))
+                if (melee && ai->IsHeal(bot, false))
                     return "";
-                if (ranged && !ai->IsHeal(bot))
+                if (ranged && !ai->IsHeal(bot, false))
                     return "";
                 break;
         }

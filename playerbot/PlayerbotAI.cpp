@@ -1967,11 +1967,16 @@ void PlayerbotAI::ResetStrategies(bool autoLoad)
     }
 }
 
-bool PlayerbotAI::IsRanged(Player* player)
+bool PlayerbotAI::IsRanged(Player* player, bool inGroup)
 {
     PlayerbotAI* botAi = player->GetPlayerbotAI();
     if (botAi)
-        return botAi->ContainsStrategy(STRATEGY_TYPE_RANGED);
+    {
+        if (inGroup)
+            return botAi->ContainsStrategy(STRATEGY_TYPE_RANGED);
+        else if (!botAi->ContainsStrategy(STRATEGY_TYPE_RANGED))
+            return false;
+    }
 
     switch (player->getClass())
     {
@@ -1988,22 +1993,32 @@ bool PlayerbotAI::IsRanged(Player* player)
     return true;
 }
 
-bool PlayerbotAI::IsTank(Player* player)
+bool PlayerbotAI::IsTank(Player* player, bool inGroup)
 {
     PlayerbotAI* botAi = player->GetPlayerbotAI();
     if (botAi)
-        return botAi->ContainsStrategy(STRATEGY_TYPE_TANK);
+    {
+        if (inGroup)
+            return botAi->ContainsStrategy(STRATEGY_TYPE_TANK);
+        else if (!botAi->ContainsStrategy(STRATEGY_TYPE_TANK))
+            return false;
+    }
        
     BotRoles botRoles = AiFactory::GetPlayerRoles(player);
 
     return (botRoles & BOT_ROLE_TANK) != 0;
 }
 
-bool PlayerbotAI::IsHeal(Player* player)
+bool PlayerbotAI::IsHeal(Player* player, bool inGroup)
 {
     PlayerbotAI* botAi = player->GetPlayerbotAI();
     if (botAi)
-        return botAi->ContainsStrategy(STRATEGY_TYPE_HEAL);
+    {
+        if (inGroup)
+            return botAi->ContainsStrategy(STRATEGY_TYPE_HEAL);
+        else if(!botAi->ContainsStrategy(STRATEGY_TYPE_HEAL))
+            return false;
+    }
 
     BotRoles botRoles = AiFactory::GetPlayerRoles(player);
 

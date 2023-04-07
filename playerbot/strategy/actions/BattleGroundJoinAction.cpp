@@ -576,7 +576,7 @@ bool BGJoinAction::isUseful()
         return false;
 
     // reduce amount of healers in BG
-    if ((ai->IsTank(bot) || ai->IsHeal(bot)) && urand(0, 100) > 20)
+    if ((ai->IsTank(bot, false) || ai->IsHeal(bot, false)) && urand(0, 100) > 20)
         return false;
 
     // do not try if in dungeon

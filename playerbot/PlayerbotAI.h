@@ -323,9 +323,9 @@ public:
     void ResetStrategies(bool autoLoad = true);
     void ReInitCurrentEngine();
     void Reset(bool full = false);
-    bool IsTank(Player* player);
-    bool IsHeal(Player* player);
-    bool IsRanged(Player* player);
+    bool IsTank(Player* player, bool inGroup = true);
+    bool IsHeal(Player* player, bool inGroup = true);
+    bool IsRanged(Player* player, bool inGroup = true);
     Creature* GetCreature(ObjectGuid guid);
     Unit* GetUnit(ObjectGuid guid);
     static Unit* GetUnit(CreatureDataPair const* creatureDataPair);
