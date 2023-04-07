@@ -332,7 +332,7 @@ bool StoreLootAction::Execute(Event& event)
 
         ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
-        if (sPlayerbotAIConfig.guildFeedback && bot->GetGuildId() && !urand(0, 10) && proto->Quality >= ITEM_QUALITY_RARE && sRandomPlayerbotMgr.IsFreeBot(bot))
+        if (sPlayerbotAIConfig.guildFeedbackRate && frand(0, 100) <= sPlayerbotAIConfig.guildFeedbackRate && bot->GetGuildId() && !urand(0, 10) && proto->Quality >= ITEM_QUALITY_RARE && sRandomPlayerbotMgr.IsFreeBot(bot))
         {
             Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
 

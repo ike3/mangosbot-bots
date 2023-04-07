@@ -1214,7 +1214,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 sObjectMgr.GetPlayerNameByGUID(guid1, name);
                 uint32 accountId = sObjectMgr.GetPlayerAccountIdByGUID(guid1);
                 isFreeBot = sPlayerbotAIConfig.IsInRandomAccountList(accountId);
-                if(!isFreeBot)
+                if (!isFreeBot)
                     isFreeBot = sPlayerbotAIConfig.IsFreeAltBot(guid1);
 
                 bool isMentioned = message.find(bot->GetName()) != std::string::npos;
@@ -1235,12 +1235,26 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 if (lang == LANG_ADDON)
                     return;
 
-                if ((isFreeBot && !isPaused && (!urand(0, 30) || (!urand(0, 20) && message.find(bot->GetName()) != std::string::npos))) || (!isFreeBot && (isMentioned || !urand(0, 4))))
-                {
-                    QueueChatResponse(msgtype, guid1, ObjectGuid(), message, chanName, name);
-                    GetAiObjectContext()->GetValue<time_t>("last said", "chat")->Set(time(0) + urand(5, 25));
+                if (msgtype == CHAT_MSG_GUILD && (!sPlayerbotAIConfig.guildRepliesRate || frand(0, 100) > sPlayerbotAIConfig.guildRepliesRate))
                     return;
+
+                if (!isFreeBot)
+                {
+                    if (!isMentioned && urand(0, 4))
+                        return;
                 }
+                else
+                {
+                    if (isPaused)
+                        return;
+
+                    if (urand(0, 20 + 10 * isMentioned))
+                        return;
+                }
+
+                QueueChatResponse(msgtype, guid1, ObjectGuid(), message, chanName, name);
+                GetAiObjectContext()->GetValue<time_t>("last said", "chat")->Set(time(0) + urand(5, 25));
+                return;
             }
         }
 

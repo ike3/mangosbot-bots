@@ -32,7 +32,7 @@ bool AutoLearnSpellAction::Execute(Event& event)
 void AutoLearnSpellAction::LearnSpells(ostringstream* out)
 {
 
-    if (sPlayerbotAIConfig.guildFeedback && bot->GetGuildId() && !urand(0, 10) && sRandomPlayerbotMgr.IsFreeBot(bot))
+    if (sPlayerbotAIConfig.guildFeedbackRate && frand(0, 100) <= sPlayerbotAIConfig.guildFeedbackRate && bot->GetGuildId() && sRandomPlayerbotMgr.IsFreeBot(bot))
     {
         Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
 

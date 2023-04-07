@@ -34,7 +34,7 @@ bool XpGainAction::Execute(Event& event)
     AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
     ai->AccelerateRespawn(guid);
 
-    if (sPlayerbotAIConfig.guildFeedback && bot->GetGuildId() && !urand(0,10) && sRandomPlayerbotMgr.IsFreeBot(bot) && (!ai->HasRealPlayerMaster() || !urand(0,10)))
+    if (sPlayerbotAIConfig.guildFeedbackRate && frand(0, 100) <= sPlayerbotAIConfig.guildFeedbackRate && !urand(0,10) && sRandomPlayerbotMgr.IsFreeBot(bot) && (!ai->HasRealPlayerMaster() || !urand(0,10)))
     {
         Creature* creature = ai->GetCreature(guid); 
 

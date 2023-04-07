@@ -355,7 +355,7 @@ void SuggestWhatToDoAction::spam(string msg, uint8 flags, bool worldChat, bool g
             worldChannel->Say(bot, msg.c_str(), LANG_UNIVERSAL);
     }
     
-    if (guild && bot->GetGuildId())
+    if (guild && bot->GetGuildId() && sPlayerbotAIConfig.guildSuggestRate && frand(0, 100) <= sPlayerbotAIConfig.guildSuggestRate)
     {
         Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());
         if (guild)

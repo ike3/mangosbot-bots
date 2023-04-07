@@ -91,7 +91,7 @@ bool GuildManageNearbyAction::Execute(Event& event)
 
             if (!urand(0, 30) && dCount < 2 && guild->HasRankRight(botMember->RankId, GR_RIGHT_PROMOTE))
             {
-                if (sPlayerbotAIConfig.guildFeedback && !urand(0, 10) && sRandomPlayerbotMgr.IsFreeBot(bot))
+                if (sPlayerbotAIConfig.guildFeedbackRate && frand(0, 100) <= sPlayerbotAIConfig.guildFeedbackRate && bot->GetGuildId() && !urand(0, 10) && sRandomPlayerbotMgr.IsFreeBot(bot))
                 {
                     map<string, string> placeholders;
                     placeholders["%name"] = player->GetName();
@@ -105,7 +105,7 @@ bool GuildManageNearbyAction::Execute(Event& event)
 
             if (!urand(0, 30) && dCount > 2 && guild->HasRankRight(botMember->RankId, GR_RIGHT_DEMOTE))
             {
-                if (sPlayerbotAIConfig.guildFeedback && !urand(0, 10) && sRandomPlayerbotMgr.IsFreeBot(bot))
+                if (sPlayerbotAIConfig.guildFeedbackRate && frand(0, 100) <= sPlayerbotAIConfig.guildFeedbackRate && bot->GetGuildId() && !urand(0, 10) && sRandomPlayerbotMgr.IsFreeBot(bot))
                 {
                     map<string, string> placeholders;
                     placeholders["%name"] = player->GetName();
