@@ -873,6 +873,7 @@ bool PlayerbotAI::IsAllowedCommand(string text)
         unsecuredCommands.insert("invite");
         unsecuredCommands.insert("leave");
         unsecuredCommands.insert("join");
+        unsecuredCommands.insert("lfg");
         unsecuredCommands.insert("guild invite");
         unsecuredCommands.insert("guild leave");
     }

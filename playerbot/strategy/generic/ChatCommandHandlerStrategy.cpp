@@ -62,6 +62,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("bank");
     supported.push_back("invite");
     supported.push_back("join");
+    supported.push_back("lfg");
     supported.push_back("spell");
     supported.push_back("rti");
     supported.push_back("position");

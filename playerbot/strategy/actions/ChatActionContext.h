@@ -144,6 +144,7 @@ namespace ai
             creators["cast custom nc spell"] = &ChatActionContext::cast_custom_nc_spell;
             creators["invite"] = &ChatActionContext::invite;
             creators["join"] = &ChatActionContext::join;
+            creators["lfg"] = &ChatActionContext::lfg;
             creators["spell"] = &ChatActionContext::spell;
             creators["rti"] = &ChatActionContext::rti;
             creators["spirit healer"] = &ChatActionContext::spirit_healer;
@@ -210,6 +211,7 @@ namespace ai
         static Action* rti(PlayerbotAI* ai) { return new RtiAction(ai); }
         static Action* invite(PlayerbotAI* ai) { return new InviteToGroupAction(ai); }
         static Action* join(PlayerbotAI* ai) { return new JoinGroupAction(ai); }
+        static Action* lfg (PlayerbotAI* ai) { return new LfgAction(ai); }
         static Action* spell(PlayerbotAI* ai) { return new TellSpellAction(ai); }
         static Action* cast_custom_spell(PlayerbotAI* ai) { return new CastCustomSpellAction(ai); }
         static Action* cast_custom_nc_spell(PlayerbotAI* ai) { return new CastCustomNcSpellAction(ai); }        

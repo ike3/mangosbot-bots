@@ -25,6 +25,14 @@ namespace ai
         virtual bool isUsefull() { return !bot->IsBeingTeleported(); }
     };
 
+    class LfgAction : public InviteToGroupAction
+    {
+    public:
+        LfgAction(PlayerbotAI* ai, string name = "lfg") : InviteToGroupAction(ai, name) {}
+        virtual bool Execute(Event& event) override;
+        virtual bool isUsefull() { return !bot->IsBeingTeleported(); }
+    };
+
     class InviteNearbyToGroupAction : public InviteToGroupAction
     {
     public:

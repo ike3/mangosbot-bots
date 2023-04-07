@@ -79,6 +79,7 @@ namespace ai
             creators["castnc"] = &ChatTriggerContext::castnc;
             creators["invite"] = &ChatTriggerContext::invite;
             creators["join"] = &ChatTriggerContext::join;
+            creators["lfg"] = &ChatTriggerContext::lfg;
             creators["spell"] = &ChatTriggerContext::spell;
             creators["rti"] = &ChatTriggerContext::rti;
             creators["revive"] = &ChatTriggerContext::revive;
@@ -151,6 +152,7 @@ namespace ai
         static Trigger* rti(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "rti"); }
         static Trigger* invite(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "invite"); }
         static Trigger* join(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "join"); }
+        static Trigger* lfg(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "lfg"); }
         static Trigger* cast(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "cast"); }
         static Trigger* castnc(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "castnc"); }
         static Trigger* talk(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "talk"); }

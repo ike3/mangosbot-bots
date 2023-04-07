@@ -60,10 +60,150 @@ namespace ai
         }
 
         if (bot->GetGroup())
-            if (!ai->DoSpecificAction("leave", event, true))
+        {
+            if (ai->HasRealPlayerMaster())
                 return false;
 
+            if (!ai->DoSpecificAction("leave", event, true))
+                return false;
+        }
+
         return Invite(master, bot);
+    }
+
+    bool LfgAction::Execute(Event& event)
+    {
+        if (bot->InBattleGround())
+            return false;
+
+        if (bot->InBattleGroundQueue())
+            return false;
+
+        Player* master = event.getOwner();
+
+        if (!ai->IsSafe(master))
+            return false;
+
+        if (master->GetLevel() == DEFAULT_MAX_LEVEL && bot->GetLevel() != DEFAULT_MAX_LEVEL)
+            return false;
+
+        if (master->GetLevel() > bot->GetLevel() + 4 || bot->GetLevel() > master->GetLevel() + 4)
+            return false;
+
+        Group* group = master->GetGroup();
+
+        unordered_map<Classes, unordered_map<BotRoles,uint32>> allowedClassNr;
+        unordered_map<BotRoles, uint32> allowedRoles;
+
+        allowedRoles[BOT_ROLE_TANK] = 1;
+        allowedRoles[BOT_ROLE_HEALER] = 1;
+        allowedRoles[BOT_ROLE_DPS] = 3;
+
+        BotRoles role = ai->IsTank(master, false) ? BOT_ROLE_TANK : (ai->IsHeal(master, false) ? BOT_ROLE_HEALER : BOT_ROLE_DPS);
+        Classes cls = (Classes)master->getClass();
+        
+        if (group)
+        {
+            if (group->IsFull())
+                return false;
+
+            if (group->IsRaidGroup())
+            {
+#ifdef MANGOSBOT_ZERO
+                allowedRoles[BOT_ROLE_TANK] = 4;
+                allowedRoles[BOT_ROLE_HEALER] = 16;
+                allowedRoles[BOT_ROLE_DPS] = 20;
+
+                allowedClassNr[CLASS_PALADIN][BOT_ROLE_TANK] = 0;
+                allowedClassNr[CLASS_DRUID][BOT_ROLE_TANK] = 1;
+
+                allowedClassNr[CLASS_DRUID][BOT_ROLE_HEALER] = 3;
+                allowedClassNr[CLASS_PALADIN][BOT_ROLE_HEALER] = 4;
+                allowedClassNr[CLASS_SHAMAN][BOT_ROLE_HEALER] = 4;
+                allowedClassNr[CLASS_PRIEST][BOT_ROLE_HEALER] = 11;
+
+                allowedClassNr[CLASS_WARRIOR][BOT_ROLE_DPS] = 8;
+                allowedClassNr[CLASS_PALADIN][BOT_ROLE_DPS] = 4;
+                allowedClassNr[CLASS_HUNTER][BOT_ROLE_DPS] = 4;
+                allowedClassNr[CLASS_ROGUE][BOT_ROLE_DPS] = 6;
+                allowedClassNr[CLASS_PRIEST][BOT_ROLE_DPS] = 1;
+                allowedClassNr[CLASS_SHAMAN][BOT_ROLE_DPS] = 4;
+                allowedClassNr[CLASS_MAGE][BOT_ROLE_DPS] = 15;
+                allowedClassNr[CLASS_WARLOCK][BOT_ROLE_DPS] = 4;
+                allowedClassNr[CLASS_DRUID][BOT_ROLE_DPS] = 1;
+#else
+                allowedRoles[BOT_ROLE_TANK] = 3;
+                allowedRoles[BOT_ROLE_HEALER] = 8;
+                allowedRoles[BOT_ROLE_DPS] = 19;
+#endif
+            }
+
+            Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
+            for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
+            {
+                // Only add group member targets that are alive and near the player
+                Player* player = sObjectMgr.GetPlayer(itr->guid);
+
+                if (!ai->IsSafe(player))
+                    return false;
+
+                role = ai->IsTank(player, false) ? BOT_ROLE_TANK : (ai->IsHeal(player, false) ? BOT_ROLE_HEALER : BOT_ROLE_DPS);
+                cls = (Classes)player->getClass();
+
+                if (allowedRoles[role] > 0)
+                    allowedRoles[role]--;
+
+                if (allowedClassNr[cls].find(role) != allowedClassNr[cls].end() && allowedClassNr[cls][role] > 0)
+                    allowedClassNr[cls][role]--;
+            }
+        }
+        else
+        {
+            if (allowedRoles[role] > 0)
+                allowedRoles[role]--;
+
+            if (allowedClassNr[cls].find(role) != allowedClassNr[cls].end() && allowedClassNr[cls][role] > 0)
+                allowedClassNr[cls][role]--;
+        }
+
+        role = ai->IsTank(bot, false) ? BOT_ROLE_TANK : (ai->IsHeal(bot, false) ? BOT_ROLE_HEALER : BOT_ROLE_DPS);
+        cls = (Classes)bot->getClass();
+
+        if (allowedRoles[role] == 0)
+            return false;
+
+        if (allowedClassNr[cls].find(role) != allowedClassNr[cls].end() && allowedClassNr[cls][role] == 0)
+            return false;        
+
+        if (bot->GetGroup())
+        {
+            if (ai->HasRealPlayerMaster())
+                return false;
+
+            if (!ai->DoSpecificAction("leave", event, true))
+                return false;
+        }
+
+        bool invite = Invite(master, bot);
+
+        if (invite)
+        {
+            if (!ai->DoSpecificAction("accept invitation", event, true))
+                return false;
+
+            map<string, string> placeholders;
+            placeholders["%role"] = (role == BOT_ROLE_TANK ? "tank" : (role == BOT_ROLE_HEALER ? "healer" : "dps"));
+            placeholders["%spotsleft"] = to_string(allowedRoles[role] - 1);
+
+            if(allowedRoles[role] > 1)
+                ai->TellMaster(BOT_TEXT2("Joining as %role, %spotsleft %role spots left.", placeholders));
+            else
+                ai->TellMaster(BOT_TEXT2("Joining as %role.", placeholders));
+
+            return true;
+        }
+
+        return false;
     }
 
     bool InviteNearbyToGroupAction::Execute(Event& event)
