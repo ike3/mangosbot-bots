@@ -1340,6 +1340,9 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
             if (!bot->IsAlive())
                 continue;
 
+            if (!bot->HasSpell(spellId))
+                continue;
+
             if (!sServerFacade.IsSpellReady(bot, spellId))
                 continue;
 
