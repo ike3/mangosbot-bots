@@ -4,6 +4,7 @@
 
 #include "../../PlayerbotAIConfig.h"
 #include "../../ServerFacade.h"
+#include "CheckMountStateAction.h"
 
 using namespace ai;
 
@@ -105,6 +106,29 @@ bool CastCustomSpellAction::Execute(Event& event)
         ai->HandleCommand(CHAT_MSG_WHISPER, msg.str(), *master);
         return true;
     }
+
+    if (bot->IsMoving())
+    {
+        ai->StopMoving();
+    }
+
+    if (CheckMountStateAction::CurrentMountSpeed(bot))
+    {
+
+        if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
+            return false;
+
+        if (bot->IsMounted())
+        {
+            WorldPacket emptyPacket;
+            bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+
+            if (bot->IsFlying())
+                bot->GetMotionMaster()->MoveFall();
+        }
+    }
+
+    ai->RemoveShapeshift();
 
     ostringstream spellName;
     spellName << ChatHelper::formatSpell(pSpellInfo) << " on ";

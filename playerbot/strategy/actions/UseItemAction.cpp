@@ -901,8 +901,6 @@ bool UseHearthStoneAction::Execute(Event& event)
             if (bot->IsFlying())
                 bot->GetMotionMaster()->MoveFall();
         }
-        else
-            ai->RemoveShapeshift();
     }
 
     ai->RemoveShapeshift();
