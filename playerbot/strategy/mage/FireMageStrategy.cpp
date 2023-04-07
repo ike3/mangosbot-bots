@@ -7,7 +7,11 @@ using namespace ai;
 
 NextAction** FireMageStrategy::GetDefaultCombatActions()
 {
+#ifndef MANGOSBOT_TWO
     return NextAction::array(0, new NextAction("scorch", 7.0f), new NextAction("fireball", 6.0f), new NextAction("fire blast", 5.0f), NULL);
+#else
+    return NextAction::array(0, new NextAction("fireball", 15.0f), NULL);
+#endif
 }
 
 void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
@@ -18,6 +22,7 @@ void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
         "enemy ten yards",
         NextAction::array(0, new NextAction("blast wave", 62.0f), NULL)));
 
+#ifndef MANGOSBOT_TWO
     triggers.push_back(new TriggerNode(
         "pyroblast",
         NextAction::array(0, new NextAction("pyroblast", 10.0f), NULL)));
@@ -25,10 +30,12 @@ void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "fireball",
         NextAction::array(0, new NextAction("fireball", 10.0f), NULL)));
-
+#else
     triggers.push_back(new TriggerNode(
         "hot streak",
         NextAction::array(0, new NextAction("pyroblast", 25.0f), NULL)));
+#endif
+
     triggers.push_back(new TriggerNode(
         "no improved scorch",
         NextAction::array(0, new NextAction("scorch", 20.0f), NULL)));

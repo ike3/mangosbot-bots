@@ -32,3 +32,8 @@ bool NoImprovedScorchDebuffTrigger::IsActive()
         && (bot->HasSpell(11095) || bot->HasSpell(12872) || bot->HasSpell(12873))
         && !ai->HasAura("improved scorch", target);
 }
+
+bool HotStreakTrigger::IsActive()
+{
+    return ai->HasAura("hot streak", bot);
+}

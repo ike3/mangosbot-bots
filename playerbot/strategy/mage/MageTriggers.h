@@ -52,11 +52,6 @@ namespace ai
         PyroblastTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "pyroblast", 10) {}
     };
 
-    class HotStreakTrigger : public HasAuraTrigger {
-    public:
-        HotStreakTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "hot streak") {}
-    };
-
     class MissileBarrageTrigger : public HasAuraTrigger {
     public:
         MissileBarrageTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "missile barrage") {}
@@ -138,4 +133,6 @@ namespace ai
 
     DEBUFF_TRIGGER_A(IceLanceTrigger, "ice lance");
     DEBUFF_TRIGGER_A(NoImprovedScorchDebuffTrigger, "no improved scorch");
+
+    BUFF_TRIGGER_A(HotStreakTrigger, "hot streak");
 }
