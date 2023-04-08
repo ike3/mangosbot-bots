@@ -16,8 +16,8 @@ namespace ai
 
         Group* group = bot->GetGroup();
 
-        /*if (!player->GetPlayerbotAI() && !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, false, player))
-            return false;*/
+        if (ai->HasRealPlayerMaster() && player != bot->GetMaster() && !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, false, player))
+            return false;
 
         bool aiMaster = (ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI());
 
