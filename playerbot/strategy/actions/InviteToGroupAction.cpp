@@ -133,8 +133,8 @@ namespace ai
                 allowedClassNr[CLASS_DRUID][BOT_ROLE_DPS] = 1;
 #else
                 allowedRoles[BOT_ROLE_TANK] = 3;
-                allowedRoles[BOT_ROLE_HEALER] = 8;
-                allowedRoles[BOT_ROLE_DPS] = 19;
+                allowedRoles[BOT_ROLE_HEALER] = 7;
+                allowedRoles[BOT_ROLE_DPS] = 15;
 #endif
             }
 
