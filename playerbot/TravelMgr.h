@@ -302,7 +302,7 @@ namespace ai
         WorldPosition* getPosition() { return wPosition; };
         string GetPosStr() { return wPosition->to_string(); }
         TravelDestination* getDestination() { return tDestination; };
-        uint32 getEntry() { if (!tDestination) return 0; return tDestination->getEntry(); }
+        int32 getEntry() { if (!tDestination) return 0; return tDestination->getEntry(); }
         PlayerbotAI* getAi() { return ai; }
 
         uint32 getExpiredTime() { return WorldTimer::getMSTime() - startTime; }

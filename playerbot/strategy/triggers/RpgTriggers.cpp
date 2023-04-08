@@ -83,20 +83,22 @@ bool RpgStartQuestTrigger::IsActive()
             return false;
     }
 
+    int32 entry = guidP.IsCreature() ? guidP.GetEntry() : -1 * (int32)guidP.GetEntry();
+
     if (AI_VALUE(bool, "can fight equal"))
     {
-        if (AI_VALUE2(bool, "can accept quest npc", guidP.GetEntry()))
+        if (AI_VALUE2(bool, "can accept quest npc", entry))
             return true;
 
-        if (!AI_VALUE2(bool, "can accept quest low level npc", guidP.GetEntry()) )
+        if (!AI_VALUE2(bool, "can accept quest low level npc", entry) )
             return false;
 
-        if (guidP.GetEntry() == AI_VALUE(TravelTarget*, "travel target")->getEntry())
+        if (entry == AI_VALUE(TravelTarget*, "travel target")->getEntry())
             return true;
     }
     else
     {
-        if (AI_VALUE2(bool, "can accept quest low level npc", guidP.GetEntry()))
+        if (AI_VALUE2(bool, "can accept quest low level npc", entry))
             return true;
     }
 
@@ -113,7 +115,9 @@ bool RpgEndQuestTrigger::IsActive()
     if (guidP.IsHostileTo(bot))
         return false;
 
-    if (AI_VALUE2(bool, "can turn in quest npc", guidP.GetEntry()))
+    int32 entry = guidP.IsCreature() ? guidP.GetEntry() : -1 * (int32)guidP.GetEntry();
+
+    if (AI_VALUE2(bool, "can turn in quest npc", entry))
         return true;
 
     return false;
