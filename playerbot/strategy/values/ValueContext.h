@@ -93,6 +93,7 @@
 #include "EngineValues.h"
 #include "FreeMoveValues.h"
 #include "HazardsValue.h"
+#include "FocusTargetValue.h"
 
 namespace ai
 {
@@ -344,6 +345,7 @@ namespace ai
             creators["has area debuff"] = &ValueContext::has_area_debuff;
             creators["combat start time"] = &ValueContext::combat_start_time;
             creators["wait for attack time"] = &ValueContext::wait_for_attack_time;
+            creators["focus heal target"] = &ValueContext::focus_heal_target;
 
             creators["mc runes"] = &ValueContext::mc_runes;
             creators["gos"] = &ValueContext::gos;
@@ -596,7 +598,7 @@ namespace ai
         static UntypedValue* has_area_debuff(PlayerbotAI* ai) { return new HasAreaDebuffValue(ai); }
         static UntypedValue* combat_start_time(PlayerbotAI* ai) { return new CombatStartTimeValue(ai); }
         static UntypedValue* wait_for_attack_time(PlayerbotAI* ai) { return new WaitForAttackTimeValue(ai); }
-
+        static UntypedValue* focus_heal_target(PlayerbotAI* ai) { return new FocusHealTargetValue(ai); }
 
         static UntypedValue* mc_runes(PlayerbotAI* ai) { return new MCRunesValue(ai); }
         static UntypedValue* gos(PlayerbotAI* ai) { return new GameObjectsValue(ai); }

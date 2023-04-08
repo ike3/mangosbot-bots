@@ -72,6 +72,7 @@
 #include "RtscAction.h"
 #include "WaitForAttackAction.h"
 #include "BattlegroundJoinAction.h"
+#include "FocusTargetAction.h"
 
 namespace ai
 {
@@ -174,6 +175,7 @@ namespace ai
             creators["ah"] = &ChatActionContext::ah;
             creators["ah bid"] = &ChatActionContext::ah_bid;
             creators["wait for attack time"] = &ChatActionContext::wait_for_attack_time;
+            creators["focus heal target"] = &ChatActionContext::focus_heal_target;
 
             creators["guild invite"] = &ChatActionContext::guild_invite;
             creators["guild join"] = &ChatActionContext::guild_join;
@@ -282,6 +284,7 @@ namespace ai
         static Action* ah(PlayerbotAI* ai) { return new AhAction(ai); }
         static Action* ah_bid(PlayerbotAI* ai) { return new AhBidAction(ai); }
         static Action* wait_for_attack_time(PlayerbotAI* ai) { return new WaitForAttackSetTimeAction(ai); }
+        static Action* focus_heal_target(PlayerbotAI* ai) { return new FocusHealSetTargetAction(ai); }
 
         static Action* guild_invite(PlayerbotAI* ai) { return new GuildInviteAction(ai); }
         static Action* guild_join(PlayerbotAI* ai) { return new GuildJoinAction(ai); }

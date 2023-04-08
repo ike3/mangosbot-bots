@@ -18,7 +18,7 @@ bool WaitForAttackSetTimeAction::Execute(Event& event)
             {
                 ai->GetAiObjectContext()->GetValue<uint8>("wait for attack time")->Set(newTime);
                 ostringstream out; out << "Wait for attack time set to " << newTime << " seconds";
-                ai->TellMaster(out);
+                ai->TellMasterNoFacing(out);
                 return true;
             }
             else

@@ -9,8 +9,10 @@ using namespace ai;
 class IsTargetOfHealingSpell : public SpellEntryPredicate
 {
 public:
-    virtual bool Check(SpellEntry const* spell) {
-        for (int i=0; i<3; i++) {
+    virtual bool Check(SpellEntry const* spell) 
+    {
+        for (int i=0; i<3; i++) 
+        {
             if (spell->Effect[i] == SPELL_EFFECT_HEAL ||
                 spell->Effect[i] == SPELL_EFFECT_HEAL_MAX_HEALTH ||
                 spell->Effect[i] == SPELL_EFFECT_HEAL_MECHANICAL)
@@ -18,7 +20,6 @@ public:
         }
         return false;
     }
-
 };
 
 bool compareByHealth(const Unit *u1, const Unit *u2)
@@ -32,99 +33,125 @@ bool compareByMissingHealth(const Unit* u1, const Unit* u2)
     uint32 hpmax1 = u1->GetMaxHealth();
     uint32 hp2 = u2->GetHealth();
     uint32 hpmax2 = u2->GetMaxHealth();
-
-
     return (hpmax1 - hp1) > (hpmax2 - hp2);
 }
 
 Unit* PartyMemberToHeal::Calculate()
 {
-
     IsTargetOfHealingSpell predicate;
-
-    vector<Unit*> needHeals;
-    vector<Unit*> tankTargets;
-
-    if (bot->GetSelectionGuid())
+    if (ai->HasStrategy("focus heal target", BotState::BOT_STATE_COMBAT))
     {
-        Unit* target = ai->GetUnit(bot->GetSelectionGuid());
-        if (target && target->GetObjectGuid() != bot->GetObjectGuid() && sServerFacade.IsFriendlyTo(bot, target) && 
-            target->GetHealthPercent() < 100)
-            if (Check(target))
-                needHeals.push_back(target);
-    }
-
-    if (GuidPosition rpgTarget = AI_VALUE(GuidPosition, "rpg target"))
-    {
-        Unit* target = rpgTarget.GetCreature();
-
-        if (target && sServerFacade.IsFriendlyTo(bot, target) && target->GetHealthPercent() < 100)
-            needHeals.push_back(target);
-    }
-
-    Group* group = bot->GetGroup();
-    if (!group && needHeals.empty())
-        return NULL;
-
-    if (group)
-    {
-        for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
+        Unit* player = nullptr;
+        const ObjectGuid targetGuid = AI_VALUE(ObjectGuid, "focus heal target");
+        if (!targetGuid.IsEmpty() && targetGuid.IsPlayer())
         {
-            Player* player = gref->getSource();
-            if (!Check(player) || !sServerFacade.IsAlive(player))
-                continue;
-
-            bool isTank = ai->IsTank(player);
-
-            // do not heal dueling members
-            if (player->duel && player->duel->opponent)
-                continue;
-
-            uint8 health = player->GetHealthPercent();
-            if ((isTank || health < sPlayerbotAIConfig.almostFullHealth) && health < sPlayerbotAIConfig.almostFullHealth || (!isTank && !IsTargetOfSpellCast(player, predicate)))
-                needHeals.push_back(player);
-
-            Pet* pet = player->GetPet();
-            if (pet && CanHealPet(pet))
+            Player* player = (Player*)ai->GetUnit(targetGuid);
+            if (player)
             {
-                health = pet->GetHealthPercent();
-                if (health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
-                    needHeals.push_back(pet);
-            }
-
-            if (isTank && bot->IsInGroup(player))
-                tankTargets.push_back(player);
-        }
-    }
-    if (needHeals.empty() && tankTargets.empty())
-        return NULL;
-
-    if (needHeals.empty() && !tankTargets.empty())
-        needHeals = tankTargets;
-
-    sort(needHeals.begin(), needHeals.end(), compareByMissingHealth);
-
-    int healerIndex = 0;
-    if (group)
-    {
-        for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
-        {
-            Player* player = gref->getSource();
-            if (!player) continue;
-            if (player == bot) break;
-            if (ai->IsHeal(player) && player->GetPlayerbotAI())
-            {
-                float percent = (float)player->GetPower(POWER_MANA) / (float)player->GetMaxPower(POWER_MANA) * 100.0;
-                if (percent > sPlayerbotAIConfig.lowMana)
-                    healerIndex++;
+                if (Check(player) && sServerFacade.IsAlive(player))
+                {
+                    // Do not heal dueling members
+                    if (!player->duel || !player->duel->opponent)
+                    {
+                        bool isTank = ai->IsTank(player);
+                        uint8 health = player->GetHealthPercent();
+                        if ((isTank || health < sPlayerbotAIConfig.almostFullHealth) && health < sPlayerbotAIConfig.almostFullHealth || 
+                            (!isTank && !IsTargetOfSpellCast(player, predicate)))
+                        {
+                            return player;
+                        }
+                    }
+                }
             }
         }
+        
+        return nullptr;
     }
     else
-        healerIndex = 1;
+    {
+        vector<Unit*> needHeals;
+        vector<Unit*> tankTargets;
+        if (bot->GetSelectionGuid())
+        {
+            Unit* target = ai->GetUnit(bot->GetSelectionGuid());
+            if (target && target->GetObjectGuid() != bot->GetObjectGuid() && sServerFacade.IsFriendlyTo(bot, target) &&
+                target->GetHealthPercent() < 100)
+                if (Check(target))
+                    needHeals.push_back(target);
+        }
 
-    healerIndex = healerIndex % needHeals.size();
-    return needHeals[healerIndex];
+        if (GuidPosition rpgTarget = AI_VALUE(GuidPosition, "rpg target"))
+        {
+            Unit* target = rpgTarget.GetCreature();
+
+            if (target && sServerFacade.IsFriendlyTo(bot, target) && target->GetHealthPercent() < 100)
+                needHeals.push_back(target);
+        }
+
+        Group* group = bot->GetGroup();
+        if (!group && needHeals.empty())
+            return NULL;
+
+        if (group)
+        {
+            for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
+            {
+                Player* player = gref->getSource();
+                if (!Check(player) || !sServerFacade.IsAlive(player))
+                    continue;
+
+                bool isTank = ai->IsTank(player);
+
+                // do not heal dueling members
+                if (player->duel && player->duel->opponent)
+                    continue;
+
+                uint8 health = player->GetHealthPercent();
+                if ((isTank || health < sPlayerbotAIConfig.almostFullHealth) && health < sPlayerbotAIConfig.almostFullHealth || (!isTank && !IsTargetOfSpellCast(player, predicate)))
+                    needHeals.push_back(player);
+
+                Pet* pet = player->GetPet();
+                if (pet && CanHealPet(pet))
+                {
+                    health = pet->GetHealthPercent();
+                    if (health < sPlayerbotAIConfig.almostFullHealth || !IsTargetOfSpellCast(player, predicate))
+                        needHeals.push_back(pet);
+                }
+
+                if (isTank && bot->IsInGroup(player))
+                    tankTargets.push_back(player);
+            }
+        }
+        if (needHeals.empty() && tankTargets.empty())
+            return NULL;
+
+        if (needHeals.empty() && !tankTargets.empty())
+            needHeals = tankTargets;
+
+        sort(needHeals.begin(), needHeals.end(), compareByMissingHealth);
+
+        int healerIndex = 0;
+        if (group)
+        {
+            for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
+            {
+                Player* player = gref->getSource();
+                if (!player) continue;
+                if (player == bot) break;
+                if (ai->IsHeal(player) && player->GetPlayerbotAI())
+                {
+                    float percent = (float)player->GetPower(POWER_MANA) / (float)player->GetMaxPower(POWER_MANA) * 100.0;
+                    if (percent > sPlayerbotAIConfig.lowMana)
+                        healerIndex++;
+                }
+            }
+        }
+        else
+            healerIndex = 1;
+
+        healerIndex = healerIndex % needHeals.size();
+        return needHeals[healerIndex];
+    }
 }
 
 bool PartyMemberToHeal::CanHealPet(Pet* pet)

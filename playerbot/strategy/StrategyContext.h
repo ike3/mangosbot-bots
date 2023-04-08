@@ -41,6 +41,7 @@
 #include "generic/MaintenanceStrategy.h"
 #include "generic/GroupStrategy.h"
 #include "generic/GuildStrategy.h"
+#include "generic/FocusTargetStrategy.h"
 
 #include "generic/DungeonStrategy.h"
 #include "generic/OnyxiasLairDungeonStrategies.h"
@@ -127,6 +128,7 @@ namespace ai
             creators["avoid aoe"] = &StrategyContext::avoid_aoe;
             creators["wait for attack"] = &StrategyContext::wait_for_attack;
             creators["pull back"] = &StrategyContext::pull_back;
+            creators["focus heal target"] = &StrategyContext::focus_heal_target;
 
             // Dungeon Strategies
             creators["dungeon"] = &StrategyContext::dungeon;
@@ -213,6 +215,7 @@ namespace ai
         static Strategy* avoid_aoe(PlayerbotAI* ai) { return new AvoidAoeStrategy(ai); }
         static Strategy* wait_for_attack(PlayerbotAI* ai) { return new WaitForAttackStrategy(ai); }
         static Strategy* pull_back(PlayerbotAI* ai) { return new PullBackStrategy(ai); }
+        static Strategy* focus_heal_target(PlayerbotAI* ai) { return new FocusHealTargetStrategy(ai); }
 
         // Dungeon Strategies
         static Strategy* dungeon(PlayerbotAI* ai) { return new DungeonStrategy(ai); }
