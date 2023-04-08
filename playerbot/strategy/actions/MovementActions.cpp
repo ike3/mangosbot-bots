@@ -481,9 +481,12 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if (!movePath.empty())
     {
-        if (!bot->GetTransport() && movePath.makeShortCut(startPosition, maxDist, bot))
+        float oldDist;
+        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+            oldDist = WorldPosition().getPathLength(movePath.getPointPath());
+        if (!bot->GetTransport() && movePath.makeShortCut(startPosition, sPlayerbotAIConfig.reactDistance, bot))
             if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                ai->TellMasterNoFacing("Found a shortcut.");
+                ai->TellMasterNoFacing("Found a shortcut: old=" + to_string(uint32(oldDist)) + "y new=" + to_string(uint32(WorldPosition().getPathLength(movePath.getPointPath()))));
 
         if (movePath.empty())
         {
@@ -810,7 +813,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     else if (bot->GetTransport()) //Wait until we can recalculate.
         return false;
 
-    AI_VALUE(LastMovement&, "last movement").setPath(movePath);
+    if(!movePath.empty() && movePath.getBack().distance(movePath.getFront()) > maxDist)
+        AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
     if (!movePosition || movePosition.getMapId() != bot->GetMapId())
     {        
