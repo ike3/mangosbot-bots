@@ -238,6 +238,9 @@ bool ChooseRpgTargetAction::Execute(Event& event)
                 {
                     continue;
                 }
+
+                if (bot->GetGroup() && player->GetGroup() == bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetObjectGuid())) //If leader starts following members that are on follow they keep moving around.
+                    continue;
             }
         }
 
