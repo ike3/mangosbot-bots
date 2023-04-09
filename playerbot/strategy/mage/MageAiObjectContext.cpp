@@ -124,6 +124,9 @@ namespace ai
 #ifdef MANGOSBOT_TWO
                 creators["hot streak"] = &TriggerFactoryInternal::hot_streak;
 #endif
+#ifndef MANGOSBOT_ZERO
+                creators["cold snap"] = &TriggerFactoryInternal::cold_snap;
+#endif
             }
 
         private:
@@ -155,6 +158,9 @@ namespace ai
             static Trigger* fire_spells_locked(PlayerbotAI* ai) { return new FireSpellsLocked(ai); }
 #ifdef MANGOSBOT_TWO
             static Trigger* hot_streak(PlayerbotAI* ai) { return new HotStreakTrigger(ai); }
+#endif
+#ifndef MANGOSBOT_ZERO
+            static Trigger* cold_snap(PlayerbotAI* ai) { return new ColdSnapTrigger(ai); }
 #endif
         };
     };
@@ -218,6 +224,9 @@ namespace ai
                 creators["cone of cold"] = &AiObjectContextInternal::cone_of_cold;
                 creators["summon water elemental"] = &AiObjectContextInternal::summon_water_elemental;
                 creators["ice lance"] = &AiObjectContextInternal::ice_lance;
+#ifndef MANGOSBOT_ZERO
+                creators["cold snap"] = &AiObjectContextInternal::cold_snap;
+#endif
             }
 
         private:
@@ -267,6 +276,9 @@ namespace ai
             static Action* invisibility(PlayerbotAI* ai) { return new CastInvisibilityAction(ai); }
             static Action* evocation(PlayerbotAI* ai) { return new CastEvocationAction(ai); }
             static Action* counterspell_on_enemy_healer(PlayerbotAI* ai) { return new CastCounterspellOnEnemyHealerAction(ai); }
+#ifndef MANGOSBOT_ZERO
+            static Action* cold_snap(PlayerbotAI* ai) { return new CastColdSnapAction(ai); }
+#endif
         };
     };
 };
