@@ -2226,6 +2226,9 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
             if (!IsTellAllowed(securityLevel))
                 return false;
 
+            if (!HasRealPlayerMaster())
+                return false;
+
             whispers[text] = time(0);
 
             if (currentChat.second >= time(0))
