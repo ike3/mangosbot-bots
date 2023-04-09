@@ -131,6 +131,17 @@ namespace ai
         virtual bool IsActive();
     };
 
+    class FireSpellsLocked : public Trigger
+    {
+    public:
+        FireSpellsLocked(PlayerbotAI* ai) : Trigger(ai, "fire spells locked", 2) {}
+        virtual bool IsActive()
+        {
+            return !bot->IsSpellReady(133)      //fireball
+                && !bot->IsSpellReady(2948);    //scorch
+        }
+    };
+
     DEBUFF_TRIGGER_A(IceLanceTrigger, "ice lance");
     DEBUFF_TRIGGER_A(NoImprovedScorchDebuffTrigger, "no improved scorch");
 
