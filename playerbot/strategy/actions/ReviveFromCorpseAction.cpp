@@ -219,10 +219,14 @@ WorldSafeLocsEntry const* SpiritHealerAction::GetGrave(bool startZone)
         if (travelTarget->getPosition())
         {
             WorldPosition travelPos = *travelTarget->getPosition();
-            ClosestGrave = bot->GetMap()->GetGraveyardManager().GetClosestGraveYard(travelPos.getX(), travelPos.getY(), travelPos.getZ(), travelPos.getMapId(), bot->GetTeam());
 
-            if (ClosestGrave)
-                return ClosestGrave;
+            if (travelPos)
+            {
+                ClosestGrave = bot->GetMap()->GetGraveyardManager().GetClosestGraveYard(travelPos.getX(), travelPos.getY(), travelPos.getZ(), travelPos.getMapId(), bot->GetTeam());
+
+                if (ClosestGrave)
+                    return ClosestGrave;
+            }
         }
     }
 
