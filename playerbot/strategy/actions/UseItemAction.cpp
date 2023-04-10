@@ -849,6 +849,9 @@ bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target, GameObject* goT
             continue;
         }
 
+        if (spellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
+            targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
+
         BotUseItemSpell* spell = new BotUseItemSpell(bot, spellInfo, (count > 0) ? TRIGGERED_OLD_TRIGGERED : TRIGGERED_NONE);
 
         Item* tItem = nullptr;       
