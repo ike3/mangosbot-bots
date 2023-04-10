@@ -378,20 +378,21 @@ int32 WorldPosition::getAreaLevel() const
     return 0;
 }
 
-std::set<Transport*> WorldPosition::getTransports(uint32 entry)
+std::set<GenericTransport*> WorldPosition::getTransports(uint32 entry)
 {
-    std::set<Transport*> transports;
-    if(!entry)
-        return getMap()->GetTransports();
-    else
-    {
-        for (auto transport : getMap()->GetTransports())
-            if(transport->GetEntry() == entry)
-                transports.insert(transport);
+    std::set<GenericTransport*> transports;
+    for (auto transport : getMap()->GetTransports()) //Boats&Zeppelins.
+        if (transport->GetEntry() == entry)
+            transports.insert(transport);
 
-        return transports;
+    if (transports.empty()) //Elevators&rams
+    {
+        for (auto gopair : getGameObjectsNear(0.0f, entry))
+            if (GameObject* go = getMap()->GetGameObject(gopair->first))
+                if (GenericTransport* transport = dynamic_cast<GenericTransport*>(go))
+                    transports.insert(transport);
     }
-    
+
     return transports;
 }
 

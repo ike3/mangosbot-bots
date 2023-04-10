@@ -825,12 +825,12 @@ bool TravelPath::shouldMoveToNextPoint(WorldPosition startPos, vector<PathNodePo
         return false; //Use the teleport
     }
 
-    //We are almost at a transport node. Move to the node before this.
+    //We are almost at a transport node. Move to the node before this.   
     if (nextP->type == PathNodeType::NODE_TRANSPORT && nextP->entry)
     {
         return false;
     }
-
+    
     //We are moving to a transport node.
     if (p->type == PathNodeType::NODE_TRANSPORT && p->entry)
     {
@@ -936,7 +936,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
         return startP->point;
     }
 
-    if (startP->type == PathNodeType::NODE_TRANSPORT)
+    if (nextP->type == PathNodeType::NODE_TRANSPORT)
     {
         pathType = TravelNodePathType::areaTrigger;
         entry = 0;
@@ -951,6 +951,20 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
     }
 
     /*
+    if (startP->type == PathNodeType::NODE_TRANSPORT)
+    {
+        pathType = TravelNodePathType::areaTrigger;
+        entry = 0;
+
+        for (auto p = startP + 1; p != ed; p++) //Move along the transport path to the end of the boat ride. 
+        {
+            if (p->type != PathNodeType::NODE_TRANSPORT)
+            {
+                return p->point;              //We want to move here.
+            }
+        }
+    }
+
     //We are on or very near a transport.
     if (startP->type == PathNodeType::NODE_TRANSPORT)
     {

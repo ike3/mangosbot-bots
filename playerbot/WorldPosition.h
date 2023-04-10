@@ -180,7 +180,7 @@ namespace ai
 
         float currentHeight() const { return coord_z - getHeight(); }
 
-        std::set<Transport*> getTransports(uint32 entry = 0);
+        std::set<GenericTransport*> getTransports(uint32 entry = 0);
         void CalculatePassengerPosition(GenericTransport* transport);
         void CalculatePassengerOffset(GenericTransport* transport);
 

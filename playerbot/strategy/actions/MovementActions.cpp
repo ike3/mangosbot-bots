@@ -644,7 +644,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
                             movePosition = WorldPosition(transport);
                             movePosition.setZ(bot->GetPositionZ());
-                            sLog.outError("on");
 
                             WorldPosition botPos(bot);                           
                             transport->AddPassenger(bot, true);
@@ -655,7 +654,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                             for (float angle = 0; angle < 8; angle++)
                             {
                                 WorldPosition onBoatPos(movePosition);
-                                onBoatPos += WorldPosition(0, cos(angle / 4 * M_PI_F) * 5.0f, sin(angle / 4 * M_PI_F) * 10.0f);
+                                if(bot->GetTransport()->IsTransport())
+                                    onBoatPos += WorldPosition(0, cos(angle / 4 * M_PI_F) * 5.0f, sin(angle / 4 * M_PI_F) * 10.0f);
                                 vector<WorldPosition> step = onBoatPos.getPathStepFrom(bot, bot);
                                 if (!step.empty() && abs(step.back().getZ() - movePosition.getZ()) < 2.0f)
                                 {
@@ -711,7 +711,6 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     bot->NearTeleportTo(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, bot->m_movementInfo.pos.z, bot->m_movementInfo.pos.o);
                     MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
                     bot->StopMoving();
-                    sLog.outError("out");
                 }
                 else //We are traveling with the boat.
                 {
@@ -725,9 +724,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                         if (movePosition.ComputePathToRandomPoint(bot, 10, true).empty() || !movePosition || movePosition.mapid != bot->GetMapId() || !movePosition.isOnTransport(bot->GetTransport()))
                             return true;
 
-                        sLog.outError("wander");
-
-                        ai->TellMasterNoFacing("Wandering to random spot on boat");
+                        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                            ai->TellMasterNoFacing("Wandering to random spot on boat");
                     }
                     else
                         return true;
