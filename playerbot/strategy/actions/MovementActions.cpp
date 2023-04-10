@@ -1594,7 +1594,7 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         Vector3 possibleEndPoint = CalculatePerpendicularPoint(endPoint, hazardPoint, hazardRangeOffset, true);
 
         // Check if point is valid
-        WorldPosition possibleEndPosition (bot->GetMapId(), possibleEndPoint.x, possibleEndPoint.y, possibleEndPoint.z);
+        WorldPosition possibleEndPosition(bot->GetMapId(), possibleEndPoint.x, possibleEndPoint.y, possibleEndPoint.z);
         if (IsValidPosition(possibleEndPosition, botPosition))
         {
             endPosition.coord_x = possibleEndPoint.x;
@@ -1605,45 +1605,42 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         {
             // Generate point translated to the right
             possibleEndPoint = CalculatePerpendicularPoint(endPoint, hazardPoint, hazardRangeOffset, false);
-        
+
             endPosition.coord_x = possibleEndPoint.x;
             endPosition.coord_y = possibleEndPoint.y;
             endPosition.coord_z = possibleEndPoint.z;
         }
     }
 
+    MotionMaster& mm = *bot->GetMotionMaster();
+
     // Prevent moving if requested to move into a hazard
     if (IsValidPosition(endPosition, botPosition))
     {
-        MotionMaster& mm = *bot->GetMotionMaster();
         Movement::PointsArray path;
         if (GeneratePathAvoidingHazards(endPosition, true, path))
         {
             mm.Clear(false, true);
             mm.MovePath(path, FORCED_MOVEMENT_RUN, false, false);
             WaitForReach(path);
+            return true;
         }
-        else
-        {
-            if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
-            {
-                ChaseMovementGenerator* chase = (ChaseMovementGenerator*)bot->GetMotionMaster()->GetCurrent();
-
-                if (chase->GetCurrentTarget() == obj)
-                    return true;
-            }
-            mm.Clear(false, true);
-            mm.MoveChase((Unit*)obj, distance, angle);
-            float dist = sServerFacade.GetDistance2d(bot, obj);
-            float distDiff = dist > distance ? dist - distance : 0.f;
-            WaitForReach(distDiff);
-        }
-
-        return true;
     }
-   
-    SetDuration(sPlayerbotAIConfig.reactDelay);
-    return false;
+
+    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
+    {
+        ChaseMovementGenerator* chase = (ChaseMovementGenerator*)bot->GetMotionMaster()->GetCurrent();
+
+        if (sServerFacade.GetChaseTarget(bot) == obj && sServerFacade.GetChaseOffset(bot) == distance)
+            return true;
+    }
+    mm.Clear(false, true);
+    mm.MoveChase((Unit*)obj, distance, angle);
+    float dist = sServerFacade.GetDistance2d(bot, obj);
+    float distDiff = dist > distance ? dist - distance : 0.f;
+    WaitForReach(distDiff);
+
+    return true;
 }
 
 float MovementAction::MoveDelay(float distance)
