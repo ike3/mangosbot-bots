@@ -409,10 +409,10 @@ bool PlayerbotAIConfig::Initialize()
     freeFood = config.GetBoolDefault("AiPlayerbot.FreeFood", true);
     talentsInPublicNote = config.GetBoolDefault("AiPlayerbot.TalentsInPublicNote", false);
     freeFood = config.GetBoolDefault("AiPlayerbot.FreeFood", true);
-    respawnModNeutral = config.GetFloatDefault("AiPlayerbot.RespawnModNeutral", 10.0f);
-    respawnModHostile = config.GetFloatDefault("AiPlayerbot.RespawnModHostile", 5.0f);
-    respawnModThreshold = config.GetIntDefault("AiPlayerbot.RespawnModThreshold", 10);
-    respawnModMax = config.GetIntDefault("AiPlayerbot.RespawnModMax", 18);
+    respawnModNeutral = config.GetFloatDefault("AiPlayerbot.RespawnModNeutral", 0.0f);
+    respawnModHostile = config.GetFloatDefault("AiPlayerbot.RespawnModHostile", 0.0f);
+    respawnModThreshold = config.GetIntDefault("AiPlayerbot.RespawnModThreshold", 9999);
+    respawnModMax = config.GetIntDefault("AiPlayerbot.RespawnModMax", 0);
     respawnModForPlayerBots = config.GetBoolDefault("AiPlayerbot.RespawnModForPlayerBots", false);
     respawnModForInstances = config.GetBoolDefault("AiPlayerbot.RespawnModForInstances", false);
 
