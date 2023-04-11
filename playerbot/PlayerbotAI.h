@@ -450,7 +450,7 @@ public:
     Player* GetGroupMaster() { return bot->InBattleGround() ? master : bot->GetGroup() ? (sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) ? sObjectMgr.GetPlayer(bot->GetGroup()->GetLeaderGuid()) : master) : master; }
 
     //Check if player is safe to use.
-    bool IsSafe(Player* player) { return player && player->GetMapId() == bot->GetMapId() && !player->IsBeingTeleported(); }
+    bool IsSafe(Player* player) { return player && player->GetMapId() == bot->GetMapId() && player->GetInstanceId() == bot->GetInstanceId() && !player->IsBeingTeleported(); }
     bool IsSafe(Unit* unit) { return unit && unit->GetMapId() == bot->GetMapId() && (!unit->IsPlayer() || !((Player*)unit)->IsBeingTeleported()); }
 
     //Returns a semi-random (cycling) number that is fixed for each bot.
