@@ -17,6 +17,9 @@ PassiveMultiplier::PassiveMultiplier(PlayerbotAI* ai) : Multiplier(ai, "passive"
         allowedActions.push_back("reset strats");
         allowedActions.push_back("reset values");
         allowedActions.push_back("check mount state");
+        allowedActions.push_back("accept invitation");
+        allowedActions.push_back("join");
+        allowedActions.push_back("lfg");
     }
 
     if (allowedParts.empty())
