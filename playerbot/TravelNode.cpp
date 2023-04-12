@@ -950,7 +950,6 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
         }
     }
 
-    /*
     if (startP->type == PathNodeType::NODE_TRANSPORT)
     {
         pathType = TravelNodePathType::areaTrigger;
@@ -999,9 +998,7 @@ WorldPosition TravelPath::getNextPoint(WorldPosition startPos, float maxDist, Tr
         entry = nextP->entry;
         telePosition = nextP->point; //Boat needs to be here.
         return startP->point;        //We want to stand somewhere here.
-    }
-    */
-    
+    } 
 
     //We have to move far for next point. Try to make a cropped path.
     if (moveDist < sPlayerbotAIConfig.targetPosRecalcDistance && std::next(startP) != ed)

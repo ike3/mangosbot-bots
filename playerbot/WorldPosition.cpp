@@ -382,10 +382,10 @@ std::set<GenericTransport*> WorldPosition::getTransports(uint32 entry)
 {
     std::set<GenericTransport*> transports;
     for (auto transport : getMap()->GetTransports()) //Boats&Zeppelins.
-        if (transport->GetEntry() == entry)
+        if (!entry || transport->GetEntry() == entry)
             transports.insert(transport);
 
-    if (transports.empty()) //Elevators&rams
+    if (transports.empty() || !entry) //Elevators&rams
     {
         for (auto gopair : getGameObjectsNear(0.0f, entry))
             if (GameObject* go = getMap()->GetGameObject(gopair->first))
@@ -408,6 +408,9 @@ void WorldPosition::CalculatePassengerOffset(GenericTransport* transport)
 
 bool WorldPosition::isOnTransport(GenericTransport* transport)
 {
+    if (!transport)
+        return false;
+
     WorldPosition trans(transport);
 
     if (distance(trans) > 40.0f)
@@ -415,9 +418,9 @@ bool WorldPosition::isOnTransport(GenericTransport* transport)
 
     WorldPosition below(*this);
 
-    below.setZ(below.getZ() - 20.0f);
+    below.setZ(below.getZ() - 5.0f);
 
-    bool result0 = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(mapid, coord_x, coord_y, coord_z, below.getX(), below.getY(), below.getZ(), below.coord_x, below.coord_y, below.coord_z, 0.0f);
+    bool result0 = VMAP::VMapFactory::createOrGetVMapManager()->getObjectHitPos(mapid, coord_x, coord_y, coord_z + 0.5f, below.getX(), below.getY(), below.getZ(), below.coord_x, below.coord_y, below.coord_z, 0.0f);
 
     if (result0)
         return false;

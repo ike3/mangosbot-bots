@@ -341,9 +341,9 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     if (master && IsSafe(master) && bot->GetDistance(master) < INTERACTION_DISTANCE * 2.5 && master->GetTransport() != bot->GetTransport())
     {
         bot->StopMoving();
-        if (master->GetTransport())
+        if (master->GetTransport() && WorldPosition(bot).isOnTransport(master->GetTransport()))
             master->GetTransport()->AddPassenger(bot);
-        else
+        else if (bot->GetTransport())
         {
             WorldPosition botPos(bot);
             bot->GetTransport()->RemovePassenger(bot);

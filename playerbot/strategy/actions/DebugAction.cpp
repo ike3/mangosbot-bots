@@ -274,14 +274,214 @@ bool DebugAction::Execute(Event& event)
     else if (text.find("transport") == 0) {
         for (auto trans : WorldPosition(bot).getTransports())
         {
+            GameObjectInfo const* data = sGOStorage.LookupEntry<GameObjectInfo>(trans->GetEntry());
             if (WorldPosition(bot).isOnTransport(trans))
-                ai->TellMaster("On transport" + string(trans->GetName()));
+                ai->TellMaster("On transport " + string(data->name));
             else
-                ai->TellMaster("Not on transport" + string(trans->GetName()));
+                ai->TellMaster("Not on transport " + string(data->name));
         }
     }
+    else if (text.find("ontrans") == 0) {
+        if (bot->GetTransport())
+            return false;
+
+        uint32 radius = 10;
+
+        if (text.length() > string("ontrans").size())
+            radius = stoi(text.substr(string("ontrans").size() + 1));
+
+        WorldPosition botPos(bot);
+        GenericTransport* transport = nullptr;
+        for (auto trans : botPos.getTransports())
+            if (!transport || botPos.distance(trans) < botPos.distance(transport))
+                transport = trans;
+
+        if (!transport)
+            return false;
+
+        GenericTransport* trans = transport;
+
+        WorldPosition pos(trans);
+
+        pos.setZ(botPos.getZ() + 3.0f);
+
+        //if(trans->GetGoType() == GAMEOBJECT_TYPE_MO_TRANSPORT)
+        //    pos += WorldPosition(0, cos(pos.getAngleTo(botPos)) * 3.0f, sin(pos.getAngleTo(botPos)) * 3.0f);
+
+        bot->SetTransport(trans);
+        vector<WorldPosition> path = pos.getPathFrom(botPos, bot); //Use full pathstep to get proper paths on to transports.
+
+        if (path.empty())
+        {
+            ai->TellMaster("No path.");
+            bot->SetTransport(nullptr);
+            return false;
+        }
+
+        WorldPosition entryPos = path.back();
+
+        if (!entryPos.isOnTransport(trans))
+        {
+            for (auto p : path)
+            {
+                bool onTrans = pos.isOnTransport(trans);
+
+                if (onTrans) //Summon creature needs to be Summonned on offset coordinates.
+                {
+                    p.CalculatePassengerOffset(trans);
+                    bot->SetTransport(trans);
+                }
+                else //Generate wp off transport so it doesn't spawn on transport.
+                    bot->SetTransport(nullptr);
+
+                Creature* wpCreature = bot->SummonCreature(2334, p.getX(), p.getY(), p.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
+                ai->AddAura(wpCreature, 246);
+
+                if (p.isOnTransport(transport))
+                    ai->AddAura(wpCreature, 1130);
+            }
+
+            ai->TellMaster("No path on boat.");  
+            bot->SetTransport(nullptr);
+            return false;
+        }
+
+        for (auto p : path)
+        {
+            bool onTrans = pos.isOnTransport(trans);
+
+            if (onTrans) //Summon creature needs to be Summonned on offset coordinates.
+            {
+                p.CalculatePassengerOffset(trans);
+                bot->SetTransport(trans);
+            }
+            else //Generate wp off transport so it doesn't spawn on transport.
+                bot->SetTransport(nullptr);
+
+            Creature* wpCreature = bot->SummonCreature(2334, p.getX(), p.getY(), p.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
+            ai->AddAura(wpCreature, 246);
+
+            if (p.isOnTransport(transport))
+                ai->AddAura(wpCreature, 1130);
+        }
+
+        transport->AddPassenger(bot);
+
+        ai->StopMoving();
+        bot->GetMotionMaster()->MovePoint(entryPos.getMapId(), entryPos.getX(), entryPos.getY(), botPos.getZ(), FORCED_MOVEMENT_RUN);
+
+        return true;
+    }
+    else if (text.find("offtrans") == 0) {
+        uint32 radius = 10;
+
+        if (text.length() > string("offtrans").size())
+            radius = stoi(text.substr(string("offtrans").size() + 1));
+
+        if (!bot->GetTransport())
+            return false;
+
+        WorldPosition botPos(bot);
+        GenericTransport* transport = bot->GetTransport();
+
+        if (!transport)
+            return false;
+
+        WorldPosition destPos = botPos + WorldPosition(0,cos(bot->GetOrientation()) * radius, sin(bot->GetOrientation()) * radius);
+
+        vector<WorldPosition> path = destPos.getPathFrom(botPos, nullptr);
+
+        if (path.empty())
+        {
+            ai->TellMaster("No path.");
+            return false;
+        }
+
+        WorldPosition exitPos = path.back();
+
+        if (exitPos.isOnTransport(transport))
+        {
+            ai->TellMaster("Path still on boat.");
+            return false;
+        }
+        
+        for (auto& p : path)
+        {
+            p.CalculatePassengerOffset(bot->GetTransport());
+
+            Creature* wpCreature = bot->SummonCreature(2334, p.getX(), p.getY(), p.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
+            ai->AddAura(wpCreature, 246);
+
+            if (p.isOnTransport(transport))
+                ai->AddAura(wpCreature, 1130);
+        }
+
+        ai->StopMoving();
+        bot->GetMotionMaster()->MovePoint(exitPos.getMapId(), exitPos.getX(), exitPos.getY(), exitPos.getZ(),FORCED_MOVEMENT_RUN);
+
+        return true;
+    }
+    else if (text.find("pathable") == 0) {
+        uint32 radius = 10;
+
+        if (text.length() > string("pathable").size())
+            radius = stoi(text.substr(string("pathable").size() + 1));
+
+        GenericTransport* transport = nullptr;
+        for (auto trans : WorldPosition(bot).getTransports())
+            if (!transport || WorldPosition(bot).distance(trans) < WorldPosition(bot).distance(transport))
+                transport = trans;
+
+        for (float x = radius * -1.0f; x < radius; x += 1.0f)
+        {
+            for (float y = radius * -1.0f; y < radius; y += 1.0f)
+            {
+                if (x * x + y * y > radius * radius)
+                    continue;
+
+                WorldPosition botPos(bot);
+                WorldPosition pos = botPos + WorldPosition(0, x, y, 3.0f);
+
+                Player* pathBot = bot;
+                GenericTransport* botTrans = bot->GetTransport();
+                GenericTransport* trans = botTrans ? botTrans : transport;
+
+                if (!pos.isOnTransport(trans)) //When trying to calculate a position off the transport, act like the bot is off the transport.
+                    pathBot = nullptr;
+                else 
+                    bot->SetTransport(trans);
+
+                vector<WorldPosition> path = pos.getPathFrom(botPos, pathBot); //Use full pathstep to get proper paths on to transports.
+
+                if (path.empty())
+                    continue;
+
+                pos = path.back();
+
+                bool onTrans = pos.isOnTransport(trans);
+
+                if (onTrans) //Summon creature needs to be Summonned on offset coordinates.
+                {
+                    pos.CalculatePassengerOffset(trans);
+                    bot->SetTransport(trans);
+                }
+                else //Generate wp off transport so it doesn't spawn on transport.
+                    bot->SetTransport(nullptr);
+
+                Creature* wpCreature = bot->SummonCreature(2334, pos.getX(), pos.getY(), pos.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
+                ai->AddAura(wpCreature, 246);
+
+                if (onTrans)
+                    ai->AddAura(wpCreature, 1130);
+
+                bot->SetTransport(botTrans);
+            }
+        }
+
+        return false;
+    }
     else if (text.find("randomspot") == 0) {
-    uint32 radius = 10;
+        uint32 radius = 10;
         if(text.length() > string("randomspot").size())
             radius = stoi(text.substr(string("randomspot").size()+1));
 

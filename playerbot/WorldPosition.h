@@ -161,12 +161,11 @@ namespace ai
 
 #if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
         bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) const { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, 0, true); }
-        bool GetHitPosition(WorldPosition pos) const { return getMap()->GetHitPosition(coord_x, coord_y, coord_z, pos.coord_x, pos.coord_y, pos.coord_z,0, 0.0f);};
+        bool GetHitPosition(WorldPosition& pos) const { return getMap()->GetHitPosition(coord_x, coord_y, coord_z, pos.coord_x, pos.coord_y, pos.coord_z,0, 0.0f);};
 #else
         bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) const { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, true); }
-        bool GetHitPosition(WorldPosition pos) const { return getMap()->GetHitPosition(coord_x, coord_y, coord_z, pos.coord_x, pos.coord_y, pos.coord_z, 0.0f);};
+        bool GetHitPosition(WorldPosition& pos) { return getMap()->GetHitPosition(coord_x, coord_y, coord_z, pos.coord_x, pos.coord_y, pos.coord_z, 0.0f);};
 #endif
-
 
 
         bool isOutside() const { WorldPosition high(*this); high.setZ(coord_z + 500.0f); return IsInLineOfSight(high); }
@@ -174,8 +173,10 @@ namespace ai
 
 #if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
         const float getHeight() const { return getMap()->GetHeight(0, coord_x, coord_y, coord_z); }
+        float GetHeightInRange(float maxSearchDist = 4.0f) const { float z = coord_z;  return getMap() ? (getMap()->GetHeightInRange(0, coord_x, coord_y, z, maxSearchDist) ? z : coord_z) : coord_z; }
 #else
         float getHeight() const { return getMap() ? getMap()->GetHeight(coord_x, coord_y, coord_z) : coord_z; }
+        float GetHeightInRange(float maxSearchDist = 4.0f) const { float z = coord_z;  return getMap() ? (getMap()->GetHeightInRange(coord_x, coord_y, z, maxSearchDist) ? z : coord_z) : coord_z; }
 #endif
 
         float currentHeight() const { return coord_z - getHeight(); }
@@ -224,7 +225,7 @@ namespace ai
         vector<WorldPosition> getPathTo(WorldPosition endPos, const Unit* bot) const { return endPos.getPathFrom(*this, bot); }
         bool isPathTo(const vector<WorldPosition>& path, float const maxDistance = sPlayerbotAIConfig.targetPosRecalcDistance) const { return !path.empty() && distance(path.back()) < maxDistance; };
         bool cropPathTo(vector<WorldPosition>& path, const float maxDistance = sPlayerbotAIConfig.targetPosRecalcDistance) const;
-        bool canPathStepTo(const WorldPosition& endPos, const Unit* bot) const { return endPos.isPathTo(endPos.getPathStepFrom(*this, bot)); }
+        bool canPathStepTo(WorldPosition& endPos, const Unit* bot) const { vector<WorldPosition> path = endPos.getPathStepFrom(*this, bot); bool canPath = endPos.isPathTo(path); if (!path.empty()) endPos = path.back(); return canPath; }
         bool canPathTo(const WorldPosition& endPos, const Unit* bot) const { return endPos.isPathTo(getPathTo(endPos, bot)); }
 
         float getPathLength(const vector<WorldPosition>& points) const { float dist = 0.0f; for (auto& p : points) if (&p == &points.front()) dist = 0; else dist += std::prev(&p, 1)->distance(p); return dist; }
