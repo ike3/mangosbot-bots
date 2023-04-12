@@ -129,6 +129,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
     time_t currentTime = time(0);
     aiObjectContext->Update();
     ProcessTriggers(minimal);
+    PushDefaultActions();
 
     int iterations = 0;
     int iterationsPerTick = queue.Size() * (minimal ? (uint32)(sPlayerbotAIConfig.iterationsPerTick / 2) : sPlayerbotAIConfig.iterationsPerTick);
@@ -183,7 +184,11 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
                     for (list<Multiplier*>::iterator i = multipliers.begin(); i != multipliers.end(); i++)
                     {
                         Multiplier* multiplier = *i;
-                        relevance *= multiplier->GetValue(action);
+                        if (relevance < 0)
+                            relevance = ((relevance + 200.0f) * multiplier->GetValue(action)) - 200.0f;
+                        else
+                            relevance *= multiplier->GetValue(action);
+
                         action->setRelevance(relevance);
                         if (!relevance)
                         {
@@ -285,6 +290,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
     }
     while (basket && ++iterations <= iterationsPerTick);
 
+    /*
     if (!basket)
     {
         lastRelevance = 0.0f;
@@ -292,6 +298,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
         if (queue.Peek() && depth < 2)
             return DoNextAction(unit, depth + 1, minimal, isStunned);
     }
+    */
 
     // MEMORY FIX TEST
  /*   do {
@@ -352,8 +359,12 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
                 {
                     k = forceRelevance;
                 }
+                else if (pushType == "default")
+                {
+                    k -= 200.0f;
+                }
 
-                if (k > 0)
+                if (k > 0 || pushType == "default")
                 {
                     LogAction("PUSH:%s - %f (%s)", actionNode->getName().c_str(), k, pushType);
                     queue.Push(new ActionBasket(actionNode, k, skipPrerequisites, event));
