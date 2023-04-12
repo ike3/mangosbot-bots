@@ -21,16 +21,21 @@ public:
     {
         Player* bot = ai->GetBot();
 
+        AiObjectContext* context = ai->GetAiObjectContext();
+
         if (!ai->CanCastSpell(spell, creature, true))
             return;
 
-        if (*ai->GetAiObjectContext()->GetValue<Unit*>("rti cc target") == creature)
+        if (AI_VALUE(Unit*,"rti cc target") == creature)
         {
             result = creature;
             return;
         }
 
-        if (*ai->GetAiObjectContext()->GetValue<Unit*>("current target") == creature)
+        if (AI_VALUE(Unit*,"current target") == creature)
+            return;
+
+        if (AI_VALUE(Unit*,"rti target") == creature)
             return;
 
         uint8 health = creature->GetHealthPercent();
@@ -42,9 +47,9 @@ public:
         if (!group)
             return;
 
-        if (*ai->GetAiObjectContext()->GetValue<uint8>("aoe count") > 2)
+        if (AI_VALUE(uint8,"aoe count") > 2)
         {
-            WorldLocation aoe = *ai->GetAiObjectContext()->GetValue<WorldLocation>("aoe position");
+            WorldLocation aoe = AI_VALUE(WorldLocation,"aoe position");
             if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(creature, aoe.coord_x, aoe.coord_y), sPlayerbotAIConfig.aoeRadius))
                 return;
         }
@@ -92,7 +97,7 @@ private:
 
 Unit* CcTargetValue::Calculate()
 {
-    list<ObjectGuid> possible = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("possible targets no los")->Get();
+    list<ObjectGuid> possible = AI_VALUE(list<ObjectGuid>,"possible targets no los");
 
     for (list<ObjectGuid>::iterator i = possible.begin(); i != possible.end(); ++i)
     {
