@@ -136,7 +136,7 @@ Unit* PartyMemberToHeal::Calculate()
             for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* player = gref->getSource();
-                if (!player) continue;
+                if (!ai->IsSafe(player)) continue;
                 if (player == bot) break;
                 if (ai->IsHeal(player) && player->GetPlayerbotAI())
                 {
