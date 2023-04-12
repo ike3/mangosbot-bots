@@ -80,8 +80,17 @@ ItemUsage ItemUsageValue::Calculate()
 
     if (ai->HasActivePlayerMaster())
     {
-        if (IsItemUsefulForSkill(proto) || IsItemNeededForSkill(proto))
+        if (IsItemUsefulForSkill(proto))
             return ITEM_USAGE_SKILL;
+
+        if (IsItemNeededForSkill(proto))
+        {
+            float stacks = CurrentStacks(ai, proto);
+            if (stacks < 1)
+                return ITEM_USAGE_SKILL; //Buy more.
+            else if (stacks == 1)
+                return ITEM_USAGE_KEEP; //Keep in inventory.
+        }
     }
     else
     {
