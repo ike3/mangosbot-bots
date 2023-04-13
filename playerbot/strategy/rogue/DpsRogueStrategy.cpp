@@ -35,7 +35,7 @@ private:
     ACTION_NODE_A(mutilate_front, "mutilate", "sinister strike");
     ACTION_NODE_A(mutilate_back, "mutilate", "backstab");
     ACTION_NODE_A(mutilate, "mutilate", "backstab");
-    ACTION_NODE_A(backstab, "backstab", "melee");
+    ACTION_NODE_A(backstab, "backstab", "sinister strike");
     ACTION_NODE_A(sinister_strike, "sinister strike", "melee");
     ACTION_NODE_A(hemorrhage_back, "hemorrhage", "backstab");
     ACTION_NODE_A(hemorrhage_front, "hemorrhage", "sinister strike");
@@ -294,13 +294,15 @@ private:
     ACTION_NODE_A(cheap_shot, "cheap shot", "sinister strike");
 };
 
-StealthedRogueStrategy::StealthedRogueStrategy(PlayerbotAI* ai) : Strategy(ai)
+StealthedRogueStrategy::StealthedRogueStrategy(PlayerbotAI* ai) : CombatStrategy(ai)
 {
     actionNodeFactories.Add(new StealthedRogueStrategyActionNodeFactory());
 }
 
 void StealthedRogueStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
+    CombatStrategy::InitCombatTriggers(triggers);
+
     triggers.push_back(new TriggerNode(
         "behind target",
         NextAction::array(0, new NextAction("ambush", ACTION_HIGH + 3), NULL)));
