@@ -866,6 +866,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     if (unit->IsDead())
                         continue;
 
+                    if (unit->GetLevel() > bot->GetLevel() + 5)
+                        continue;
+
                     float range = unit->GetAttackDistance(bot);
 
                     if (WorldPosition(unit).sqDistance(point) > range * range)
