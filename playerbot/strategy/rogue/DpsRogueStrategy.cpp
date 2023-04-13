@@ -35,7 +35,7 @@ private:
     ACTION_NODE_A(mutilate_front, "mutilate", "sinister strike");
     ACTION_NODE_A(mutilate_back, "mutilate", "backstab");
     ACTION_NODE_A(mutilate, "mutilate", "backstab");
-    ACTION_NODE_A(backstab, "backstab", "sinister strike");
+    ACTION_NODE_A(backstab, "backstab", "melee");
     ACTION_NODE_A(sinister_strike, "sinister strike", "melee");
     ACTION_NODE_A(hemorrhage_back, "hemorrhage", "backstab");
     ACTION_NODE_A(hemorrhage_front, "hemorrhage", "sinister strike");
@@ -175,6 +175,10 @@ void AssassinationRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
     triggers.push_back(new TriggerNode(
         "slice and dice",
         NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "not behind target",
+        NextAction::array(0, new NextAction("sinister strike", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "behind target",
