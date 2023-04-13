@@ -115,8 +115,15 @@ bool AttackAction::Attack(Unit* target)
             sServerFacade.SetFacingTo(bot, target);
         }
 
-        // Don't attack target if it is waiting for attack
-        return isWaitingForAttack ? true : bot->Attack(target, !ai->IsRanged(bot) || (sServerFacade.GetDistance2d(bot, target) < 5.0f));
+        // Don't attack target if it is waiting for attack or in stealth
+        if (!ai->HasStrategy("stealthed", BotState::BOT_STATE_COMBAT) && !isWaitingForAttack)
+        {
+            return bot->Attack(target, !ai->IsRanged(bot) || (sServerFacade.GetDistance2d(bot, target) < 5.0f));
+        }
+        else
+        {
+            return true;
+        }
     }
 
     return false;

@@ -54,7 +54,7 @@ namespace ai
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class StealthedRogueStrategy : public Strategy
+    class StealthedRogueStrategy : public CombatStrategy
     {
     public:
         StealthedRogueStrategy(PlayerbotAI* ai);

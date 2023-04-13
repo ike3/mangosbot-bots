@@ -839,7 +839,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
 
     //Stop the path when we might get aggro.
-    if (!bot->IsInCombat() && !bot->IsDead() && !ignoreEnemyTargets) 
+    if (!ai->IsStateActive(BotState::BOT_STATE_COMBAT) && !bot->IsDead() && !ignoreEnemyTargets) 
     {
         list<ObjectGuid> targets = AI_VALUE_LAZY(list<ObjectGuid>, "possible attack targets");
 
