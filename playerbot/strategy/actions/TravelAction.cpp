@@ -79,23 +79,29 @@ bool MoveToDarkPortalAction::Execute(Event& event)
                 if (bot->GetTeam() == ALLIANCE)
                 {
                     Quest const* quest = sObjectMgr.GetQuestTemplate(10119);
-                    CreatureDataPair const* dataPair = sRandomPlayerbotMgr.GetCreatureDataByEntry(16841);
-                    if (quest && dataPair)
+                    if (quest && bot->CanAddQuest(quest, false))
                     {
-                        ObjectGuid npcGuid = ObjectGuid(HIGHGUID_UNIT, 16841, dataPair->first);
-                        Creature* npc = bot->GetMap()->GetCreature(npcGuid);
-                        bot->AddQuest(quest, npc);
+                        CreatureDataPair const* dataPair = sRandomPlayerbotMgr.GetCreatureDataByEntry(16841);
+                        if (dataPair)
+                        {
+                            ObjectGuid npcGuid = ObjectGuid(HIGHGUID_UNIT, 16841, dataPair->first);
+                            Creature* npc = bot->GetMap()->GetCreature(npcGuid);
+                            bot->AddQuest(quest, npc);
+                        }
                     }
                 }
                 else
                 {
                     Quest const* quest = sObjectMgr.GetQuestTemplate(9407);
-                    CreatureDataPair const* dataPair = sRandomPlayerbotMgr.GetCreatureDataByEntry(19254);
-                    if (quest && dataPair)
+                    if (quest && bot->CanAddQuest(quest, false))
                     {
-                        ObjectGuid npcGuid = ObjectGuid(HIGHGUID_UNIT, 19254, dataPair->first);
-                        Creature* npc = bot->GetMap()->GetCreature(npcGuid);
-                        bot->AddQuest(quest, npc);
+                        CreatureDataPair const* dataPair = sRandomPlayerbotMgr.GetCreatureDataByEntry(19254);
+                        if (dataPair)
+                        {
+                            ObjectGuid npcGuid = ObjectGuid(HIGHGUID_UNIT, 19254, dataPair->first);
+                            Creature* npc = bot->GetMap()->GetCreature(npcGuid);
+                            bot->AddQuest(quest, npc);
+                        }
                     }
                 }
             }
