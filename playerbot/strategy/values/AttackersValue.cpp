@@ -152,6 +152,16 @@ void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, set<Objec
             units.insert(bot->duel->opponent);
         }
 
+        // Add the pet attackers (if nearby)
+        Pet* pet = player->GetPet();
+        if (pet && sServerFacade.GetDistance2d(bot, pet) <= GetRange())
+        {
+            for (Unit* attacker : pet->getAttackers())
+            {
+                units.insert(attacker);
+            }
+        }
+
         // Filter the units that are valid
         for (Unit* unit : units)
         {
