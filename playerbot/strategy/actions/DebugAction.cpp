@@ -17,8 +17,7 @@ using namespace ai;
 bool DebugAction::Execute(Event& event)
 {
     
-    if (event.getSource() != ".bot" && (!event.getOwner() || !event.getOwner()->GetSession() || event.getOwner()->GetSession()->GetSecurity() < SEC_MODERATOR))
-        return false;
+    bool isMod = event.getSource() == ".bot" || (event.getOwner() && event.getOwner()->GetSession() && event.getOwner()->GetSession()->GetSecurity() >= SEC_MODERATOR);
 
     Player* master = GetMaster();
     if (!master)
@@ -29,7 +28,7 @@ bool DebugAction::Execute(Event& event)
         masterTarget = ai->GetUnit(master->GetSelectionGuid());
 
     string text = event.getParam();
-    if (text == "scan")
+    if (text == "scan" && isMod)
     {
         sPlayerbotAIConfig.openLog("scan.csv", "w");
 
@@ -65,7 +64,7 @@ bool DebugAction::Execute(Event& event)
         }
         return i == 0;
     }
-    else if (text == "gy")
+    else if (text == "gy" && isMod)
     {
         for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
         {
@@ -112,7 +111,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("test") == 0)
+    else if (text.find("test" && isMod) == 0)
     {
         string param = "";
         if (text.length() > 4)
@@ -195,7 +194,7 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("motion") == 0)
+    else if (text.find("motion" && isMod) == 0)
     {
         Unit* motionBot = bot;
         Unit* motionTarget = masterTarget;
@@ -271,7 +270,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("transport") == 0) {
+    else if (text.find("transport") == 0 && isMod) {
         for (auto trans : WorldPosition(bot).getTransports())
         {
             GameObjectInfo const* data = sGOStorage.LookupEntry<GameObjectInfo>(trans->GetEntry());
@@ -281,7 +280,7 @@ bool DebugAction::Execute(Event& event)
                 ai->TellMaster("Not on transport " + string(data->name));
         }
     }
-    else if (text.find("ontrans") == 0) {
+    else if (text.find("ontrans") == 0 && isMod) {
         if (bot->GetTransport())
             return false;
 
@@ -372,7 +371,7 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("offtrans") == 0) {
+    else if (text.find("offtrans") == 0 && isMod) {
         uint32 radius = 10;
 
         if (text.length() > string("offtrans").size())
@@ -421,7 +420,7 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("pathable") == 0) {
+    else if (text.find("pathable") == 0 && isMod) {
         uint32 radius = 10;
 
         if (text.length() > string("pathable").size())
@@ -480,7 +479,7 @@ bool DebugAction::Execute(Event& event)
 
         return false;
     }
-    else if (text.find("randomspot") == 0) {
+    else if (text.find("randomspot") == 0 && isMod) {
         uint32 radius = 10;
         if(text.length() > string("randomspot").size())
             radius = stoi(text.substr(string("randomspot").size()+1));
@@ -515,7 +514,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("printmap") == 0)
+    else if (text.find("printmap" && isMod) == 0)
     {
         sTravelNodeMap.printMap();
         sTravelNodeMap.printNodeStore();
@@ -1195,7 +1194,7 @@ bool DebugAction::Execute(Event& event)
         }
     return true;
     }
-    else if (text.find("add node") == 0)
+    else if (text.find("add node" && isMod) == 0)
     {
         WorldPosition pos(bot);
 
@@ -1214,7 +1213,7 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("rem node") == 0)
+    else if (text.find("rem node" && isMod) == 0)
     {
         WorldPosition pos(bot);
 
@@ -1236,38 +1235,38 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("reset node") == 0) {
+    else if (text.find("reset node" && isMod) == 0) {
         for (auto& node : sTravelNodeMap.getNodes())
             node->setLinked(false);
         return true;
     }
-    else if (text.find("reset path") == 0) {
+    else if (text.find("reset path" && isMod) == 0) {
         for (auto& node : sTravelNodeMap.getNodes())
             for (auto& path : *node->getLinks())
                 node->removeLinkTo(path.first, true);
         return true;
     }
-    else if (text.find("gen node") == 0) {
+    else if (text.find("gen node" && isMod) == 0) {
 
         //Pathfinder
         sTravelNodeMap.generateNodes();
         return true;
     }
-    else if (text.find("gen path") == 0) {
+    else if (text.find("gen path" && isMod) == 0) {
     sTravelNodeMap.generatePaths(false);
     return true;
     }
-    else if (text.find("crop path") == 0) {
+    else if (text.find("crop path" && isMod) == 0) {
         sTravelNodeMap.removeUselessPaths();
         return true;
     }
-    else if (text.find("save node") == 0)
+    else if (text.find("save node" && isMod) == 0)
     {
         sTravelNodeMap.printNodeStore();
         sTravelNodeMap.saveNodeStore(true);
         return true;
     }
-    else if (text.find("load node") == 0)
+    else if (text.find("load node" && isMod) == 0)
     {
         std::thread t([] {if (sTravelNodeMap.removeNodes())
             sTravelNodeMap.loadNodeStore(); });
@@ -1276,7 +1275,7 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("show node") == 0)
+    else if (text.find("show node" && isMod) == 0)
     {
         WorldPosition pos(bot);
 
@@ -1308,7 +1307,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("dspell ") == 0)
+    else if (text.find("dspell " && isMod) == 0)
     {
         uint32 spellEffect = stoi(text.substr(7));
 
@@ -1334,7 +1333,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("vspell ") == 0)
+    else if (text.find("vspell " && isMod) == 0)
     {
         uint32 spellEffect = stoi(text.substr(7));
 
@@ -1364,7 +1363,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("aspell ") == 0)
+    else if (text.find("aspell " && isMod) == 0)
     {
         uint32 spellEffect = stoi(text.substr(7));
 
@@ -1392,7 +1391,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("cspell ") == 0)
+    else if (text.find("cspell " && isMod) == 0)
     {
         uint32 spellEffect = stoi(text.substr(7));
 
@@ -1422,7 +1421,7 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("fspell ") == 0)
+    else if (text.find("fspell " && isMod) == 0)
     {
         uint32 spellEffect = stoi(text.substr(7));
 
@@ -1456,13 +1455,13 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("spell ") == 0)
+    else if (text.find("spell " && isMod) == 0)
     {
         uint32 spellEffect = stoi(text.substr(6));
         master->GetSession()->SendPlaySpellVisual(bot->GetObjectGuid(), spellEffect);
         return true;
     }
-    else if (text.find("tspellmap") == 0)
+    else if (text.find("tspellmap" && isMod) == 0)
     {
         for (int32 dx = 0; dx < 10; dx++)
         {
@@ -1492,7 +1491,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("uspellmap") == 0)
+    else if (text.find("uspellmap" && isMod) == 0)
     {
         for (int32 dx = 0; dx < 10; dx++)
         {
@@ -1511,7 +1510,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("dspellmap") == 0)
+    else if (text.find("dspellmap" && isMod) == 0)
     {
         for (int32 dx = 0; dx < 10; dx++)
         {
@@ -1530,7 +1529,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("vspellmap") == 0)
+    else if (text.find("vspellmap" && isMod) == 0)
     {
         vector<WorldPacket> datMap;
         for (int32 dx = 0; dx < 10; dx++)
@@ -1575,7 +1574,7 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("ispellmap") == 0)
+    else if (text.find("ispellmap" && isMod) == 0)
     {
         vector<WorldPacket> datMap;
         for (int32 dx = 0; dx < 10; dx++)
@@ -1618,7 +1617,7 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("cspellmap") == 0)
+    else if (text.find("cspellmap" && isMod) == 0)
     {
         Creature* wpCreature = nullptr;
         Creature* lCreature = nullptr;
@@ -1646,7 +1645,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("aspellmap") == 0)
+    else if (text.find("aspellmap" && isMod) == 0)
     {
         Creature* wpCreature = nullptr;
 
@@ -1672,7 +1671,7 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("gspellmap") == 0)
+    else if (text.find("gspellmap" && isMod) == 0)
     {
         vector<ObjectGuid> all_targets;// = { bot->GetObjectGuid(), master->GetObjectGuid() };
         //vector<ObjectGuid> all_dummies = { bot->GetObjectGuid(), master->GetObjectGuid() };
@@ -1758,7 +1757,7 @@ bool DebugAction::Execute(Event& event)
             }
         return true;
     }
-    else if (text.find("mspellmap") == 0)
+    else if (text.find("mspellmap" && isMod) == 0)
     {
     vector<ObjectGuid> all_targets;
 
@@ -1835,7 +1834,7 @@ bool DebugAction::Execute(Event& event)
         }
     return true;
     }
-    else if (text.find("soundmap") == 0)
+    else if (text.find("soundmap" && isMod) == 0)
     {
         uint32 soundEffects = stoi(text.substr(9));
         for (int32 dx = 0; dx < 10; dx++)
@@ -1855,7 +1854,7 @@ bool DebugAction::Execute(Event& event)
             }
         }
     }
-    else if (text.find("sounds") == 0)
+    else if (text.find("sounds" && isMod) == 0)
     {
         uint32 soundEffects = stoi(text.substr(6));
 
@@ -1867,19 +1866,19 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
-    else if (text.find("dsound") == 0)
+    else if (text.find("dsound" && isMod) == 0)
     {
         uint32 soundEffect = stoi(text.substr(7));
         bot->PlayDirectSound(soundEffect);
         return true;
     }
-    else if (text.find("dsound") == 0)
+    else if (text.find("dsound" && isMod) == 0)
     {
         uint32 soundEffect = stoi(text.substr(7));
         bot->PlayDirectSound(soundEffect);
         return true;
     }
-    else if (text.find("sound") == 0)
+    else if (text.find("sound" && isMod) == 0)
     {
         uint32 soundEffect = stoi(text.substr(6));
         bot->PlayDistanceSound(soundEffect);
