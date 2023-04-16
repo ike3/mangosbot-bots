@@ -4819,8 +4819,6 @@ ItemIds PlayerbotAI::InventoryFindOutfitItems(string name)
 
 void PlayerbotAI::AccelerateRespawn(Creature* creature, float accelMod)
 {
-    return;
-
     if (!creature)
         return;
 
