@@ -37,6 +37,12 @@ bool CastCustomSpellAction::Execute(Event& event)
     string text = event.getParam();
     Player* master = GetMaster();
 
+    // Process summon request
+    if (text.find("summon") != string::npos)
+    {
+        return CastSummon(text);
+    }
+
     list<ObjectGuid> gos = chat->parseGameobjects(text);
 
     if (!gos.empty())
@@ -170,6 +176,124 @@ bool CastCustomSpellAction::Execute(Event& event)
     }
 
     return result;
+}
+
+bool CastCustomSpellAction::CastSummon(std::string command)
+{
+    if (bot->getClass() == CLASS_WARLOCK)
+    {
+        if (!ai->IsStateActive(BotState::BOT_STATE_COMBAT))
+        {
+            // Get target from command parameters
+            uint8 membersAroundSummoner = 0;
+            Player* target = nullptr;
+            const std::string summonString = "summon ";
+            const int pos = command.find(summonString);
+            if (pos != std::string::npos)
+            {
+                // Get player name
+                std::string playerName = command.substr(summonString.size());
+
+                const Group* group = bot->GetGroup();
+                if (group && !playerName.empty())
+                {
+                    const Group::MemberSlotList& groupSlot = group->GetMemberSlots();
+                    for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
+                    {
+                        Player* member = sObjectMgr.GetPlayer(itr->guid);
+                        if (member)
+                        {
+                            if (member->GetName() == playerName)
+                            {
+                                target = member;
+                            }
+
+                            if (member->GetDistance(bot) <= sPlayerbotAIConfig.reactDistance)
+                            {
+                                membersAroundSummoner++;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Get target from master target
+                Player* master = ai->GetMaster();
+                if (master && master->GetSelectionGuid())
+                {
+                    const ObjectGuid& targetGuid = master->GetSelectionGuid();
+                    if (targetGuid.IsPlayer())
+                    {
+                        const Group* group = bot->GetGroup();
+                        if (group)
+                        {
+                            const Group::MemberSlotList& groupSlot = group->GetMemberSlots();
+                            for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
+                            {
+                                Player* member = sObjectMgr.GetPlayer(itr->guid);
+                                if (member)
+                                {
+                                    if (itr->guid == targetGuid)
+                                    {
+                                        target = member;
+                                    }
+
+                                    if (member->GetDistance(bot) <= sPlayerbotAIConfig.reactDistance)
+                                    {
+                                        membersAroundSummoner++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }   
+            }
+
+            if (target)
+            {
+                if (membersAroundSummoner >= 3)
+                {
+                    if (target->isRealPlayer())
+                    {
+                        float x, y, z;
+                        bot->GetPosition(x, y, z);
+                        target->SetSummonPoint(bot->GetMapId(), x, y, z, bot->GetObjectGuid());
+
+                        WorldPacket data(SMSG_SUMMON_REQUEST, 8 + 4 + 4);
+                        data << bot->GetObjectGuid();
+                        data << uint32(bot->GetZoneId());
+                        data << uint32(MAX_PLAYER_SUMMON_DELAY * IN_MILLISECONDS);
+                        target->GetSession()->SendPacket(data);
+                    }
+                    else
+                    {
+                        target->TeleportTo(bot->GetMapId(), bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetOrientation());
+                    }
+
+                    ostringstream msg;
+                    msg << "Summoning " << target->GetName();
+                    ai->TellMasterNoFacing(msg.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                    SetDuration(sPlayerbotAIConfig.globalCoolDown);
+                    return true;
+                }
+                else
+                {
+                    ai->TellError("I don't have enough party members around to cast a summon");
+                }
+            }
+            else
+            {
+                ai->TellError("Failed to find the summon target");
+            }
+        }
+        else
+        {
+            ai->TellError("I can't summon because I'm in combat");
+        }
+    }
+
+    return false;
 }
 
 bool CastRandomSpellAction::Execute(Event& event)

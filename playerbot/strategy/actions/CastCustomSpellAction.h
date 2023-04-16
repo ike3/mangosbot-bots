@@ -13,6 +13,9 @@ namespace ai
         virtual string castString(WorldObject* target) { return "cast"; }
         virtual uint32 getDuration() const { return 3000U; }
 
+    private:
+        bool CastSummon(std::string command);
+
     protected:
         bool ncCast = false;
     };
