@@ -71,7 +71,8 @@ namespace ai
             creators["guard"] = &ChatTriggerContext::guard;
             creators["free"] = &ChatTriggerContext::free;
             creators["wait for attack time"] = &ChatTriggerContext::wait_for_attack_time;
-            creators["focus heal target"] = &ChatTriggerContext::focus_heal_target;
+            creators["focus heal"] = &ChatTriggerContext::focus_heal_target;
+            creators["self res"] = &ChatTriggerContext::self_resurrect;
             creators["flee"] = &ChatTriggerContext::flee;
             creators["grind"] = &ChatTriggerContext::grind;
             creators["tank attack"] = &ChatTriggerContext::tank_attack;
@@ -164,7 +165,8 @@ namespace ai
         static Trigger* guard(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guard"); }
         static Trigger* free(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "free"); }
         static Trigger* wait_for_attack_time(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "wait for attack time"); }
-        static Trigger* focus_heal_target(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "focus heal target"); }
+        static Trigger* focus_heal_target(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "focus heal"); }
+        static Trigger* self_resurrect(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "self res"); }
         static Trigger* follow(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "follow"); }
         static Trigger* gb(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "gb"); }
         static Trigger* bank(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "bank"); }
