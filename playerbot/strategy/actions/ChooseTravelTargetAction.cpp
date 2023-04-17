@@ -699,7 +699,12 @@ bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool newQues
             if (!completedQuests && bot->CanRewardQuest(questTemplate, false))
                 continue;
 
-            if (onlyClassQuest && TravelDestinations.size()) //Only do class quests if we have any.
+            //Find quest takers or objectives
+            PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "getQuestTravelDestinations2", &context->performanceStack);
+            vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, true, false,0);
+            if(pmo) pmo->finish();
+
+            if (onlyClassQuest && TravelDestinations.size() && questDestinations.size()) //Only do class quests if we have any.
             {
                 if (TravelDestinations.front()->GetQuestTemplate()->GetRequiredClasses() && !questTemplate->GetRequiredClasses())
                     continue;
@@ -707,11 +712,6 @@ bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool newQues
                 if (!TravelDestinations.front()->GetQuestTemplate()->GetRequiredClasses() && questTemplate->GetRequiredClasses())
                     TravelDestinations.clear();
             }
-
-            //Find quest takers or objectives
-            PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "getQuestTravelDestinations2", &context->performanceStack);
-            vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, true, false,0);
-            if(pmo) pmo->finish();
 
             TravelDestinations.insert(TravelDestinations.end(), questDestinations.begin(), questDestinations.end());
         }
