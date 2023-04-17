@@ -201,6 +201,10 @@ void ChatCommandHandlerStrategy::InitReactionTriggers(std::list<TriggerNode*> &t
         NextAction::array(0, new NextAction("focus heal target", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "self res",
+        NextAction::array(0, new NextAction("self resurrect", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "flee",
         NextAction::array(0, new NextAction("flee chat shortcut", relevance), NULL)));
 

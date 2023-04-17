@@ -160,4 +160,23 @@ namespace ai
             return true;
         }
     };
+
+    class SelfResurrectAction : public ChatCommandAction
+    {
+    public:
+        SelfResurrectAction(PlayerbotAI* ai, string name = "self resurrect") : ChatCommandAction(ai, name) {}
+
+    public:
+        bool Execute(Event& event) override
+        {
+            WorldPacket packet(CMSG_SELF_RES);
+            bot->GetSession()->HandleSelfResOpcode(packet);
+            return true;
+        }
+
+        bool isPossible() override
+        {
+            return ai->IsStateActive(BotState::BOT_STATE_DEAD) && bot->GetUInt32Value(PLAYER_SELF_RES_SPELL);
+        }
+    };
 }
