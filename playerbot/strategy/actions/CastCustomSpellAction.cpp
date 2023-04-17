@@ -104,6 +104,12 @@ bool CastCustomSpellAction::Execute(Event& event)
         return false;
     }
 
+    // Don't use totem items for totem spells
+    if (pSpellInfo->Totem[0] > 0)
+    {
+        itemTarget = nullptr;
+    }
+
     if (target != bot && !sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
     {
         sServerFacade.SetFacingTo(bot, target);
