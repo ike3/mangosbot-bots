@@ -107,7 +107,6 @@ namespace ai
                 creators["counterspell"] = &TriggerFactoryInternal::counterspell;
                 creators["polymorph"] = &TriggerFactoryInternal::polymorph;
                 creators["spellsteal"] = &TriggerFactoryInternal::spellsteal;
-                creators["no improved scorch"] = &TriggerFactoryInternal::no_improved_scorch;
                 creators["missile barrage"] = &TriggerFactoryInternal::missile_barrage;
                 creators["arcane blast"] = &TriggerFactoryInternal::arcane_blast;
                 creators["counterspell on enemy healer"] = &TriggerFactoryInternal::counterspell_enemy_healer;
@@ -137,6 +136,7 @@ namespace ai
                 creators["remove glyph of mirror image"] = &TriggerFactoryInternal::remove_glyph_of_mirror_image;
                 creators["learn glyph of molten armor"] = &TriggerFactoryInternal::learn_glyph_of_molten_armor;
                 creators["remove glyph of molten armor"] = &TriggerFactoryInternal::remove_glyph_of_molten_armor;
+                creators["no improved scorch"] = &TriggerFactoryInternal::no_improved_scorch;
 #endif
 #ifndef MANGOSBOT_ZERO
                 creators["living bomb"] = &TriggerFactoryInternal::living_bomb;
@@ -152,7 +152,6 @@ namespace ai
             static Trigger* fire_ward(PlayerbotAI* ai) { return new FireWardTrigger(ai); }
             static Trigger* presence_of_mind(PlayerbotAI* ai) { return new PresenceOfMindTrigger(ai); }
             static Trigger* arcane_power(PlayerbotAI* ai) { return new ArcanePowerTrigger(ai); }
-            static Trigger* no_improved_scorch(PlayerbotAI* ai) { return new NoImprovedScorchDebuffTrigger(ai); }
             static Trigger* fireball(PlayerbotAI* ai) { return new FireballTrigger(ai); }
             static Trigger* pyroblast(PlayerbotAI* ai) { return new PyroblastTrigger(ai); }
             static Trigger* combustion(PlayerbotAI* ai) { return new CombustionTrigger(ai); }
@@ -186,6 +185,7 @@ namespace ai
             static Trigger* remove_glyph_of_mirror_image(PlayerbotAI* ai) { return new RemoveGlyphOfMirrorImageTrigger(ai); }
             static Trigger* learn_glyph_of_molten_armor(PlayerbotAI* ai) { return new LearnGlyphOfMoltenArmorTrigger(ai); }
             static Trigger* remove_glyph_of_molten_armor(PlayerbotAI* ai) { return new RemoveGlyphOfMoltenArmorTrigger(ai); }
+            static Trigger* no_improved_scorch(PlayerbotAI* ai) { return new NoImprovedScorchDebuffTrigger(ai); }
 #endif
 #ifndef MANGOSBOT_ZERO
             static Trigger* living_bomb(PlayerbotAI* ai) { return new LivingBombTrigger(ai); }
