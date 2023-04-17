@@ -52,39 +52,40 @@ bool AutoShareQuestAction::Execute(Event& event)
 
         for (GroupReference* itr = bot->GetGroup()->GetFirstMember(); itr != nullptr; itr = itr->next())
         {
-            Player* pPlayer = itr->getSource();
+            Player* player = itr->getSource();
 
-            if (!pPlayer || pPlayer == bot || !pPlayer->IsInWorld() || !ai->IsSafe(pPlayer))         // skip self
+            if (!player || player == bot || !player->IsInWorld() || !ai->IsSafe(player))         // skip self
                 continue;
 
-            if (bot->GetDistance(pPlayer) > 10)
+            if (bot->GetDistance(player) > 10)
                 continue;
 
-            if (!pPlayer->SatisfyQuestStatus(quest, false))
+            if (!player->SatisfyQuestStatus(quest, false))
                 continue;
 
-            if (pPlayer->GetQuestStatus(logQuest) == QUEST_STATUS_COMPLETE)
+            if (player->GetQuestStatus(logQuest) == QUEST_STATUS_COMPLETE)
                 continue;
 
-            if (!pPlayer->CanTakeQuest(quest, false))
+            if (!player->CanTakeQuest(quest, false))
                 continue;
 
-            if (!pPlayer->SatisfyQuestLog(false))
+            if (!player->SatisfyQuestLog(false))
                 continue;
 
-            if (pPlayer->GetDividerGuid())
+            if (player->GetDividerGuid())
                 continue;
 
-            if (pPlayer->GetPlayerbotAI())
+            if (player->GetPlayerbotAI())
             {
-                WorldPacket packet(CMSG_PUSHQUESTTOPARTY, 20);
-                packet << logQuest;
-                pPlayer->GetPlayerbotAI()->HandleMasterOutgoingPacket(packet);
+                if (PAI_VALUE(uint8, "free quest log slots") < 15)
+                {
+                    WorldPacket packet(CMSG_PUSHQUESTTOPARTY, 20);
+                    packet << logQuest;
+                    player->GetPlayerbotAI()->HandleMasterIncomingPacket(packet);
+                }
             }
-
-            partyNeedsQuest = true;
-
-            break;
+            else
+                partyNeedsQuest = true;
         }
 
         if (!partyNeedsQuest)

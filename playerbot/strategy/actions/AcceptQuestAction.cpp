@@ -87,6 +87,9 @@ bool AcceptQuestShareAction::Execute(Event& event)
     Player* master = GetMaster();
     Player *bot = ai->GetBot();
 
+    if (!ai->IsSafe(master))
+        master = bot;
+
     WorldPacket& p = event.getPacket();
     p.rpos(0);
     uint32 quest;
