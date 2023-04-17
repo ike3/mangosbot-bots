@@ -4472,13 +4472,13 @@ bool PlayerbotAI::AddAura(Unit* unit, uint32 spellId)
 
 void PlayerbotAI::InventoryIterateItems(IterateItemsVisitor* visitor, IterateItemsMask mask)
 {
-    if (mask & ITERATE_ITEMS_IN_BAGS)
+    if (mask & ITERATE_ITEMS_IN_BAGS || mask == ITERATE_ALL_ITEMS)
         InventoryIterateItemsInBags(visitor);
 
-    if (mask & ITERATE_ITEMS_IN_EQUIP)
+    if (mask & ITERATE_ITEMS_IN_EQUIP || mask == ITERATE_ALL_ITEMS)
         InventoryIterateItemsInEquip(visitor);
 
-    if (mask == ITERATE_ITEMS_IN_BANK)
+    if (mask == ITERATE_ITEMS_IN_BANK || mask == ITERATE_ALL_ITEMS)
         InventoryIterateItemsInBank(visitor);
 }
 

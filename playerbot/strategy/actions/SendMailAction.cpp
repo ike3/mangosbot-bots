@@ -14,18 +14,6 @@ bool SendMailAction::Execute(Event& event)
     uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
     bool randomBot = sPlayerbotAIConfig.IsInRandomAccountList(account);
 
-    list<ObjectGuid> gos = *context->GetValue<list<ObjectGuid> >("nearest game objects");
-    bool mailboxFound = false;
-    for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); ++i)
-    {
-        GameObject* go = ai->GetGameObject(*i);
-        if (go && go->GetGoType() == GAMEOBJECT_TYPE_MAILBOX)
-        {
-            mailboxFound = true;
-            break;
-        }
-    }
-
     string text = event.getParam();
     Player* receiver = GetMaster();
     Player* tellTo = receiver;
@@ -44,13 +32,6 @@ bool SendMailAction::Execute(Event& event)
     }
 
     if (!tellTo) tellTo = receiver;
-
-    if (!mailboxFound && !randomBot)
-    {
-        bot->Whisper("There is no mailbox nearby", LANG_UNIVERSAL, tellTo->GetObjectGuid());
-        return false;
-    }
-
 
     ItemIds ids = chat->parseItems(text);
     if (ids.size() > 1)
@@ -108,7 +89,7 @@ bool SendMailAction::Execute(Event& event)
     for (ItemIds::iterator i =ids.begin(); i != ids.end(); i++)
     {
         FindItemByIdVisitor visitor(*i);
-        ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        ai->InventoryIterateItems(&visitor, ITERATE_ALL_ITEMS);
         list<Item*> items = visitor.GetResult();
         for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
         {
