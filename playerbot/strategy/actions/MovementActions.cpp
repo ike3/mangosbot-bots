@@ -1538,7 +1538,7 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         return false;
     }
 
-    if (!obj || obj == bot || bot->GetMapId() != obj->GetMapId())
+    if (!ai->IsSafe(obj))
         return false;
 
 #ifdef MANGOSBOT_TWO
