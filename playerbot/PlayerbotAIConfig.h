@@ -216,7 +216,7 @@ public:
     void logEvent(PlayerbotAI* ai, string eventName, string info1 = "", string info2 = "");
     void logEvent(PlayerbotAI* ai, string eventName, ObjectGuid guid, string info2);
 
-    bool CanLogAction(string actionName) { return std::find(debugFilter.begin(), debugFilter.end(), actionName) == debugFilter.end(); }
+    bool CanLogAction(PlayerbotAI* ai, string actionName, bool isExecute);
 private:
     Config config;
 };
