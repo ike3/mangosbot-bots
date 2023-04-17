@@ -16,6 +16,8 @@ Unit* PartyMemberValue::FindPartyMember(list<Player*>* party, FindPlayerPredicat
         if (!player)
             continue;
 
+        if (bot->GetGroup() && !player->IsInGroup(bot) && !AI_VALUE2(bool, "can free move to", GuidPosition(player).to_string())) continue;
+
         if (Check(player) && predicate.Check(player))
             return player;
 
@@ -57,7 +59,7 @@ Unit* PartyMemberValue::FindPartyMember(FindPlayerPredicate &predicate, bool ign
         }
     }
     
-    if (!ignoreOutOfGroup && !nearestPlayers.empty() && nearestPlayers.size() < 100)
+    if (!ignoreOutOfGroup && !nearestPlayers.empty() && nearestPlayers.size() < 100  && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.sightDistance))
         nearestGroupPlayers.insert(nearestGroupPlayers.end(), nearestPlayers.begin(), nearestPlayers.end());
 
     nearestPlayers = nearestGroupPlayers;
