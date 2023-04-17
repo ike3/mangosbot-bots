@@ -455,6 +455,25 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
                     movePosition = endPosition;
                 }
+                else if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                {
+                    vector<WorldPosition> beginPath = endPosition.getPathFromPath({ startPosition }, bot, 40);
+                    TravelNodeRoute route = sTravelNodeMap.getRoute(startPosition, endPosition, beginPath, bot);       
+
+                    string routeList;
+
+                    for (auto node : route.getNodes())
+                    {
+                        routeList += node->getName() + "-";
+                    }
+
+                    if (!routeList.empty())
+                        ai->TellMasterNoFacing(routeList);
+
+                    route.cleanTempNodes();                 
+
+                    sTravelNodeMap.m_nMapMtx.unlock_shared();
+                }
             }
             else
             {
