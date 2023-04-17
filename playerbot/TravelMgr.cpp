@@ -2788,7 +2788,7 @@ void TravelMgr::loadMapTransfers()
     }
 }
 
-float TravelMgr::mapTransDistance(WorldPosition start, WorldPosition end)
+float TravelMgr::mapTransDistance(WorldPosition start, WorldPosition end, bool toMap)
 {
     uint32 sMap = start.getMapId();
     uint32 eMap = end.getMapId();
@@ -2805,6 +2805,8 @@ float TravelMgr::mapTransDistance(WorldPosition start, WorldPosition end)
 
     for (auto& mapTrans : mapTransfers->second)
     {
+        if (toMap) end = *mapTrans.getPointTo();
+
         float dist = mapTrans.distance(start, end);
 
         if (dist < minDist)
@@ -2814,7 +2816,7 @@ float TravelMgr::mapTransDistance(WorldPosition start, WorldPosition end)
     return minDist;
 }
 
-float TravelMgr::fastMapTransDistance(WorldPosition start, WorldPosition end)
+float TravelMgr::fastMapTransDistance(WorldPosition start, WorldPosition end, bool toMap)
 {
     uint32 sMap = start.getMapId();
     uint32 eMap = end.getMapId();
@@ -2831,6 +2833,8 @@ float TravelMgr::fastMapTransDistance(WorldPosition start, WorldPosition end)
 
     for (auto& mapTrans : mapTransfers->second)
     {
+        if (toMap) end = *mapTrans.getPointTo();
+
         float dist = mapTrans.fDist(start, end);
 
         if (dist < minDist)

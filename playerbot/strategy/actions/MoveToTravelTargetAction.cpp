@@ -118,7 +118,7 @@ bool MoveToTravelTargetAction::isUseful()
     if (!ai->AllowActivity(TRAVEL_ACTIVITY))
         return false;
 
-    if (!context->GetValue<TravelTarget*>("travel target")->Get()->isTraveling())
+    if (!AI_VALUE(TravelTarget*,"travel target")->isTraveling())
         return false;
 
     if (bot->IsTaxiFlying())
@@ -134,6 +134,11 @@ bool MoveToTravelTargetAction::isUseful()
 #endif
 
     if (!AI_VALUE(bool, "can move around"))
+        return false;
+
+    WorldPosition travelPos(*AI_VALUE(TravelTarget*, "travel target")->getPosition());
+
+    if (travelPos.isDungeon() && bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetObjectGuid()) && sTravelMgr.mapTransDistance(bot, travelPos, true) < sPlayerbotAIConfig.sightDistance && !AI_VALUE2(bool, "group and", "near leader"))
         return false;
      
     LootObject loot = AI_VALUE(LootObject, "loot target");

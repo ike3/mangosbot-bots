@@ -388,8 +388,8 @@ namespace ai
 
         void addMapTransfer(WorldPosition start, WorldPosition end, float portalDistance = 0.1f, bool makeShortcuts = true);
         void loadMapTransfers();
-        float mapTransDistance(WorldPosition start, WorldPosition end);
-        float fastMapTransDistance(WorldPosition start, WorldPosition end);
+        float mapTransDistance(WorldPosition start, WorldPosition end, bool toMap = false);
+        float fastMapTransDistance(WorldPosition start, WorldPosition end, bool toMap = false);
 
         NullTravelDestination* nullTravelDestination = new NullTravelDestination();
         WorldPosition* nullWorldPosition = new WorldPosition();

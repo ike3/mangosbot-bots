@@ -158,6 +158,7 @@ namespace ai
         uint32 getInstanceId() const { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
         Map* getMap() const { return sMapMgr.FindMap(mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
         const TerrainInfo* getTerrain() const { return getMap() ? getMap()->GetTerrain() : NULL; }
+        bool isDungeon() { return getMapEntry()->IsDungeon(); }
 
 #if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
         bool IsInLineOfSight(WorldPosition pos, float heightMod = 0.5f) const { return mapid == pos.mapid && getMap() && getMap()->IsInLineOfSight(coord_x, coord_y, coord_z + heightMod, pos.coord_x, pos.coord_y, pos.coord_z + heightMod, 0, true); }
