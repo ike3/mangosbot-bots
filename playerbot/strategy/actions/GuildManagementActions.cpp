@@ -241,6 +241,8 @@ bool GuildLeaveAction::Execute(Event& event)
         guild->BroadcastToGuild(bot->GetSession(), "I am leaving this guild to prevent it from reaching the 1064 member limit.", LANG_UNIVERSAL);
     }
 
+    sPlayerbotAIConfig.logEvent(ai, "GuildLeaveAction", guild->GetName(), to_string(guild->GetMemberSize()));
+
     WorldPacket packet;
     bot->GetSession()->HandleGuildLeaveOpcode(packet);
     return true;
