@@ -127,7 +127,7 @@ namespace ai {
     public:
         EntanglingRootsKiteTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "entangling roots") {}
 
-        virtual bool IsActive() { return DebuffTrigger::IsActive() && AI_VALUE(uint8, "attackers count") < 3 && !GetTarget()->HasMana(); }
+        virtual bool IsActive();
     };
 
     class EntanglingRootsSnareTrigger : public SnareTargetTrigger
