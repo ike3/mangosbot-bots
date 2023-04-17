@@ -1578,6 +1578,10 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     const Vector3 targetPoint = targetPosition.getVector3();
 
     const float distanceToTarget = botPosition.distance(targetPosition);
+
+    if (distanceToTarget > sPlayerbotAIConfig.sightDistance)
+        return MoveTo(targetPosition.getMapId(), targetPosition.getX(), targetPosition.getY(), targetPosition.getZ());
+
     const Vector3 directionToTarget = (targetPoint - botPoint).directionOrZero();
     const Vector3 endPoint = botPoint + (directionToTarget * std::min(distance, distanceToTarget));
     WorldPosition endPosition(obj->GetMapId(), endPoint.x, endPoint.y, endPoint.z);
