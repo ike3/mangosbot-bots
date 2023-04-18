@@ -126,6 +126,7 @@ namespace ai
             creators["pull end"] = &ActionContext::pull_end;
             creators["emote"] = &ActionContext::emote;
             creators["talk"] = &ActionContext::talk;
+            creators["mount anim"] = &ActionContext::mount_anim;
             creators["suggest what to do"] = &ActionContext::suggest_what_to_do;
             creators["suggest trade"] = &ActionContext::suggest_trade;
             creators["return"] = &ActionContext::_return;
@@ -247,7 +248,6 @@ namespace ai
             creators["rpg craft"] = &ActionContext::rpg_craft;
             creators["rpg trade useful"] = &ActionContext::rpg_trade_useful;
             creators["rpg duel"] = &ActionContext::rpg_duel;
-            creators["rpg mount anim"] = &ActionContext::rpg_mount_anim;
             creators["rpg item"] = &ActionContext::rpg_item;
 
             // Bot States
@@ -358,6 +358,7 @@ namespace ai
 
         static Action* emote(PlayerbotAI* ai) { return new EmoteAction(ai); }
         static Action* talk(PlayerbotAI* ai) { return new TalkAction(ai); }
+        static Action* mount_anim(PlayerbotAI* ai) { return new MountAnimAction(ai); }
         static Action* suggest_what_to_do(PlayerbotAI* ai) { return new SuggestWhatToDoAction(ai); }
         static Action* suggest_trade(PlayerbotAI* ai) { return new SuggestTradeAction(ai); }
         static Action* attack_anything(PlayerbotAI* ai) { return new AttackAnythingAction(ai); }
@@ -493,7 +494,6 @@ namespace ai
         static Action* rpg_craft(PlayerbotAI* ai) { return new RpgCraftAction(ai); }
         static Action* rpg_trade_useful(PlayerbotAI* ai) { return new RpgTradeUsefulAction(ai); }
         static Action* rpg_duel(PlayerbotAI* ai) { return new RpgDuelAction(ai); }
-        static Action* rpg_mount_anim(PlayerbotAI* ai) { return new RpgMountAnimAction(ai); }
         static Action* rpg_item(PlayerbotAI* ai) { return new RpgItemAction(ai); }
 
         // Bot States

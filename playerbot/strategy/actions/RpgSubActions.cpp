@@ -359,19 +359,6 @@ bool RpgDuelAction::Execute(Event& event)
     return ai->DoSpecificAction("cast custom spell", Event("rpg action", chat->formatWorldobject(player) + " 7266"), true);
 }
 
-bool RpgMountAnimAction::isUseful()
-{
-    return AI_VALUE2(bool, "mounted", "self target") && !AI_VALUE2(bool, "moving", "self target");
-}
-
-bool RpgMountAnimAction::Execute(Event& event)
-{
-    WorldPacket p;
-    bot->GetSession()->HandleMountSpecialAnimOpcode(p);
-
-    return true;
-}
-
 bool RpgItemAction::Execute(Event& event)
 {
     GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");

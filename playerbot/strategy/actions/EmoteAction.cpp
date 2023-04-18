@@ -1416,3 +1416,16 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
     }
     return 1;
 }
+
+bool MountAnimAction::isUseful()
+{
+    return AI_VALUE2(bool, "mounted", "self target") && !AI_VALUE2(bool, "moving", "self target");
+}
+
+bool MountAnimAction::Execute(Event& event)
+{
+    WorldPacket p;
+    bot->GetSession()->HandleMountSpecialAnimOpcode(p);
+
+    return true;
+}

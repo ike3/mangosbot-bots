@@ -40,5 +40,5 @@ void EmoteStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "random",
-        NextAction::array(0, new NextAction("rpg mount anim", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("mount anim", 1.0f), NULL)));
 }
