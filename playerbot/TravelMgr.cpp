@@ -252,7 +252,6 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
 
     return true;
 }
-
 string QuestObjectiveTravelDestination::getTitle() {
     ostringstream out;
 
@@ -274,20 +273,40 @@ bool RpgTravelDestination::isActive(Player* bot)
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     AiObjectContext* context = ai->GetAiObjectContext();
 
-    CreatureInfo const* cInfo = this->getCreatureInfo();
-
-    if (!cInfo)
-        return false;
-
     bool isUsefull = false;
 
-    if (cInfo->NpcFlags & UNIT_NPC_FLAG_VENDOR)
-        if (AI_VALUE2_LAZY(bool, "group or", "should sell,can sell,following party,near leader"))
-            isUsefull = true;
+    if (entry > 0)
+    {
 
-    if (cInfo->NpcFlags & UNIT_NPC_FLAG_REPAIR)
-        if (AI_VALUE2_LAZY(bool, "group or", "should repair,can repair,following party,near leader"))
-            isUsefull = true;
+        CreatureInfo const* cInfo = this->getCreatureInfo();
+
+        if (!cInfo)
+            return false;
+
+        if (cInfo->NpcFlags & UNIT_NPC_FLAG_VENDOR)
+            if (AI_VALUE2_LAZY(bool, "group or", "should sell,can sell,following party,near leader"))
+                isUsefull = true;
+
+        if (cInfo->NpcFlags & UNIT_NPC_FLAG_REPAIR)
+            if (AI_VALUE2_LAZY(bool, "group or", "should repair,can repair,following party,near leader"))
+                isUsefull = true;
+
+        if (cInfo->NpcFlags & UNIT_NPC_FLAG_AUCTIONEER)
+            if (AI_VALUE2_LAZY(bool, "group or", "should sell,can ah sell,following party,near leader"))
+                isUsefull = true;        
+    }
+    else
+    {
+        GameObjectInfo const* gInfo = this->getGoInfo();
+
+        if (!gInfo)
+            return false;
+
+        if(gInfo->type == GAMEOBJECT_TYPE_MAILBOX)
+            if (AI_VALUE_LAZY(bool, "can get mail"))
+                isUsefull = true;
+    }
+
 
     if (!isUsefull)
         return false;
@@ -1135,70 +1154,100 @@ void TravelMgr::LoadQuestTravelTable()
         GrindTravelDestination* gLoc;
         BossTravelDestination* bLoc;
 
-        if (u.type != 0)
-            continue;
-
-        CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(u.entry);
-
-        if (!cInfo)
-            continue;
-
-        if (cInfo->ExtraFlags & CREATURE_EXTRA_FLAG_INVISIBLE)
-            continue;
-
-        vector<uint32> allowedNpcFlags;
-
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_INNKEEPER);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_GOSSIP);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_QUESTGIVER);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_FLIGHTMASTER);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_BANKER);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_AUCTIONEER);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_STABLEMASTER);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_PETITIONER);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_TABARDDESIGNER);
-
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR);
-        allowedNpcFlags.push_back(UNIT_NPC_FLAG_REPAIR);
-
-        point = GuidPosition(u.guid, WorldPosition(u.map, u.x, u.y, u.z, u.o));
-
-        for (vector<uint32>::iterator i = allowedNpcFlags.begin(); i != allowedNpcFlags.end(); ++i)
+        if (u.type == 0)
         {
-            if ((cInfo->NpcFlags & *i) != 0)
-            {
-                rLoc = new RpgTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
-                rLoc->setExpireDelay(5 * 60 * 1000);
+            CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(u.entry);
 
-                pointsMap.insert_or_assign(u.guid, point);
-                rLoc->addPoint(&pointsMap.find(u.guid)->second);
-                rpgNpcs.push_back(rLoc);
-                break;
-            }
-        }
+            if (!cInfo)
+                continue;
 
-        if (cInfo->MinLootGold > 0)
-        {
-            gLoc = new GrindTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
-            gLoc->setExpireDelay(5 * 60 * 1000);
+            if (cInfo->ExtraFlags & CREATURE_EXTRA_FLAG_INVISIBLE)
+                continue;
+
+            vector<uint32> allowedNpcFlags;
+
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_INNKEEPER);
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_GOSSIP);
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_QUESTGIVER);
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_FLIGHTMASTER);
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_BANKER);
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_AUCTIONEER);
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_STABLEMASTER);
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_PETITIONER);
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_TABARDDESIGNER);
+
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER);
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR);
+            allowedNpcFlags.push_back(UNIT_NPC_FLAG_REPAIR);
 
             point = GuidPosition(u.guid, WorldPosition(u.map, u.x, u.y, u.z, u.o));
-            pointsMap.insert_or_assign(u.guid, point);
-            gLoc->addPoint(&pointsMap.find(u.guid)->second);
-            grindMobs.push_back(gLoc);
+
+            for (auto flag : allowedNpcFlags)
+            {
+                if ((cInfo->NpcFlags & flag) != 0)
+                {
+                    rLoc = new RpgTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+                    rLoc->setExpireDelay(5 * 60 * 1000);
+
+                    pointsMap.insert_or_assign(u.guid, point);
+                    rLoc->addPoint(&pointsMap.find(u.guid)->second);
+                    rpgNpcs.push_back(rLoc);
+                    break;
+                }
+            }
+
+            if (cInfo->MinLootGold > 0)
+            {
+                gLoc = new GrindTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+                gLoc->setExpireDelay(5 * 60 * 1000);
+
+                point = GuidPosition(u.guid, WorldPosition(u.map, u.x, u.y, u.z, u.o));
+                pointsMap.insert_or_assign(u.guid, point);
+                gLoc->addPoint(&pointsMap.find(u.guid)->second);
+                grindMobs.push_back(gLoc);
+            }
+
+            if (cInfo->Rank == 3 || (cInfo->Rank == 1 && !point.isOverworld() && u.c == 1))
+            {
+                string nodeName = cInfo->Name;
+
+                bLoc = new BossTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+                bLoc->setExpireDelay(5 * 60 * 1000);
+
+                pointsMap.insert_or_assign(u.guid, point);
+                bLoc->addPoint(&pointsMap.find(u.guid)->second);
+                bossMobs.push_back(bLoc);
+            }
         }
-
-        if (cInfo->Rank == 3 || (cInfo->Rank == 1 && !point.isOverworld() && u.c == 1))
+        else
         {
-            string nodeName = cInfo->Name;
+            GameObjectInfo const* gInfo = ObjectMgr::GetGameObjectInfo(u.entry);
 
-            bLoc = new BossTravelDestination(u.entry, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
-            bLoc->setExpireDelay(5 * 60 * 1000);
+            if (!gInfo)
+                continue;
 
-            pointsMap.insert_or_assign(u.guid, point);
-            bLoc->addPoint(&pointsMap.find(u.guid)->second);
-            bossMobs.push_back(bLoc);
+            if (gInfo->ExtraFlags & CREATURE_EXTRA_FLAG_INVISIBLE)
+                continue;
+
+            vector<uint32> allowedGoTypes;
+
+            allowedGoTypes.push_back(GAMEOBJECT_TYPE_MAILBOX);
+
+            point = GuidPosition(u.guid, WorldPosition(u.map, u.x, u.y, u.z, u.o));
+
+            for (auto type : allowedGoTypes)
+            {
+                if (gInfo->type == type)
+                {
+                    rLoc = new RpgTravelDestination(u.entry * -1, sPlayerbotAIConfig.tooCloseDistance, sPlayerbotAIConfig.sightDistance);
+                    rLoc->setExpireDelay(5 * 60 * 1000);
+
+                    pointsMap.insert_or_assign(u.guid, point);
+                    rLoc->addPoint(&pointsMap.find(u.guid)->second);
+                    rpgNpcs.push_back(rLoc);
+                    break;
+                }
+            }
         }
     }
 

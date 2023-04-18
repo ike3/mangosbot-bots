@@ -43,24 +43,14 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     //Enpty bags/repair
     if (!foundTarget && urand(1, 100) > 10)                                  //90% chance
     {
-        if (AI_VALUE2(bool, "group or", "should sell,can sell,following party,near leader") || AI_VALUE2(bool, "group or", "should repair,can repair,following party,near leader"))
+        if (AI_VALUE2(bool, "group or", "should sell,can sell,following party,near leader") || 
+            AI_VALUE2(bool, "group or", "should repair,can repair,following party,near leader") || 
+            AI_VALUE(bool, "can get mail") || 
+            (AI_VALUE2(bool, "group or", "should sell,can ah sell,following party,near leader") && bot->GetLevel() > 5))
         {
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetRpgTarget1", &context->performanceStack);
             foundTarget = SetRpgTarget(newTarget);                           //Go to town to sell items or repair
             if (pmo) pmo->finish();
-        }
-        else if (AI_VALUE2(bool, "group or", "should sell,can ah sell,following party,near leader") && bot->GetLevel() > 5)
-        {
-            PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetNpcFlagTarget1", &context->performanceStack);
-            foundTarget = SetNpcFlagTarget(newTarget, { UNIT_NPC_FLAG_AUCTIONEER });
-            if (pmo) pmo->finish();
-
-            if (!foundTarget)
-            {
-                PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetRpgTarget2", &context->performanceStack);
-                foundTarget = SetRpgTarget(newTarget);                           //Go to town to sell items or repair
-                if (pmo) pmo->finish();
-            }
         }
     }
 
@@ -284,6 +274,10 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
             out << "selling items";
         else if (AI_VALUE2(bool, "group or", "should repair,can repair"))
             out << "repairing";
+        else if (AI_VALUE2(bool, "group or", "should sell,can ah sell"))
+            out << "auctioning";
+        else if (AI_VALUE(bool, "can get mail"))
+            out << "mailing";
         else
             out << "rpg";
 
@@ -779,7 +773,7 @@ bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPC
     //Loop over all npcs.
     for (auto& d : sTravelMgr.getRpgTravelDestinations(bot, true, true))
     {
-        if (!d->getEntry())
+        if (d->getEntry() <= 0)
             continue;
 
         CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(d->getEntry());
@@ -862,6 +856,48 @@ bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPC
 
     return true; //Flag targets are always inactive for now.
 }
+
+bool ChooseTravelTargetAction::SetGOTypeTarget(TravelTarget* target, GameobjectTypes type, string name)
+{
+    WorldPosition pos = WorldPosition(bot);
+    WorldPosition* botPos = &pos;
+
+    vector<TravelDestination*> TravelDestinations;
+
+    //Loop over all npcs.
+    for (auto& d : sTravelMgr.getRpgTravelDestinations(bot, true, true))
+    {
+        if (d->getEntry() >= 0)
+            continue;
+
+        GameObjectInfo const* gInfo = ObjectMgr::GetGameObjectInfo(-1 * d->getEntry());
+
+        if (!gInfo)
+            continue;
+
+        //Check if the object has any of the required type.
+        if(gInfo->type != type)
+
+        //Check if the npc has (part of) the required name.
+        if (!name.empty() && !strstri(gInfo->name, name.c_str()))
+            continue;        
+
+        TravelDestinations.push_back(d);
+    }
+
+    if (ai->HasStrategy("debug travel", BotState::BOT_STATE_NON_COMBAT))
+        ai->TellMasterNoFacing(to_string(TravelDestinations.size()) + " go type targets found.");
+
+    SetBestTarget(target, TravelDestinations);
+
+    if (!target->getDestination())
+        return false;
+
+    target->setForced(true);
+
+    return true; //Flag targets are always inactive for now.
+}
+
 
 bool ChooseTravelTargetAction::SetNullTarget(TravelTarget* target)
 {

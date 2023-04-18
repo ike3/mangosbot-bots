@@ -177,6 +177,7 @@ namespace ai
         virtual bool isActive(Player* bot);
 
         virtual CreatureInfo const* getCreatureInfo() { return ObjectMgr::GetCreatureTemplate(entry); }
+        virtual GameObjectInfo const* getGoInfo() { return ObjectMgr::GetGameObjectInfo(-1*entry); }
         virtual string getName() { return "RpgTravelDestination"; }
         virtual int32 getEntry() { return entry; }
         virtual string getTitle();
