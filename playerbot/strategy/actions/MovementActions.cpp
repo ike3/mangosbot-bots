@@ -1653,11 +1653,14 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
 
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
     {
-        ChaseMovementGenerator* chase = (ChaseMovementGenerator*)bot->GetMotionMaster()->GetCurrent();
-
-        if (sServerFacade.GetChaseTarget(bot) == obj && sServerFacade.GetChaseOffset(bot) == distance)
+        if (!bot->IsStopped() &&
+            sServerFacade.GetChaseTarget(bot) == obj && 
+            sServerFacade.GetChaseOffset(bot) == distance)
+        {
             return true;
+        }
     }
+
     mm.Clear(false, true);
     mm.MoveChase((Unit*)obj, distance, angle);
     float dist = sServerFacade.GetDistance2d(bot, obj);
