@@ -34,6 +34,6 @@ void DeadStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("repop", relevance+1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "location stuck",
+        "move long stuck",
         NextAction::array(0, new NextAction("repop", relevance+1), NULL)));
 }

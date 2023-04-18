@@ -20,7 +20,7 @@ namespace ai
         virtual GuidPosition guidP() { return AI_VALUE(GuidPosition, "rpg target"); }
         virtual ObjectGuid guid() { return (ObjectGuid)guidP(); }        
         void Update() {GuidPosition p = guidP(); p.updatePosition(); if (p != guidP()) SET_AI_VALUE(GuidPosition, "rpg target", p);}
-        virtual bool InRange() { return guidP() ? (guidP().sqDistance2d(bot) < INTERACTION_DISTANCE * INTERACTION_DISTANCE) : false; }
+        virtual bool InRange() { return guidP() ? (guidP().sqDistance2d(bot) < INTERACTION_DISTANCE * INTERACTION_DISTANCE * 1.5) : false; }
         void setDelay(bool waitForGroup);
     private:
         void setFacingTo(GuidPosition guidPosition);

@@ -46,7 +46,7 @@ namespace ai
     class RpgTrigger : public FarFromRpgTargetTrigger
     {
     public:
-        RpgTrigger(PlayerbotAI* ai, string name = "sub rpg", int checkInterval = 2) : FarFromRpgTargetTrigger(ai, name, checkInterval) {}
+        RpgTrigger(PlayerbotAI* ai, string name = "rpg", int checkInterval = 2) : FarFromRpgTargetTrigger(ai, name, checkInterval) {}
 
         GuidPosition getGuidP() { return AI_VALUE(GuidPosition, "rpg target"); }
 
