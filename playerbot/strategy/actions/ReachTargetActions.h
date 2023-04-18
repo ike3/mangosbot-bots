@@ -15,7 +15,7 @@ namespace ai
     public:
         ReachTargetAction(PlayerbotAI* ai, string name, float range = 0.0f) : MovementAction(ai, name), Qualified(), range(range), spellName("") {}
 
-        void Qualify(string qualifier)
+        virtual void Qualify(string qualifier)
         {
             Qualified::Qualify(qualifier);
 
@@ -154,6 +154,15 @@ namespace ai
             {
                 range = strategy->GetRange();
             }
+        }
+
+        void Qualify(string qualifier) override
+        {
+            ReachTargetAction::Qualify(qualifier);
+
+            // Reduce the range slightly for a more accurate pull (moving targets can get out of reach)
+            const float threshold = 5.0f;
+            range = range > threshold ? range - threshold : range;
         }
 
         string GetTargetName() override { return "pull target"; }
