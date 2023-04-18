@@ -298,7 +298,7 @@ bool PlayerbotAIConfig::Initialize()
     }
 
     botCheats.clear();
-    LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.BotCheats", "taxi,item"), botCheats);
+    LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.BotCheats", "taxi,item,breath"), botCheats);
 
     botCheatMask = 0;
 
@@ -314,7 +314,16 @@ bool PlayerbotAIConfig::Initialize()
         botCheatMask |= (uint32)BotCheatMask::power;
     if (std::find(botCheats.begin(), botCheats.end(), "item") != botCheats.end())
         botCheatMask |= (uint32)BotCheatMask::item;
-
+    if (std::find(botCheats.begin(), botCheats.end(), "cooldown") != botCheats.end())
+        botCheatMask |= (uint32)BotCheatMask::cooldown;
+    if (std::find(botCheats.begin(), botCheats.end(), "repair") != botCheats.end())
+        botCheatMask |= (uint32)BotCheatMask::repair;
+    if (std::find(botCheats.begin(), botCheats.end(), "movespeed") != botCheats.end())
+        botCheatMask |= (uint32)BotCheatMask::movespeed;
+    if (std::find(botCheats.begin(), botCheats.end(), "attackspeed") != botCheats.end())
+        botCheatMask |= (uint32)BotCheatMask::attackspeed;
+    if (std::find(botCheats.begin(), botCheats.end(), "breath") != botCheats.end())
+        botCheatMask |= (uint32)BotCheatMask::breath;
 
     LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.AllowedLogFiles", ""), allowedLogFiles);
     LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.DebugFilter", "add gathering loot,check values,emote,check mount state"), debugFilter);

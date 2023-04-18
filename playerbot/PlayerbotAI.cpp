@@ -336,6 +336,10 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             bot->UpdateSpeed(MOVE_RUN, true, 10);
             bot->UpdateSpeed(MOVE_SWIM, true, 10);
         }
+        if (HasCheat(BotCheatMask::breath))
+        {
+            bot->SetWaterBreathingIntervalMultiplier(0);
+        }
     }
 
     if (master && IsSafe(master) && bot->GetDistance(master) < INTERACTION_DISTANCE * 2.5 && master->GetTransport() != bot->GetTransport())

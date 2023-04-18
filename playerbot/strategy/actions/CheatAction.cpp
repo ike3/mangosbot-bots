@@ -49,7 +49,7 @@ bool CheatAction::Execute(Event& event)
 
 BotCheatMask CheatAction::GetCheatMask(string cheat)
 {
-    vector<string> cheatName = { "taxi", "gold", "health", "mana", "power", "item", "cooldown", "repair", "movespeed", "attackspeed", "maxMask"};
+    vector<string> cheatName = { "taxi", "gold", "health", "mana", "power", "item", "cooldown", "repair", "movespeed", "attackspeed", "breath", "maxMask"};
     for (int i = 0; i < log2((uint32)BotCheatMask::maxMask); i++)
     {
         if (cheatName[i] == cheat)
@@ -61,7 +61,7 @@ BotCheatMask CheatAction::GetCheatMask(string cheat)
 
 string CheatAction::GetCheatName(BotCheatMask cheatMask)
 {
-    vector<string> cheatName = { "taxi", "gold", "health", "mana", "power", "item", "cooldown", "repair", "movespeed", "attackspeed", "maxMask" };
+    vector<string> cheatName = { "taxi", "gold", "health", "mana", "power", "item", "cooldown", "repair", "movespeed", "attackspeed", "breath", "maxMask" };
     return cheatName[log2(((uint32)cheatMask))];
 }
 
