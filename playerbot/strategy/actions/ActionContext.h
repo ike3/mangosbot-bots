@@ -193,6 +193,7 @@ namespace ai
             creators["use bandage"] = &ActionContext::use_bandage;
             creators["rocket boots"] = &ActionContext::rocket_boots;
             creators["fire protection potion"] = &ActionContext::fire_protection_potion;
+            creators["free action potion"] = &ActionContext::free_action_potion;
 
             // BG Tactics
             creators["bg tactics"] = &ActionContext::bg_tactics;
@@ -439,6 +440,7 @@ namespace ai
         static Action* use_bandage(PlayerbotAI* ai) { return new UseBandageAction(ai); }
         static Action* rocket_boots(PlayerbotAI* ai) { return new UseRocketBootsAction(ai); }
         static Action* fire_protection_potion(PlayerbotAI* ai) { return new UseFireProtectionPotionAction(ai); }
+        static Action* free_action_potion(PlayerbotAI* ai) { return new UseFreeActionPotionAction(ai); }
         
         // BG Tactics
         static Action* bg_tactics(PlayerbotAI* ai) { return new BGTactics(ai); }

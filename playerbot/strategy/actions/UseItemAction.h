@@ -351,4 +351,27 @@ namespace ai
 
         virtual uint32 GetItemId() override { return 13457; }
     };
+
+    class UseFreeActionPotionAction : public UseItemIdAction
+    {
+    public:
+        UseFreeActionPotionAction(PlayerbotAI* ai) : UseItemIdAction(ai, "free action potion") {}
+
+        virtual bool isUseful() override
+        {
+            if (bot->GetLevel() < 20 || bot->HasAura(6615))
+                return false;
+
+            Unit* target = AI_VALUE(Unit*, "current target");
+            if (!target || !target->IsPlayer())
+                return false;
+
+            if (!bot->InBattleGround() && urand(0, 1))
+                return false;
+
+            return true;
+        }
+
+        virtual uint32 GetItemId() override { return 5634; }
+    };
 }
