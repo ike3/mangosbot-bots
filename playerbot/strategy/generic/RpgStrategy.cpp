@@ -64,7 +64,7 @@ void RpgStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("rpg emote", 1.001f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "has rpg target",
+        "rpg",
         NextAction::array(0, new NextAction("rpg cancel", 1.001f), NULL)));
 
     triggers.push_back(new TriggerNode(
