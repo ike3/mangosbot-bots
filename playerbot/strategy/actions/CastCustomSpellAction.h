@@ -14,7 +14,7 @@ namespace ai
         virtual uint32 getDuration() const { return 3000U; }
 
     private:
-        bool CastSummon(std::string command);
+        bool CastSummonPlayer(std::string command);
 
     protected:
         bool ncCast = false;
