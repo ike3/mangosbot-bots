@@ -77,7 +77,7 @@ bool AutoShareQuestAction::Execute(Event& event)
 
             if (player->GetPlayerbotAI())
             {
-                if (PAI_VALUE(uint8, "free quest log slots") < 15)
+                if (PAI_VALUE(uint8, "free quest log slots") < 15 || !urand(0,5))
                 {
                     WorldPacket packet(CMSG_PUSHQUESTTOPARTY, 20);
                     packet << logQuest;
