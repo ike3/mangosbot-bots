@@ -1,6 +1,5 @@
 #pragma once
 #include "botpch.h"
-#include "Mail.h"
 #include "../../playerbot.h"
 #include "RpgTriggers.h"
 #include "../../PlayerbotAIConfig.h"
@@ -439,6 +438,11 @@ bool RpgQueueBGTrigger::IsActive()
         return false;
 
     if (AI_VALUE(BattleGroundTypeId, "rpg bg type") == BATTLEGROUND_TYPE_NONE)
+        return false;
+
+    Action* action = context->GetAction("free bg join");
+
+    if (!action->isUseful())
         return false;
 
     return true;

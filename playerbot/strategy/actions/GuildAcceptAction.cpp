@@ -61,6 +61,8 @@ bool GuildAcceptAction::Execute(Event& event)
     if (accept)
     {
         bot->GetSession()->HandleGuildAcceptOpcode(packet);
+
+        sPlayerbotAIConfig.logEvent(ai, "GuildAcceptAction", guild->GetName(), to_string(guild->GetMemberSize()));
     }
     else
     {

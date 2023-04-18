@@ -455,6 +455,25 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
                     movePosition = endPosition;
                 }
+                else if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                {
+                    vector<WorldPosition> beginPath = endPosition.getPathFromPath({ startPosition }, bot, 40);
+                    TravelNodeRoute route = sTravelNodeMap.getRoute(startPosition, endPosition, beginPath, bot);       
+
+                    string routeList;
+
+                    for (auto node : route.getNodes())
+                    {
+                        routeList += node->getName() + "-";
+                    }
+
+                    if (!routeList.empty())
+                        ai->TellMasterNoFacing(routeList);
+
+                    route.cleanTempNodes();                 
+
+                    sTravelNodeMap.m_nMapMtx.unlock_shared();
+                }
             }
             else
             {
@@ -1538,7 +1557,7 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         return false;
     }
 
-    if (!obj || obj == bot || bot->GetMapId() != obj->GetMapId())
+    if (!ai->IsSafe(obj))
         return false;
 
 #ifdef MANGOSBOT_TWO
@@ -1578,6 +1597,10 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
     const Vector3 targetPoint = targetPosition.getVector3();
 
     const float distanceToTarget = botPosition.distance(targetPosition);
+
+    if (distanceToTarget > sPlayerbotAIConfig.sightDistance)
+        return MoveTo(targetPosition.getMapId(), targetPosition.getX(), targetPosition.getY(), targetPosition.getZ());
+
     const Vector3 directionToTarget = (targetPoint - botPoint).directionOrZero();
     const Vector3 endPoint = botPoint + (directionToTarget * std::min(distance, distanceToTarget));
     WorldPosition endPosition(obj->GetMapId(), endPoint.x, endPoint.y, endPoint.z);

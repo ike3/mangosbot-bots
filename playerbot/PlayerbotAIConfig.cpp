@@ -409,10 +409,10 @@ bool PlayerbotAIConfig::Initialize()
     freeFood = config.GetBoolDefault("AiPlayerbot.FreeFood", true);
     talentsInPublicNote = config.GetBoolDefault("AiPlayerbot.TalentsInPublicNote", false);
     freeFood = config.GetBoolDefault("AiPlayerbot.FreeFood", true);
-    respawnModNeutral = config.GetFloatDefault("AiPlayerbot.RespawnModNeutral", 0.0f);
-    respawnModHostile = config.GetFloatDefault("AiPlayerbot.RespawnModHostile", 0.0f);
-    respawnModThreshold = config.GetIntDefault("AiPlayerbot.RespawnModThreshold", 9999);
-    respawnModMax = config.GetIntDefault("AiPlayerbot.RespawnModMax", 0);
+    respawnModNeutral = config.GetFloatDefault("AiPlayerbot.RespawnModNeutral", 10.0f);
+    respawnModHostile = config.GetFloatDefault("AiPlayerbot.RespawnModHostile", 5.0f);
+    respawnModThreshold = config.GetIntDefault("AiPlayerbot.RespawnModThreshold", 10);
+    respawnModMax = config.GetIntDefault("AiPlayerbot.RespawnModMax", 18);
     respawnModForPlayerBots = config.GetBoolDefault("AiPlayerbot.RespawnModForPlayerBots", false);
     respawnModForInstances = config.GetBoolDefault("AiPlayerbot.RespawnModForInstances", false);
 
@@ -811,3 +811,19 @@ void PlayerbotAIConfig::logEvent(PlayerbotAI* ai, string eventName, ObjectGuid g
 
     logEvent(ai, eventName, info1, info2);
 };
+
+bool PlayerbotAIConfig::CanLogAction(PlayerbotAI* ai, string actionName, bool isExecute)
+{
+    bool forRpg = (actionName.find("rpg") == 0) && ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT);
+
+    if (!forRpg)
+    {
+        if (isExecute && !ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
+            return false;
+
+        if (!isExecute && !ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT))
+            return false;
+    }
+
+    return std::find(debugFilter.begin(), debugFilter.end(), actionName) == debugFilter.end(); 
+}

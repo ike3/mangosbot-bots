@@ -666,6 +666,8 @@ bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool newQues
 {
     vector<TravelDestination*> TravelDestinations;
 
+    bool onlyClassQuest = !urand(0, 10);
+
     if (newQuests)
     {
         PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "getQuestTravelDestinations1", &context->performanceStack);
@@ -689,16 +691,27 @@ bool ChooseTravelTargetAction::SetQuestTarget(TravelTarget* target, bool newQues
             uint32 questId = quest.first;
             QuestStatusData* questStatus = &quest.second;
 
-            if (!activeQuests && !bot->CanRewardQuest(sObjectMgr.GetQuestTemplate(questId), false))
+            Quest const* questTemplate = sObjectMgr.GetQuestTemplate(questId);
+
+            if (!activeQuests && !bot->CanRewardQuest(questTemplate, false))
                 continue;
 
-            if (!completedQuests && bot->CanRewardQuest(sObjectMgr.GetQuestTemplate(questId), false))
+            if (!completedQuests && bot->CanRewardQuest(questTemplate, false))
                 continue;
 
             //Find quest takers or objectives
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "getQuestTravelDestinations2", &context->performanceStack);
             vector<TravelDestination*> questDestinations = sTravelMgr.getQuestTravelDestinations(bot, questId, true, false,0);
             if(pmo) pmo->finish();
+
+            if (onlyClassQuest && TravelDestinations.size() && questDestinations.size()) //Only do class quests if we have any.
+            {
+                if (TravelDestinations.front()->GetQuestTemplate()->GetRequiredClasses() && !questTemplate->GetRequiredClasses())
+                    continue;
+
+                if (!TravelDestinations.front()->GetQuestTemplate()->GetRequiredClasses() && questTemplate->GetRequiredClasses())
+                    TravelDestinations.clear();
+            }
 
             TravelDestinations.insert(TravelDestinations.end(), questDestinations.begin(), questDestinations.end());
         }

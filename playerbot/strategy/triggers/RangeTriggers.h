@@ -295,7 +295,7 @@ namespace ai
     class OutOfReactRangeTrigger : public FarFromMasterTrigger
     {
     public:
-        OutOfReactRangeTrigger(PlayerbotAI* ai,string name = "out of react range", float distance = sPlayerbotAIConfig.reactDistance, int checkInterval = 5) : FarFromMasterTrigger(ai, name, distance, checkInterval) {}
+        OutOfReactRangeTrigger(PlayerbotAI* ai,string name = "out of react range", float distance = sPlayerbotAIConfig.reactDistance, int checkInterval = 2) : FarFromMasterTrigger(ai, name, distance, checkInterval) {}
     };
 
     class NotNearMasterTrigger : public OutOfReactRangeTrigger

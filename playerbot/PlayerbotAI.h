@@ -451,7 +451,7 @@ public:
 
     //Check if player is safe to use.
     bool IsSafe(Player* player) { return player && player->GetMapId() == bot->GetMapId() && player->GetInstanceId() == bot->GetInstanceId() && !player->IsBeingTeleported(); }
-    bool IsSafe(Unit* unit) { return unit && unit->GetMapId() == bot->GetMapId() && (!unit->IsPlayer() || !((Player*)unit)->IsBeingTeleported()); }
+    bool IsSafe(WorldObject* obj) { return obj && obj->GetMapId() == bot->GetMapId() && obj->GetInstanceId() == bot->GetInstanceId() && (!obj->IsPlayer() || !((Player*)obj)->IsBeingTeleported()); }
 
     //Returns a semi-random (cycling) number that is fixed for each bot.
     uint32 GetFixedBotNumer(BotTypeNumber typeNumber, uint32 maxNum = 100, float cyclePerMin = 1); 
