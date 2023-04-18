@@ -125,6 +125,9 @@ void PlayerbotHelpMgr::LoadStrategies(string className, AiObjectContext* context
 
         Strategy* strategy = context->GetStrategy(strategyName);
 
+        if (!strategy)
+            sLog.outError("Strategy %s is defined but can not be created.", strategyName.c_str());
+
         if (className != "generic" && IsGenericSupported(strategy))
             continue;
 
@@ -143,6 +146,9 @@ void PlayerbotHelpMgr::LoadStrategies(string className, AiObjectContext* context
                 {
                     Trigger* trigger = context->GetTrigger(triggerNode->getName());
 
+                    if (!trigger)
+                        sLog.outError("Trigger %s is used in strategy %s but can not be created.", triggerNode->getName().c_str(), strategyName.c_str());
+
                     if (trigger)
                     {
                         triggerNode->setTrigger(trigger);
@@ -159,6 +165,10 @@ void PlayerbotHelpMgr::LoadStrategies(string className, AiObjectContext* context
                         for (auto nextAction : nextActionList)
                         {
                             Action* action = context->GetAction(nextAction->getName());
+
+                            if (!action)
+                                sLog.outError("Action %s is defined in strategy %s for trigger %s but can not be created.", nextAction->getName().c_str(), strategyName.c_str(), triggerNode->getName().c_str());
+
                             if (action)
                             {
                                 classMap[className][strategy][state][trigger][action] = nextAction->getRelevance();
@@ -181,6 +191,10 @@ void PlayerbotHelpMgr::LoadStrategies(string className, AiObjectContext* context
                 for (auto nextAction : nextActionList)
                 {
                     Action* action = context->GetAction(nextAction->getName());
+
+                    if (!action)
+                        sLog.outError("Default action %s is defined in strategy %s but can not be created.", action->getName().c_str(), strategyName.c_str());
+
                     if (action)
                     {
                         classMap[className][strategy][state][nullptr][action] = nextAction->getRelevance();
