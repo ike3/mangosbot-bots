@@ -458,6 +458,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 else if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
                 {
                     vector<WorldPosition> beginPath = endPosition.getPathFromPath({ startPosition }, bot, 40);
+                    sTravelNodeMap.m_nMapMtx.lock_shared();
                     TravelNodeRoute route = sTravelNodeMap.getRoute(startPosition, endPosition, beginPath, bot);       
 
                     string routeList;
