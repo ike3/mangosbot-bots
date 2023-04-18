@@ -91,7 +91,7 @@ void RpgHelper::resetFacing(GuidPosition guidPosition)
 
 void RpgHelper::setDelay(bool waitForGroup)
 {
-    if ((!ai->HasRealPlayerMaster() && !bot->GetGroup()) || (bot->GetGroup()->IsLeader(bot->GetObjectGuid()) && waitForGroup))
+    if ((!ai->HasRealPlayerMaster() && !bot->GetGroup()) || (bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetObjectGuid()) && waitForGroup))
         ai->SetActionDuration(sPlayerbotAIConfig.rpgDelay);       
     else
         ai->SetActionDuration(sPlayerbotAIConfig.rpgDelay / 5);
