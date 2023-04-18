@@ -237,20 +237,20 @@ bool LootObject::IsLootPossible(Player* bot)
     if (!AI_VALUE2_LAZY(bool, "should loot object", to_string(guid.GetRawValue())))
         return false;
 
-    if (skillId == SKILL_NONE)
+
+    if (guid.IsGameObject())
     {
-        if (guid.IsGameObject())
+        GameObject* go = ai->GetGameObject(guid);
+        if (go)
         {
-            GameObject* go = ai->GetGameObject(guid);
-            if (go)
-            {
-                if (sObjectMgr.IsGameObjectForQuests(guid.GetEntry())) //If object has quest loot bot needs the quest.
-                    if (!go->ActivateToQuest(bot))
-                        return false;
-            }
+            if (sObjectMgr.IsGameObjectForQuests(guid.GetEntry())) //If object has quest loot bot needs the quest.
+                if (!go->ActivateToQuest(bot))
+                    return false;
         }
-        return true;
     }
+
+    if (skillId == SKILL_NONE)
+        return true;
 
     if (skillId == SKILL_FISHING)
         return false;
