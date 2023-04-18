@@ -1546,7 +1546,7 @@ TravelPath TravelNodeMap::getFullPath(WorldPosition startPos, WorldPosition endP
 
     beginPath = endPos.getPathFromPath({ startPos }, bot, 40);
 
-    if (endPos.isPathTo(beginPath))
+    if (endPos.isPathTo(beginPath,sPlayerbotAIConfig.spellDistance)) //If we can get within spell distance a longer route won't help.
         return TravelPath(beginPath);
 
     //[[Node pathfinding system]]
