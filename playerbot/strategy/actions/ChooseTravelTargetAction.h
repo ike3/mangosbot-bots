@@ -31,8 +31,8 @@ namespace ai
         bool SetGrindTarget(TravelTarget* target);
         bool SetBossTarget(TravelTarget* target);
         bool SetExploreTarget(TravelTarget* target);
-        bool SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags, string name = "", vector<uint32> items = {});
-        bool SetGOTypeTarget(TravelTarget* target, GameobjectTypes type, string name = "");
+        bool SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags, string name = "", vector<uint32> items = {}, bool force = true);
+        bool SetGOTypeTarget(TravelTarget* target, GameobjectTypes type, string name = "", bool force = true);
         bool SetNullTarget(TravelTarget* target);
 
     public:

@@ -45,7 +45,6 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     {
         if (AI_VALUE2(bool, "group or", "should sell,can sell,following party,near leader") || 
             AI_VALUE2(bool, "group or", "should repair,can repair,following party,near leader") || 
-            AI_VALUE(bool, "can get mail") || 
             (AI_VALUE2(bool, "group or", "should sell,can ah sell,following party,near leader") && bot->GetLevel() > 5))
         {
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetRpgTarget1", &context->performanceStack);
@@ -90,26 +89,37 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     //Grind for money
     if (!foundTarget && AI_VALUE(bool, "should get money"))
     {
-        if (urand(1, 100) > 50) //50% Focus on active quests for money.
+        //Empty mail for money
+        if (AI_VALUE(bool, "can get mail"))
         {
-            {
-                PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetQuestTarget1", &context->performanceStack);
-                foundTarget = SetQuestTarget(newTarget, false, true, true);           //Turn in quests for money.
-                if(pmo) pmo->finish();
-            }
-
-            if (!foundTarget)
-            {
-                PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetQuestTarget2", &context->performanceStack);
-                foundTarget = SetQuestTarget(newTarget, true, false, false);      //Find new (low) level quests
-                if(pmo) pmo->finish();
-            }
+            PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetGoTarget1", &context->performanceStack);
+            foundTarget = SetGOTypeTarget(newTarget, GAMEOBJECT_TYPE_MAILBOX,"",false);  //Find a mailbox
+            if (pmo) pmo->finish();
         }
-        else
+
+        if (!foundTarget)
         {
-            PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetGrindTarget1", &context->performanceStack);
-            foundTarget = SetGrindTarget(newTarget);                               //Go grind mobs for money    
-            if(pmo) pmo->finish();
+            if (urand(1, 100) > 50) //50% Focus on active quests for money.
+            {
+                {
+                    PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetQuestTarget1", &context->performanceStack);
+                    foundTarget = SetQuestTarget(newTarget, false, true, true);           //Turn in quests for money.
+                    if (pmo) pmo->finish();
+                }
+
+                if (!foundTarget)
+                {
+                    PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetQuestTarget2", &context->performanceStack);
+                    foundTarget = SetQuestTarget(newTarget, true, false, false);      //Find new (low) level quests
+                    if (pmo) pmo->finish();
+                }
+            }
+            else
+            {
+                PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetGrindTarget1", &context->performanceStack);
+                foundTarget = SetGrindTarget(newTarget);                               //Go grind mobs for money    
+                if (pmo) pmo->finish();
+            }
         }
     }
 
@@ -120,6 +130,17 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
         PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetCurrentTarget", &context->performanceStack);
         foundTarget = SetCurrentTarget(newTarget, oldTarget);             //Extend current target.
         if(pmo) pmo->finish();
+    }
+
+    //Get mail
+    if (!foundTarget && urand(1, 100) > 10)                                  //90% chance
+    {
+        if (AI_VALUE(bool, "can get mail"))
+        {
+            PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetGoTarget2", &context->performanceStack);
+            foundTarget = SetGOTypeTarget(newTarget, GAMEOBJECT_TYPE_MAILBOX, "", false);  //Find a mailbox
+            if (pmo) pmo->finish();
+        }
     }
 
     //Dungeon in group.
@@ -151,7 +172,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     if (!foundTarget && urand(1, 100) > 50)                                 //50% chance
     {
         {
-            PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetRpgTarget3", &context->performanceStack);
+            PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "SetRpgTarget2", &context->performanceStack);
             foundTarget = SetRpgTarget(newTarget);
             if (foundTarget)
                 newTarget->setForced(true);
@@ -763,7 +784,7 @@ bool ChooseTravelTargetAction::SetExploreTarget(TravelTarget* target)
 
 char* strstri(const char* haystack, const char* needle);
 
-bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags, string name, vector<uint32> items)
+bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags, string name, vector<uint32> items, bool force)
 {
     WorldPosition pos = WorldPosition(bot);
     WorldPosition* botPos = &pos;
@@ -847,17 +868,21 @@ bool ChooseTravelTargetAction::SetNpcFlagTarget(TravelTarget* target, vector<NPC
     if (ai->HasStrategy("debug travel", BotState::BOT_STATE_NON_COMBAT))
         ai->TellMasterNoFacing(to_string(TravelDestinations.size()) + " npc flag targets found.");
 
-    SetBestTarget(target, TravelDestinations);
+    bool isActive = SetBestTarget(target, TravelDestinations);
 
     if (!target->getDestination())
         return false;
 
-    target->setForced(true);
+    if (force)
+    {
+        target->setForced(true);
+        return true;
+    }
 
-    return true; //Flag targets are always inactive for now.
+    return isActive;
 }
 
-bool ChooseTravelTargetAction::SetGOTypeTarget(TravelTarget* target, GameobjectTypes type, string name)
+bool ChooseTravelTargetAction::SetGOTypeTarget(TravelTarget* target, GameobjectTypes type, string name, bool force)
 {
     WorldPosition pos = WorldPosition(bot);
     WorldPosition* botPos = &pos;
@@ -876,7 +901,8 @@ bool ChooseTravelTargetAction::SetGOTypeTarget(TravelTarget* target, GameobjectT
             continue;
 
         //Check if the object has any of the required type.
-        if(gInfo->type != type)
+        if (gInfo->type != type)
+            continue;
 
         //Check if the npc has (part of) the required name.
         if (!name.empty() && !strstri(gInfo->name, name.c_str()))
@@ -888,14 +914,18 @@ bool ChooseTravelTargetAction::SetGOTypeTarget(TravelTarget* target, GameobjectT
     if (ai->HasStrategy("debug travel", BotState::BOT_STATE_NON_COMBAT))
         ai->TellMasterNoFacing(to_string(TravelDestinations.size()) + " go type targets found.");
 
-    SetBestTarget(target, TravelDestinations);
+    bool isActive = SetBestTarget(target, TravelDestinations);
 
     if (!target->getDestination())
         return false;
 
-    target->setForced(true);
+    if (force)
+    {
+        target->setForced(true);
+        return true;
+    }
 
-    return true; //Flag targets are always inactive for now.
+    return isActive;
 }
 
 
