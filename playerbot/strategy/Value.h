@@ -107,9 +107,9 @@ namespace ai
     template<class T> class MemoryCalculatedValue : public CalculatedValue<T>
     {
     public:
-        MemoryCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) : CalculatedValue<T>(ai, name,checkInterval) { lastChangeTime = time(0); }
+        MemoryCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) : CalculatedValue<T>(ai, name,checkInterval) { lastChangeTime = 0; }
         virtual bool EqualToLast(T value) = 0;
-        virtual bool CanCheckChange() { return time(0) - lastChangeTime > minChangeInterval && !EqualToLast(this->value); }
+        virtual bool CanCheckChange() { return !lastChangeTime || (time(0) - lastChangeTime > minChangeInterval && !EqualToLast(this->value)); }
         virtual bool UpdateChange() { if (!CanCheckChange()) return false; lastChangeTime = time(0); lastValue = this->value; return true; }
 
         virtual void Set(T value) { CalculatedValue<T>::Set(value); UpdateChange(); }
