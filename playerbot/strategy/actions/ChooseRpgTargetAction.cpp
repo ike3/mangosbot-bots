@@ -355,6 +355,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
     if (!guidP)
     {
+        RESET_AI_VALUE(set<ObjectGuid>&, "ignore rpg target");
         RESET_AI_VALUE(GuidPosition, "rpg target");
         return false;
     }
