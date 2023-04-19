@@ -183,6 +183,13 @@ namespace ai
                 return true;
             }
 
+            if (bot->duel && bot->duel->startTime - time(0) > 15 * MINUTE)
+            {
+                //sLog.outBasic("Bot #%d %s:%d <%s> was in combat for %d seconds", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
+
+                return true;
+            }
+
             return false;
         }
     };
@@ -208,9 +215,14 @@ namespace ai
 
             WorldPosition botPos(bot);
 
-            MemoryCalculatedValue<bool>* combatVal = dynamic_cast<MemoryCalculatedValue<bool>*>(context->GetUntypedValue("combat::self target"));
+            if (MEM_AI_VALUE(bool,"combat::self target")->LastChangeDelay() > 15 * MINUTE)
+            {
+                //sLog.outBasic("Bot #%d %s:%d <%s> was in combat for %d seconds", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
 
-            if (combatVal->LastChangeDelay() > 15 * MINUTE)
+                return true;
+            }
+
+            if (bot->duel && bot->duel->startTime - time(0) > 15 * MINUTE)
             {
                 //sLog.outBasic("Bot #%d %s:%d <%s> was in combat for %d seconds", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->getLevel(), bot->GetName(), posVal->LastChangeDelay());
 

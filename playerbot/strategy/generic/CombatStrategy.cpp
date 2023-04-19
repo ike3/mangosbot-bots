@@ -17,7 +17,7 @@ void CombatStrategy::InitCombatTriggers(list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "combat stuck",
-        NextAction::array(0, new NextAction("reset", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("reset", 0.7f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "combat long stuck",
