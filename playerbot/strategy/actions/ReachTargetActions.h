@@ -66,29 +66,34 @@ namespace ai
 
         virtual bool isUseful()
 		{
-            Unit* target = GetTarget();
-            if (!target)
-                return false;
-
-            // Do not move while casting
-            if (bot->IsNonMeleeSpellCasted(true))
-                return false;
-
             // Do not move if stay strategy is set
-            if(ai->HasStrategy("stay", ai->GetState()))
-                return false;
-
-            // Check if the spell for which the reach action is used for can be casted
-            if (!spellName.empty())
+            if (!ai->HasStrategy("stay", ai->GetState()))
             {
-                if (!ai->CanCastSpell(spellName, target, true, nullptr, true))
+                Unit* target = GetTarget();
+                if (target)
                 {
-                    return false;
+                    // Do not move while casting
+                    if (!bot->IsNonMeleeSpellCasted(true))
+                    {
+                        // Check if the spell for which the reach action is used for can be casted
+                        if (!spellName.empty() && !ai->CanCastSpell(spellName, target, true, nullptr, true))
+                        {
+                            return false;
+                        }
+
+                        // Force move if not in los
+                        if (bot->IsWithinLOSInMap(target, true))
+                        {
+                            // Check if the bot is already on the range required
+                            return bot->GetDistance(target, true, DIST_CALC_COMBAT_REACH) > range;
+                        }
+
+                        return true;
+                    }
                 }
             }
 
-            // Check if the bot is already on the range required
-            return bot->GetDistance(target, true, DIST_CALC_COMBAT_REACH) > range;
+            return false;
         }
 
         virtual string GetTargetName() { return "current target"; }
