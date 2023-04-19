@@ -291,16 +291,38 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
 
         out << " for ";
 
-        if (AI_VALUE2(bool, "group or", "should sell,can sell"))
-            out << "selling items";
-        else if (AI_VALUE2(bool, "group or", "should repair,can repair"))
-            out << "repairing";
-        else if (AI_VALUE2(bool, "group or", "should sell,can ah sell"))
-            out << "auctioning";
-        else if (AI_VALUE(bool, "can get mail"))
-            out << "mailing";
+        if (RpgDestination->getEntry() > 0)
+        {
+            CreatureInfo const* cInfo = RpgDestination->getCreatureInfo();
+
+            if (cInfo)
+            {
+                if ((cInfo->NpcFlags & UNIT_NPC_FLAG_VENDOR ) && AI_VALUE2(bool, "group or", "should sell,can sell"))
+                    out << "selling items";
+                else if ((cInfo->NpcFlags & UNIT_NPC_FLAG_REPAIR) && AI_VALUE2(bool, "group or", "should repair,can repair"))
+                    out << "repairing";
+                else if ((cInfo->NpcFlags & UNIT_NPC_FLAG_AUCTIONEER) && AI_VALUE2(bool, "group or", "should sell,can ah sell"))
+                    out << "posting items on the auctionhouse";
+                else
+                    out << "rpg";
+            }
+            else
+                out << "rpg";
+        }
         else
-            out << "rpg";
+        {
+            GameObjectInfo const* gInfo = RpgDestination->getGoInfo();
+
+            if (gInfo)
+            {
+                if (gInfo->type == GAMEOBJECT_TYPE_MAILBOX && AI_VALUE(bool, "can get mail"))
+                    out << "getting mail";
+                else
+                    out << "rpg";
+            }
+            else
+                out << "rpg";
+        }
 
         out << " to " << RpgDestination->getTitle();        
     }
