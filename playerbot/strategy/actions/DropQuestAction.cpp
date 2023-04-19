@@ -110,7 +110,7 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
         if (!quest)
             continue;
 
-        if (quest->GetRequiredClasses() && (quest->GetRewSpellCast() || quest->GetRewSpell())) //Do not drop class specific quests that learn spells.
+        if (quest->GetRequiredClasses()) //Do not drop class specific quests
             continue;
 
         if (wantNum == 100)
@@ -150,7 +150,7 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
 
         numQuest--;
 
-        ai->TellMaster(BOT_TEXT("quest_remove") + chat->formatQuest(quest), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellMaster(BOT_TEXT("quest_remove") + " " + chat->formatQuest(quest), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }
 
