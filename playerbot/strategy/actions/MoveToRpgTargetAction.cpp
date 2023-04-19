@@ -201,7 +201,7 @@ bool MoveToRpgTargetAction::Execute(Event& event)
 
 bool MoveToRpgTargetAction::isUseful()
 {
-    GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");
+    GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target"), p=guidP;
 
     if (!guidP)
         return false;
@@ -228,6 +228,9 @@ bool MoveToRpgTargetAction::isUseful()
         return false;
 
     guidP.updatePosition();
+
+    if(p != guidP)
+        SET_AI_VALUE(GuidPosition, "rpg target", guidP);
 
     if (guidP.distance(bot) < INTERACTION_DISTANCE)
         return false;

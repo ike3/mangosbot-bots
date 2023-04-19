@@ -88,7 +88,7 @@ namespace ai
     public:
         RpgCancelAction(PlayerbotAI* ai, string name = "rpg cancel") : RpgSubAction(ai, name) {}
 
-        virtual bool isUseful() { rpg->Update(); return rpg->InRange(); }
+        virtual bool isUseful() { return rpg->InRange(); }
 
         virtual bool Execute(Event& event) { rpg->OnCancel();  AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target")); RESET_AI_VALUE(GuidPosition, "rpg target"); rpg->AfterExecute(false, false, ""); DoDelay(); return true; };
     };
