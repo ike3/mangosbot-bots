@@ -8,7 +8,7 @@ namespace ai
     public:
         NoRpgTargetTrigger(PlayerbotAI* ai, string name = "no rpg target", int checkInterval = 10) : Trigger(ai, name, checkInterval) {}
 
-        virtual bool IsActive() { return !AI_VALUE(GuidPosition, "rpg target"); };
+        virtual bool IsActive() { return !AI_VALUE(GuidPosition, "rpg target") || AI_VALUE2(float, "distance", "rpg target") > sPlayerbotAIConfig.reactDistance * 2; };
     };
 
     class HasRpgTargetTrigger : public NoRpgTargetTrigger
