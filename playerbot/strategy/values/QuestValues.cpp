@@ -460,3 +460,46 @@ uint32 DialogStatusValue::getDialogStatus(Player* bot, int32 questgiver, uint32 
 
 	return dialogStatus;
 }
+
+bool NeedQuestRewardValue::Calculate()
+{
+	uint32 questId = stoi(getQualifier());
+	Quest const* pQuest = sObjectMgr.GetQuestTemplate(questId);
+	for (uint8 i = 0; i < pQuest->GetRewChoiceItemsCount(); ++i)
+	{
+		ItemUsage usage = AI_VALUE2_LAZY(ItemUsage, "item usage", pQuest->RewChoiceItemId[i]);
+		if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_BAD_EQUIP)
+			return true;
+	}
+
+	return false;
+}
+
+bool NeedQuestObjectiveValue::Calculate()
+{
+	uint32 questId = getMultiQualifierInt(getQualifier(),0,",");
+	uint32 objective = getMultiQualifierInt(getQualifier(), 1, ",");
+	if (!bot->IsActiveQuest(questId))
+		return false;
+
+	if (bot->GetQuestStatus(questId) != QUEST_STATUS_INCOMPLETE)
+		return false;
+
+	QuestStatusData& questStatus = bot->getQuestStatusMap()[questId];
+
+	Quest const* pQuest = sObjectMgr.GetQuestTemplate(questId);
+
+	uint32  reqCount = pQuest->ReqItemCount[objective];
+	uint32  hasCount = questStatus.m_itemcount[objective];
+
+	if (reqCount && hasCount < reqCount)
+		return true;
+
+	reqCount = pQuest->ReqCreatureOrGOCount[objective];
+	hasCount = questStatus.m_creatureOrGOcount[objective];
+
+	if (reqCount && hasCount < reqCount)
+		return true;
+
+	return false;
+}

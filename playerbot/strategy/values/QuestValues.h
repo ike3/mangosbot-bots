@@ -173,6 +173,14 @@ namespace ai
         };
     };
 
+    //Has good reward
+    class NeedQuestRewardValue : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        NeedQuestRewardValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "need quest reward") {}
+        virtual bool Calculate();
+    };
+
     //Can hand in quest to npc
     class CanTurnInQuestValue : public BoolCalculatedValue, public Qualified
     {
@@ -200,5 +208,14 @@ namespace ai
         {
             return AI_VALUE2(uint32, "dialog status", getQualifier()) == DIALOG_STATUS_REWARD_REP;
         };
+    };
+
+    //Need objective
+    class NeedQuestObjectiveValue : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        NeedQuestObjectiveValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "need quest objective") {}
+
+        virtual bool Calculate();
     };
 }

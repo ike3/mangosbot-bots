@@ -55,6 +55,7 @@ string QuestTravelDestination::getTitle() {
 
 bool QuestRelationTravelDestination::isActive(Player* bot) {
     PlayerbotAI* ai = bot->GetPlayerbotAI();
+    AiObjectContext* context = ai->GetAiObjectContext();
     if(!ai->HasStrategy("rpg quest", BotState::BOT_STATE_NON_COMBAT))
         return false;
 
@@ -62,17 +63,14 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
     {
         if ((int32)questTemplate->GetQuestLevel() >= (int32)bot->GetLevel() + (int32)5)
             return false;
-        //if (questTemplate->XPValue(bot) == 0)
-        //    return false;
 
         if (getPoints().front()->getMapId() != bot->GetMapId()) //CanTakeQuest will check required conditions which will fail on a different map.
             if (questTemplate->GetRequiredCondition())          //So we skip this quest for now.
                 return false;
+
             
         if (!bot->GetMap()->IsContinent() || !bot->CanTakeQuest(questTemplate, false))
             return false;
-
-        AiObjectContext* context = ai->GetAiObjectContext();
 
         uint32 dialogStatus = sTravelMgr.getDialogStatus(bot, entry, questTemplate);
 
@@ -81,36 +79,13 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
             if (AI_VALUE(uint8, "free quest log slots") < 5)
                 return false;
 
-            if (dialogStatus != DIALOG_STATUS_AVAILABLE)
-            {
-#ifndef MANGOSBOT_TWO
-                if (dialogStatus != DIALOG_STATUS_CHAT)
-#else
-                if (dialogStatus != DIALOG_STATUS_LOW_LEVEL_AVAILABLE)
-#endif
-                {
-                    bool hasGoodReward = false;
-                    for (uint8 i = 0; i < questTemplate->GetRewChoiceItemsCount(); ++i)
-                    {
-                        ItemUsage usage = AI_VALUE2_LAZY(ItemUsage, "item usage", questTemplate->RewChoiceItemId[i]);
-                        if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE)
-                        {
-                            hasGoodReward = true;
-                            break;
-                        }
-                    }
-                    if (!hasGoodReward)
+            if (!AI_VALUE2(bool, "group or", "following party,near leader,can accept quest npc::" + to_string(entry))) //Noone has yellow exclamation mark.
+                if (!AI_VALUE2(bool, "group or", "following party,near leader,can accept quest low level npc::" + to_string(entry) + "need quest objective::" + to_string(questId))) //Noone can do this quest for a usefull reward.
                         return false;
-                }
-            }
         }
         else
         {
-#ifndef MANGOSBOT_TWO
-            if (dialogStatus != DIALOG_STATUS_CHAT)
-#else
-            if (dialogStatus != DIALOG_STATUS_LOW_LEVEL_AVAILABLE)
-#endif
+            if (!AI_VALUE2(bool, "group or", "following party,near leader,can accept quest low level npc::" + to_string(entry))) //Noone can pick up this quest for money.
                 return false;
 
             if (AI_VALUE(uint8, "free quest log slots") < 10)
@@ -122,24 +97,9 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
             return false;
     }
     else
-    {
-        if (!bot->IsActiveQuest(questId))
+    {       
+        if (!AI_VALUE2(bool, "group or", "following party,near leader,can turn in quest npc::" + to_string(entry)))
             return false;
-
-        if (!bot->CanRewardQuest(questTemplate, false))
-            return false;
-
-        uint32 dialogStatus = sTravelMgr.getDialogStatus(bot, entry, questTemplate);
-        
-#ifdef MANGOSBOT_ZERO
-        if (dialogStatus != DIALOG_STATUS_REWARD2 && dialogStatus != DIALOG_STATUS_REWARD_REP)
-#else
-        if (dialogStatus != DIALOG_STATUS_REWARD2 && dialogStatus != DIALOG_STATUS_REWARD && dialogStatus != DIALOG_STATUS_REWARD_REP)
-#endif
-            return false;
-
-        PlayerbotAI* ai = bot->GetPlayerbotAI();
-        AiObjectContext* context = ai->GetAiObjectContext();
 
         //Do not try to hand-in dungeon/elite quests in instances without a group.
         if ((questTemplate->GetType() == QUEST_TYPE_ELITE || questTemplate->GetType() == QUEST_TYPE_DUNGEON) && !AI_VALUE(bool, "can fight boss"))
@@ -223,6 +183,11 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
             return false;
     }
 
+    vector<string> qualifier = { to_string(questTemplate->GetQuestId()), to_string(objective) };
+
+    if (!AI_VALUE2(bool, "group or", "following party,near leader,need quest objective::" + Qualified::MultiQualify(qualifier,","))) //Noone needs the quest objective.
+        return false;
+
     if (!sTravelMgr.getObjectiveStatus(bot, questTemplate, objective))
         return false;
 
@@ -244,11 +209,6 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot) {
             return false;
         }
     }
-
-    //if (entry > 0)
-    //{
-    //    return GuidPosition(HIGHGUID_UNIT, entry).IsHostileTo(bot);
-    //}
 
     return true;
 }
@@ -328,7 +288,9 @@ bool RpgTravelDestination::isActive(Player* bot)
 string RpgTravelDestination::getTitle() {
     ostringstream out;
 
-    out << "rpg npc ";
+
+    if(entry > 0)
+        out << "rpg npc ";
 
     out << " " << ChatHelper::formatWorldEntry(entry);
 
