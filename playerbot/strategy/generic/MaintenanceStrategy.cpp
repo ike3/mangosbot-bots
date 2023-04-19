@@ -28,7 +28,7 @@ void MaintenanceStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &trigger
 
     triggers.push_back(new TriggerNode(
         "move stuck",
-        NextAction::array(0, new NextAction("reset", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("reset", 0.7f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "move long stuck",
