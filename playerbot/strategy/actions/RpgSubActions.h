@@ -290,15 +290,6 @@ namespace ai
         virtual bool Execute(Event& event);
     };
 
-    class RpgMountAnimAction : public Action
-    {
-    public:
-        RpgMountAnimAction(PlayerbotAI* ai, string name = "rpg mount anim") : Action(ai, name) {}
-
-        virtual bool isUseful();
-        virtual bool Execute(Event& event);
-    };
-
     class RpgItemAction : public UseItemAction, public RpgEnabled
     {
     public:

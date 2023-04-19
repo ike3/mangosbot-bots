@@ -193,7 +193,7 @@ namespace ai
         virtual WorldLocation GetLocationInternal()
         {
             Player* master = ai->GetGroupMaster();
-            if (!master)
+            if (ai->IsSafe(master))
                 return WorldLocation();
 
             float range = ai->GetRange("follow");

@@ -23,7 +23,8 @@ enum class BotCheatMask : uint32
     repair = 1 << 7,
     movespeed = 1 << 8,
     attackspeed = 1 << 9,
-    maxMask = 1 << 10
+    breath = 1 << 10,
+    maxMask = 1 << 11
 };
 
 

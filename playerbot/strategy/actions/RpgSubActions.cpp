@@ -91,7 +91,7 @@ void RpgHelper::resetFacing(GuidPosition guidPosition)
 
 void RpgHelper::setDelay(bool waitForGroup)
 {
-    if (!ai->HasRealPlayerMaster() || !bot->GetGroup() || (bot->GetGroup()->IsLeader(bot->GetObjectGuid()) && waitForGroup))
+    if ((!ai->HasRealPlayerMaster() && !bot->GetGroup()) || (bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetObjectGuid()) && waitForGroup))
         ai->SetActionDuration(sPlayerbotAIConfig.rpgDelay);       
     else
         ai->SetActionDuration(sPlayerbotAIConfig.rpgDelay / 5);
@@ -357,19 +357,6 @@ bool RpgDuelAction::Execute(Event& event)
         return false;
 
     return ai->DoSpecificAction("cast custom spell", Event("rpg action", chat->formatWorldobject(player) + " 7266"), true);
-}
-
-bool RpgMountAnimAction::isUseful()
-{
-    return AI_VALUE2(bool, "mounted", "self target") && !AI_VALUE2(bool, "moving", "self target");
-}
-
-bool RpgMountAnimAction::Execute(Event& event)
-{
-    WorldPacket p;
-    bot->GetSession()->HandleMountSpecialAnimOpcode(p);
-
-    return true;
 }
 
 bool RpgItemAction::Execute(Event& event)

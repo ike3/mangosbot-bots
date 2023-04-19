@@ -36,4 +36,13 @@ namespace ai
 
         static uint32 GetRandomEmote(Unit* unit, bool textEmote = false);
     };
+
+    class MountAnimAction : public Action
+    {
+    public:
+        MountAnimAction(PlayerbotAI* ai, string name = "mount anim") : Action(ai, name) {}
+
+        virtual bool isUseful();
+        virtual bool Execute(Event& event);
+    };
 }

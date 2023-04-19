@@ -477,44 +477,31 @@ bool RpgUseTrigger::IsActive()
     GameObjectInfo const* goInfo = guidP.GetGameObjectInfo();
 
     switch (goInfo->type) {
-    case GAMEOBJECT_TYPE_DOOR:
-    case    GAMEOBJECT_TYPE_BUTTON:
-    case GAMEOBJECT_TYPE_QUESTGIVER:
-    case GAMEOBJECT_TYPE_CHEST:
-    case GAMEOBJECT_TYPE_TRAP:
-    case GAMEOBJECT_TYPE_CHAIR:
-    case GAMEOBJECT_TYPE_SPELL_FOCUS:
-    case GAMEOBJECT_TYPE_SUMMONING_RITUAL:
-    case GAMEOBJECT_TYPE_MAILBOX:
-    case GAMEOBJECT_TYPE_MEETINGSTONE:
-    case GAMEOBJECT_TYPE_FLAGSTAND:
-    case GAMEOBJECT_TYPE_FLAGDROP:
-    case GAMEOBJECT_TYPE_MINI_GAME:
-    case GAMEOBJECT_TYPE_CAPTURE_POINT:
+    case GAMEOBJECT_TYPE_DOOR:                          // 0
+    case GAMEOBJECT_TYPE_BUTTON:                        // 1
+    case GAMEOBJECT_TYPE_QUESTGIVER:                    // 2
+    case GAMEOBJECT_TYPE_CHEST:                         // 3
+    case GAMEOBJECT_TYPE_GENERIC:                       // 5
+    case GAMEOBJECT_TYPE_TRAP:                          // 6
+    case GAMEOBJECT_TYPE_CHAIR:                         // 7 Sitting: Wooden bench, chairs
+    case GAMEOBJECT_TYPE_SPELL_FOCUS:                   // 8
+    case GAMEOBJECT_TYPE_GOOBER:                        // 10
+    case GAMEOBJECT_TYPE_CAMERA:                        // 13
+    case GAMEOBJECT_TYPE_FISHINGNODE:                   // 17 fishing bobber
+    case GAMEOBJECT_TYPE_SUMMONING_RITUAL:              // 18
 #ifndef MANGOSBOT_TWO
     case GAMEOBJECT_TYPE_AUCTIONHOUSE:
     case GAMEOBJECT_TYPE_LOTTERY_KIOSK:
 #endif
+    case GAMEOBJECT_TYPE_SPELLCASTER:                   // 22
+    case GAMEOBJECT_TYPE_MEETINGSTONE:                  // 23
+    case GAMEOBJECT_TYPE_FLAGSTAND:                     // 24
+    case GAMEOBJECT_TYPE_FISHINGHOLE:                   // 25
+    case GAMEOBJECT_TYPE_FLAGDROP:                      // 26
         return true;
-    case GAMEOBJECT_TYPE_BINDER:
-    case GAMEOBJECT_TYPE_GENERIC:
-    case GAMEOBJECT_TYPE_TEXT:
-    case GAMEOBJECT_TYPE_GOOBER:
-    case GAMEOBJECT_TYPE_TRANSPORT:
-    case GAMEOBJECT_TYPE_AREADAMAGE:
-    case GAMEOBJECT_TYPE_CAMERA:
-    case GAMEOBJECT_TYPE_MAP_OBJECT:
-    case GAMEOBJECT_TYPE_MO_TRANSPORT:
-    case GAMEOBJECT_TYPE_DUEL_ARBITER:
-    case GAMEOBJECT_TYPE_FISHINGNODE:
-    case GAMEOBJECT_TYPE_GUARDPOST:
-    case GAMEOBJECT_TYPE_SPELLCASTER:
-    case GAMEOBJECT_TYPE_FISHINGHOLE:
-    case GAMEOBJECT_TYPE_AURA_GENERATOR:
+    default:
         return false;
-    }
-
-    return true;
+    }   
 }
 
 bool RpgSpellTrigger::IsActive()
