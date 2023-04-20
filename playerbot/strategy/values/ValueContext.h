@@ -94,6 +94,7 @@
 #include "FreeMoveValues.h"
 #include "HazardsValue.h"
 #include "FocusTargetValue.h"
+#include "TalentSpecValue.h"
 
 namespace ai
 {
@@ -279,7 +280,7 @@ namespace ai
             creators["last long move"] = &ValueContext::last_long_move;
 
             creators["bot roles"] = &ValueContext::bot_roles;
-
+            creators["talent spec"] = &ValueContext::talent_spec;
             
             creators["free quest log slots"] = &ValueContext::free_quest_log_slots;
             creators["dialog status"] = &ValueContext::dialog_status;
@@ -535,6 +536,7 @@ namespace ai
         static UntypedValue* home_bind(PlayerbotAI* ai) { return new HomeBindValue(ai); }
 
         static UntypedValue* bot_roles(PlayerbotAI* ai) { return new BotRolesValue(ai); }
+        static UntypedValue* talent_spec(PlayerbotAI* ai) { return new TalentSpecValue(ai); }
 
         static UntypedValue* free_quest_log_slots(PlayerbotAI* ai) { return new FreeQuestLogSlotValue(ai); }
         static UntypedValue* dialog_status(PlayerbotAI* ai) { return new DialogStatusValue(ai); }

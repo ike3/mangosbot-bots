@@ -7,15 +7,12 @@ using namespace ai;
 
 bool ChangeTalentsAction::Execute(Event& event)
 {
-    string param = event.getParam();
-
     ostringstream out;
-
     TalentSpec botSpec(bot);
+    string param = event.getParam();
 
     if (!param.empty())
     {
-
         if (param.find("auto") != string::npos)
         {
             AutoSelectTalents(&out);
@@ -62,6 +59,7 @@ bool ChangeTalentsAction::Execute(Event& event)
                     newSpec.CropTalents(bot->GetLevel());
                     out << "becomes: " << newSpec.GetTalentLink();
                 }
+
                 if (shift)
                 {
                     TalentSpec botSpec(bot);
@@ -75,6 +73,8 @@ bool ChangeTalentsAction::Execute(Event& event)
                     sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specNo", 0);
                     sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specLink", 1, specLink);
                 }
+
+                ai->UpdateTalentSpec();
             }
             else
             {
@@ -93,21 +93,26 @@ bool ChangeTalentsAction::Execute(Event& event)
                     {
                         if (paths.size() > 1)
                             out << "Found " << paths.size() << " possible specs to choose from. ";
+                        
                         TalentPath* path = PickPremadePath(paths, sRandomPlayerbotMgr.IsRandomBot(bot));
                         TalentSpec newSpec = *GetBestPremadeSpec(path->id);
                         string specLink = newSpec.GetTalentLink();
                         newSpec.CropTalents(bot->GetLevel());
                         newSpec.ApplyTalents(bot, &out);
+
                         if (newSpec.GetTalentPoints() > 0)
                         {
                             out << "Apply spec " << "|h|cffffffff" << path->name << " " << newSpec.formatSpec(bot);
                             sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specNo", path->id + 1);
                             sRandomPlayerbotMgr.SetValue(bot->GetGUIDLow(), "specLink", 0);
+
+                            ai->UpdateTalentSpec();
                         }
                     }
                 }
             }
         }
+
         // learn available spells
         ai->DoSpecificAction("auto learn spell");
     }
@@ -126,11 +131,14 @@ bool ChangeTalentsAction::Execute(Event& event)
             if (specPath->id == specId)
                 specName = specPath->name;
         }
+
         out << "My current talent spec is: " << "|h|cffffffff";
+
         if (specName != "")
             out << specName << " (" << botSpec.formatSpec(bot) << ")";
         else
             out << chat->formatClass(bot, botSpec.highestTree());
+
         out << " Link: ";
         out << botSpec.GetTalentLink();
     }
@@ -180,6 +188,7 @@ TalentPath* ChangeTalentsAction::getPremadePath(int id)
             return &path;
         }
     }
+
     return &sPlayerbotAIConfig.classSpecs[bot->getClass()].talentPath[0];
 }
 
@@ -191,10 +200,12 @@ void ChangeTalentsAction::listPremadePaths(std::vector<TalentPath*> paths, ostri
     }
 
     *out << "|h|cffffffff";
+
     for (auto path : paths)
     {
         *out << path->name << " (" << path->talentSpec.back().formatSpec(bot) << "), ";
     }
+
     out->seekp(-2, out->cur);
     *out << ".";
 }
@@ -243,6 +254,7 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
         TalentSpec newSpec = *GetBestPremadeSpec(specId);
         newSpec.CropTalents(bot->GetLevel());
         newSpec.ApplyTalents(bot, out);
+        ai->UpdateTalentSpec();
         if (newSpec.GetTalentPoints() > 0)
         {
             *out << "Upgrading spec " << "|h|cffffffff" << getPremadePath(specId)->name << " (" << newSpec.formatSpec(bot) << ")";
@@ -253,6 +265,7 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
         TalentSpec newSpec(bot, specLink);
         newSpec.CropTalents(bot->GetLevel());
         newSpec.ApplyTalents(bot, out);
+        ai->UpdateTalentSpec();
         if (newSpec.GetTalentPoints() > 0)
         {
             *out << "Upgrading saved spec " << "|h|cffffffff" << chat->formatClass(bot, newSpec.highestTree()) << " (" << newSpec.formatSpec(bot) << ")";
@@ -269,7 +282,8 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
         if (paths.size() == 0) //No spec like the old one found. Pick any.
         {
             if (bot->CalculateTalentsPoints() > 0)
-                *out << "No specs like the current spec found. ";
+                *out << "No specs like the current spec found.";
+
             paths = getPremadePaths("");
         }   
 
@@ -278,22 +292,28 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
             //Check if any spec has the same tree as the current spec.
             bool hasSameTree = false;
             for (auto it : paths)
+            {
                 if (it->talentSpec.back().highestTree() == currentTree)
                 {
                     hasSameTree = true;
                     break;
                 }
+            }
 
             if (hasSameTree) //Remove specs that do not end up in the same tree.
             {
                 auto it = paths.begin();
-                while (it != paths.end()) {
+                while (it != paths.end()) 
+                {
                     TalentPath* path = *it;
-                    if (path->talentSpec.back().highestTree() != currentTree) {
-
+                    if (path->talentSpec.back().highestTree() != currentTree) 
+                    {
                         it = paths.erase(it);
                     }
-                    else ++it;
+                    else 
+                    {
+                        ++it;
+                    }
                 }
             }
         }
@@ -302,11 +322,9 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
         {
             *out << "No predefined talents found for this class.";
             specId = -1;
-            //specLink = "";
         }
         else if (paths.size() > 1 && sPlayerbotAIConfig.autoPickTalents != "full" && !sRandomPlayerbotMgr.IsRandomBot(bot))
         {
-
             *out << "Found multiple specs: ";
             listPremadePaths(paths, out);
         }
@@ -317,6 +335,7 @@ bool ChangeTalentsAction::AutoSelectTalents(ostringstream* out)
             specLink = newSpec.GetTalentLink();
             newSpec.CropTalents(bot->GetLevel());
             newSpec.ApplyTalents(bot, out);
+            ai->UpdateTalentSpec();
 
             if (paths.size() > 1)
                 *out << "Found " << paths.size() << " possible specs to choose from. ";

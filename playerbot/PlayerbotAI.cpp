@@ -138,6 +138,8 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
     engines[(uint8)BotState::BOT_STATE_DEAD] = AiFactory::createDeadEngine(bot, this, aiObjectContext);
     engines[(uint8)BotState::BOT_STATE_REACTION] = reactionEngine = AiFactory::createReactionEngine(bot, this, aiObjectContext);
 
+    UpdateTalentSpec();
+
     for (uint8 e = 0; e < (uint8)BotState::BOT_STATE_ALL; e++)
     {
         engines[e]->initMode = false;
@@ -518,6 +520,50 @@ bool PlayerbotAI::IsImmuneToSpell(uint32 spellId) const
     }
 
     return false;
+}
+
+PlayerTalentSpec PlayerbotAI::GetTalentSpec()
+{
+    return aiObjectContext->GetValue<PlayerTalentSpec>("talent spec")->Get();
+}
+
+void PlayerbotAI::UpdateTalentSpec(PlayerTalentSpec spec)
+{
+    if(spec == PlayerTalentSpec::TALENT_SPEC_INVALID)
+    {
+        int talentsTab = 0;
+        if(bot->GetLevel() < 10)
+        {
+            switch (bot->getClass())
+            {
+                case CLASS_MAGE:
+                {
+                    talentsTab = 1;
+                    break;
+                }
+
+                case CLASS_PALADIN:
+                {
+                    talentsTab = 0;
+                    break;
+                }
+
+                case CLASS_PRIEST:
+                {
+                    talentsTab = 1;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            talentsTab = AiFactory::GetPlayerSpecTab(bot);
+        }
+
+        spec = PlayerTalentSpec(((bot->getClass() * 3) - 2) + talentsTab);
+    }
+
+    aiObjectContext->GetValue<PlayerTalentSpec>("talent spec")->Set(spec);
 }
 
 bool PlayerbotAI::IsStateActive(BotState state) const

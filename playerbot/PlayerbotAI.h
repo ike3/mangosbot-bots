@@ -10,6 +10,7 @@
 #include "PlayerbotSecurity.h"
 #include "PlayerbotTextMgr.h"
 #include "BotState.h"
+#include "PlayerTalentSpec.h"
 #include <stack>
 #include "strategy/IterateItemsMask.h"
 
@@ -511,6 +512,9 @@ public:
 
     void SetShouldLogOut(bool val = true) { shouldLogOut = val; }
     bool GetShouldLogOut() { return shouldLogOut; }
+
+    PlayerTalentSpec GetTalentSpec();
+    void UpdateTalentSpec(PlayerTalentSpec spec = PlayerTalentSpec::TALENT_SPEC_INVALID);
     
 private:
     bool UpdateAIReaction(uint32 elapsed, bool minimal, bool isStunned);
