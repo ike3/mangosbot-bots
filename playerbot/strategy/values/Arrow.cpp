@@ -88,16 +88,15 @@ void ArrowFormation::FillSlotsExceptMaster()
     while (gref)
     {
         Player* member = gref->getSource();
-        if (!ai->IsSafe(member))
-            continue;
-
-        if (member == bot)
-            FindSlot(member)->AddLast(botUnit = new FormationUnit(index, false));
-        else if (member != ai->GetMaster())
-            FindSlot(member)->AddLast(new FormationUnit(index, false));
-
+        if (ai->IsSafe(member))
+        {
+            if (member == bot)
+                FindSlot(member)->AddLast(botUnit = new FormationUnit(index, false));
+            else if (member != ai->GetMaster())
+                FindSlot(member)->AddLast(new FormationUnit(index, false));
+            index++;
+        }
         gref = gref->next();
-        index++;
     }
 }
 
