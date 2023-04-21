@@ -434,7 +434,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
 
     switch (player->getClass()){
         case CLASS_PRIEST:
-            nonCombatEngine->addStrategies("dps assist", "cure", "crusader", NULL);
+            nonCombatEngine->addStrategies("dps assist", "cure", "rshadow", NULL);
             break;
         case CLASS_PALADIN:
             if (tab == 1)
