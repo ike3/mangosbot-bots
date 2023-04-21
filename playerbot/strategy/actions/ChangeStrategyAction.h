@@ -13,21 +13,21 @@ namespace ai
     class ChangeNonCombatStrategyAction : public ChatCommandAction
     {
     public:
-        ChangeNonCombatStrategyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "nc") {}
+        ChangeNonCombatStrategyAction(PlayerbotAI* ai, string name = "nc") : ChatCommandAction(ai, name) {}
         virtual bool Execute(Event& event) override;
     };
 
     class ChangeDeadStrategyAction : public ChatCommandAction
     {
     public:
-        ChangeDeadStrategyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "de") {}
+        ChangeDeadStrategyAction(PlayerbotAI* ai, string name = "de") : ChatCommandAction(ai, name) {}
         virtual bool Execute(Event& event) override;
     };
 
     class ChangeReactionStrategyAction : public ChatCommandAction
     {
     public:
-        ChangeReactionStrategyAction(PlayerbotAI* ai) : ChatCommandAction(ai, "react") {}
+        ChangeReactionStrategyAction(PlayerbotAI* ai, string name = "react") : ChatCommandAction(ai, name) {}
         virtual bool Execute(Event& event) override;
     };
 

@@ -58,7 +58,6 @@ void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "no fire vulnerability",
         NextAction::array(0, new NextAction("scorch", 55.0f), NULL)));
-
 #else
     triggers.push_back(new TriggerNode(
         "hot streak",

@@ -133,9 +133,11 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
 
     int iterations = 0;
     int iterationsPerTick = queue.Size() * (minimal ? (uint32)(sPlayerbotAIConfig.iterationsPerTick / 2) : sPlayerbotAIConfig.iterationsPerTick);
-    do {
+    do 
+    {
         basket = queue.Peek();
-        if (basket) {
+        if (basket) 
+        {
             float relevance = basket->getRelevance(); // just for reference
             bool skipPrerequisites = basket->isSkipPrerequisites();
             Event event = basket->getEvent();
@@ -320,7 +322,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
     return actionExecuted;
 }
 
-ActionNode* Engine::CreateActionNode(string name)
+ActionNode* Engine::CreateActionNode(const string& name)
 {
     ActionNode* actionNode = nullptr;
     for (map<string, Strategy*>::iterator i = strategies.begin(); i != strategies.end(); i++)
@@ -385,7 +387,7 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
     return pushed;
 }
 
-ActionResult Engine::ExecuteAction(string name, Event& event)
+ActionResult Engine::ExecuteAction(const string& name, Event& event)
 {
     ActionResult actionResult = ACTION_RESULT_UNKNOWN;
     ActionNode* actionNode = CreateActionNode(name);
@@ -420,7 +422,7 @@ ActionResult Engine::ExecuteAction(string name, Event& event)
     return actionResult;
 }
 
-bool Engine::CanExecuteAction(string name, bool isUseful, bool isPossible)
+bool Engine::CanExecuteAction(const string& name, bool isUseful, bool isPossible)
 {
     bool result = true;
     ActionNode* actionNode = CreateActionNode(name);
@@ -446,7 +448,7 @@ bool Engine::CanExecuteAction(string name, bool isUseful, bool isPossible)
     return result;
 }
 
-void Engine::addStrategy(string name)
+void Engine::addStrategy(const string& name)
 {
     removeStrategy(name, initMode);
 
@@ -489,7 +491,7 @@ void Engine::addStrategies(string first, ...)
 	va_end(vl);
 }
 
-bool Engine::removeStrategy(string name, bool init)
+bool Engine::removeStrategy(const string& name, bool init)
 {
     map<string, Strategy*>::iterator i = strategies.find(name);
     if (i == strategies.end())
@@ -513,18 +515,18 @@ void Engine::removeAllStrategies()
     Init();
 }
 
-void Engine::toggleStrategy(string name)
+void Engine::toggleStrategy(const string& name)
 {
     if (!removeStrategy(name))
         addStrategy(name);
 }
 
-bool Engine::HasStrategy(string name)
+bool Engine::HasStrategy(const string& name)
 {
     return strategies.find(name) != strategies.end();
 }
 
-Strategy* Engine::GetStrategy(string name) const
+Strategy* Engine::GetStrategy(const string& name) const
 {
     auto i = strategies.find(name);
     if (i != strategies.end())
@@ -752,7 +754,7 @@ void Engine::LogAction(const char* format, ...)
     }
 }
 
-void Engine::ChangeStrategy(string names, string engineType)
+void Engine::ChangeStrategy(const string& names, string engineType)
 {
     vector<string> splitted = split(names, ',');
     for (vector<string>::iterator i = splitted.begin(); i != splitted.end(); i++)

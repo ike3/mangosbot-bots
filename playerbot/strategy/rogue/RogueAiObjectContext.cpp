@@ -90,7 +90,6 @@ namespace ai
                 creators["2 combo"] = &TriggerFactoryInternal::combo2;
                 creators["3 combo"] = &TriggerFactoryInternal::combo3;
                 creators["4 combo"] = &TriggerFactoryInternal::combo3;
-
                 creators["sinister strike"] = &TriggerFactoryInternal::sinister_strike;
                 creators["hemorrhage"] = &TriggerFactoryInternal::hemorrhage;
                 creators["killing spree"] = &TriggerFactoryInternal::killing_spree;
@@ -100,7 +99,6 @@ namespace ai
                 creators["cloak of shadows"] = &TriggerFactoryInternal::cloak_of_shadows;
                 creators["fan of knives"] = &TriggerFactoryInternal::fan_of_knives;
                 creators["riposte"] = &TriggerFactoryInternal::riposte;
-
             }
 
         private:

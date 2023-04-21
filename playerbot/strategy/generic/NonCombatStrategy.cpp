@@ -27,13 +27,15 @@ void NonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
         "need world buff",
         NextAction::array(0, new NextAction("world buff", 1.0f), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
+    /*
+    triggers.push_back(new TriggerNode(
         "vehicle near",
-        NextAction::array(0, new NextAction("enter vehicle", 10.0f), NULL)));*/
+        NextAction::array(0, new NextAction("enter vehicle", 10.0f), NULL)));
 
-    /*triggers.push_back(new TriggerNode(
+    triggers.push_back(new TriggerNode(
         "very often",
-        NextAction::array(0, new NextAction("use lightwell", 80.0f), NULL)));*/
+        NextAction::array(0, new NextAction("use lightwell", 80.0f), NULL)));
+    */
 }
 
 void CollisionStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)

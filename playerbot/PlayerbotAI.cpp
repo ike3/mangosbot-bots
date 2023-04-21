@@ -133,12 +133,12 @@ PlayerbotAI::PlayerbotAI(Player* bot) :
 
     aiObjectContext = AiFactory::createAiObjectContext(bot, this);
 
+    UpdateTalentSpec();
+
     engines[(uint8)BotState::BOT_STATE_COMBAT] = AiFactory::createCombatEngine(bot, this, aiObjectContext);
     engines[(uint8)BotState::BOT_STATE_NON_COMBAT] = AiFactory::createNonCombatEngine(bot, this, aiObjectContext);
     engines[(uint8)BotState::BOT_STATE_DEAD] = AiFactory::createDeadEngine(bot, this, aiObjectContext);
     engines[(uint8)BotState::BOT_STATE_REACTION] = reactionEngine = AiFactory::createReactionEngine(bot, this, aiObjectContext);
-
-    UpdateTalentSpec();
 
     for (uint8 e = 0; e < (uint8)BotState::BOT_STATE_ALL; e++)
     {
@@ -1795,7 +1795,7 @@ void PlayerbotAI::ReInitCurrentEngine()
     currentEngine->Init();
 }
 
-void PlayerbotAI::ChangeStrategy(string names, BotState type)
+void PlayerbotAI::ChangeStrategy(const string& names, BotState type)
 {
     if(type == BotState::BOT_STATE_ALL)
     {
@@ -1856,7 +1856,7 @@ list<string_view> PlayerbotAI::GetStrategies(BotState type)
     return list<string_view>();
 }
 
-bool PlayerbotAI::CanDoSpecificAction(string name, bool isUseful, bool isPossible)
+bool PlayerbotAI::CanDoSpecificAction(const string& name, bool isUseful, bool isPossible)
 {
     for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
@@ -1873,7 +1873,7 @@ bool PlayerbotAI::CanDoSpecificAction(string name, bool isUseful, bool isPossibl
     return false;
 }
 
-bool PlayerbotAI::DoSpecificAction(string name, Event event, bool silent)
+bool PlayerbotAI::DoSpecificAction(const string& name, Event event, bool silent)
 {
     for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
@@ -1996,7 +1996,7 @@ bool PlayerbotAI::ContainsStrategy(StrategyType type)
     return false;
 }
 
-bool PlayerbotAI::HasStrategy(string name, BotState type)
+bool PlayerbotAI::HasStrategy(const string& name, BotState type)
 {
     // Can't check the strategy for all engines at once
     if(type != BotState::BOT_STATE_ALL)

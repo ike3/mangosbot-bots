@@ -8,7 +8,8 @@ using namespace ai;
 bool ChangeCombatStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
-    ai->ChangeStrategy(text.empty() ? getName() : text, BotState::BOT_STATE_COMBAT);
+    text = text.empty() ? getName() : text;
+    ai->ChangeStrategy(text, BotState::BOT_STATE_COMBAT);
     if (event.getSource() == "co")
     {
         vector<string> splitted = split(text, ',');
@@ -35,6 +36,7 @@ bool ChangeCombatStrategyAction::Execute(Event& event)
 bool ChangeNonCombatStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
+    text = text.empty() ? getName() : text;
     uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
     if (sPlayerbotAIConfig.IsInRandomAccountList(account) && ai->GetMaster() && ai->GetMaster()->GetSession()->GetSecurity() < SEC_GAMEMASTER)
     {
@@ -46,7 +48,6 @@ bool ChangeNonCombatStrategyAction::Execute(Event& event)
     }
 
     ai->ChangeStrategy(text, BotState::BOT_STATE_NON_COMBAT);
-
     if (event.getSource() == "nc")
     {
         vector<string> splitted = split(text, ',');
@@ -71,6 +72,7 @@ bool ChangeNonCombatStrategyAction::Execute(Event& event)
 bool ChangeDeadStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
+    text = text.empty() ? getName() : text;
     ai->ChangeStrategy(text, BotState::BOT_STATE_DEAD);
     return true;
 }
@@ -78,6 +80,7 @@ bool ChangeDeadStrategyAction::Execute(Event& event)
 bool ChangeReactionStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
+    text = text.empty() ? getName() : text;
     ai->ChangeStrategy(text, BotState::BOT_STATE_REACTION);
     return true;
 }

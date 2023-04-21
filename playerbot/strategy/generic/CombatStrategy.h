@@ -7,6 +7,7 @@ namespace ai
     public:
         CombatStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         virtual int GetType() override { return STRATEGY_TYPE_COMBAT; }
+
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
@@ -16,13 +17,16 @@ namespace ai
     public:
         AvoidAoeStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "avoid aoe"; }
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "avoid aoe"; } //Must equal iternal name
-        virtual string GetHelpDescription() {
+        virtual string GetHelpDescription() 
+        {
             return "This strategy will make bots move away when they are in aoe.";
         }
         virtual vector<string> GetRelatedStrategies() { return { }; }
 #endif
+
     private:
         void InitCombatMultipliers(std::list<Multiplier*>& multipliers) override;
         void InitReactionMultipliers(std::list<Multiplier*>& multipliers) override;
@@ -55,6 +59,7 @@ namespace ai
         }
         virtual vector<string> GetRelatedStrategies() { return { }; }
 #endif
+
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         void InitCombatMultipliers(std::list<Multiplier*>& multipliers) override;

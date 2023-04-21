@@ -311,15 +311,15 @@ public:
 	void HandleTeleportAck();
     void ChangeEngine(BotState type);
     void DoNextAction(bool minimal = false);
-    bool CanDoSpecificAction(string name, bool isUseful = true, bool isPossible = true);
-    virtual bool DoSpecificAction(string name, Event event = Event(), bool silent = false);
-    void ChangeStrategy(string name, BotState type);
+    bool CanDoSpecificAction(const string& name, bool isUseful = true, bool isPossible = true);
+    virtual bool DoSpecificAction(const string& name, Event event = Event(), bool silent = false);
+    void ChangeStrategy(const string& name, BotState type);
     void ClearStrategies(BotState type);
     list<string_view> GetStrategies(BotState type);
     bool ContainsStrategy(StrategyType type);
-    bool HasStrategy(string name, BotState type);
+    bool HasStrategy(const string& name, BotState type);
     template<class T>
-    T* GetStrategy(string name, BotState type);
+    T* GetStrategy(const string& name, BotState type);
     BotState GetState() { return currentState; };
     void ResetStrategies(bool autoLoad = true);
     void ReInitCurrentEngine();
@@ -554,7 +554,7 @@ protected:
 };
 
 template<typename T>
-T* PlayerbotAI::GetStrategy(string name, BotState type)
+T* PlayerbotAI::GetStrategy(const string& name, BotState type)
 {
     return  dynamic_cast<T*>(engines[(uint8)type]->GetStrategy(name));
 }

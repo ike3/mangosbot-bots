@@ -65,24 +65,24 @@ namespace ai
         Engine(PlayerbotAI* ai, AiObjectContext *factory, BotState state);
 
 	    void Init();
-        void addStrategy(string name);
+        void addStrategy(const string& name);
 		void addStrategies(string first, ...);
-        bool removeStrategy(string name, bool init = true);
-        bool HasStrategy(string name);
-        Strategy* GetStrategy(string name) const;
+        bool removeStrategy(const string& name, bool init = true);
+        bool HasStrategy(const string& name);
+        Strategy* GetStrategy(const string& name) const;
         void removeAllStrategies();
-        void toggleStrategy(string name);
+        void toggleStrategy(const string& name);
         std::string ListStrategies();
         list<string_view> GetStrategies();
 		bool ContainsStrategy(StrategyType type);
-		void ChangeStrategy(string names, string engineType = "");
+		void ChangeStrategy(const string& names, string engineType = "");
 		string GetLastAction() { return lastAction; }
         const Action* GetLastExecutedAction() const { return lastExecutedAction; }
 
     public:
 	    virtual bool DoNextAction(Unit*, int depth, bool minimal, bool isStunned);
-	    ActionResult ExecuteAction(string name, Event& event);
-        bool CanExecuteAction(string name, bool isUseful = true, bool isPossible = true);
+	    ActionResult ExecuteAction(const string& name, Event& event);
+        bool CanExecuteAction(const string& name, bool isUseful = true, bool isPossible = true);
 
     public:
         void AddActionExecutionListener(ActionExecutionListener* listener)
@@ -103,7 +103,7 @@ namespace ai
         void ProcessTriggers(bool minimal);
         void PushDefaultActions();
         void PushAgain(ActionNode* actionNode, float relevance, const Event& event);
-        ActionNode* CreateActionNode(string name);
+        ActionNode* CreateActionNode(const string& name);
         virtual Action* InitializeAction(ActionNode* actionNode);
         virtual bool ListenAndExecute(Action* action, Event& event);
 
