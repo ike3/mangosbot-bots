@@ -189,6 +189,8 @@ namespace ai
             creators["petition signed"] = &TriggerContext::petition_signed;
             creators["buy tabard"] = &TriggerContext::buy_tabard;
             creators["leave large guild"] = &TriggerContext::leave_large_guild;
+            creators["in pvp"] = &TriggerContext::in_pvp;
+            creators["in pve"] = &TriggerContext::in_pve;
 
             creators["val"] = &TriggerContext::val;
 
@@ -395,6 +397,8 @@ namespace ai
         static Trigger* leader_is_afk(PlayerbotAI* ai) { return new LeaderIsAfkTrigger(ai); }
         static Trigger* player_wants_in_bg(PlayerbotAI* ai) { return new PlayerWantsInBattlegroundTrigger(ai); }
         static Trigger* use_trinket(PlayerbotAI* ai) { return new UseTrinketTrigger(ai); }
+        static Trigger* in_pve(PlayerbotAI* ai) { return new InPveTrigger(ai); }
+        static Trigger* in_pvp(PlayerbotAI* ai) { return new InPvpTrigger(ai); }
 
         static Trigger* petition_signed(PlayerbotAI* ai) { return new PetitionTurnInTrigger(ai); }
         static Trigger* buy_tabard(PlayerbotAI* ai) { return new BuyTabardTrigger(ai); }        

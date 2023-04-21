@@ -1028,6 +1028,20 @@ namespace ai
             return false;
         }
     };
+
+    class InPvpTrigger : public Trigger
+    {
+    public:
+        InPvpTrigger(PlayerbotAI* ai, std::string name = "in pvp") : Trigger(ai, name, 5) {}
+        bool IsActive() override;
+    };
+
+    class InPveTrigger : public Trigger
+    {
+    public:
+        InPveTrigger(PlayerbotAI* ai, std::string name = "in pve") : Trigger(ai, name, 5) {}
+        bool IsActive() override;
+    };
 }
 
 #include "RangeTriggers.h"
