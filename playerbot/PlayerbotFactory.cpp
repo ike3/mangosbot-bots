@@ -2520,6 +2520,7 @@ void PlayerbotFactory::InitAvailableSpells()
             bookSpells.push_back(25315);
             bookSpells.push_back(25316);
             bookSpells.push_back(21564);
+            bookSpells.push_back(27683);
             break;
         case CLASS_SHAMAN:
             bookSpells.push_back(29228);
