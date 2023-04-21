@@ -172,6 +172,7 @@ namespace ai
 
         void Erase(string name)
         {
+            delete created[name];
             created.erase(name);
         }
 

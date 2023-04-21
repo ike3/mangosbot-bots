@@ -134,7 +134,11 @@ void MageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "arcane intellect on party",
-        NextAction::array(0, new NextAction("arcane intellect on party", 20.0f), NULL)));
+        NextAction::array(0, new NextAction("arcane intellect on party", 22.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "arcane brilliance on party",
+        NextAction::array(0, new NextAction("arcane brilliance on party", 23.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "give water",

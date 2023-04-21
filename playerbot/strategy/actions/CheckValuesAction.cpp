@@ -18,11 +18,11 @@ bool CheckValuesAction::Execute(Event& event)
 {
     if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
     {
-        ai->Ping(bot->GetPositionX()-7.5, bot->GetPositionY()+7.5);
+        ai->Ping(bot->GetPositionX() - 7.5, bot->GetPositionY() + 7.5);
 
-        LastMovement& lastMove = *context->GetValue<LastMovement&>("last movement");
+        LastMovement& lastMove = AI_VALUE(LastMovement&, "last movement");
 
-        if(lastMove.lastMoveShort)
+        if (lastMove.lastMoveShort)
             ai->Ping(lastMove.lastMoveShort.getX() - 7.5, lastMove.lastMoveShort.getY() + 7.5);
     }
 
@@ -31,11 +31,12 @@ bool CheckValuesAction::Execute(Event& event)
         sTravelNodeMap.manageNodes(bot, ai->HasStrategy("map full", BotState::BOT_STATE_NON_COMBAT));
     }
 
-    list<ObjectGuid> possible_targets = *context->GetValue<list<ObjectGuid> >("possible targets");
-    list<ObjectGuid> all_targets = *context->GetValue<list<ObjectGuid> >("all targets");
-    list<ObjectGuid> npcs = *context->GetValue<list<ObjectGuid> >("nearest npcs");
-    list<ObjectGuid> corpses = *context->GetValue<list<ObjectGuid> >("nearest corpses");
-    list<ObjectGuid> gos = *context->GetValue<list<ObjectGuid> >("nearest game objects");
-    list<ObjectGuid> nfp = *context->GetValue<list<ObjectGuid> >("nearest friendly players");
+    list<ObjectGuid> possible_targets = AI_VALUE(list<ObjectGuid>, "possible targets");
+    list<ObjectGuid> all_targets = AI_VALUE(list<ObjectGuid>, "all targets");
+    list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
+    list<ObjectGuid> corpses = AI_VALUE(list<ObjectGuid>, "nearest corpses");
+    list<ObjectGuid> gos = AI_VALUE(list<ObjectGuid>, "nearest game objects");
+    list<ObjectGuid> nfp = AI_VALUE(list<ObjectGuid>, "nearest friendly players");
+    context->ClearExpiredValues();
     return true;
 }

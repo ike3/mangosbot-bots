@@ -29,6 +29,7 @@ namespace ai
     BUFF_TRIGGER(FearWardTrigger, "fear ward");
     DEFLECT_TRIGGER(FeedbackTrigger, "feedback");
     SNARE_TRIGGER(ChastiseTrigger, "chastise");
+    DEBUFF_TRIGGER(StarshardsTrigger, "starshards");
 
     BOOST_TRIGGER_A(ShadowfiendTrigger, "shadowfiend");
 
@@ -57,7 +58,7 @@ namespace ai
     public:
         DivineSpiritTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "divine spirit", 4) {}
 
-        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("divine spirit", GetTarget()) && !ai->HasAura("prayer of shadow protection", GetTarget()); }
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("divine spirit", GetTarget()) && !ai->HasAura("prayer of spirit", GetTarget()); }
     };
 
     class ShadowProtectionOnPartyTrigger : public BuffOnPartyTrigger {
@@ -71,12 +72,12 @@ namespace ai
     public:
         ShadowProtectionTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "shadow protection", 4) {}
 
-        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("shadow protection", GetTarget()) && !ai->HasAura("prayer of spirit", GetTarget()); }
+        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("shadow protection", GetTarget()) && !ai->HasAura("prayer of shadow protection", GetTarget()); }
     };
 
     class PrayerOfFortitudeTrigger : public BuffOnPartyTrigger {
     public:
-        PrayerOfFortitudeTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of fortitude", 3) {}
+        PrayerOfFortitudeTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of fortitude", 4) {}
 
         virtual bool IsActive() { return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&
             !ai->HasAura("prayer of fortitude", GetTarget()) &&
@@ -92,7 +93,7 @@ namespace ai
 
     class PrayerOfSpiritTrigger : public BuffOnPartyTrigger {
     public:
-        PrayerOfSpiritTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of spirit", 3) {}
+        PrayerOfSpiritTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of spirit", 4) {}
 
         virtual bool IsActive() { return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&
             !ai->HasAura("prayer of spirit", GetTarget()) &&
@@ -109,7 +110,7 @@ namespace ai
 
     class PrayerOfShadowProtectionTrigger : public BuffOnPartyTrigger {
     public:
-        PrayerOfShadowProtectionTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of shadow protection", 3) {}
+        PrayerOfShadowProtectionTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "prayer of shadow protection", 4) {}
 
         virtual bool IsActive() {
             return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&

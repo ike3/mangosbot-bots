@@ -101,6 +101,7 @@ namespace ai
                 creators["icy veins"] = &TriggerFactoryInternal::icy_veins;
                 creators["arcane intellect"] = &TriggerFactoryInternal::arcane_intellect;
                 creators["arcane intellect on party"] = &TriggerFactoryInternal::arcane_intellect_on_party;
+                creators["arcane brilliance on party"] = &TriggerFactoryInternal::arcane_brilliance_on_party;
                 creators["mage armor"] = &TriggerFactoryInternal::mage_armor;
                 creators["remove curse"] = &TriggerFactoryInternal::remove_curse;
                 creators["remove curse on party"] = &TriggerFactoryInternal::remove_curse_on_party;
@@ -160,6 +161,7 @@ namespace ai
             static Trigger* icy_veins(PlayerbotAI* ai) { return new IcyVeinsTrigger(ai); }
             static Trigger* arcane_intellect(PlayerbotAI* ai) { return new ArcaneIntellectTrigger(ai); }
             static Trigger* arcane_intellect_on_party(PlayerbotAI* ai) { return new ArcaneIntellectOnPartyTrigger(ai); }
+            static Trigger* arcane_brilliance_on_party(PlayerbotAI* ai) { return new ArcaneBrillianceOnPartyTrigger(ai); }
             static Trigger* mage_armor(PlayerbotAI* ai) { return new MageArmorTrigger(ai); }
             static Trigger* remove_curse(PlayerbotAI* ai) { return new RemoveCurseTrigger(ai); }
             static Trigger* remove_curse_on_party(PlayerbotAI* ai) { return new PartyMemberRemoveCurseTrigger(ai); }
@@ -217,6 +219,7 @@ namespace ai
                 creators["frost nova"] = &AiObjectContextInternal::frost_nova;
                 creators["arcane intellect"] = &AiObjectContextInternal::arcane_intellect;
                 creators["arcane intellect on party"] = &AiObjectContextInternal::arcane_intellect_on_party;
+                creators["arcane brilliance on party"] = &AiObjectContextInternal::arcane_brilliance_on_party;
                 creators["conjure water"] = &AiObjectContextInternal::conjure_water;
                 creators["conjure food"] = &AiObjectContextInternal::conjure_food;
                 creators["molten armor"] = &AiObjectContextInternal::molten_armor;
@@ -296,6 +299,7 @@ namespace ai
             static Action* frost_nova(PlayerbotAI* ai) { return new CastFrostNovaAction(ai); }
             static Action* arcane_intellect(PlayerbotAI* ai) { return new CastArcaneIntellectAction(ai); }
             static Action* arcane_intellect_on_party(PlayerbotAI* ai) { return new CastArcaneIntellectOnPartyAction(ai); }
+            static Action* arcane_brilliance_on_party(PlayerbotAI* ai) { return new CastArcaneBrillianceOnPartyAction(ai); }
             static Action* conjure_water(PlayerbotAI* ai) { return new CastConjureWaterAction(ai); }
             static Action* conjure_food(PlayerbotAI* ai) { return new CastConjureFoodAction(ai); }
             static Action* molten_armor(PlayerbotAI* ai) { return new CastMoltenArmorAction(ai); }

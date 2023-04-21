@@ -13,7 +13,7 @@ ShadowPriestStrategy::ShadowPriestStrategy(PlayerbotAI* ai) : GenericPriestStrat
 
 NextAction** ShadowPriestStrategy::GetDefaultCombatActions()
 {
-    return NextAction::array(0, new NextAction("mind blast", 10.0f), new NextAction("mana burn", 9.0f), new NextAction("starshards", 8.0f), new NextAction("shoot", 7.0f), NULL);
+    return NextAction::array(0, new NextAction("shoot", 1.0f), NULL);
 }
 
 void ShadowPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
@@ -21,8 +21,12 @@ void ShadowPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     GenericPriestStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "timer",
+        NextAction::array(0, new NextAction("mind blast", 10.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "shadowform",
-        NextAction::array(0, new NextAction("shadowform", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("shadowform", ACTION_HIGH + 10), NULL)));
 
     /*triggers.push_back(new TriggerNode(
         "low mana",
@@ -31,6 +35,10 @@ void ShadowPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "vampiric embrace",
         NextAction::array(0, new NextAction("vampiric embrace", 16.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "starshards",
+        NextAction::array(0, new NextAction("starshards", 15.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "silence",
@@ -42,14 +50,14 @@ void ShadowPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "shadowfiend",
-        NextAction::array(0, new NextAction("shadowfiend", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("shadowfiend", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium mana",
-        NextAction::array(0, new NextAction("shadowfiend", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("shadowfiend", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "low mana",
+        "very often",
         NextAction::array(0, new NextAction("mana burn", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(

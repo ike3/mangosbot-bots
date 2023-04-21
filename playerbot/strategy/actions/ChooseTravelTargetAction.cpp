@@ -133,7 +133,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
     }
 
     //Get mail
-    if (!foundTarget && urand(1, 100) > 10)                                  //90% chance
+    if (!foundTarget && urand(1, 100) > 70)                                  //30% chance
     {
         if (AI_VALUE(bool, "can get mail"))
         {
