@@ -930,6 +930,8 @@ bool UseRandomRecipeAction::Execute(Event& event)
     for (auto& recipe : recipes)
     {
         recipeName = recipe->GetProto()->Name1;
+        if (!urand(0, 10))
+            break;
     }
 
     if (recipeName.empty())
