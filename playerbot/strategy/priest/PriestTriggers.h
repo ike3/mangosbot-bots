@@ -29,6 +29,7 @@ namespace ai
     BUFF_TRIGGER(FearWardTrigger, "fear ward");
     DEFLECT_TRIGGER(FeedbackTrigger, "feedback");
     SNARE_TRIGGER(ChastiseTrigger, "chastise");
+    DEBUFF_TRIGGER(StarshardsTrigger, "starshards");
 
     BOOST_TRIGGER_A(ShadowfiendTrigger, "shadowfiend");
 

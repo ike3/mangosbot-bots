@@ -33,6 +33,10 @@ void ShadowPriestStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("vampiric embrace", 16.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "starshards",
+        NextAction::array(0, new NextAction("starshards", 15.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "silence",
         NextAction::array(0, new NextAction("silence", ACTION_INTERRUPT + 1), NULL)));
 

@@ -108,6 +108,7 @@ namespace ai
                 creators["touch of weakness"] = &TriggerFactoryInternal::touch_of_weakness;
                 creators["hex of weakness"] = &TriggerFactoryInternal::hex_of_weakness;
                 creators["shadowguard"] = &TriggerFactoryInternal::shadowguard;
+                creators["starshards"] = &TriggerFactoryInternal::starshards;
                 creators["fear ward"] = &TriggerFactoryInternal::fear_ward;
                 creators["feedback"] = &TriggerFactoryInternal::feedback;
                 creators["binding heal"] = &TriggerFactoryInternal::binding_heal;
@@ -126,6 +127,7 @@ namespace ai
             static Trigger* feedback(PlayerbotAI* ai) { return new FeedbackTrigger(ai); }
             static Trigger* fear_ward(PlayerbotAI* ai) { return new FearWardTrigger(ai); }
             static Trigger* shadowguard(PlayerbotAI* ai) { return new ShadowguardTrigger(ai); }
+            static Trigger* starshards(PlayerbotAI* ai) { return new StarshardsTrigger(ai); }
             static Trigger* hex_of_weakness(PlayerbotAI* ai) { return new HexOfWeaknessTrigger(ai); }
             static Trigger* touch_of_weakness(PlayerbotAI* ai) { return new TouchOfWeaknessTrigger(ai); }
             static Trigger* holy_fire(PlayerbotAI* ai) { return new HolyFireTrigger(ai); }
