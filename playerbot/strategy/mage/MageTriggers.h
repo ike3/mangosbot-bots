@@ -20,16 +20,34 @@ namespace ai
 
     class ArcaneIntellectOnPartyTrigger : public BuffOnPartyTrigger {
     public:
-        ArcaneIntellectOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane intellect", 2) {}
+        ArcaneIntellectOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane intellect", 4) {}
 
         virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("arcane brilliance", GetTarget()); }
     };
 
     class ArcaneIntellectTrigger : public BuffTrigger {
     public:
-        ArcaneIntellectTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "arcane intellect", 2) {}
+        ArcaneIntellectTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "arcane intellect", 4) {}
 
         virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("arcane brilliance", GetTarget()); }
+    };
+
+    class ArcaneBrillianceOnPartyTrigger : public BuffOnPartyTrigger {
+    public:
+        ArcaneBrillianceOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane brilliance", 4) {}
+
+        virtual bool IsActive() {
+            return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&
+                !ai->HasAura("arcane intellect", GetTarget()) &&
+#ifdef MANGOS
+                (ai->GetBot()->IsInSameGroupWith((Player*)GetTarget()) || ai->GetBot()->IsInSameRaidWith((Player*)GetTarget())) &&
+#endif
+#ifdef CMANGOS
+                bot->IsInGroup((Player*)GetTarget()) &&
+#endif
+                (ai->GetBuffedCount((Player*)GetTarget(), "arcane brilliance") + ai->GetBuffedCount((Player*)GetTarget(), "arcane intellect")) < 4;
+            ;
+        }
     };
 
     class MageArmorTrigger : public BuffTrigger {
