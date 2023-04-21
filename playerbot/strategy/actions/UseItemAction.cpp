@@ -144,7 +144,7 @@ bool UseItemAction::Execute(Event& event)
          list<Item*>::iterator i = items.begin();
          Item* itemTarget = *i++;
          Item* item = *i;
-         if(item->IsPotion() || item->GetProto()->Class == ITEM_CLASS_CONSUMABLE)
+         if(item->IsPotion() || item->GetProto()->Class == ITEM_CLASS_CONSUMABLE || itemTarget->GetProto() == item->GetProto())
              return UseItemAuto(item);
          else
              return UseItemOnItem(item, itemTarget);
