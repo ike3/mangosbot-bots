@@ -2503,6 +2503,13 @@ void PlayerbotFactory::InitAvailableSpells()
             bookSpells.push_back(25294);
             bookSpells.push_back(25295);
             break;
+        case CLASS_MAGE:
+            bookSpells.push_back(23028);
+            bookSpells.push_back(25345);
+            bookSpells.push_back(25306);
+            bookSpells.push_back(3723);
+            bookSpells.push_back(28612);
+            break;
         case CLASS_ROGUE:
             bookSpells.push_back(25300);
             bookSpells.push_back(25302);
