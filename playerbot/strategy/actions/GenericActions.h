@@ -75,7 +75,32 @@ namespace ai
     {
     public:
         ChatCommandAction(PlayerbotAI* ai, string name, uint32 duration = sPlayerbotAIConfig.reactDelay) : Action(ai, name, duration) {}
+    };
 
-        // ...
+    class UpdateStrategyDependenciesAction : public Action
+    {
+        struct StrategyToUpdate
+        {
+            StrategyToUpdate(BotState inState, std::string inStrategy, std::vector<std::string> inStrategiesRequired = {})
+            : state(inState)
+            , name(inStrategy)
+            , strategiesRequired(inStrategiesRequired) {}
+
+            BotState state;
+            std::string name;
+            std::vector<std::string> strategiesRequired;
+        };
+
+     public:
+         UpdateStrategyDependenciesAction(PlayerbotAI* ai, std::string name = "update strategy dependencies") : Action(ai, name) {}
+         bool Execute(Event& event) override;
+         bool isUseful() override;
+
+    protected:
+        std::vector<StrategyToUpdate> strategiesToUpdate;
+
+    private:
+        std::vector<const StrategyToUpdate*> strategiesToAdd;
+        std::vector<const StrategyToUpdate*> strategiesToRemove;
     };
 }
