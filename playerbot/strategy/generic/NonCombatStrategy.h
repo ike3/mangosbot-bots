@@ -3,6 +3,7 @@
 
 namespace ai
 {
+    // TO DO: Remove this when no dependencies are left
     class NonCombatStrategy : public Strategy
     {
     public:

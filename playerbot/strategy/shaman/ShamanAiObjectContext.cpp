@@ -2,45 +2,74 @@
 #include "../../playerbot.h"
 #include "ShamanActions.h"
 #include "ShamanAiObjectContext.h"
-#include "ShamanNonCombatStrategy.h"
-#include "ShamanReactionStrategy.h"
-#include "HealShamanStrategy.h"
-#include "MeleeShamanStrategy.h"
 #include "ShamanTriggers.h"
 #include "../NamedObjectContext.h"
-#include "TotemsShamanStrategy.h"
-#include "CasterShamanStrategy.h"
-
-using namespace ai;
+#include "ElementalShamanStrategy.h"
+#include "RestorationShamanStrategy.h"
+#include "EnhancementShamanStrategy.h"
 
 namespace ai
 {
     namespace shaman
     {
-        using namespace ai;
-
         class StrategyFactoryInternal : public NamedObjectContext<Strategy>
         {
         public:
             StrategyFactoryInternal()
             {
-                creators["nc"] = &shaman::StrategyFactoryInternal::nc;
-                creators["react"] = &shaman::StrategyFactoryInternal::react;
-                creators["totems"] = &shaman::StrategyFactoryInternal::totems;
-                creators["melee aoe"] = &shaman::StrategyFactoryInternal::melee_aoe;
-                creators["caster aoe"] = &shaman::StrategyFactoryInternal::caster_aoe;
+                creators["aoe"] = &shaman::StrategyFactoryInternal::aoe;
                 creators["cure"] = &shaman::StrategyFactoryInternal::cure;
                 creators["pull"] = &shaman::StrategyFactoryInternal::pull;
             }
 
         private:
-            static Strategy* nc(PlayerbotAI* ai) { return new ShamanNonCombatStrategy(ai); }
-            static Strategy* react(PlayerbotAI* ai) { return new ShamanReactionStrategy(ai); }
-            static Strategy* totems(PlayerbotAI* ai) { return new TotemsShamanStrategy(ai); }
-            static Strategy* melee_aoe(PlayerbotAI* ai) { return new MeleeAoeShamanStrategy(ai); }
-            static Strategy* caster_aoe(PlayerbotAI* ai) { return new CasterAoeShamanStrategy(ai); }
-            static Strategy* cure(PlayerbotAI* ai) { return new ShamanCureStrategy(ai); }
+            static Strategy* aoe(PlayerbotAI* ai) { return new ShamanAoePlaceholderStrategy(ai); }
+            static Strategy* cure(PlayerbotAI* ai) { return new ShamanCurePlaceholderStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "lightning bolt"); }            
+        };
+
+        class AoePvePvpStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            AoePvePvpStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["aoe elemental pve"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_elemental_pve;
+                creators["aoe elemental pvp"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_elemental_pvp;
+                creators["aoe restoration pve"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_restoration_pve;
+                creators["aoe restoration pvp"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_restoration_pvp;
+                creators["aoe enhancement pve"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_enhancement_pve;
+                creators["aoe enhancement pvp"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_enhancement_pvp;
+            }
+
+        private:
+            static Strategy* aoe_elemental_pve(PlayerbotAI* ai) { return new ElementalShamanAoePveStrategy(ai); }
+            static Strategy* aoe_elemental_pvp(PlayerbotAI* ai) { return new ElementalShamanAoePvpStrategy(ai); }
+            static Strategy* aoe_restoration_pve(PlayerbotAI* ai) { return new RestorationShamanAoePveStrategy(ai); }
+            static Strategy* aoe_restoration_pvp(PlayerbotAI* ai) { return new RestorationShamanAoePvpStrategy(ai); }
+            static Strategy* aoe_enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanAoePveStrategy(ai); }
+            static Strategy* aoe_enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanAoePvpStrategy(ai); }
+        };
+
+        class CurePvePvpStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            CurePvePvpStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["cure elemental pve"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_elemental_pve;
+                creators["cure elemental pvp"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_elemental_pvp;
+                creators["cure restoration pve"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_restoration_pve;
+                creators["cure restoration pvp"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_restoration_pvp;
+                creators["cure enhancement pve"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_enhancement_pve;
+                creators["cure enhancement pvp"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_enhancement_pvp;
+            }
+
+        private:
+            static Strategy* cure_elemental_pve(PlayerbotAI* ai) { return new ElementalShamanCurePveStrategy(ai); }
+            static Strategy* cure_elemental_pvp(PlayerbotAI* ai) { return new ElementalShamanCurePvpStrategy(ai); }
+            static Strategy* cure_restoration_pve(PlayerbotAI* ai) { return new RestorationShamanCurePveStrategy(ai); }
+            static Strategy* cure_restoration_pvp(PlayerbotAI* ai) { return new RestorationShamanCurePvpStrategy(ai); }
+            static Strategy* cure_enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanCurePveStrategy(ai); }
+            static Strategy* cure_enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanCurePvpStrategy(ai); }
         };
 
         class TotemStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -49,20 +78,38 @@ namespace ai
             TotemStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
             {
                 creators["totems"] = &shaman::TotemStrategyFactoryInternal::totems;
-#ifdef MANGOSBOT_TWO
                 creators["totembar elements"] = &shaman::TotemStrategyFactoryInternal::totem_bar_elements;
                 creators["totembar ancestors"] = &shaman::TotemStrategyFactoryInternal::totem_bar_ancestors;
                 creators["totembar spirits"] = &shaman::TotemStrategyFactoryInternal::totem_bar_spirits;
-#endif
             }
 
         private:
-            static Strategy* totems(PlayerbotAI* ai) { return new TotemsShamanStrategy(ai); }
-#ifdef MANGOSBOT_TWO            
+            static Strategy* totems(PlayerbotAI* ai) { return new ShamanTotemsPlaceholderStrategy(ai); }         
             static Strategy* totem_bar_elements(PlayerbotAI* ai) { return new ShamanTotemBarElementsStrategy(ai); }
             static Strategy* totem_bar_ancestors(PlayerbotAI* ai) { return new ShamanTotemBarAncestorsStrategy(ai); }
             static Strategy* totem_bar_spirits(PlayerbotAI* ai) { return new ShamanTotemBarSpiritsStrategy(ai); }
-#endif
+        };
+
+        class TotemsPvePvpStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            TotemsPvePvpStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["totems elemental pve"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_elemental_pve;
+                creators["totems elemental pvp"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_elemental_pvp;
+                creators["totems restoration pve"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_restoration_pve;
+                creators["totems restoration pvp"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_restoration_pvp;
+                creators["totems enhancement pve"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_enhancement_pve;
+                creators["totems enhancement pvp"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_enhancement_pvp;
+            }
+
+        private:
+            static Strategy* totems_elemental_pve(PlayerbotAI* ai) { return new ElementalShamanTotemsPveStrategy(ai); }
+            static Strategy* totems_elemental_pvp(PlayerbotAI* ai) { return new ElementalShamanTotemsPvpStrategy(ai); }
+            static Strategy* totems_restoration_pve(PlayerbotAI* ai) { return new RestorationShamanTotemsPveStrategy(ai); }
+            static Strategy* totems_restoration_pvp(PlayerbotAI* ai) { return new RestorationShamanTotemsPvpStrategy(ai); }
+            static Strategy* totems_enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanTotemsPveStrategy(ai); }
+            static Strategy* totems_enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanTotemsPvpStrategy(ai); }
         };
 
         class BuffStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -79,21 +126,42 @@ namespace ai
             static Strategy* bdps(PlayerbotAI* ai) { return new ShamanBuffDpsStrategy(ai); }
         };
 
-        class CombatStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        class ClassStrategyFactoryInternal : public NamedObjectContext<Strategy>
         {
         public:
-            CombatStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            ClassStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
             {
-                creators["heal"] = &shaman::CombatStrategyFactoryInternal::heal;
-                creators["melee"] = &shaman::CombatStrategyFactoryInternal::dps;
-                creators["dps"] = &shaman::CombatStrategyFactoryInternal::dps;
-                creators["caster"] = &shaman::CombatStrategyFactoryInternal::caster;
+                creators["restoration"] = &shaman::ClassStrategyFactoryInternal::restoration;
+                creators["enhancement"] = &shaman::ClassStrategyFactoryInternal::enhancement;
+                creators["elemental"] = &shaman::ClassStrategyFactoryInternal::elemental;
             }
 
         private:
-            static Strategy* heal(PlayerbotAI* ai) { return new HealShamanStrategy(ai); }
-            static Strategy* dps(PlayerbotAI* ai) { return new MeleeShamanStrategy(ai); }
-            static Strategy* caster(PlayerbotAI* ai) { return new CasterShamanStrategy(ai); }
+            static Strategy* restoration(PlayerbotAI* ai) { return new RestorationShamanPlaceholderStrategy(ai); }
+            static Strategy* enhancement(PlayerbotAI* ai) { return new EnhancementShamanPlaceholderStrategy(ai); }
+            static Strategy* elemental(PlayerbotAI* ai) { return new ElementalShamanPlaceholderStrategy(ai); }
+        };
+
+        class ClassPvePvpStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            ClassPvePvpStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["elemental pvp"] = &shaman::ClassPvePvpStrategyFactoryInternal::elemental_pvp;
+                creators["elemental pve"] = &shaman::ClassPvePvpStrategyFactoryInternal::elemental_pve;
+                creators["restoration pvp"] = &shaman::ClassPvePvpStrategyFactoryInternal::restoration_pvp;
+                creators["restoration pve"] = &shaman::ClassPvePvpStrategyFactoryInternal::restoration_pve;
+                creators["enhancement pvp"] = &shaman::ClassPvePvpStrategyFactoryInternal::enhancement_pvp;
+                creators["enhancement pve"] = &shaman::ClassPvePvpStrategyFactoryInternal::enhancement_pve;
+            }
+
+        private:
+            static Strategy* elemental_pvp(PlayerbotAI* ai) { return new ElementalShamanPvpStrategy(ai); }
+            static Strategy* elemental_pve(PlayerbotAI* ai) { return new ElementalShamanPveStrategy(ai); }
+            static Strategy* restoration_pvp(PlayerbotAI* ai) { return new RestorationShamanPvpStrategy(ai); }
+            static Strategy* restoration_pve(PlayerbotAI* ai) { return new RestorationShamanPveStrategy(ai); }
+            static Strategy* enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanPvpStrategy(ai); }
+            static Strategy* enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanPveStrategy(ai); }
         };
     };
 };
@@ -139,12 +207,10 @@ namespace ai
                 creators["earth totem"] = &TriggerFactoryInternal::earth_totem;
                 creators["water totem"] = &TriggerFactoryInternal::water_totem;
                 creators["air totem"] = &TriggerFactoryInternal::air_totem;
-#ifdef MANGOSBOT_TWO
                 creators["call of the elements"] = &TriggerFactoryInternal::call_of_the_elements;
                 creators["call of the ancestors"] = &TriggerFactoryInternal::call_of_the_ancestors;
                 creators["call of the spirits"] = &TriggerFactoryInternal::call_of_the_spirits;
                 creators["totemic recall"] = &TriggerFactoryInternal::totemic_recall;
-#endif
             }
 
         private:
@@ -258,6 +324,8 @@ namespace ai
                 creators["call of the spirits"] = &AiObjectContextInternal::call_of_the_spirits;
                 creators["totemic recall"] = &AiObjectContextInternal::totemic_recall;
                 creators["set totembars on levelup"] = &AiObjectContextInternal::set_totembars;
+                creators["update pve strats"] = &AiObjectContextInternal::update_pve_strats;
+                creators["update pvp strats"] = &AiObjectContextInternal::update_pvp_strats;
             }
 
         private:
@@ -322,6 +390,8 @@ namespace ai
             static Action* call_of_the_spirits(PlayerbotAI* ai) { return new CastCallOfTheSpirits(ai); }
             static Action* totemic_recall(PlayerbotAI* ai) { return new CastTotemicRecall(ai); }
             static Action* set_totembars(PlayerbotAI* ai) { return new SetTotemBars(ai); }
+            static Action* update_pve_strats(PlayerbotAI* ai) { return new UpdateShamanPveStrategiesAction(ai); }
+            static Action* update_pvp_strats(PlayerbotAI* ai) { return new UpdateShamanPvpStrategiesAction(ai); }
         };
     };
 };
@@ -329,7 +399,11 @@ namespace ai
 ShamanAiObjectContext::ShamanAiObjectContext(PlayerbotAI* ai) : AiObjectContext(ai)
 {
     strategyContexts.Add(new ai::shaman::StrategyFactoryInternal());
-    strategyContexts.Add(new ai::shaman::CombatStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::TotemsPvePvpStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::AoePvePvpStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::CurePvePvpStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::ClassStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::ClassPvePvpStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::BuffStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::TotemStrategyFactoryInternal());
     actionContexts.Add(new ai::shaman::AiObjectContextInternal());

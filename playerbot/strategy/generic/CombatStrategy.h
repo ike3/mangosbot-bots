@@ -2,6 +2,7 @@
 
 namespace ai
 {
+    // TO DO: Remove this class when no more dependencies
     class CombatStrategy : public Strategy
     {
     public:

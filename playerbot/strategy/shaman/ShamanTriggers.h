@@ -3,7 +3,8 @@
 
 namespace ai
 {
-    class ShamanWeaponTrigger : public BuffTrigger {
+    class ShamanWeaponTrigger : public BuffTrigger 
+    {
     public:
         ShamanWeaponTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "rockbiter weapon") {}
         virtual bool IsActive();
@@ -11,7 +12,8 @@ namespace ai
         static list<string> spells;
     };
 
-    class ReadyToRemoveTotemsTrigger : public Trigger {
+    class ReadyToRemoveTotemsTrigger : public Trigger 
+    {
     public:
         ReadyToRemoveTotemsTrigger(PlayerbotAI* ai) : Trigger(ai, "ready to remove totems", 5) {}
 
@@ -25,7 +27,8 @@ namespace ai
         }
     };
 
-    class TotemsAreNotSummonedTrigger : public Trigger {
+    class TotemsAreNotSummonedTrigger : public Trigger 
+    {
     public:
         TotemsAreNotSummonedTrigger(PlayerbotAI* ai) : Trigger(ai, "no totems summoned", 5) {}
 
@@ -35,7 +38,8 @@ namespace ai
         }
     };
 
-    class TotemTrigger : public Trigger {
+    class TotemTrigger : public Trigger 
+    {
     public:
         TotemTrigger(PlayerbotAI* ai, string spell, int attackerCount = 0) : Trigger(ai, spell), attackerCount(attackerCount) {}
 
@@ -48,7 +52,8 @@ namespace ai
         int attackerCount;
     };
 
-    class FireTotemTrigger : public Trigger {
+    class FireTotemTrigger : public Trigger 
+    {
     public:
         FireTotemTrigger(PlayerbotAI* ai) : Trigger(ai, "trigger spec appropriate fire totem") {}
         virtual bool IsActive()
@@ -62,7 +67,8 @@ namespace ai
         }
     };
 
-    class FireTotemAoeTrigger : public Trigger {
+    class FireTotemAoeTrigger : public Trigger 
+    {
     public:
         FireTotemAoeTrigger(PlayerbotAI* ai) : Trigger(ai, "trigger spec appropriate fire totem aoe", 2) {}
         virtual bool IsActive()
@@ -77,7 +83,8 @@ namespace ai
         }
     };
 
-    class EarthTotemTrigger : public Trigger {
+    class EarthTotemTrigger : public Trigger 
+    {
     public:
         EarthTotemTrigger(PlayerbotAI* ai) : Trigger(ai, "trigger spec appropriate earth totem") {}
         virtual bool IsActive()
@@ -91,7 +98,8 @@ namespace ai
         }
     };
 
-    class AirTotemTrigger : public Trigger {
+    class AirTotemTrigger : public Trigger 
+    {
     public:
         AirTotemTrigger(PlayerbotAI* ai) : Trigger(ai, "trigger spec appropriate air totem") {}
         virtual bool IsActive()
@@ -104,7 +112,8 @@ namespace ai
         }
     };
 
-    class WaterTotemTrigger : public Trigger {
+    class WaterTotemTrigger : public Trigger 
+    {
     public:
         WaterTotemTrigger(PlayerbotAI* ai) : Trigger(ai, "trigger spec appropriate water totem") {}
         virtual bool IsActive()
@@ -190,7 +199,8 @@ namespace ai
         }
     };
 
-    class WaterWalkingTrigger : public BuffTrigger {
+    class WaterWalkingTrigger : public BuffTrigger 
+    {
     public:
         WaterWalkingTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "water walking", 7) {}
 
@@ -200,7 +210,8 @@ namespace ai
         }
     };
 
-    class WaterBreathingTrigger : public BuffTrigger {
+    class WaterBreathingTrigger : public BuffTrigger 
+    {
     public:
         WaterBreathingTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "water breathing", 5) {}
 
@@ -210,7 +221,8 @@ namespace ai
         }
     };
 
-    class WaterWalkingOnPartyTrigger : public BuffOnPartyTrigger {
+    class WaterWalkingOnPartyTrigger : public BuffOnPartyTrigger 
+    {
     public:
         WaterWalkingOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "water walking on party", 7) {}
 
@@ -220,7 +232,8 @@ namespace ai
         }
     };
 
-    class WaterBreathingOnPartyTrigger : public BuffOnPartyTrigger {
+    class WaterBreathingOnPartyTrigger : public BuffOnPartyTrigger 
+    {
     public:
         WaterBreathingOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "water breathing on party", 2) {}
 
@@ -266,13 +279,15 @@ namespace ai
         PartyMemberCleanseSpiritDiseaseTrigger(PlayerbotAI* ai) : PartyMemberNeedCureTrigger(ai, "cleanse spirit", DISPEL_DISEASE) {}
     };
 
-    class ShockTrigger : public DebuffTrigger {
+    class ShockTrigger : public DebuffTrigger 
+    {
     public:
         ShockTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "earth shock") {}
         virtual bool IsActive();
     };
 
-    class FrostShockSnareTrigger : public SnareTargetTrigger {
+    class FrostShockSnareTrigger : public SnareTargetTrigger
+    {
     public:
         FrostShockSnareTrigger(PlayerbotAI* ai) : SnareTargetTrigger(ai, "frost shock") {}
     };

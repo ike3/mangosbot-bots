@@ -358,11 +358,17 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         case CLASS_SHAMAN:
         {
             if (tab == 0)
-                engine->addStrategies("caster", "caster aoe", "bmana", "threat", "flee", "ranged", NULL);
+            {
+                engine->addStrategies("elemental", "aoe", "bmana", "threat", "flee", "ranged", NULL);
+            }
             else if (tab == 2)
-                engine->addStrategies("heal", "bmana", "flee", "ranged", NULL);
+            {
+                engine->addStrategies("restoration", "bmana", "flee", "ranged", NULL);
+            }
             else
-                engine->addStrategies("dps", "melee aoe", "bdps", "threat", "close", NULL);
+            {
+                engine->addStrategies("enhancement", "aoe", "bdps", "threat", "close", NULL);
+            }
 
             engine->addStrategies("dps assist", "cure", "totems", NULL);
             break;
@@ -506,7 +512,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
             if (player->getClass() == CLASS_SHAMAN && tab == 2)
             {
-                engine->addStrategies("caster", "caster aoe", NULL);
+                engine->addStrategies("elemental", "aoe", NULL);
             }
 
             if (player->getClass() == CLASS_PALADIN && tab == 0)
@@ -586,8 +592,15 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         engine->removeStrategy("threat");
         engine->addStrategy("boost");
 
-        if ((player->getClass() == CLASS_DRUID && tab == 2) || (player->getClass() == CLASS_SHAMAN && tab == 2))
+        if (player->getClass() == CLASS_SHAMAN && tab == 2)
+        {
+            engine->addStrategies("elemental", "aoe", NULL);
+        }
+
+        if (player->getClass() == CLASS_DRUID && tab == 2)
+        {
             engine->addStrategies("caster", "caster aoe", NULL);
+        }
 
         if (player->getClass() == CLASS_DRUID && tab == 1)
         {
@@ -653,18 +666,18 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         {
             if (tab == 0)
             {
-                nonCombatEngine->addStrategies("caster", "bmana", "aoe", NULL);
+                nonCombatEngine->addStrategies("elemental", "bmana", "aoe", NULL);
             }
             else if (tab == 1)
             {
-                nonCombatEngine->addStrategies("melee", "bdps", NULL);
+                nonCombatEngine->addStrategies("enhancement", "bdps", NULL);
             }
             else
             {
-                nonCombatEngine->addStrategies("heal", "bmana", NULL);
+                nonCombatEngine->addStrategies("restoration", "bmana", NULL);
             }
 
-            nonCombatEngine->addStrategies("dps assist", "cure", NULL);
+            nonCombatEngine->addStrategies("dps assist", "cure", "totems", NULL);
             break;
         }
 
@@ -937,6 +950,28 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
     {
         deadEngine->removeStrategy("follow");
     }
+
+    const int tab = GetPlayerSpecTab(player);
+    switch (player->getClass())
+    {
+        case CLASS_SHAMAN:
+        {
+            if (tab == 0)
+            {
+                deadEngine->addStrategy("elemental");
+            }
+            else if (tab == 1)
+            {
+                deadEngine->addStrategy("enhancement");
+            }
+            else
+            {
+                deadEngine->addStrategy("restoration");
+            }
+
+            break;
+        }
+    }
 }
 
 Engine* AiFactory::createDeadEngine(Player* player, PlayerbotAI* const facade, AiObjectContext* AiObjectContext)
@@ -949,6 +984,28 @@ Engine* AiFactory::createDeadEngine(Player* player, PlayerbotAI* const facade, A
 void AiFactory::AddDefaultReactionStrategies(Player* player, PlayerbotAI* const facade, ReactionEngine* reactionEngine)
 {
     reactionEngine->addStrategies("react", "chat", "avoid aoe", "potions", NULL);
+
+    const int tab = GetPlayerSpecTab(player);
+    switch (player->getClass())
+    {
+        case CLASS_SHAMAN:
+        {
+            if (tab == 0)
+            {
+                reactionEngine->addStrategy("elemental");
+            }
+            else if (tab == 1)
+            {
+                reactionEngine->addStrategy("enhancement");
+            }
+            else
+            {
+                reactionEngine->addStrategy("restoration");
+            }
+
+            break;
+        }
+    }
 }
 
 ReactionEngine* AiFactory::createReactionEngine(Player* player, PlayerbotAI* const facade, AiObjectContext* AiObjectContext)
