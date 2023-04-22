@@ -54,24 +54,24 @@ namespace ai
         static void InitDeadTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class ShamanAoeStrategy : public Strategy
+    class ShamanAoeStrategy : public AoeStrategy
     {
     public:
-        ShamanAoeStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        ShamanAoeStrategy(PlayerbotAI* ai) : AoeStrategy(ai) {}
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class ShamanAoePvpStrategy
+    class ShamanAoePvpStrategy : public AoePvpStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class ShamanAoePveStrategy
+    class ShamanAoePveStrategy : public AoePveStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -100,24 +100,24 @@ namespace ai
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class ShamanCureStrategy : public Strategy
+    class ShamanCureStrategy : public CureStrategy
     {
     public:
-        ShamanCureStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        ShamanCureStrategy(PlayerbotAI* ai) : CureStrategy(ai) {}
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class ShamanCurePvpStrategy
+    class ShamanCurePvpStrategy : public CurePvpStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class ShamanCurePveStrategy
+    class ShamanCurePveStrategy : public CurePveStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);

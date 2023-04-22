@@ -270,32 +270,32 @@ void ShamanPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 void ShamanAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoeStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoeStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePvpStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePvpStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePveStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePveStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanBuffDpsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -322,6 +322,8 @@ void ShamanBuffManaStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trig
 
 void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    CureStrategy::InitCombatTriggers(triggers);
+
     triggers.push_back(new TriggerNode(
         "cure disease",
         NextAction::array(0, new NextAction("cure disease", 31.0f), NULL)));
@@ -341,27 +343,43 @@ void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
 void ShamanCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    InitCombatTriggers(triggers);
+    CureStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "cure disease",
+        NextAction::array(0, new NextAction("cure disease", 31.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member cure disease",
+        NextAction::array(0, new NextAction("cure disease on party", 30.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "cure poison",
+        NextAction::array(0, new NextAction("cure poison", 21.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member cure poison",
+        NextAction::array(0, new NextAction("cure poison on party", 21.0f), NULL)));
 }
 
 void ShamanCurePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePvpStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePvpStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanCurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePveStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanCurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePveStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanTotemsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -569,32 +587,32 @@ void ShamanPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 void ShamanAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoeStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoeStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePvpStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePvpStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePveStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePveStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanBuffDpsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -623,6 +641,8 @@ void ShamanBuffManaStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trig
 
 void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    CureStrategy::InitCombatTriggers(triggers);
+
     triggers.push_back(new TriggerNode(
         "cure disease",
         NextAction::array(0, new NextAction("cure disease", 31.0f), NULL)));
@@ -642,27 +662,43 @@ void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
 void ShamanCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    InitCombatTriggers(triggers);
+    CureStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "cure disease",
+        NextAction::array(0, new NextAction("cure disease", 31.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member cure disease",
+        NextAction::array(0, new NextAction("cure disease on party", 30.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "cure poison",
+        NextAction::array(0, new NextAction("cure poison", 21.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member cure poison",
+        NextAction::array(0, new NextAction("cure poison on party", 21.0f), NULL)));
 }
 
 void ShamanCurePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePvpStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePvpStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanCurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePveStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanCurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePveStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanTotemsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -874,32 +910,32 @@ void ShamanPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 void ShamanAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoeStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoeStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePvpStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePvpStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePveStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    AoePveStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanBuffDpsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -928,6 +964,8 @@ void ShamanBuffManaStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trig
 
 void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    CureStrategy::InitCombatTriggers(triggers);
+
     triggers.push_back(new TriggerNode(
         "cure disease",
         NextAction::array(0, new NextAction("cure disease", 31.0f), NULL)));
@@ -978,27 +1016,74 @@ void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
 void ShamanCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    InitCombatTriggers(triggers);
+    CureStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "cure disease",
+        NextAction::array(0, new NextAction("cure disease", 31.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member cure disease",
+        NextAction::array(0, new NextAction("cure disease on party", 30.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "cleanse spirit poison",
+        NextAction::array(0, new NextAction("cleanse spirit", 24.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "cleanse spirit disease",
+        NextAction::array(0, new NextAction("cleanse spirit", 24.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "cleanse spirit curse",
+        NextAction::array(0, new NextAction("cleanse spirit", 24.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member cleanse spirit poison",
+        NextAction::array(0, new NextAction("cleanse spirit poison on party", 23.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member cleanse spirit disease",
+        NextAction::array(0, new NextAction("cleanse spirit disease on party", 23.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member cleanse spirit curse",
+        NextAction::array(0, new NextAction("cleanse spirit curse on party", 23.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "cure poison",
+        NextAction::array(0, new NextAction("cure poison", 21.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member cure poison",
+        NextAction::array(0, new NextAction("cure poison on party", 21.0f), NULL)));
+
+    if (sRandomPlayerbotMgr.IsRandomBot(ai->GetBot()))
+    {
+        triggers.push_back(new TriggerNode(
+            "levelup",
+            NextAction::array(0, new NextAction("set totembars on levelup", 20.0f), NULL)));
+    }
 }
 
 void ShamanCurePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePvpStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePvpStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanCurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePveStrategy::InitCombatTriggers(triggers);
 }
 
 void ShamanCurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    CurePveStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanTotemsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
