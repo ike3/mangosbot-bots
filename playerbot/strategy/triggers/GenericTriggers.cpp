@@ -584,12 +584,22 @@ bool InPvpTrigger::IsActive()
 {
     if (ai->IsSafe(bot))
     {
-        // Check if the bot is in a PvP scenario
-        const Map* map = bot->GetMap();
-        const bool inBattleground = map ? map->IsBattleGround() : false;
         const bool inDuel = bot->duel && bot->duel->opponent;
-        const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
-        return inBattleground || inDuel || isPlayerNear;
+        if (!inDuel)
+        {
+            const Map* map = bot->GetMap();
+            const bool inBattleground = map ? map->IsBattleGround() : false;
+            if (!inBattleground)
+            {
+                const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
+                if (!isPlayerNear)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     return false;
@@ -599,12 +609,22 @@ bool InPveTrigger::IsActive()
 {
     if (ai->IsSafe(bot))
     {
-        // Check if the bot no longer is in a PvP scenario
-        const Map* map = bot->GetMap();
-        const bool inBattleground = map ? map->IsBattleGround() : false;
         const bool inDuel = bot->duel && bot->duel->opponent;
-        const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
-        return !inBattleground && !inDuel && !isPlayerNear;
+        if (!inDuel)
+        {
+            const Map* map = bot->GetMap();
+            const bool inBattleground = map ? map->IsBattleGround() : false;
+            if (!inBattleground)
+            {
+                const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
+                if (!isPlayerNear)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     return false;
