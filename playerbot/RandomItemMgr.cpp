@@ -3632,6 +3632,8 @@ void RandomItemMgr::BuildRarityCache()
                             itemId, rarity);
                 }
             }
+
+            delete results;
         }
         sLog.outString("Item rarity cache built from %u items", sItemStorage.GetMaxEntry());
     }
