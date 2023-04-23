@@ -563,4 +563,65 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "totems restoration pvp", strategiesRequired);
         }
     };
+
+    class UpdateShamanBossStrategiesAction : public UpdateStrategyDependenciesAction
+    {
+    public:
+        UpdateShamanBossStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update boss strats")
+        {
+            std::vector<std::string> strategiesRequired = { "elemental" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "elemental boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "elemental boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "elemental boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "elemental boss", strategiesRequired);
+
+            strategiesRequired = { "elemental", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe elemental boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe elemental boss", strategiesRequired);
+
+            strategiesRequired = { "elemental", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure elemental boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure elemental boss", strategiesRequired);
+
+            strategiesRequired = { "elemental", "totems" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "totems elemental boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "totems elemental boss", strategiesRequired);
+
+            strategiesRequired = { "enhancement" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "enhancement boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "enhancement boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "enhancement boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "enhancement boss", strategiesRequired);
+
+            strategiesRequired = { "enhancement", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe enhancement boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe enhancement boss", strategiesRequired);
+
+            strategiesRequired = { "enhancement", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure enhancement boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure enhancement boss", strategiesRequired);
+
+            strategiesRequired = { "enhancement", "totems" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "totems enhancement boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "totems enhancement boss", strategiesRequired);
+
+            strategiesRequired = { "restoration" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "restoration boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "restoration boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "restoration boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "restoration boss", strategiesRequired);
+
+            strategiesRequired = { "restoration", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe restoration boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe restoration boss", strategiesRequired);
+
+            strategiesRequired = { "restoration", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure restoration boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure restoration boss", strategiesRequired);
+
+            strategiesRequired = { "restoration", "totems" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "totems restoration boss", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "totems restoration boss", strategiesRequired);
+        }
+    };
 }

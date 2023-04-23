@@ -134,6 +134,26 @@ void ClassPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
+void ClassBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void ClassBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void ClassBossStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void ClassBossStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 void AoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
@@ -380,6 +400,26 @@ void ClassPveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void ClassPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void ClassBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void ClassBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void ClassBossStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void ClassBossStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -634,6 +674,26 @@ void ClassPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
+void ClassBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void ClassBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void ClassBossStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void ClassBossStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 void AoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
@@ -765,6 +825,10 @@ void SpecPlaceholderStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
     triggers.push_back(new TriggerNode(
         "in pvp",
         NextAction::array(0, new NextAction("update pvp strats", 100.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "in boss fight",
+        NextAction::array(0, new NextAction("update boss strats", 100.0f), NULL)));
 }
 
 void SpecPlaceholderStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -776,4 +840,48 @@ void SpecPlaceholderStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tri
     triggers.push_back(new TriggerNode(
         "in pvp",
         NextAction::array(0, new NextAction("update pvp strats", 100.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "in boss fight",
+        NextAction::array(0, new NextAction("update boss strats", 100.0f), NULL)));
+}
+
+void AoeBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void AoeBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CureBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CureBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CcBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CcBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
 }

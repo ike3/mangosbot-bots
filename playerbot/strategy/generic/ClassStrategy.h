@@ -33,6 +33,15 @@ namespace ai
         static void InitDeadTriggers(std::list<TriggerNode*>& triggers);
     };
 
+    class ClassBossStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitReactionTriggers(std::list<TriggerNode*>& triggers);
+        static void InitDeadTriggers(std::list<TriggerNode*>& triggers);
+    };
+
     class AoeStrategy : public Strategy
     {
     public:
@@ -51,6 +60,13 @@ namespace ai
     };
 
     class AoePveStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class AoeBossStrategy
     {
     protected:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -81,6 +97,13 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
+    class CureBossStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
     class BoostStrategy : public Strategy
     {
     public:
@@ -105,6 +128,13 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
+    class BoostBossStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
     class CcStrategy : public Strategy
     {
     public:
@@ -123,6 +153,13 @@ namespace ai
     };
 
     class CcPveStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class CcBossStrategy
     {
     protected:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);

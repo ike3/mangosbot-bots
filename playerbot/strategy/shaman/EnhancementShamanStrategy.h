@@ -50,6 +50,19 @@ namespace ai
         void InitDeadTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class EnhancementShamanBossStrategy : public EnhancementShamanStrategy
+    {
+    public:
+        EnhancementShamanBossStrategy(PlayerbotAI* ai) : EnhancementShamanStrategy(ai) {}
+        std::string getName() override { return "enhancement boss"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitReactionTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitDeadTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class EnhancementShamanAoeStrategy : public ShamanAoeStrategy
     {
     public:
@@ -76,6 +89,17 @@ namespace ai
     public:
         EnhancementShamanAoePvpStrategy(PlayerbotAI* ai) : EnhancementShamanAoeStrategy(ai) {}
         string getName() override { return "aoe enhancement pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class EnhancementShamanAoeBossStrategy : public EnhancementShamanAoeStrategy
+    {
+    public:
+        EnhancementShamanAoeBossStrategy(PlayerbotAI* ai) : EnhancementShamanAoeStrategy(ai) {}
+        string getName() override { return "aoe enhancement boss"; }
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
@@ -114,6 +138,17 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class EnhancementShamanCureBossStrategy : public EnhancementShamanCureStrategy
+    {
+    public:
+        EnhancementShamanCureBossStrategy(PlayerbotAI* ai) : EnhancementShamanCureStrategy(ai) {}
+        string getName() override { return "cure enhancement boss"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class EnhancementShamanTotemsStrategy : public ShamanTotemsStrategy
     {
     public:
@@ -140,6 +175,17 @@ namespace ai
     public:
         EnhancementShamanTotemsPvpStrategy(PlayerbotAI* ai) : EnhancementShamanTotemsStrategy(ai) {}
         string getName() override { return "totems enhancement pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class EnhancementShamanTotemsBossStrategy : public EnhancementShamanTotemsStrategy
+    {
+    public:
+        EnhancementShamanTotemsBossStrategy(PlayerbotAI* ai) : EnhancementShamanTotemsStrategy(ai) {}
+        string getName() override { return "totems enhancement boss"; }
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;

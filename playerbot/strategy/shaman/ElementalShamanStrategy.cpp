@@ -117,6 +117,30 @@ void ElementalShamanPvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& trigg
     ShamanPvpStrategy::InitDeadTriggers(triggers);
 }
 
+void ElementalShamanBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitCombatTriggers(triggers);
+    ShamanBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitNonCombatTriggers(triggers);
+    ShamanBossStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ElementalShamanBossStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitReactionTriggers(triggers);
+    ShamanBossStrategy::InitReactionTriggers(triggers);
+}
+
+void ElementalShamanBossStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitDeadTriggers(triggers);
+    ShamanBossStrategy::InitDeadTriggers(triggers);
+}
+
 void ElementalShamanAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ShamanAoeStrategy::InitCombatTriggers(triggers);
@@ -155,6 +179,18 @@ void ElementalShamanAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*
     ShamanAoePvpStrategy::InitNonCombatTriggers(triggers);
 }
 
+void ElementalShamanAoeBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanAoeStrategy::InitCombatTriggers(triggers);
+    ShamanAoeBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanAoeBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanAoeStrategy::InitNonCombatTriggers(triggers);
+    ShamanAoeBossStrategy::InitNonCombatTriggers(triggers);
+}
+
 void ElementalShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ShamanCureStrategy::InitCombatTriggers(triggers);
@@ -187,6 +223,18 @@ void ElementalShamanCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode
 {
     ElementalShamanCureStrategy::InitNonCombatTriggers(triggers);
     ShamanCurePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ElementalShamanCureBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanCureStrategy::InitCombatTriggers(triggers);
+    ShamanCureBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanCureBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanCureStrategy::InitNonCombatTriggers(triggers);
+    ShamanCureBossStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ElementalShamanTotemsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -241,6 +289,18 @@ void ElementalShamanTotemsPvpStrategy::InitNonCombatTriggers(std::list<TriggerNo
 {
     ElementalShamanTotemsStrategy::InitNonCombatTriggers(triggers);
     ShamanTotemsPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ElementalShamanTotemsBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanTotemsStrategy::InitCombatTriggers(triggers);
+    ShamanTotemsBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanTotemsBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanTotemsStrategy::InitNonCombatTriggers(triggers);
+    ShamanTotemsBossStrategy::InitNonCombatTriggers(triggers);
 }
 
 #elif MANGOSBOT_ONE // TBC
@@ -326,6 +386,30 @@ void ElementalShamanPvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& trigg
     ShamanPvpStrategy::InitDeadTriggers(triggers);
 }
 
+void ElementalShamanBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitCombatTriggers(triggers);
+    ShamanBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitNonCombatTriggers(triggers);
+    ShamanBossStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ElementalShamanBossStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitReactionTriggers(triggers);
+    ShamanBossStrategy::InitReactionTriggers(triggers);
+}
+
+void ElementalShamanBossStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitDeadTriggers(triggers);
+    ShamanBossStrategy::InitDeadTriggers(triggers);
+}
+
 void ElementalShamanAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ShamanAoeStrategy::InitCombatTriggers(triggers);
@@ -364,6 +448,18 @@ void ElementalShamanAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*
     ShamanAoePvpStrategy::InitNonCombatTriggers(triggers);
 }
 
+void ElementalShamanAoeBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanAoeStrategy::InitCombatTriggers(triggers);
+    ShamanAoeBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanAoeBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanAoeStrategy::InitNonCombatTriggers(triggers);
+    ShamanAoeBossStrategy::InitNonCombatTriggers(triggers);
+}
+
 void ElementalShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ShamanCureStrategy::InitCombatTriggers(triggers);
@@ -396,6 +492,18 @@ void ElementalShamanCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode
 {
     ElementalShamanCureStrategy::InitNonCombatTriggers(triggers);
     ShamanCurePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ElementalShamanCureBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanCureStrategy::InitCombatTriggers(triggers);
+    ShamanCureBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanCureBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanCureStrategy::InitNonCombatTriggers(triggers);
+    ShamanCureBossStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ElementalShamanTotemsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -450,6 +558,18 @@ void ElementalShamanTotemsPvpStrategy::InitNonCombatTriggers(std::list<TriggerNo
 {
     ElementalShamanTotemsStrategy::InitNonCombatTriggers(triggers);
     ShamanTotemsPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ElementalShamanTotemsBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanTotemsStrategy::InitCombatTriggers(triggers);
+    ShamanTotemsBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanTotemsBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanTotemsStrategy::InitNonCombatTriggers(triggers);
+    ShamanTotemsBossStrategy::InitNonCombatTriggers(triggers);
 }
 
 #elif MANGOSBOT_TWO // WOTLK
@@ -535,6 +655,30 @@ void ElementalShamanPvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& trigg
     ShamanPvpStrategy::InitDeadTriggers(triggers);
 }
 
+void ElementalShamanBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitCombatTriggers(triggers);
+    ShamanBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitNonCombatTriggers(triggers);
+    ShamanBossStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ElementalShamanBossStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitReactionTriggers(triggers);
+    ShamanBossStrategy::InitReactionTriggers(triggers);
+}
+
+void ElementalShamanBossStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanStrategy::InitDeadTriggers(triggers);
+    ShamanBossStrategy::InitDeadTriggers(triggers);
+}
+
 void ElementalShamanAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ShamanAoeStrategy::InitCombatTriggers(triggers);
@@ -573,6 +717,18 @@ void ElementalShamanAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*
     ShamanAoePvpStrategy::InitNonCombatTriggers(triggers);
 }
 
+void ElementalShamanAoeBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanAoeStrategy::InitCombatTriggers(triggers);
+    ShamanAoeBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanAoeBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanAoeStrategy::InitNonCombatTriggers(triggers);
+    ShamanAoeBossStrategy::InitNonCombatTriggers(triggers);
+}
+
 void ElementalShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ShamanCureStrategy::InitCombatTriggers(triggers);
@@ -605,6 +761,18 @@ void ElementalShamanCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode
 {
     ElementalShamanCureStrategy::InitNonCombatTriggers(triggers);
     ShamanCurePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ElementalShamanCureBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanCureStrategy::InitCombatTriggers(triggers);
+    ShamanCureBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanCureBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanCureStrategy::InitNonCombatTriggers(triggers);
+    ShamanCureBossStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ElementalShamanTotemsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -659,6 +827,18 @@ void ElementalShamanTotemsPvpStrategy::InitNonCombatTriggers(std::list<TriggerNo
 {
     ElementalShamanTotemsStrategy::InitNonCombatTriggers(triggers);
     ShamanTotemsPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ElementalShamanTotemsBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanTotemsStrategy::InitCombatTriggers(triggers);
+    ShamanTotemsBossStrategy::InitCombatTriggers(triggers);
+}
+
+void ElementalShamanTotemsBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ElementalShamanTotemsStrategy::InitNonCombatTriggers(triggers);
+    ShamanTotemsBossStrategy::InitNonCombatTriggers(triggers);
 }
 
 #endif

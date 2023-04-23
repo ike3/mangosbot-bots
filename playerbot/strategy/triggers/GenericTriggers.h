@@ -1042,6 +1042,13 @@ namespace ai
         InPveTrigger(PlayerbotAI* ai, std::string name = "in pve") : Trigger(ai, name, 5) {}
         bool IsActive() override;
     };
+
+    class InBossFightTrigger : public Trigger
+    {
+    public:
+        InBossFightTrigger(PlayerbotAI* ai, std::string name = "in boss fight") : Trigger(ai, name, 5) {}
+        bool IsActive() override;
+    };
 }
 
 #include "RangeTriggers.h"

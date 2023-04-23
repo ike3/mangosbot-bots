@@ -35,19 +35,25 @@ namespace ai
             {
                 creators["aoe elemental pve"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_elemental_pve;
                 creators["aoe elemental pvp"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_elemental_pvp;
+                creators["aoe elemental boss"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_elemental_boss;
                 creators["aoe restoration pve"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_restoration_pve;
                 creators["aoe restoration pvp"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_restoration_pvp;
+                creators["aoe restoration boss"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_restoration_boss;
                 creators["aoe enhancement pve"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_enhancement_pve;
                 creators["aoe enhancement pvp"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_enhancement_pvp;
+                creators["aoe enhancement boss"] = &shaman::AoePvePvpStrategyFactoryInternal::aoe_enhancement_boss;
             }
 
         private:
             static Strategy* aoe_elemental_pve(PlayerbotAI* ai) { return new ElementalShamanAoePveStrategy(ai); }
             static Strategy* aoe_elemental_pvp(PlayerbotAI* ai) { return new ElementalShamanAoePvpStrategy(ai); }
+            static Strategy* aoe_elemental_boss(PlayerbotAI* ai) { return new ElementalShamanAoeBossStrategy(ai); }
             static Strategy* aoe_restoration_pve(PlayerbotAI* ai) { return new RestorationShamanAoePveStrategy(ai); }
             static Strategy* aoe_restoration_pvp(PlayerbotAI* ai) { return new RestorationShamanAoePvpStrategy(ai); }
+            static Strategy* aoe_restoration_boss(PlayerbotAI* ai) { return new RestorationShamanAoeBossStrategy(ai); }
             static Strategy* aoe_enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanAoePveStrategy(ai); }
             static Strategy* aoe_enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanAoePvpStrategy(ai); }
+            static Strategy* aoe_enhancement_boss(PlayerbotAI* ai) { return new EnhancementShamanAoeBossStrategy(ai); }
         };
 
         class CurePvePvpStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -57,19 +63,25 @@ namespace ai
             {
                 creators["cure elemental pve"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_elemental_pve;
                 creators["cure elemental pvp"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_elemental_pvp;
+                creators["cure elemental boss"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_elemental_boss;
                 creators["cure restoration pve"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_restoration_pve;
                 creators["cure restoration pvp"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_restoration_pvp;
+                creators["cure restoration boss"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_restoration_boss;
                 creators["cure enhancement pve"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_enhancement_pve;
                 creators["cure enhancement pvp"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_enhancement_pvp;
+                creators["cure enhancement boss"] = &shaman::CurePvePvpStrategyFactoryInternal::cure_enhancement_boss;
             }
 
         private:
             static Strategy* cure_elemental_pve(PlayerbotAI* ai) { return new ElementalShamanCurePveStrategy(ai); }
             static Strategy* cure_elemental_pvp(PlayerbotAI* ai) { return new ElementalShamanCurePvpStrategy(ai); }
+            static Strategy* cure_elemental_boss(PlayerbotAI* ai) { return new ElementalShamanCureBossStrategy(ai); }
             static Strategy* cure_restoration_pve(PlayerbotAI* ai) { return new RestorationShamanCurePveStrategy(ai); }
             static Strategy* cure_restoration_pvp(PlayerbotAI* ai) { return new RestorationShamanCurePvpStrategy(ai); }
+            static Strategy* cure_restoration_boss(PlayerbotAI* ai) { return new RestorationShamanCureBossStrategy(ai); }
             static Strategy* cure_enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanCurePveStrategy(ai); }
             static Strategy* cure_enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanCurePvpStrategy(ai); }
+            static Strategy* cure_enhancement_boss(PlayerbotAI* ai) { return new EnhancementShamanCureBossStrategy(ai); }
         };
 
         class TotemStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -97,19 +109,25 @@ namespace ai
             {
                 creators["totems elemental pve"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_elemental_pve;
                 creators["totems elemental pvp"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_elemental_pvp;
+                creators["totems elemental boss"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_elemental_boss;
                 creators["totems restoration pve"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_restoration_pve;
                 creators["totems restoration pvp"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_restoration_pvp;
+                creators["totems restoration boss"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_restoration_boss;
                 creators["totems enhancement pve"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_enhancement_pve;
                 creators["totems enhancement pvp"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_enhancement_pvp;
+                creators["totems enhancement boss"] = &shaman::TotemsPvePvpStrategyFactoryInternal::totems_enhancement_boss;
             }
 
         private:
             static Strategy* totems_elemental_pve(PlayerbotAI* ai) { return new ElementalShamanTotemsPveStrategy(ai); }
             static Strategy* totems_elemental_pvp(PlayerbotAI* ai) { return new ElementalShamanTotemsPvpStrategy(ai); }
+            static Strategy* totems_elemental_boss(PlayerbotAI* ai) { return new ElementalShamanTotemsBossStrategy(ai); }
             static Strategy* totems_restoration_pve(PlayerbotAI* ai) { return new RestorationShamanTotemsPveStrategy(ai); }
             static Strategy* totems_restoration_pvp(PlayerbotAI* ai) { return new RestorationShamanTotemsPvpStrategy(ai); }
+            static Strategy* totems_restoration_boss(PlayerbotAI* ai) { return new RestorationShamanTotemsBossStrategy(ai); }
             static Strategy* totems_enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanTotemsPveStrategy(ai); }
             static Strategy* totems_enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanTotemsPvpStrategy(ai); }
+            static Strategy* totems_enhancement_boss(PlayerbotAI* ai) { return new EnhancementShamanTotemsBossStrategy(ai); }
         };
 
         class BuffStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -149,19 +167,25 @@ namespace ai
             {
                 creators["elemental pvp"] = &shaman::ClassPvePvpStrategyFactoryInternal::elemental_pvp;
                 creators["elemental pve"] = &shaman::ClassPvePvpStrategyFactoryInternal::elemental_pve;
+                creators["elemental boss"] = &shaman::ClassPvePvpStrategyFactoryInternal::elemental_boss;
                 creators["restoration pvp"] = &shaman::ClassPvePvpStrategyFactoryInternal::restoration_pvp;
                 creators["restoration pve"] = &shaman::ClassPvePvpStrategyFactoryInternal::restoration_pve;
+                creators["restoration boss"] = &shaman::ClassPvePvpStrategyFactoryInternal::restoration_boss;
                 creators["enhancement pvp"] = &shaman::ClassPvePvpStrategyFactoryInternal::enhancement_pvp;
                 creators["enhancement pve"] = &shaman::ClassPvePvpStrategyFactoryInternal::enhancement_pve;
+                creators["enhancement boss"] = &shaman::ClassPvePvpStrategyFactoryInternal::enhancement_boss;
             }
 
         private:
             static Strategy* elemental_pvp(PlayerbotAI* ai) { return new ElementalShamanPvpStrategy(ai); }
             static Strategy* elemental_pve(PlayerbotAI* ai) { return new ElementalShamanPveStrategy(ai); }
+            static Strategy* elemental_boss(PlayerbotAI* ai) { return new ElementalShamanBossStrategy(ai); }
             static Strategy* restoration_pvp(PlayerbotAI* ai) { return new RestorationShamanPvpStrategy(ai); }
             static Strategy* restoration_pve(PlayerbotAI* ai) { return new RestorationShamanPveStrategy(ai); }
+            static Strategy* restoration_boss(PlayerbotAI* ai) { return new RestorationShamanBossStrategy(ai); }
             static Strategy* enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanPvpStrategy(ai); }
             static Strategy* enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanPveStrategy(ai); }
+            static Strategy* enhancement_boss(PlayerbotAI* ai) { return new EnhancementShamanBossStrategy(ai); }
         };
     };
 };
@@ -326,6 +350,7 @@ namespace ai
                 creators["set totembars on levelup"] = &AiObjectContextInternal::set_totembars;
                 creators["update pve strats"] = &AiObjectContextInternal::update_pve_strats;
                 creators["update pvp strats"] = &AiObjectContextInternal::update_pvp_strats;
+                creators["update boss strats"] = &AiObjectContextInternal::update_boss_strats;
             }
 
         private:
@@ -392,6 +417,7 @@ namespace ai
             static Action* set_totembars(PlayerbotAI* ai) { return new SetTotemBars(ai); }
             static Action* update_pve_strats(PlayerbotAI* ai) { return new UpdateShamanPveStrategiesAction(ai); }
             static Action* update_pvp_strats(PlayerbotAI* ai) { return new UpdateShamanPvpStrategiesAction(ai); }
+            static Action* update_boss_strats(PlayerbotAI* ai) { return new UpdateShamanBossStrategiesAction(ai); }
         };
     };
 };

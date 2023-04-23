@@ -54,6 +54,15 @@ namespace ai
         static void InitDeadTriggers(std::list<TriggerNode*>& triggers);
     };
 
+    class ShamanBossStrategy : public ClassBossStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitReactionTriggers(std::list<TriggerNode*>& triggers);
+        static void InitDeadTriggers(std::list<TriggerNode*>& triggers);
+    };
+
     class ShamanAoeStrategy : public AoeStrategy
     {
     public:
@@ -72,6 +81,13 @@ namespace ai
     };
 
     class ShamanAoePveStrategy : public AoePveStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class ShamanAoeBossStrategy : public AoeBossStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -124,6 +140,13 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
+    class ShamanCureBossStrategy : public CureBossStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
     class ShamanTotemsStrategy : public Strategy
     {
     public:
@@ -142,6 +165,13 @@ namespace ai
     };
 
     class ShamanTotemsPveStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class ShamanTotemsBossStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
