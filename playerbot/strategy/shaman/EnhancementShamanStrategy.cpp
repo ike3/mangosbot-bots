@@ -18,62 +18,21 @@ public:
         creators["windfury totem"] = &windfury_totem;
         creators["mana spring totem"] = &mana_spring_totem;
     }
+
 private:
-    static ActionNode* stormstrike(PlayerbotAI* ai)
-    {
-        return new ActionNode ("stormstrike",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("lava lash"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(stormstrike, "stormstrike", "lava lash");
 
-    static ActionNode* lava_lash(PlayerbotAI* ai)
-    {
-        return new ActionNode ("lava lash",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("melee"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(lava_lash, "lava lash", "melee");
 
-    static ActionNode* flametongue_totem(PlayerbotAI* ai)
-    {
-        return new ActionNode("flametongue totem",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("searing totem"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(flametongue_totem, "flametongue totem", "searing totem");
 
-    static ActionNode* magma_totem(PlayerbotAI* ai)
-    {
-        return new ActionNode("magma totem",
-            /*P*/ NULL,
-            /*A*/ NULL,
-            /*C*/ NextAction::array(0, new NextAction("fire nova"), NULL));
-    }
+    ACTION_NODE_C(magma_totem, "magma totem", "fire nova");
 
-    static ActionNode* strength_of_earth_totem(PlayerbotAI* ai)
-    {
-        return new ActionNode("strength of earth totem",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("stoneskin totem"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(strength_of_earth_totem, "strength of earth totem", "stoneskin totem");
 
-    static ActionNode* windfury_totem(PlayerbotAI* ai)
-    {
-        return new ActionNode("windfury totem",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("wrath of air totem"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(windfury_totem, "windfury totem", "wrath of air totem");
 
-    static ActionNode* mana_spring_totem(PlayerbotAI* ai)
-    {
-        return new ActionNode("mana spring totem",
-            /*P*/ NULL,
-            /*A*/ NULL,
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(mana_spring_totem, "mana spring totem", "mana spring totem");
 };
 
 EnhancementShamanStrategy::EnhancementShamanStrategy(PlayerbotAI* ai) : ShamanStrategy(ai)

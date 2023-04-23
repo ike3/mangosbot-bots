@@ -18,62 +18,21 @@ public:
         creators["wrath of air totem"] = &wrath_of_air_totem;
         creators["healing stream totem"] = &healing_stream_totem;
     }
+
 private:
-    static ActionNode* earthliving_weapon(PlayerbotAI* ai)
-    {
-        return new ActionNode ("earthliving weapon",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("flametongue weapon"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(earthliving_weapon, "earthliving weapon", "flametongue weapon");
 
-    static ActionNode* mana_tide_totem(PlayerbotAI* ai)
-    {
-        return new ActionNode ("mana tide totem",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("mana potion"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(mana_tide_totem, "mana tide totem", "mana potion");
 
-    static ActionNode* flametongue_totem(PlayerbotAI* ai)
-    {
-        return new ActionNode("flametongue totem",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("searing totem"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(flametongue_totem, "flametongue totem", "searing totem");
 
-    static ActionNode* magma_totem(PlayerbotAI* ai)
-    {
-        return new ActionNode("magma totem",
-            /*P*/ NULL,
-            /*A*/ NULL,
-            /*C*/ NextAction::array(0, new NextAction("fire nova"), NULL));
-    }
+    ACTION_NODE_C(magma_totem, "magma totem", "fire nova");
 
-    static ActionNode* strength_of_earth_totem(PlayerbotAI* ai)
-    {
-        return new ActionNode("strength of earth totem",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("stoneskin totem"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(strength_of_earth_totem, "strength of earth totem", "stoneskin totem");
 
-    static ActionNode* wrath_of_air_totem(PlayerbotAI* ai)
-    {
-        return new ActionNode("wrath of air totem",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("windfury totem"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(wrath_of_air_totem, "wrath of air totem", "windfury totem");
 
-    static ActionNode* healing_stream_totem(PlayerbotAI* ai)
-    {
-        return new ActionNode("healing stream totem",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("mana spring totem"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(healing_stream_totem, "healing stream totem", "mana spring totem");
 };
 
 RestorationShamanStrategy::RestorationShamanStrategy(PlayerbotAI* ai) : ShamanStrategy(ai)
