@@ -61,15 +61,8 @@ class PerformanceMonitor
         PerformanceMonitorOperation* start(PerformanceMetric metric, string name, PlayerbotAI* ai);
         void PrintStats(bool perTick = false,  bool fullStack = false);
         void Reset();
-
-        void Add(string objectType, double object);
-        void Rem(string objectType, double object);
-        void Print();
 	private:
         map<PerformanceMetric, map<string, PerformanceData*> > data;
-
-        unordered_map<thread::id, map<string, int32>> objectnumbers;
-        list<map<string, int32 >> objectnumbersHist;
 #ifdef CMANGOS
 		std::mutex lock;
 #endif

@@ -159,8 +159,8 @@ bool MoveToRpgTargetAction::Execute(Event& event)
 
     bool couldMove;
 
-    if (unit && unit->IsMoving() && guidP.sqDistance2d(bot) < (INTERACTION_DISTANCE * INTERACTION_DISTANCE) * 1.5 && unit->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
-        couldMove = Follow(unit, INTERACTION_DISTANCE * distance, angle);
+    if (unit && unit->IsMoving() && bot->GetDistance(unit) < INTERACTION_DISTANCE  * 2 && unit->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+        couldMove = Follow(unit, INTERACTION_DISTANCE * distance, unit->GetOrientation());
     else    
         couldMove = MoveTo(mapId, x, y, z, false, false);
 

@@ -1,3 +1,4 @@
+#pragma once
 #include "../botpch.h"
 #include "playerbot.h"
 #include "PlayerbotAIConfig.h"
@@ -313,39 +314,6 @@ void PerformanceMonitorOperation::finish()
     delete this;
 }
 
-void PerformanceMonitor::Add(string objectType, double object)
-{
-    objectnumbers[std::this_thread::get_id()][objectType]++;
-}
-
-void PerformanceMonitor::Rem(string objectType, double object)
-{
-    objectnumbers[std::this_thread::get_id()][objectType]--;
-}
-
-void PerformanceMonitor::Print()
-{
-    int32 div = 0;
-    for (auto& t : objectnumbers)
-        div += t.second["PlayerbotAI"];
-
-    if (!div) div = 1;
-
-    map<string, int32> nums;
-
-    for (auto& t : objectnumbers)
-        for (auto& object : t.second)
-            nums[object.first]+=object.second;
-
-    objectnumbersHist.push_back(nums);
-
-    if (objectnumbersHist.size() > 10)
-        objectnumbersHist.pop_front();
-
-    for (auto& num : nums)
-        sLog.outString("%s : %d (%d)", num.first, num.second / (num.first == "PlayerbotAI" ? 1 : div), (objectnumbersHist.back()[num.first] - objectnumbersHist.front()[num.first]) / (num.first == "PlayerbotAI" ? 1 : div));
-}
-
 bool ChatHandler::HandlePerfMonCommand(char* args)
 {
     if (!strcmp(args, "reset"))
@@ -382,12 +350,6 @@ bool ChatHandler::HandlePerfMonCommand(char* args)
             sLog.outString("Performance monitor disabled");
         return true;
     }   
-
-    if (!strcmp(args, "objects"))
-    {
-        sPerformanceMonitor.Print();
-        return true;
-    }
 
     sPerformanceMonitor.PrintStats();
     return true;
