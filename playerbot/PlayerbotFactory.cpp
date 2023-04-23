@@ -240,20 +240,20 @@ void PlayerbotFactory::Randomize(bool incremental, bool syncWithMaster)
     UpdateTradeSkills();
     if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Equip");
-    sLog.outDetail("Initializing equipmemt...");
-    if (bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
-    {
-        sLog.outDetail("Initializing enchant templates...");
-        LoadEnchantContainer();
-    }
-
     if (isRealRandomBot)
     {
         pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reputations");
         sLog.outDetail("Initializing reputations...");
         InitReputations();
         if (pmo) pmo->finish();
+    }
+
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Equip");
+    sLog.outDetail("Initializing equipmemt...");
+    if (bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+    {
+        sLog.outDetail("Initializing enchant templates...");
+        LoadEnchantContainer();
     }
 
     InitEquipment(incremental, syncWithMaster);
