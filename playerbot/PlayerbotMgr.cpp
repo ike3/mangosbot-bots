@@ -421,6 +421,8 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         else
             bot->GetPlayerbotAI()->SetPlayerFriend(false);
 
+        delete result;
+
         if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && !bot->GetTotalPlayedTime())
         {
             sRandomPlayerbotMgr.InstaRandomize(bot);

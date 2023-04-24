@@ -37,6 +37,6 @@ bool CheckValuesAction::Execute(Event& event)
     list<ObjectGuid> corpses = AI_VALUE(list<ObjectGuid>, "nearest corpses");
     list<ObjectGuid> gos = AI_VALUE(list<ObjectGuid>, "nearest game objects");
     list<ObjectGuid> nfp = AI_VALUE(list<ObjectGuid>, "nearest friendly players");
-    context->ClearExpiredValues();
+    //context->ClearExpiredValues();
     return true;
 }

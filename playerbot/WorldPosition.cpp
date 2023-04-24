@@ -25,6 +25,20 @@
 using namespace ai;
 using namespace MaNGOS;
 
+void WorldPosition::add()
+{
+#ifdef MEMORY_MONITOR
+    sMemoryMonitor.Add("WorldPosition", (int64)this,1);
+#endif
+}
+
+void WorldPosition::rem()
+{
+#ifdef MEMORY_MONITOR
+    sMemoryMonitor.Rem("WorldPosition", (int64)this, 1);
+#endif
+}
+
 WorldPosition::WorldPosition(const uint32 mapId, const GuidPosition& guidP)
 {
     if (guidP.mapid !=0 || guidP.coord_x != 0 || guidP.coord_y != 0 || guidP.coord_z !=0) {
@@ -33,6 +47,8 @@ WorldPosition::WorldPosition(const uint32 mapId, const GuidPosition& guidP)
     }
 
     set(ObjectGuid(guidP), guidP.mapid);
+
+    add();
  }
 
 void WorldPosition::set(const ObjectGuid& guid, const uint32 mapId)
@@ -95,6 +111,8 @@ WorldPosition::WorldPosition(const vector<WorldPosition*>& list, const WorldPosi
         WorldPosition pos = WorldPosition(list, WP_CENTROID);
         set(*pos.closestSq(list));
     }
+
+    add();
 }
 
 WorldPosition::WorldPosition(const vector<WorldPosition>& list, const WorldPositionConst conType)
@@ -113,6 +131,8 @@ WorldPosition::WorldPosition(const vector<WorldPosition>& list, const WorldPosit
         WorldPosition pos = WorldPosition(list, WP_CENTROID);
         set(pos.closestSq(list));
     }    
+
+    add();
 }
 
 float WorldPosition::distance(const WorldPosition& to) const

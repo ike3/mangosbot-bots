@@ -240,20 +240,20 @@ void PlayerbotFactory::Randomize(bool incremental, bool syncWithMaster)
     UpdateTradeSkills();
     if (pmo) pmo->finish();
 
-    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Equip");
-    sLog.outDetail("Initializing equipmemt...");
-    if (bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
-    {
-        sLog.outDetail("Initializing enchant templates...");
-        LoadEnchantContainer();
-    }
-
     if (isRealRandomBot)
     {
         pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Reputations");
         sLog.outDetail("Initializing reputations...");
         InitReputations();
         if (pmo) pmo->finish();
+    }
+
+    pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Equip");
+    sLog.outDetail("Initializing equipmemt...");
+    if (bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+    {
+        sLog.outDetail("Initializing enchant templates...");
+        LoadEnchantContainer();
     }
 
     InitEquipment(incremental, syncWithMaster);
@@ -1624,6 +1624,17 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool syncWithMaster)
                     if (!proto)
                         continue;
 
+                    if (std::find(lockedItems.begin(), lockedItems.end(), proto->ItemId) != lockedItems.end())
+                        continue;
+
+                    // skip not available items
+                    if (proto->ExtraFlags & ITEM_EXTRA_NOT_OBTAINABLE)
+                        continue;
+
+                    // blacklist
+                    if (std::find(sPlayerbotAIConfig.randomGearBlacklist.begin(), sPlayerbotAIConfig.randomGearBlacklist.end(), proto->ItemId) != sPlayerbotAIConfig.randomGearBlacklist.end())
+                        continue;
+
                     // skip unique-equippable items if already have one in inventory
                     if (proto->Flags & ITEM_FLAG_UNIQUE_EQUIPPABLE && bot->HasItemCount(proto->ItemId, 1))
                         continue;
@@ -1686,13 +1697,6 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool syncWithMaster)
                                 continue;
                         }
                     }
-
-                    if (std::find(lockedItems.begin(), lockedItems.end(), proto->ItemId) != lockedItems.end())
-                        continue;
-
-                    // blacklist
-                    if (std::find(sPlayerbotAIConfig.randomGearBlacklist.begin(), sPlayerbotAIConfig.randomGearBlacklist.end(), proto->ItemId) != sPlayerbotAIConfig.randomGearBlacklist.end())
-                        continue;
 
                     // check req level difference from config
                     int delta = sPlayerbotAIConfig.randomGearMaxDiff + (80 - bot->GetLevel()) / 10;
