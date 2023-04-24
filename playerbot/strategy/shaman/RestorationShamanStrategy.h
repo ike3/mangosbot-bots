@@ -48,11 +48,11 @@ namespace ai
         void InitDeadTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RestorationShamanBossStrategy : public RestorationShamanStrategy
+    class RestorationShamanRaidStrategy : public RestorationShamanStrategy
     {
     public:
-        RestorationShamanBossStrategy(PlayerbotAI* ai) : RestorationShamanStrategy(ai) {}
-        std::string getName() override { return "restoration boss"; }
+        RestorationShamanRaidStrategy(PlayerbotAI* ai) : RestorationShamanStrategy(ai) {}
+        std::string getName() override { return "restoration raid"; }
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
@@ -93,11 +93,11 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RestorationShamanAoeBossStrategy : public RestorationShamanAoeStrategy
+    class RestorationShamanAoeRaidStrategy : public RestorationShamanAoeStrategy
     {
     public:
-        RestorationShamanAoeBossStrategy(PlayerbotAI* ai) : RestorationShamanAoeStrategy(ai) {}
-        string getName() override { return "aoe restoration boss"; }
+        RestorationShamanAoeRaidStrategy(PlayerbotAI* ai) : RestorationShamanAoeStrategy(ai) {}
+        string getName() override { return "aoe restoration raid"; }
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
@@ -136,11 +136,11 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RestorationShamanCureBossStrategy : public RestorationShamanCureStrategy
+    class RestorationShamanCureRaidStrategy : public RestorationShamanCureStrategy
     {
     public:
-        RestorationShamanCureBossStrategy(PlayerbotAI* ai) : RestorationShamanCureStrategy(ai) {}
-        string getName() override { return "cure restoration boss"; }
+        RestorationShamanCureRaidStrategy(PlayerbotAI* ai) : RestorationShamanCureStrategy(ai) {}
+        string getName() override { return "cure restoration raid"; }
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
@@ -179,11 +179,11 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RestorationShamanTotemsBossStrategy : public RestorationShamanTotemsStrategy
+    class RestorationShamanTotemsRaidStrategy : public RestorationShamanTotemsStrategy
     {
     public:
-        RestorationShamanTotemsBossStrategy(PlayerbotAI* ai) : RestorationShamanTotemsStrategy(ai) {}
-        string getName() override { return "totems restoration boss"; }
+        RestorationShamanTotemsRaidStrategy(PlayerbotAI* ai) : RestorationShamanTotemsStrategy(ai) {}
+        string getName() override { return "totems restoration raid"; }
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;

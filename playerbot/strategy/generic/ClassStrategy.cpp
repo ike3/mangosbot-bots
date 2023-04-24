@@ -134,22 +134,22 @@ void ClassPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
-void ClassBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
 
-void ClassBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
 
-void ClassBossStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
 
-void ClassBossStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -184,6 +184,16 @@ void AoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
+void AoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void AoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 void CureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
@@ -210,6 +220,16 @@ void CurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void CurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -244,6 +264,16 @@ void BoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
+void BoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 void CcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
@@ -270,6 +300,16 @@ void CcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void CcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -404,22 +444,22 @@ void ClassPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
-void ClassBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
 
-void ClassBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
 
-void ClassBossStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
 
-void ClassBossStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -454,6 +494,16 @@ void AoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
+void AoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void AoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 void CureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
@@ -480,6 +530,16 @@ void CurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void CurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -514,6 +574,16 @@ void BoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
+void BoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 void CcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
@@ -540,6 +610,16 @@ void CcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void CcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -674,22 +754,22 @@ void ClassPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
-void ClassBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
 
-void ClassBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
 
-void ClassBossStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
 
-void ClassBossStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+void ClassRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -724,6 +804,16 @@ void AoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
+void AoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void AoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 void CureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
@@ -750,6 +840,16 @@ void CurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void CurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -784,6 +884,16 @@ void BoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
+void BoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 void CcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
@@ -814,6 +924,16 @@ void CcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
+void CcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void CcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 #endif
 
 void SpecPlaceholderStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -827,8 +947,8 @@ void SpecPlaceholderStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
         NextAction::array(0, new NextAction("update pvp strats", 100.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "in boss fight",
-        NextAction::array(0, new NextAction("update boss strats", 100.0f), NULL)));
+        "in raid fight",
+        NextAction::array(0, new NextAction("update raid strats", 100.0f), NULL)));
 }
 
 void SpecPlaceholderStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -842,46 +962,6 @@ void SpecPlaceholderStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tri
         NextAction::array(0, new NextAction("update pvp strats", 100.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "in boss fight",
-        NextAction::array(0, new NextAction("update boss strats", 100.0f), NULL)));
-}
-
-void AoeBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void AoeBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void CureBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void CureBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void BoostBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void BoostBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void CcBossStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void CcBossStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
+        "in raid fight",
+        NextAction::array(0, new NextAction("update raid strats", 100.0f), NULL)));
 }

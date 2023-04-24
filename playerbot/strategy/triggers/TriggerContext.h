@@ -191,7 +191,7 @@ namespace ai
             creators["leave large guild"] = &TriggerContext::leave_large_guild;
             creators["in pvp"] = &TriggerContext::in_pvp;
             creators["in pve"] = &TriggerContext::in_pve;
-            creators["in boss fight"] = &TriggerContext::in_boss_fight;
+            creators["in raid fight"] = &TriggerContext::in_raid_fight;
 
             creators["val"] = &TriggerContext::val;
 
@@ -400,7 +400,7 @@ namespace ai
         static Trigger* use_trinket(PlayerbotAI* ai) { return new UseTrinketTrigger(ai); }
         static Trigger* in_pve(PlayerbotAI* ai) { return new InPveTrigger(ai); }
         static Trigger* in_pvp(PlayerbotAI* ai) { return new InPvpTrigger(ai); }
-        static Trigger* in_boss_fight(PlayerbotAI* ai) { return new InBossFightTrigger(ai); }
+        static Trigger* in_raid_fight(PlayerbotAI* ai) { return new InRaidFightTrigger(ai); }
 
         static Trigger* petition_signed(PlayerbotAI* ai) { return new PetitionTurnInTrigger(ai); }
         static Trigger* buy_tabard(PlayerbotAI* ai) { return new BuyTabardTrigger(ai); }        

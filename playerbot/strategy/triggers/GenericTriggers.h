@@ -1043,10 +1043,10 @@ namespace ai
         bool IsActive() override;
     };
 
-    class InBossFightTrigger : public Trigger
+    class InRaidFightTrigger : public Trigger
     {
     public:
-        InBossFightTrigger(PlayerbotAI* ai, std::string name = "in boss fight") : Trigger(ai, name, 5) {}
+        InRaidFightTrigger(PlayerbotAI* ai, std::string name = "in raid fight") : Trigger(ai, name, 5) {}
         bool IsActive() override;
     };
 }

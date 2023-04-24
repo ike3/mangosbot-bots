@@ -54,7 +54,7 @@ namespace ai
         static void InitDeadTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class ShamanBossStrategy : public ClassBossStrategy
+    class ShamanRaidStrategy : public ClassRaidStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -87,7 +87,7 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class ShamanAoeBossStrategy : public AoeBossStrategy
+    class ShamanAoeRaidStrategy : public AoeRaidStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -140,7 +140,7 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class ShamanCureBossStrategy : public CureBossStrategy
+    class ShamanCureRaidStrategy : public CureRaidStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -171,7 +171,7 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class ShamanTotemsBossStrategy
+    class ShamanTotemsRaidStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);

@@ -605,10 +605,15 @@ bool InPvpTrigger::IsActive()
     return false;
 }
 
-bool InBossFight(PlayerbotAI* ai)
+bool InRaidFight(PlayerbotAI* ai)
 {
-    bool inBossFight = false;
-    if (ai && ai->GetState() == BotState::BOT_STATE_COMBAT)
+    bool inRaidFight = false;
+    const Map* map = ai->GetBot()->GetMap();
+    if (map && map->IsRaid())
+    {
+        inRaidFight = true;
+    }
+    else if (ai->GetState() == BotState::BOT_STATE_COMBAT)
     {
         AiObjectContext* context = ai->GetAiObjectContext();
         const std::list<ObjectGuid>& attackers = AI_VALUE(std::list<ObjectGuid>, "attackers");
@@ -622,7 +627,7 @@ bool InBossFight(PlayerbotAI* ai)
                 {
                     if (creatureInfo->Rank == CREATURE_ELITE_WORLDBOSS)
                     {
-                        inBossFight = true;
+                        inRaidFight = true;
                         break;
                     }
                 }
@@ -630,7 +635,7 @@ bool InBossFight(PlayerbotAI* ai)
         }
     }
 
-    return inBossFight;
+    return inRaidFight;
 }
 
 bool InPveTrigger::IsActive()
@@ -647,7 +652,7 @@ bool InPveTrigger::IsActive()
                 const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
                 if (!isPlayerNear)
                 {
-                    return !InBossFight(ai);
+                    return !InRaidFight(ai);
                 }
             }
         }
@@ -658,7 +663,7 @@ bool InPveTrigger::IsActive()
     return false;
 }
 
-bool InBossFightTrigger::IsActive()
+bool InRaidFightTrigger::IsActive()
 {
     if (ai->IsSafe(bot))
     {
@@ -672,7 +677,7 @@ bool InBossFightTrigger::IsActive()
                 const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
                 if (!isPlayerNear)
                 {
-                    return InBossFight(ai);
+                    return InRaidFight(ai);
                 }
             }
         }

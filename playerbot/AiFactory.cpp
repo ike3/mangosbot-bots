@@ -668,13 +668,13 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             {
                 nonCombatEngine->addStrategies("elemental", "bmana", "aoe", NULL);
             }
-            else if (tab == 1)
+            else if (tab == 2)
             {
-                nonCombatEngine->addStrategies("enhancement", "bdps", NULL);
+                nonCombatEngine->addStrategies("restoration", "bmana", NULL);
             }
             else
             {
-                nonCombatEngine->addStrategies("restoration", "bmana", NULL);
+                nonCombatEngine->addStrategies("enhancement", "bdps", NULL);
             }
 
             nonCombatEngine->addStrategies("dps assist", "cure", "totems", NULL);
@@ -960,13 +960,13 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
             {
                 deadEngine->addStrategy("elemental");
             }
-            else if (tab == 1)
+            else if (tab == 2)
             {
-                deadEngine->addStrategy("enhancement");
+                deadEngine->addStrategy("restoration");
             }
             else
             {
-                deadEngine->addStrategy("restoration");
+                deadEngine->addStrategy("enhancement");
             }
 
             break;
@@ -994,13 +994,13 @@ void AiFactory::AddDefaultReactionStrategies(Player* player, PlayerbotAI* const 
             {
                 reactionEngine->addStrategy("elemental");
             }
-            else if (tab == 1)
+            else if (tab == 2)
             {
-                reactionEngine->addStrategy("enhancement");
+                reactionEngine->addStrategy("restoration");
             }
             else
             {
-                reactionEngine->addStrategy("restoration");
+                reactionEngine->addStrategy("enhancement");
             }
 
             break;

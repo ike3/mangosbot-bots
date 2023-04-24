@@ -33,7 +33,7 @@ namespace ai
         static void InitDeadTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class ClassBossStrategy
+    class ClassRaidStrategy
     {
     protected:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -66,7 +66,7 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class AoeBossStrategy
+    class AoeRaidStrategy
     {
     protected:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -97,7 +97,7 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class CureBossStrategy
+    class CureRaidStrategy
     {
     protected:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -128,7 +128,7 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class BoostBossStrategy
+    class BoostRaidStrategy
     {
     protected:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -159,7 +159,7 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class CcBossStrategy
+    class CcRaidStrategy
     {
     protected:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
