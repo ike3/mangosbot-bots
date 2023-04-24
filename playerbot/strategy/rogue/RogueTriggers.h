@@ -42,11 +42,14 @@ namespace ai
         CloakOfShadowsTrigger(PlayerbotAI* ai) : NeedCureTrigger(ai, "cloak of shadows", DISPEL_MAGIC) {}
     };
 
-    /*class TricksOfTheTradeOnTankTrigger : public BuffOnTankTrigger {
+    /*
+    class TricksOfTheTradeOnTankTrigger : public BuffOnTankTrigger 
+    {
     public:
         TricksOfTheTradeOnTankTrigger(PlayerbotAI* ai) : BuffOnTankTrigger(ai, "tricks of the trade", 1) {}
 
-        virtual bool IsActive() {
+        virtual bool IsActive() 
+        {
             return BuffOnTankTrigger::IsActive() &&
                 GetTarget() &&
                 !ai->HasAura("tricks of the trade", GetTarget()) &&
@@ -58,7 +61,8 @@ namespace ai
 #endif               
                 ;
         }
-    };*/
+    };
+    */
 
     class ExposeArmorTrigger : public NoDebuffAndComboPointsAvailableTrigger
     {
@@ -81,20 +85,28 @@ namespace ai
     class NoStealthTrigger : public HasNoAuraTrigger
     {
     public:
-        NoStealthTrigger(PlayerbotAI* ai) : HasNoAuraTrigger(ai, "stealth") {}
+        NoStealthTrigger(PlayerbotAI* ai) : HasNoAuraTrigger(ai, "stealth") 
+        {
+            checkInterval = 2;
+        }
     };
 
     class UnstealthTrigger : public BuffTrigger
     {
     public:
         UnstealthTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "stealth", 2) {}
+
         virtual bool IsActive()
         {
             if (!ai->HasAura("stealth", bot))
+            {
                 return false;
+            }
 
             if (bot->InBattleGround())
+            {
                 return false;
+            }
 
             return ai->HasAura("stealth", bot) &&
                 !AI_VALUE(bool, "has attackers") &&
@@ -111,37 +123,52 @@ namespace ai
     {
     public:
         StealthTrigger(PlayerbotAI* ai) : Trigger(ai, "stealth") {}
+
         virtual bool IsActive()
         {
             if (ai->HasAura("stealth", bot) || sServerFacade.IsInCombat(bot) || !sServerFacade.IsSpellReady(bot, 1784))
+            {
                 return false;
-
-            float distance = 30.0f;
+            }
 
             Unit* target = AI_VALUE(Unit*, "enemy player target");
             if (!target)
+            {
                 target = AI_VALUE(Unit*, "grind target");
+            }
             if (!target)
+            {
                 target = AI_VALUE(Unit*, "dps target");
+            }
             if (!target)
+            {
                 return false;
+            }
 
+            float distance = 30.0f;
             if (target && target->GetVictim())
+            {
                 distance -= 10;
+            }
 
             if (sServerFacade.isMoving(target) && target->GetVictim())
+            {
                 distance -= 10;
+            }
 
             if (bot->InBattleGround())
+            {
                 distance += 20;
+            }
 
 #ifndef MANGOSBOT_ZERO
             if (bot->InArena())
+            {
                 distance += 20;
+            }
 #endif
 
-            return (target &&
-                sServerFacade.GetDistance2d(bot, target) < distance);
+            return (target && sServerFacade.GetDistance2d(bot, target) < distance);
         }
     };
 
@@ -149,6 +176,7 @@ namespace ai
     {
     public:
         SapTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "sap") {}
+
         virtual bool IsPossible()
         {
             return bot->GetLevel() > 10 && bot->HasSpell(6770) && !sServerFacade.IsInCombat(bot);
@@ -159,33 +187,49 @@ namespace ai
     {
     public:
         SprintTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "sprint", 2) {}
+
         virtual bool IsActive()
         {
             if (!sServerFacade.IsSpellReady(bot, 2983))
+            {
                 return false;
+            }
 
             float distance = ai->GetMaster() ? 45.0f : 35.0f;
             if (ai->HasAura("stealth", bot))
+            {
                 distance -= 10;
+            }
 
             bool targeted = false;
 
             Unit* dps = AI_VALUE(Unit*, "dps target");
-            Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");
             if (dps)
+            {
                 targeted = (dps == AI_VALUE(Unit*, "current target"));
+            }
+
+            Unit* enemyPlayer = AI_VALUE(Unit*, "enemy player target");
             if (enemyPlayer && !targeted)
+            {
                 targeted = (enemyPlayer == AI_VALUE(Unit*, "current target"));
+            }
 
             // use sprint on players
             if (enemyPlayer && !bot->CanReachWithMeleeAttack(enemyPlayer))
+            {
                 return true;
+            }
 
             if (!targeted)
+            {
                 return false;
+            }
 
             if ((dps && sServerFacade.IsInCombat(dps)) || (enemyPlayer))
+            {
                 distance -= 10;
+            }
 
             return  AI_VALUE2(bool, "moving", "self target") &&
                     (AI_VALUE2(bool, "moving", "dps target") ||
@@ -194,5 +238,72 @@ namespace ai
                     (sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "dps target"), distance) ||
                      sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "enemy player target"), distance));
         }
+    };
+
+    class ApplyPoisonTrigger : public Trigger
+    {
+    public:
+        ApplyPoisonTrigger(PlayerbotAI* ai, bool inMainHand, const std::vector<uint32>& inPoisonEnchantIds, std::string name = "apply poison")
+        : Trigger(ai, name, 5) 
+        , mainHand(inMainHand)
+        , poisonEnchantIds(inPoisonEnchantIds) {}
+
+        bool IsActive() override
+        {
+            Item* weapon = mainHand ? bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) : bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+            if (weapon)
+            {
+                const uint32 currentEnchantId = weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT);
+                if(currentEnchantId != 0)
+                {
+                    // Check if the current poison is the poison we need
+                    return std::find(poisonEnchantIds.begin(), poisonEnchantIds.end(), currentEnchantId) == poisonEnchantIds.end();
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+    private:
+        bool mainHand;
+        std::vector<uint32> poisonEnchantIds;
+    };
+
+    class ApplyDeadlyPoisonTrigger : public ApplyPoisonTrigger
+    {
+    public:
+        ApplyDeadlyPoisonTrigger(PlayerbotAI* ai, bool inMainHand) : ApplyPoisonTrigger(ai, inMainHand, { 7, 8, 626, 627, 2630, 2642, 2643, 3770, 3771 }, "apply deadly poison main hand") {}
+    };
+
+    class ApplyCripplingPoisonTrigger : public ApplyPoisonTrigger
+    {
+    public:
+        ApplyCripplingPoisonTrigger(PlayerbotAI* ai, bool inMainHand) : ApplyPoisonTrigger(ai, inMainHand, { 22, 603 }, "apply crippling poison main hand") {}
+    };
+
+    class ApplyMindPoisonTrigger : public ApplyPoisonTrigger
+    {
+    public:
+        ApplyMindPoisonTrigger(PlayerbotAI* ai, bool inMainHand) : ApplyPoisonTrigger(ai, inMainHand, { 35, 23, 643 }, "apply mind poison main hand") {}
+    };
+
+    class ApplyInstantPoisonTrigger : public ApplyPoisonTrigger
+    {
+    public:
+        ApplyInstantPoisonTrigger(PlayerbotAI* ai, bool inMainHand) : ApplyPoisonTrigger(ai, inMainHand, { 323, 324, 325, 623, 624, 625, 2641, 3768, 3769 }, "apply instant poison main hand") {}
+    };
+
+    class ApplyWoundPoisonTrigger : public ApplyPoisonTrigger
+    {
+    public:
+        ApplyWoundPoisonTrigger(PlayerbotAI* ai, bool inMainHand) : ApplyPoisonTrigger(ai, inMainHand, { 703, 704, 705, 706, 2644, 3772, 3773 }, "apply wound poison main hand") {}
+    };
+
+    class ApplyAnestheticPoisonTrigger : public ApplyPoisonTrigger
+    {
+    public:
+        ApplyAnestheticPoisonTrigger(PlayerbotAI* ai, bool inMainHand) : ApplyPoisonTrigger(ai, inMainHand, { 2640, 3774 }, "apply anesthetic poison main hand") {}
     };
 }

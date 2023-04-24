@@ -148,7 +148,6 @@ namespace ai
             creators["greet"] = &ActionContext::greet;
             creators["check values"] = &ActionContext::check_values;
             creators["ra"] = &ActionContext::ra;
-            creators["apply poison"] = &ActionContext::apply_poison;
             creators["apply stone"] = &ActionContext::apply_stone;
             creators["apply oil"] = &ActionContext::apply_oil;
             creators["try emergency"] = &ActionContext::try_emergency;
@@ -314,7 +313,6 @@ namespace ai
         static Action* move_random(PlayerbotAI* ai) { return new MoveRandomAction(ai); }
         static Action* check_values(PlayerbotAI* ai) { return new CheckValuesAction(ai); }
         static Action* greet(PlayerbotAI* ai) { return new GreetAction(ai); }
-        static Action* apply_poison(PlayerbotAI* ai) { return new ImbueWithPoisonAction(ai); }
         static Action* apply_oil(PlayerbotAI* ai) { return new ImbueWithOilAction(ai); }
         static Action* try_emergency(PlayerbotAI* ai) { return new TryEmergencyAction(ai); }
         static Action* apply_stone(PlayerbotAI* ai) { return new ImbueWithStoneAction(ai); }

@@ -6,36 +6,20 @@
 
 namespace ai
 {
-   class ImbueWithPoisonAction : public Action
-   {
-   public:
-      ImbueWithPoisonAction(PlayerbotAI* ai);
-      virtual bool Execute(Event& event);
-   };
-}
-
-namespace ai
-{
    class ImbueWithStoneAction : public Action
    {
    public:
       ImbueWithStoneAction(PlayerbotAI* ai);
       virtual bool Execute(Event& event);
    };
-}
 
-namespace ai
-{
    class ImbueWithOilAction : public Action
    {
    public:
       ImbueWithOilAction(PlayerbotAI* ai);
       virtual bool Execute(Event& event);
    };
-}
 
-namespace ai
-{
    class TryEmergencyAction : public Action
    {
    public:

@@ -433,20 +433,15 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         {
             if (tab == 0)
             {
-                engine->addStrategies("assassin", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", NULL);
+                engine->addStrategies("assassination", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", "poisons", NULL);
             }
-            else if (tab == 1)
+            else if (tab == 2)
             {
-                engine->addStrategies("combat", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", NULL);
+                engine->addStrategies("subtlety", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", "poisons", NULL);
             }
             else
             {
-                engine->addStrategies("subtlety", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", NULL);
-            }
-
-            if (player->GetLevel() < 15)
-            {
-                engine->addStrategies("dps", NULL);
+                engine->addStrategies("combat", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", "poisons", NULL);
             }
 
             break;
@@ -609,7 +604,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         
         if (player->getClass() == CLASS_ROGUE)
         {
-            engine->addStrategies("behind", "stealth", NULL);
+            engine->addStrategies("behind", "stealth", "poisons", NULL);
         }
     }
 }
@@ -680,6 +675,25 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             nonCombatEngine->addStrategies("dps assist", "cure", "totems", NULL);
             break;
         }
+
+        case CLASS_ROGUE:
+        {
+            if (tab == 0)
+            {
+                nonCombatEngine->addStrategy("assassination");
+            }
+            else if (tab == 2)
+            {
+                nonCombatEngine->addStrategy("subtlety");
+            }
+            else
+            {
+                nonCombatEngine->addStrategy("combat");
+            }
+
+            nonCombatEngine->addStrategies("dps assist", "poisons", "stealth", NULL);
+            break;
+    }
 
         case CLASS_MAGE:
         {
@@ -971,6 +985,24 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
 
             break;
         }
+
+        case CLASS_ROGUE:
+        {
+            if (tab == 0)
+            {
+                deadEngine->addStrategy("assassination");
+            }
+            else if (tab == 2)
+            {
+                deadEngine->addStrategy("subtlety");
+            }
+            else
+            {
+                deadEngine->addStrategy("combat");
+            }
+
+            break;
+        }
     }
 }
 
@@ -1001,6 +1033,24 @@ void AiFactory::AddDefaultReactionStrategies(Player* player, PlayerbotAI* const 
             else
             {
                 reactionEngine->addStrategy("enhancement");
+            }
+
+            break;
+        }
+
+        case CLASS_ROGUE:
+        {
+            if (tab == 0)
+            {
+                reactionEngine->addStrategy("assassination");
+            }
+            else if (tab == 2)
+            {
+                reactionEngine->addStrategy("subtlety");
+            }
+            else
+            {
+                reactionEngine->addStrategy("combat");
             }
 
             break;
