@@ -258,21 +258,22 @@ namespace ai
 
         set<string> GetSiblings(string name)
         {
+            set<string> siblings;
             for (typename list<NamedObjectContext<T>*>::iterator i = contexts.begin(); i != contexts.end(); i++)
             {
-                if (!(*i)->IsSupportsSiblings())
-                    continue;
-
-                set<string> supported = (*i)->supports();
-                set<string>::iterator found = supported.find(name);
-                if (found == supported.end())
-                    continue;
-
-                supported.erase(found);
-                return supported;
+                if ((*i)->IsSupportsSiblings())
+                {
+                    set<string> supported = (*i)->supports();
+                    set<string>::iterator found = supported.find(name);
+                    if (found != supported.end())
+                    {
+                        supported.erase(found);
+                        siblings.insert(supported.begin(), supported.end());
+                    }
+                }
             }
 
-            return set<string>();
+            return siblings;
         }
 
         set<string> supports()
