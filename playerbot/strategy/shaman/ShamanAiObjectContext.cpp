@@ -86,22 +86,148 @@ namespace ai
             static Strategy* cure_enhancement_raid(PlayerbotAI* ai) { return new EnhancementShamanCureRaidStrategy(ai); }
         };
 
-        class TotemStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        class BuffSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
         {
         public:
-            TotemStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            BuffSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
             {
-                creators["totems"] = &shaman::TotemStrategyFactoryInternal::totems;
-                creators["totembar elements"] = &shaman::TotemStrategyFactoryInternal::totem_bar_elements;
-                creators["totembar ancestors"] = &shaman::TotemStrategyFactoryInternal::totem_bar_ancestors;
-                creators["totembar spirits"] = &shaman::TotemStrategyFactoryInternal::totem_bar_spirits;
+                creators["buff elemental pve"] = &shaman::BuffSituationStrategyFactoryInternal::buff_elemental_pve;
+                creators["buff elemental pvp"] = &shaman::BuffSituationStrategyFactoryInternal::buff_elemental_pvp;
+                creators["buff elemental raid"] = &shaman::BuffSituationStrategyFactoryInternal::buff_elemental_raid;
+                creators["buff restoration pve"] = &shaman::BuffSituationStrategyFactoryInternal::buff_restoration_pve;
+                creators["buff restoration pvp"] = &shaman::BuffSituationStrategyFactoryInternal::buff_restoration_pvp;
+                creators["buff restoration raid"] = &shaman::BuffSituationStrategyFactoryInternal::buff_restoration_raid;
+                creators["buff enhancement pve"] = &shaman::BuffSituationStrategyFactoryInternal::buff_enhancement_pve;
+                creators["buff enhancement pvp"] = &shaman::BuffSituationStrategyFactoryInternal::buff_enhancement_pvp;
+                creators["buff enhancement raid"] = &shaman::BuffSituationStrategyFactoryInternal::buff_enhancement_raid;
             }
 
         private:
-            static Strategy* totems(PlayerbotAI* ai) { return new ShamanTotemsPlaceholderStrategy(ai); }         
+            static Strategy* buff_elemental_pve(PlayerbotAI* ai) { return new ElementalShamanBuffPveStrategy(ai); }
+            static Strategy* buff_elemental_pvp(PlayerbotAI* ai) { return new ElementalShamanBuffPvpStrategy(ai); }
+            static Strategy* buff_elemental_raid(PlayerbotAI* ai) { return new ElementalShamanBuffRaidStrategy(ai); }
+            static Strategy* buff_restoration_pve(PlayerbotAI* ai) { return new RestorationShamanBuffPveStrategy(ai); }
+            static Strategy* buff_restoration_pvp(PlayerbotAI* ai) { return new RestorationShamanBuffPvpStrategy(ai); }
+            static Strategy* buff_restoration_raid(PlayerbotAI* ai) { return new RestorationShamanBuffRaidStrategy(ai); }
+            static Strategy* buff_enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanBuffPveStrategy(ai); }
+            static Strategy* buff_enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanBuffPvpStrategy(ai); }
+            static Strategy* buff_enhancement_raid(PlayerbotAI* ai) { return new EnhancementShamanBuffRaidStrategy(ai); }
+        };
+
+        class EarthTotemStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            EarthTotemStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["totems"] = &shaman::EarthTotemStrategyFactoryInternal::totems;
+                creators["totembar elements"] = &shaman::EarthTotemStrategyFactoryInternal::totem_bar_elements;
+                creators["totembar ancestors"] = &shaman::EarthTotemStrategyFactoryInternal::totem_bar_ancestors;
+                creators["totembar spirits"] = &shaman::EarthTotemStrategyFactoryInternal::totem_bar_spirits;
+                creators["totem earth stoneclaw"] = &shaman::EarthTotemStrategyFactoryInternal::totem_earth_stoneclaw;
+                creators["totem earth stoneskin"] = &shaman::EarthTotemStrategyFactoryInternal::totem_earth_stoneskin;
+                creators["totem earth earthbind"] = &shaman::EarthTotemStrategyFactoryInternal::totem_earth_earthbind;
+                creators["totem earth strength"] = &shaman::EarthTotemStrategyFactoryInternal::totem_earth_strength;
+                creators["totem earth tremor"] = &shaman::EarthTotemStrategyFactoryInternal::totem_earth_tremor;
+            }
+
+        private:
+            static Strategy* totems(PlayerbotAI* ai) { return new ShamanTotemsPlaceholderStrategy(ai); }
             static Strategy* totem_bar_elements(PlayerbotAI* ai) { return new ShamanTotemBarElementsStrategy(ai); }
             static Strategy* totem_bar_ancestors(PlayerbotAI* ai) { return new ShamanTotemBarAncestorsStrategy(ai); }
             static Strategy* totem_bar_spirits(PlayerbotAI* ai) { return new ShamanTotemBarSpiritsStrategy(ai); }
+            static Strategy* totem_earth_stoneclaw(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem earth stoneclaw", "earth totem", "stoneclaw totem"); }
+            static Strategy* totem_earth_stoneskin(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem earth stoneskin", "earth totem", "stoneskin totem"); }
+            static Strategy* totem_earth_earthbind(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem earth earthbind", "earth totem", "earthbind totem"); }
+            static Strategy* totem_earth_strength(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem earth strength", "earth totem", "strength of earth totem"); }
+            static Strategy* totem_earth_tremor(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem earth tremor", "earth totem", "tremor totem"); }
+        };
+
+        class FireTotemStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            FireTotemStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["totems"] = &shaman::FireTotemStrategyFactoryInternal::totems;
+                creators["totembar elements"] = &shaman::FireTotemStrategyFactoryInternal::totem_bar_elements;
+                creators["totembar ancestors"] = &shaman::FireTotemStrategyFactoryInternal::totem_bar_ancestors;
+                creators["totembar spirits"] = &shaman::FireTotemStrategyFactoryInternal::totem_bar_spirits;
+                creators["totem fire nova"] = &shaman::FireTotemStrategyFactoryInternal::totem_fire_nova;
+                creators["totem fire flametongue"] = &shaman::FireTotemStrategyFactoryInternal::totem_fire_flametongue;
+                creators["totem fire resistance"] = &shaman::FireTotemStrategyFactoryInternal::totem_fire_resistance;
+                creators["totem fire magma"] = &shaman::FireTotemStrategyFactoryInternal::totem_fire_magma;
+                creators["totem fire searing"] = &shaman::FireTotemStrategyFactoryInternal::totem_fire_searing;
+            }
+
+        private:
+            static Strategy* totems(PlayerbotAI* ai) { return new ShamanTotemsPlaceholderStrategy(ai); }
+            static Strategy* totem_bar_elements(PlayerbotAI* ai) { return new ShamanTotemBarElementsStrategy(ai); }
+            static Strategy* totem_bar_ancestors(PlayerbotAI* ai) { return new ShamanTotemBarAncestorsStrategy(ai); }
+            static Strategy* totem_bar_spirits(PlayerbotAI* ai) { return new ShamanTotemBarSpiritsStrategy(ai); }
+            static Strategy* totem_fire_nova(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem fire nova", "fire totem", "fire nova"); }
+            static Strategy* totem_fire_flametongue(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem fire flametongue", "fire totem", "flametongue totem"); }
+            static Strategy* totem_fire_resistance(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem fire resistance", "fire totem", "frost resistance totem"); }
+            static Strategy* totem_fire_magma(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem fire magma", "fire totem", "magma totem"); }
+            static Strategy* totem_fire_searing(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem fire searing", "fire totem", "searing totem"); }
+        };
+
+        class WaterTotemStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            WaterTotemStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["totems"] = &shaman::WaterTotemStrategyFactoryInternal::totems;
+                creators["totembar elements"] = &shaman::WaterTotemStrategyFactoryInternal::totem_bar_elements;
+                creators["totembar ancestors"] = &shaman::WaterTotemStrategyFactoryInternal::totem_bar_ancestors;
+                creators["totembar spirits"] = &shaman::WaterTotemStrategyFactoryInternal::totem_bar_spirits;
+                creators["totem water cleansing"] = &shaman::WaterTotemStrategyFactoryInternal::totem_water_cleansing;
+                creators["totem water resistance"] = &shaman::WaterTotemStrategyFactoryInternal::totem_water_resistance;
+                creators["totem water healing"] = &shaman::WaterTotemStrategyFactoryInternal::totem_water_healing;
+                creators["totem water mana"] = &shaman::WaterTotemStrategyFactoryInternal::totem_water_mana;
+                creators["totem water poison"] = &shaman::WaterTotemStrategyFactoryInternal::totem_water_poison;
+            }
+
+        private:
+            static Strategy* totems(PlayerbotAI* ai) { return new ShamanTotemsPlaceholderStrategy(ai); }
+            static Strategy* totem_bar_elements(PlayerbotAI* ai) { return new ShamanTotemBarElementsStrategy(ai); }
+            static Strategy* totem_bar_ancestors(PlayerbotAI* ai) { return new ShamanTotemBarAncestorsStrategy(ai); }
+            static Strategy* totem_bar_spirits(PlayerbotAI* ai) { return new ShamanTotemBarSpiritsStrategy(ai); }
+            static Strategy* totem_water_cleansing(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem water cleansing", "water totem", "disease cleansing totem"); }
+            static Strategy* totem_water_resistance(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem water resistance", "water totem", "fire resistance totem"); }
+            static Strategy* totem_water_healing(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem water healing", "water totem", "healing stream totem"); }
+            static Strategy* totem_water_mana(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem water mana", "water totem", "mana spring totem"); }
+            static Strategy* totem_water_poison(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem water poison", "water totem", "poison cleansing totem"); }
+        };
+
+        class AirTotemStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            AirTotemStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["totems"] = &shaman::AirTotemStrategyFactoryInternal::totems;
+                creators["totembar elements"] = &shaman::AirTotemStrategyFactoryInternal::totem_bar_elements;
+                creators["totembar ancestors"] = &shaman::AirTotemStrategyFactoryInternal::totem_bar_ancestors;
+                creators["totembar spirits"] = &shaman::AirTotemStrategyFactoryInternal::totem_bar_spirits;
+                creators["totem air grace"] = &shaman::AirTotemStrategyFactoryInternal::totem_air_grace;
+                creators["totem air grounding"] = &shaman::AirTotemStrategyFactoryInternal::totem_air_grounding;
+                creators["totem air resistance"] = &shaman::AirTotemStrategyFactoryInternal::totem_air_resistance;
+                creators["totem air tranquil"] = &shaman::AirTotemStrategyFactoryInternal::totem_air_tranquil;
+                creators["totem air windfury"] = &shaman::AirTotemStrategyFactoryInternal::totem_air_windfury;
+                creators["totem air windwall"] = &shaman::AirTotemStrategyFactoryInternal::totem_air_windwall;
+                creators["totem air wrath"] = &shaman::AirTotemStrategyFactoryInternal::totem_air_wrath;
+            }
+
+        private:
+            static Strategy* totems(PlayerbotAI* ai) { return new ShamanTotemsPlaceholderStrategy(ai); }
+            static Strategy* totem_bar_elements(PlayerbotAI* ai) { return new ShamanTotemBarElementsStrategy(ai); }
+            static Strategy* totem_bar_ancestors(PlayerbotAI* ai) { return new ShamanTotemBarAncestorsStrategy(ai); }
+            static Strategy* totem_bar_spirits(PlayerbotAI* ai) { return new ShamanTotemBarSpiritsStrategy(ai); }
+            static Strategy* totem_air_grace(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem air grace", "air totem", "grace of air totem"); }
+            static Strategy* totem_air_grounding(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem air grounding", "air totem", "grounding totem"); }
+            static Strategy* totem_air_resistance(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem air resistance", "air totem", "nature resistance totem"); }
+            static Strategy* totem_air_tranquil(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem air tranquil", "air totem", "tranquil air totem"); }
+            static Strategy* totem_air_windfury(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem air windfury", "air totem", "windfury totem"); }
+            static Strategy* totem_air_windwall(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem air windwall", "air totem", "windwall totem"); }
+            static Strategy* totem_air_wrath(PlayerbotAI* ai) { return new ShamanManualTotemStrategy(ai, "totem air wrath", "air totem", "wrath of air totem"); }
         };
 
         class TotemsSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -219,6 +345,10 @@ namespace ai
                 creators["earth totem"] = &TriggerFactoryInternal::earth_totem;
                 creators["water totem"] = &TriggerFactoryInternal::water_totem;
                 creators["air totem"] = &TriggerFactoryInternal::air_totem;
+                creators["air totem nc"] = &TriggerFactoryInternal::air_totem_nc;
+                creators["fire totem nc"] = &TriggerFactoryInternal::fire_totem_nc;
+                creators["earth totem nc"] = &TriggerFactoryInternal::earth_totem_nc;
+                creators["water totem nc"] = &TriggerFactoryInternal::water_totem_nc;
                 creators["call of the elements"] = &TriggerFactoryInternal::call_of_the_elements;
                 creators["call of the ancestors"] = &TriggerFactoryInternal::call_of_the_ancestors;
                 creators["call of the spirits"] = &TriggerFactoryInternal::call_of_the_spirits;
@@ -256,6 +386,10 @@ namespace ai
             static Trigger* earth_totem(PlayerbotAI* ai) { return new EarthTotemTrigger(ai); }
             static Trigger* water_totem(PlayerbotAI* ai) { return new WaterTotemTrigger(ai); }
             static Trigger* air_totem(PlayerbotAI* ai) { return new AirTotemTrigger(ai); }
+            static Trigger* fire_totem_nc(PlayerbotAI* ai) { return new FireTotemTrigger(ai, false); }
+            static Trigger* earth_totem_nc(PlayerbotAI* ai) { return new EarthTotemTrigger(ai, false); }
+            static Trigger* water_totem_nc(PlayerbotAI* ai) { return new WaterTotemTrigger(ai, false); }
+            static Trigger* air_totem_nc(PlayerbotAI* ai) { return new AirTotemTrigger(ai, false); }
             static Trigger* call_of_the_elements(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }
             static Trigger* call_of_the_ancestors(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }
             static Trigger* call_of_the_spirits(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }
@@ -283,12 +417,23 @@ namespace ai
                 creators["magma totem"] = &AiObjectContextInternal::magma_totem;
                 creators["totem of wrath"] = &AiObjectContextInternal::totem_of_wrath;
                 creators["windfury totem"] = &AiObjectContextInternal::windfury_totem;
+                creators["stoneskin totem"] = &AiObjectContextInternal::stoneskin_totem;
+                creators["stoneclaw totem"] = &AiObjectContextInternal::stoneclaw_totem;
+                creators["grounding totem"] = &AiObjectContextInternal::grounding_totem;
                 creators["grace of air totem"] = &AiObjectContextInternal::grace_of_air_totem;
+                creators["windwall totem"] = &AiObjectContextInternal::windwall_totem;
                 creators["mana spring totem"] = &AiObjectContextInternal::mana_spring_totem;
                 creators["mana tide totem"] = &AiObjectContextInternal::mana_tide_totem;
                 creators["earthbind totem"] = &AiObjectContextInternal::earthbind_totem;
+                creators["tremor totem"] = &AiObjectContextInternal::tremor_totem;
+                creators["tranquil air totem"] = &AiObjectContextInternal::tranquil_air_totem;
                 creators["healing stream totem"] = &AiObjectContextInternal::healing_stream_totem;
                 creators["wrath of air totem"] = &AiObjectContextInternal::wrath_of_air_totem;
+                creators["frost resistance totem"] = &AiObjectContextInternal::frost_resistance_totem;
+                creators["fire resistance totem"] = &AiObjectContextInternal::fire_resistance_totem;
+                creators["nature resistance totem"] = &AiObjectContextInternal::nature_resistance_totem;
+                creators["disease cleansing totem"] = &AiObjectContextInternal::disease_cleansing_totem;
+                creators["poison cleansing totem"] = &AiObjectContextInternal::poison_cleansing_totem;
                 creators["wind shear"] = &AiObjectContextInternal::wind_shear;
                 creators["wind shear on enemy healer"] = &AiObjectContextInternal::wind_shear_on_enemy_healer;
                 creators["rockbiter weapon"] = &AiObjectContextInternal::rockbiter_weapon;
@@ -367,13 +512,24 @@ namespace ai
             static Action* searing_totem(PlayerbotAI* ai) { return new CastSearingTotemAction(ai); }
             static Action* totem_of_wrath(PlayerbotAI* ai) { return new CastTotemOfWrathAction(ai); }
             static Action* fire_nova(PlayerbotAI* ai) { return new CastFireNovaAction(ai); }
+            static Action* stoneskin_totem(PlayerbotAI* ai) { return new CastStoneskinTotemAction(ai); }
+            static Action* stoneclaw_totem(PlayerbotAI* ai) { return new CastStoneclawTotemAction(ai); }
+            static Action* grounding_totem(PlayerbotAI* ai) { return new CastGroundingTotemAction(ai); }
             static Action* windfury_totem(PlayerbotAI* ai) { return new CastWindfuryTotemAction(ai); }
+            static Action* windwall_totem(PlayerbotAI* ai) { return new CastWindwallTotemAction(ai); }
             static Action* grace_of_air_totem(PlayerbotAI* ai) { return new CastGraceOfAirTotemAction(ai); }
             static Action* mana_spring_totem(PlayerbotAI* ai) { return new CastManaSpringTotemAction(ai); }
             static Action* mana_tide_totem(PlayerbotAI* ai) { return new CastManaTideTotemAction(ai); }
             static Action* earthbind_totem(PlayerbotAI* ai) { return new CastEarthbindTotemAction(ai); }
+            static Action* tremor_totem(PlayerbotAI* ai) { return new CastTremorTotemAction(ai); }
+            static Action* tranquil_air_totem(PlayerbotAI* ai) { return new CastTranquilAirTotemAction(ai); }
             static Action* healing_stream_totem(PlayerbotAI* ai) { return new CastHealingStreamTotemAction(ai); }
             static Action* wrath_of_air_totem(PlayerbotAI* ai) { return new CastWrathOfAirTotemAction(ai); }
+            static Action* frost_resistance_totem(PlayerbotAI* ai) { return new CastFrostResistanceTotemAction(ai); }
+            static Action* fire_resistance_totem(PlayerbotAI* ai) { return new CastFireResistanceTotemAction(ai); }
+            static Action* nature_resistance_totem(PlayerbotAI* ai) { return new CastNatureResistanceTotemAction(ai); }
+            static Action* disease_cleansing_totem(PlayerbotAI* ai) { return new CastDiseaseCleansingTotemAction(ai); }
+            static Action* poison_cleansing_totem(PlayerbotAI* ai) { return new CastPoisonCleansingTotemAction(ai); }
             static Action* wind_shear(PlayerbotAI* ai) { return new CastWindShearAction(ai); }
             static Action* rockbiter_weapon(PlayerbotAI* ai) { return new CastRockbiterWeaponAction(ai); }
             static Action* flametongue_weapon(PlayerbotAI* ai) { return new CastFlametongueWeaponAction(ai); }
@@ -413,6 +569,10 @@ namespace ai
 ShamanAiObjectContext::ShamanAiObjectContext(PlayerbotAI* ai) : AiObjectContext(ai)
 {
     strategyContexts.Add(new ai::shaman::StrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::EarthTotemStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::FireTotemStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::WaterTotemStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::AirTotemStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::TotemsSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::AoeSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::CureSituationStrategyFactoryInternal());

@@ -1277,3 +1277,10 @@ void ShamanTotemBarSpiritsStrategy::InitCombatTriggers(std::list<TriggerNode*>& 
 }
 
 #endif
+
+void ShamanManualTotemStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        triggerName,
+        NextAction::array(0, new NextAction(actionName, ACTION_HIGH), NULL)));
+}

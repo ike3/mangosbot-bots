@@ -1304,3 +1304,10 @@ float RogueStealthedStrategyMultiplier::GetValue(Action* action)
 
     return 0.0f;
 }
+
+void RogueManualPoisonStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        triggerName,
+        NextAction::array(0, new NextAction(actionName, 1.0f), NULL)));
+}

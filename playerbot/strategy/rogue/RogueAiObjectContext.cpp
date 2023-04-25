@@ -24,7 +24,6 @@ namespace ai
                 creators["stealth"] = &rogue::StrategyFactoryInternal::stealth;
                 creators["stealthed"] = &rogue::StrategyFactoryInternal::stealthed;
                 creators["cc"] = &rogue::StrategyFactoryInternal::cc;
-                creators["poisons"] = &rogue::StrategyFactoryInternal::poisons;
             }
 
         private:
@@ -34,7 +33,6 @@ namespace ai
             static Strategy* stealth(PlayerbotAI* ai) { return new RogueStealthPlaceholderStrategy(ai); }
             static Strategy* stealthed(PlayerbotAI* ai) { return new RogueStealthedStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new RogueCcPlaceholderStrategy(ai); }
-            static Strategy* poisons(PlayerbotAI* ai) { return new RoguePoisonsPlaceholderStrategy(ai); }
         };
 
         class AoeSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -175,6 +173,54 @@ namespace ai
             static Strategy* poisons_subtlety_pve(PlayerbotAI* ai) { return new SubtletyRoguePoisonsPveStrategy(ai); }
             static Strategy* poisons_subtlety_pvp(PlayerbotAI* ai) { return new SubtletyRoguePoisonsPvpStrategy(ai); }
             static Strategy* poisons_subtlety_raid(PlayerbotAI* ai) { return new SubtletyRoguePoisonsRaidStrategy(ai); }
+        };
+
+        class PoisonMainStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            PoisonMainStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["poisons"] = &rogue::PoisonMainStrategyFactoryInternal::poisons;
+                creators["poison main deadly"] = &rogue::PoisonMainStrategyFactoryInternal::poison_main_deadly;
+                creators["poison main crippling"] = &rogue::PoisonMainStrategyFactoryInternal::poison_main_crippling;
+                creators["poison main mind"] = &rogue::PoisonMainStrategyFactoryInternal::poison_main_mind;
+                creators["poison main instant"] = &rogue::PoisonMainStrategyFactoryInternal::poison_main_instant;
+                creators["poison main wound"] = &rogue::PoisonMainStrategyFactoryInternal::poison_main_wound;
+                creators["poison main anesthetic"] = &rogue::PoisonMainStrategyFactoryInternal::poison_main_anesthetic;
+            }
+
+        private:
+            static Strategy* poisons(PlayerbotAI* ai) { return new RoguePoisonsPlaceholderStrategy(ai); }
+            static Strategy* poison_main_deadly(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison main deadly", "apply deadly poison main hand", "apply deadly poison main hand"); }
+            static Strategy* poison_main_crippling(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison main crippling", "apply crippling poison main hand", "apply crippling poison main hand"); }
+            static Strategy* poison_main_mind(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison main mind", "apply mind poison main hand", "apply mind poison main hand"); }
+            static Strategy* poison_main_instant(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison main instant", "apply instant poison main hand", "apply instant poison main hand"); }
+            static Strategy* poison_main_wound(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison main wound", "apply wound poison main hand", "apply wound poison main hand"); }
+            static Strategy* poison_main_anesthetic(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison main anesthetic", "apply anesthetic poison main hand", "apply anesthetic poison main hand"); }
+        };
+
+        class PoisonOffStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            PoisonOffStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["poisons"] = &rogue::PoisonOffStrategyFactoryInternal::poisons;
+                creators["poison off deadly"] = &rogue::PoisonOffStrategyFactoryInternal::poison_off_deadly;
+                creators["poison off crippling"] = &rogue::PoisonOffStrategyFactoryInternal::poison_off_crippling;
+                creators["poison off mind"] = &rogue::PoisonOffStrategyFactoryInternal::poison_off_mind;
+                creators["poison off instant"] = &rogue::PoisonOffStrategyFactoryInternal::poison_off_instant;
+                creators["poison off wound"] = &rogue::PoisonOffStrategyFactoryInternal::poison_off_wound;
+                creators["poison off anesthetic"] = &rogue::PoisonOffStrategyFactoryInternal::poison_off_anesthetic;
+            }
+
+        private:
+            static Strategy* poisons(PlayerbotAI* ai) { return new RoguePoisonsPlaceholderStrategy(ai); }
+            static Strategy* poison_off_deadly(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison off deadly", "apply deadly poison off hand", "apply deadly poison off hand"); }
+            static Strategy* poison_off_crippling(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison off crippling", "apply crippling poison off hand", "apply crippling poison off hand"); }
+            static Strategy* poison_off_mind(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison off mind", "apply mind poison off hand", "apply mind poison off hand"); }
+            static Strategy* poison_off_instant(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison off instant", "apply instant poison off hand", "apply instant poison off hand"); }
+            static Strategy* poison_off_wound(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison off wound", "apply wound poison off hand", "apply wound poison off hand"); }
+            static Strategy* poison_off_anesthetic(PlayerbotAI* ai) { return new RogueManualPoisonStrategy(ai, "poison off anesthetic", "apply anesthetic poison off hand", "apply anesthetic poison off hand"); }
         };
 
         class ClassStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -438,6 +484,8 @@ RogueAiObjectContext::RogueAiObjectContext(PlayerbotAI* ai) : AiObjectContext(ai
     strategyContexts.Add(new ai::rogue::CcSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::rogue::StealthSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::rogue::PoisonsSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::rogue::PoisonMainStrategyFactoryInternal());
+    strategyContexts.Add(new ai::rogue::PoisonOffStrategyFactoryInternal());
     strategyContexts.Add(new ai::rogue::ClassStrategyFactoryInternal());
     strategyContexts.Add(new ai::rogue::ClassSituationStrategyFactoryInternal());
     actionContexts.Add(new ai::rogue::AiObjectContextInternal());

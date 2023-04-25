@@ -55,16 +55,48 @@ namespace ai
     class FireTotemTrigger : public Trigger 
     {
     public:
-        FireTotemTrigger(PlayerbotAI* ai) : Trigger(ai, "trigger spec appropriate fire totem") {}
+        FireTotemTrigger(PlayerbotAI* ai, bool inMovement = true) : Trigger(ai, "trigger spec appropriate fire totem", 5), inMovement(inMovement) {}
+
         virtual bool IsActive()
         {
-            return !AI_VALUE2(bool, "has totem", "searing totem") &&
-                !AI_VALUE2(bool, "has totem", "magma totem") &&
-                !AI_VALUE2(bool, "has totem", "frost resistance totem") &&
-                !AI_VALUE2(bool, "has totem", "flametongue totem") &&
-                !AI_VALUE2(bool, "has totem", "totem of wrath") &&
-                !AI_VALUE2(bool, "has totem", "fire elemental totem");
+            if (!inMovement && bot->IsMoving() && bot->GetMotionMaster() && bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+            {
+                return false;
+            }
+
+            if (ai->HasStrategy("totem fire nova", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "fire nova totem");
+            }
+            else if (ai->HasStrategy("totem fire flametongue", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "flametongue totem");
+            }
+            else if (ai->HasStrategy("totem fire resistance", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "frost resistance totem");
+            }
+            else if (ai->HasStrategy("totem fire magma", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "magma totem");
+            }
+            else if (ai->HasStrategy("totem fire searing", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "searing totem");
+            }
+            else
+            {
+                return !AI_VALUE2(bool, "has totem", "searing totem") &&
+                       !AI_VALUE2(bool, "has totem", "magma totem") &&
+                       !AI_VALUE2(bool, "has totem", "frost resistance totem") &&
+                       !AI_VALUE2(bool, "has totem", "flametongue totem") &&
+                       !AI_VALUE2(bool, "has totem", "totem of wrath") &&
+                       !AI_VALUE2(bool, "has totem", "fire elemental totem");
+            }
         }
+
+    private:
+        bool inMovement;
     };
 
     class FireTotemAoeTrigger : public Trigger 
@@ -86,45 +118,152 @@ namespace ai
     class EarthTotemTrigger : public Trigger 
     {
     public:
-        EarthTotemTrigger(PlayerbotAI* ai) : Trigger(ai, "trigger spec appropriate earth totem") {}
+        EarthTotemTrigger(PlayerbotAI* ai, bool inMovement = true) : Trigger(ai, "trigger spec appropriate earth totem", 5), inMovement(inMovement) {}
+
         virtual bool IsActive()
         {
-            return !AI_VALUE2(bool, "has totem", "earthbind totem") &&
-                !AI_VALUE2(bool, "has totem", "stoneskin totem") &&
-                !AI_VALUE2(bool, "has totem", "stoneclaw totem") &&
-                !AI_VALUE2(bool, "has totem", "strength of earth totem") &&
-                !AI_VALUE2(bool, "has totem", "tremor totem") &&
-                !AI_VALUE2(bool, "has totem", "earth elemental totem");
+            if (!inMovement && bot->IsMoving() && bot->GetMotionMaster() && bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+            {
+                return false;
+            }
+
+            if (ai->HasStrategy("totem earth stoneclaw", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "stoneclaw totem");
+            }
+            else if (ai->HasStrategy("totem earth stoneskin", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "stoneskin totem");
+            }
+            else if (ai->HasStrategy("totem earth earthbind", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "earthbind totem");
+            }
+            else if (ai->HasStrategy("totem earth strength", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "strength of earth totem");
+            }
+            else if (ai->HasStrategy("totem earth tremor", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "tremor totem");
+            }
+            else
+            {
+                return !AI_VALUE2(bool, "has totem", "earthbind totem") &&
+                       !AI_VALUE2(bool, "has totem", "stoneskin totem") &&
+                       !AI_VALUE2(bool, "has totem", "stoneclaw totem") &&
+                       !AI_VALUE2(bool, "has totem", "strength of earth totem") &&
+                       !AI_VALUE2(bool, "has totem", "tremor totem") &&
+                       !AI_VALUE2(bool, "has totem", "earth elemental totem");
+            }
         }
+
+    private:
+        bool inMovement;
     };
 
     class AirTotemTrigger : public Trigger 
     {
     public:
-        AirTotemTrigger(PlayerbotAI* ai) : Trigger(ai, "trigger spec appropriate air totem") {}
+        AirTotemTrigger(PlayerbotAI* ai, bool inMovement = true) : Trigger(ai, "trigger spec appropriate air totem", 5), inMovement(inMovement) {}
+
         virtual bool IsActive()
         {
-            return !AI_VALUE2(bool, "has totem", "windfury totem") &&
-                !AI_VALUE2(bool, "has totem", "grounding totem") &&
-                !AI_VALUE2(bool, "has totem", "sentry totem") &&
-                !AI_VALUE2(bool, "has totem", "nature resistance totem") &&
-                !AI_VALUE2(bool, "has totem", "wrath of air totem");
+            if (!inMovement && bot->IsMoving() && bot->GetMotionMaster() && bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+            {
+                return false;
+            }
+
+            if (ai->HasStrategy("totem air grace", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "grace of air totem");
+            }
+            else if (ai->HasStrategy("totem air grounding", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "grounding totem");
+            }
+            else if (ai->HasStrategy("totem air resistance", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "nature resistance totem");
+            }
+            else if (ai->HasStrategy("totem air tranquil", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "tranquil air totem");
+            }
+            else if (ai->HasStrategy("totem air windfury", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "windfury totem");
+            }
+            else if (ai->HasStrategy("totem air windwall", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "windwall totem");
+            }
+            else if (ai->HasStrategy("totem air wrath", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "wrath of air totem");
+            }
+            else
+            {
+                return !AI_VALUE2(bool, "has totem", "grace of air totem") &&
+                       !AI_VALUE2(bool, "has totem", "windwall totem") &&
+                       !AI_VALUE2(bool, "has totem", "tranquil air totem") &&
+                       !AI_VALUE2(bool, "has totem", "windfury totem") &&
+                       !AI_VALUE2(bool, "has totem", "grounding totem") &&
+                       !AI_VALUE2(bool, "has totem", "sentry totem") &&
+                       !AI_VALUE2(bool, "has totem", "nature resistance totem") &&
+                       !AI_VALUE2(bool, "has totem", "wrath of air totem");
+            }
         }
+
+    private:
+        bool inMovement;
     };
 
     class WaterTotemTrigger : public Trigger 
     {
     public:
-        WaterTotemTrigger(PlayerbotAI* ai) : Trigger(ai, "trigger spec appropriate water totem") {}
+        WaterTotemTrigger(PlayerbotAI* ai, bool inMovement = true) : Trigger(ai, "trigger spec appropriate water totem", 5), inMovement(inMovement) {}
+
         virtual bool IsActive()
         {
-            return !AI_VALUE2(bool, "has totem", "healing stream totem") &&
-                !AI_VALUE2(bool, "has totem", "mana spring totem") &&
-                !AI_VALUE2(bool, "has totem", "poison cleansing totem") &&
-                !AI_VALUE2(bool, "has totem", "disease cleansing totem") &&
-                !AI_VALUE2(bool, "has totem", "mana tide totem") &&
-                !AI_VALUE2(bool, "has totem", "fire resistance totem");
+            if (!inMovement && bot->IsMoving() && bot->GetMotionMaster() && bot->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+            {
+                return false;
+            }
+
+            if (ai->HasStrategy("totem water cleansing", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "disease cleansing totem");
+            }
+            else if (ai->HasStrategy("totem water resistance", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "fire resistance totem");
+            }
+            else if (ai->HasStrategy("totem water healing", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "healing stream totem");
+            }
+            else if (ai->HasStrategy("totem water mana", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "mana spring totem");
+            }
+            else if (ai->HasStrategy("totem water poison", BotState::BOT_STATE_COMBAT))
+            {
+                return !AI_VALUE2(bool, "has totem", "poison cleansing totem");
+            }
+            else
+            {
+                return !AI_VALUE2(bool, "has totem", "healing stream totem") &&
+                       !AI_VALUE2(bool, "has totem", "mana spring totem") &&
+                       !AI_VALUE2(bool, "has totem", "poison cleansing totem") &&
+                       !AI_VALUE2(bool, "has totem", "disease cleansing totem") &&
+                       !AI_VALUE2(bool, "has totem", "mana tide totem") &&
+                       !AI_VALUE2(bool, "has totem", "fire resistance totem");
+            }
         }
+
+    private:
+        bool inMovement;
     };
 
     class WindShearInterruptSpellTrigger : public InterruptSpellTrigger

@@ -115,10 +115,34 @@ namespace ai
         CastStoneskinTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "stoneskin totem") {}
     };
 
+    class CastStoneclawTotemAction : public CastTotemAction
+    {
+    public:
+        CastStoneclawTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "stoneclaw totem") {}
+    };
+
+    class CastGroundingTotemAction : public CastTotemAction
+    {
+    public:
+        CastGroundingTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "grounding totem") {}
+    };
+
     class CastEarthbindTotemAction : public CastTotemAction
     {
     public:
         CastEarthbindTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "earthbind totem") {}
+    };
+
+    class CastTremorTotemAction : public CastTotemAction
+    {
+    public:
+        CastTremorTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "tremor totem") {}
+    };
+
+    class CastTranquilAirTotemAction : public CastTotemAction
+    {
+    public:
+        CastTranquilAirTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "tranquil air totem") {}
     };
 
     class CastStrengthOfEarthTotemAction : public CastTotemAction
@@ -153,6 +177,36 @@ namespace ai
 		CastWrathOfAirTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "wrath of air totem") {}
 	};
 
+    class CastFrostResistanceTotemAction : public CastTotemAction
+    {
+    public:
+        CastFrostResistanceTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "frost resistance totem") {}
+    };
+
+    class CastFireResistanceTotemAction : public CastTotemAction
+    {
+    public:
+        CastFireResistanceTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "fire resistance totem") {}
+    };
+
+    class CastNatureResistanceTotemAction : public CastTotemAction
+    {
+    public:
+        CastNatureResistanceTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "nature resistance totem") {}
+    };
+
+    class CastDiseaseCleansingTotemAction : public CastTotemAction
+    {
+    public:
+        CastDiseaseCleansingTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "disease cleansing totem") {}
+    };
+
+    class CastPoisonCleansingTotemAction : public CastTotemAction
+    {
+    public:
+        CastPoisonCleansingTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "poison cleansing totem") {}
+    };
+
     class CastTotemOfWrathAction : public CastTotemAction
     {
     public:
@@ -176,6 +230,12 @@ namespace ai
     {
     public:
         CastWindfuryTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "windfury totem") {}
+    };
+
+    class CastWindwallTotemAction : public CastTotemAction
+    {
+    public:
+        CastWindwallTotemAction(PlayerbotAI* ai) : CastTotemAction(ai, "windwall totem") {}
     };
 
     class CastGraceOfAirTotemAction : public CastTotemAction

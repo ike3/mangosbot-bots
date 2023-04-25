@@ -252,85 +252,23 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    /*
-    class RogueDpsStrategy : public RogueStrategy
+    class RogueManualPoisonStrategy : public Strategy
     {
     public:
-        RogueDpsStrategy(PlayerbotAI* ai) : RogueStrategy(ai) {}
-        string getName() override { return "dps"; }
+        RogueManualPoisonStrategy(PlayerbotAI* ai, std::string inName, std::string inTriggerName, std::string inActionName)
+        : Strategy(ai)
+        , name(inName)
+        , triggerName(inTriggerName)
+        , actionName(inActionName) {}
+
+        string getName() override { return name; }
 
     private:
-        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
-    };
-
-    class AssassinationRogueStrategy : public RogueStrategy
-    {
-    public:
-        AssassinationRogueStrategy(PlayerbotAI* ai) : RogueStrategy(ai) {}
-        string getName() override { return "assassin"; }
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
 
     private:
-        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        std::string name;
+        std::string triggerName;
+        std::string actionName;
     };
-
-    class CombatRogueStrategy : public RogueStrategy
-    {
-    public:
-        CombatRogueStrategy(PlayerbotAI* ai) : RogueStrategy(ai) {}
-        string getName() override { return "combat"; }
-
-    private:
-        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
-    };
-
-    class SubtletyRogueStrategy : public RogueStrategy
-    {
-    public:
-        SubtletyRogueStrategy(PlayerbotAI* ai) : RogueStrategy(ai) {}
-        string getName() override { return "subtlety"; }
-
-    private:
-        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
-    };
-
-    class StealthedRogueStrategy : public CombatStrategy
-    {
-    public:
-        StealthedRogueStrategy(PlayerbotAI* ai);
-        string getName() override { return "stealthed"; }
-
-    private:
-        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
-    };
-
-    class StealthStrategy : public Strategy
-    {
-    public:
-        StealthStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        string getName() override { return "stealth"; }
-
-    private:
-        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
-    };
-
-    class RogueBoostStrategy : public Strategy
-    {
-    public:
-        RogueBoostStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        string getName() override { return "boost"; }
-
-    private:
-        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
-    };
-
-    class RogueCcStrategy : public Strategy
-    {
-    public:
-        RogueCcStrategy(PlayerbotAI* ai);
-        string getName() override { return "cc"; }
-
-    private:
-        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
-    };
-    */
 }

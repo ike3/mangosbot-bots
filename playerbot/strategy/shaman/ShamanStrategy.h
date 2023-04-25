@@ -223,4 +223,24 @@ namespace ai
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
+
+    class ShamanManualTotemStrategy : public Strategy
+    {
+    public:
+        ShamanManualTotemStrategy(PlayerbotAI* ai, std::string inName, std::string inTriggerName, std::string inActionName) 
+        : Strategy(ai) 
+        , name(inName)
+        , triggerName(inTriggerName)
+        , actionName(inActionName) {}
+
+        string getName() override { return name; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+
+    private:
+        std::string name;
+        std::string triggerName;
+        std::string actionName;
+    };
 }
