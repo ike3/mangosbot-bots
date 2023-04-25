@@ -12,7 +12,6 @@ public:
     {
         creators["flametongue weapon"] = &flametongue_weapon;
         creators["frostbrand weapon"] = &frostbrand_weapon;
-        creators["windfury weapon"] = &windfury_weapon;
         creators["lesser healing wave"] = &lesser_healing_wave;
         creators["lesser healing wave on party"] = &lesser_healing_wave_on_party;
         creators["chain heal"] = &chain_heal;
@@ -31,8 +30,6 @@ private:
     ACTION_NODE_A(flametongue_weapon, "flametongue weapon", "frostbrand weapon");
 
     ACTION_NODE_A(frostbrand_weapon, "frostbrand weapon", "rockbiter weapon");
-
-    ACTION_NODE_A(windfury_weapon, "windfury weapon", "rockbiter weapon");
 
     ACTION_NODE_A(lesser_healing_wave, "lesser healing wave", "healing wave");
 
@@ -126,22 +123,6 @@ void ShamanStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "party member cure poison",
         NextAction::array(0, new NextAction("cure poison on party", 21.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water breathing",
-        NextAction::array(0, new NextAction("water breathing", 12.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water walking",
-        NextAction::array(0, new NextAction("water walking", 12.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water breathing on party",
-        NextAction::array(0, new NextAction("water breathing on party", 11.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water walking on party",
-        NextAction::array(0, new NextAction("water walking on party", 11.0f), NULL)));
 }
 
 void ShamanStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -262,28 +243,6 @@ void ShamanAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigg
     AoeRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-void ShamanBuffDpsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "lightning shield",
-        NextAction::array(0, new NextAction("lightning shield", 22.0f), NULL)));
-}
-
-void ShamanBuffDpsStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    InitCombatTriggers(triggers);
-}
-
-void ShamanBuffManaStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    
-}
-
-void ShamanBuffManaStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    InitCombatTriggers(triggers);
-}
-
 void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CureStrategy::InitCombatTriggers(triggers);
@@ -396,6 +355,62 @@ void ShamanTotemsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 
 }
 
+void ShamanBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "water breathing",
+        NextAction::array(0, new NextAction("water breathing", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "water walking",
+        NextAction::array(0, new NextAction("water walking", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "water breathing on party",
+        NextAction::array(0, new NextAction("water breathing on party", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "water walking on party",
+        NextAction::array(0, new NextAction("water walking on party", 1.0f), NULL)));
+}
+
+void ShamanBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void ShamanTotemBarElementsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
@@ -420,14 +435,6 @@ void ShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "purge",
         NextAction::array(0, new NextAction("purge", 80.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "heroism",
-        NextAction::array(0, new NextAction("heroism", 31.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "bloodlust",
-        NextAction::array(0, new NextAction("bloodlust", 30.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium aoe heal",
@@ -493,22 +500,6 @@ void ShamanStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "party member cure poison",
         NextAction::array(0, new NextAction("cure poison on party", 21.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water breathing",
-        NextAction::array(0, new NextAction("water breathing", 12.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water walking",
-        NextAction::array(0, new NextAction("water walking", 12.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water breathing on party",
-        NextAction::array(0, new NextAction("water breathing on party", 11.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water walking on party",
-        NextAction::array(0, new NextAction("water walking on party", 11.0f), NULL)));
 }
 
 void ShamanStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -629,30 +620,6 @@ void ShamanAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigg
     AoeRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-void ShamanBuffDpsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "lightning shield",
-        NextAction::array(0, new NextAction("lightning shield", 22.0f), NULL)));
-}
-
-void ShamanBuffDpsStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    InitCombatTriggers(triggers);
-}
-
-void ShamanBuffManaStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "water shield",
-        NextAction::array(0, new NextAction("water shield", 22.0f), NULL)));
-}
-
-void ShamanBuffManaStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    InitCombatTriggers(triggers);
-}
-
 void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CureStrategy::InitCombatTriggers(triggers);
@@ -763,6 +730,70 @@ void ShamanTotemsRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigg
 void ShamanTotemsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
+}
+
+void ShamanBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "heroism",
+        NextAction::array(0, new NextAction("heroism", 31.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "bloodlust",
+        NextAction::array(0, new NextAction("bloodlust", 31.0f), NULL)));
+}
+
+void ShamanBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "water breathing",
+        NextAction::array(0, new NextAction("water breathing", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "water walking",
+        NextAction::array(0, new NextAction("water walking", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "water breathing on party",
+        NextAction::array(0, new NextAction("water breathing on party", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "water walking on party",
+        NextAction::array(0, new NextAction("water walking on party", 1.0f), NULL)));
+}
+
+void ShamanBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanTotemBarElementsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -866,22 +897,6 @@ void ShamanStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "totemic recall",
         NextAction::array(0, new NextAction("totemic recall", 15.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water breathing",
-        NextAction::array(0, new NextAction("water breathing", 12.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water walking",
-        NextAction::array(0, new NextAction("water walking", 12.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water breathing on party",
-        NextAction::array(0, new NextAction("water breathing on party", 11.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "water walking on party",
-        NextAction::array(0, new NextAction("water walking on party", 11.0f), NULL)));
 }
 
 void ShamanStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -1000,30 +1015,6 @@ void ShamanAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
 void ShamanAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     AoeRaidStrategy::InitNonCombatTriggers(triggers);
-}
-
-void ShamanBuffDpsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "lightning shield",
-        NextAction::array(0, new NextAction("lightning shield", 22.0f), NULL)));
-}
-
-void ShamanBuffDpsStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    InitCombatTriggers(triggers);
-}
-
-void ShamanBuffManaStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "water shield",
-        NextAction::array(0, new NextAction("water shield", 22.0f), NULL)));
-}
-
-void ShamanBuffManaStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    InitCombatTriggers(triggers);
 }
 
 void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1198,6 +1189,70 @@ void ShamanTotemsRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigg
 void ShamanTotemsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
+}
+
+void ShamanBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "heroism",
+        NextAction::array(0, new NextAction("heroism", 31.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "bloodlust",
+        NextAction::array(0, new NextAction("bloodlust", 31.0f), NULL)));
+}
+
+void ShamanBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "water breathing",
+        NextAction::array(0, new NextAction("water breathing", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "water walking",
+        NextAction::array(0, new NextAction("water walking", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "water breathing on party",
+        NextAction::array(0, new NextAction("water breathing on party", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "water walking on party",
+        NextAction::array(0, new NextAction("water walking on party", 1.0f), NULL)));
+}
+
+void ShamanBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanTotemBarElementsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

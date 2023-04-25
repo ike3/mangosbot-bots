@@ -3,6 +3,7 @@
 
 namespace ai
 {
+    // Generic strategy to be used for all class rotations
     class ClassStrategy : public Strategy
     {
     public:
@@ -42,6 +43,7 @@ namespace ai
         static void InitDeadTriggers(std::list<TriggerNode*>& triggers);
     };
 
+    // Generic strategy to be used for all class aoe rotations
     class AoeStrategy : public Strategy
     {
     public:
@@ -73,6 +75,7 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
+    // Generic strategy to be used for all class cure rotations
     class CureStrategy : public Strategy
     {
     public:
@@ -104,37 +107,7 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class BoostStrategy : public Strategy
-    {
-    public:
-        BoostStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-
-    protected:
-        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
-        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
-    };
-
-    class BoostPvpStrategy
-    {
-    protected:
-        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
-        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
-    };
-
-    class BoostPveStrategy
-    {
-    protected:
-        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
-        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
-    };
-
-    class BoostRaidStrategy
-    {
-    protected:
-        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
-        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
-    };
-
+    // Generic strategy to be used for all class cc rotations
     class CcStrategy : public Strategy
     {
     public:
@@ -160,6 +133,39 @@ namespace ai
     };
 
     class CcRaidStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    // Generic strategy to be used for all class buff rotations 
+    // (combat for Boost CDs and non combat for buffs)
+    class BuffStrategy : public Strategy
+    {
+    public:
+        BuffStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class BuffPvpStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class BuffPveStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class BuffRaidStrategy
     {
     protected:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -198,17 +204,17 @@ namespace ai
         CurePlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
     };
 
-    // This strategy is used to hold the boost strategy
-    class BoostPlaceholderStrategy : public PlaceholderStrategy
-    {
-    public:
-        BoostPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
-    };
-
     // This strategy is used to hold the cc strategy
     class CcPlaceholderStrategy : public PlaceholderStrategy
     {
     public:
         CcPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
+    };
+
+    // This strategy is used to hold the buff strategy
+    class BuffPlaceholderStrategy : public PlaceholderStrategy
+    {
+    public:
+        BuffPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
     };
 }

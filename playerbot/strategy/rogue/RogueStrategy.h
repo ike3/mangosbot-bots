@@ -10,13 +10,6 @@ namespace ai
         string getName() override { return "aoe"; }
     };
 
-    class RogueBoostPlaceholderStrategy : public BoostPlaceholderStrategy
-    {
-    public:
-        RogueBoostPlaceholderStrategy(PlayerbotAI* ai) : BoostPlaceholderStrategy(ai) {}
-        string getName() override { return "boost"; }
-    };
-
     class RogueCcPlaceholderStrategy : public CcPlaceholderStrategy
     {
     public:
@@ -29,6 +22,13 @@ namespace ai
     public:
         RogueStealthPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
         string getName() override { return "stealth"; }
+    };
+
+    class RogueBuffPlaceholderStrategy : public BuffPlaceholderStrategy
+    {
+    public:
+        RogueBuffPlaceholderStrategy(PlayerbotAI* ai) : BuffPlaceholderStrategy(ai) {}
+        string getName() override { return "buff"; }
     };
 
     class RogueStealthedStrategy : public Strategy
@@ -128,31 +128,31 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class RogueBoostStrategy : public BoostStrategy
+    class RogueBuffStrategy : public BuffStrategy
     {
     public:
-        RogueBoostStrategy(PlayerbotAI* ai) : BoostStrategy(ai) {}
+        RogueBuffStrategy(PlayerbotAI* ai) : BuffStrategy(ai) {}
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RogueBoostPvpStrategy : public BoostPvpStrategy
+    class RogueBuffPvpStrategy : public BuffPvpStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class RogueBoostPveStrategy : public BoostPveStrategy
+    class RogueBuffPveStrategy : public BuffPveStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class RogueBoostRaidStrategy : public BoostRaidStrategy
+    class RogueBuffRaidStrategy : public BuffRaidStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);

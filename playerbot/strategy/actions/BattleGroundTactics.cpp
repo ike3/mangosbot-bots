@@ -5167,8 +5167,6 @@ bool ArenaTactics::Execute(Event& event)
     if (ai->HasStrategy("collision", BotState::BOT_STATE_NON_COMBAT))
         ai->ChangeStrategy("-collision", BotState::BOT_STATE_NON_COMBAT);
 
-    if (ai->HasStrategy("buff", BotState::BOT_STATE_NON_COMBAT))
-        ai->ChangeStrategy("-buff", BotState::BOT_STATE_NON_COMBAT);
 #ifdef MANGOS
     if (sBattleGroundMgr.IsArenaType(bg->GetTypeID()))
 #endif

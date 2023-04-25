@@ -247,44 +247,44 @@ void RogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
     AoeRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostStrategy::InitCombatTriggers(triggers);
+    BuffStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostStrategy::InitNonCombatTriggers(triggers);
+    BuffStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPvpStrategy::InitCombatTriggers(triggers);
+    BuffPvpStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+    BuffPvpStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPveStrategy::InitCombatTriggers(triggers);
+    BuffPveStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPveStrategy::InitNonCombatTriggers(triggers);
+    BuffPveStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostRaidStrategy::InitCombatTriggers(triggers);
+    BuffRaidStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostRaidStrategy::InitNonCombatTriggers(triggers);
+    BuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void RogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -647,44 +647,44 @@ void RogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
     AoeRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostStrategy::InitCombatTriggers(triggers);
+    BuffStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostStrategy::InitNonCombatTriggers(triggers);
+    BuffStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPvpStrategy::InitCombatTriggers(triggers);
+    BuffPvpStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+    BuffPvpStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPveStrategy::InitCombatTriggers(triggers);
+    BuffPveStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPveStrategy::InitNonCombatTriggers(triggers);
+    BuffPveStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostRaidStrategy::InitCombatTriggers(triggers);
+    BuffRaidStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostRaidStrategy::InitNonCombatTriggers(triggers);
+    BuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void RogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1047,44 +1047,44 @@ void RogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
     AoeRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostStrategy::InitCombatTriggers(triggers);
+    BuffStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostStrategy::InitNonCombatTriggers(triggers);
+    BuffStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPvpStrategy::InitCombatTriggers(triggers);
+    BuffPvpStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+    BuffPvpStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPveStrategy::InitCombatTriggers(triggers);
+    BuffPveStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostPveStrategy::InitNonCombatTriggers(triggers);
+    BuffPveStrategy::InitNonCombatTriggers(triggers);
 }
 
-void RogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostRaidStrategy::InitCombatTriggers(triggers);
+    BuffRaidStrategy::InitCombatTriggers(triggers);
 }
 
-void RogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+void RogueBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    BoostRaidStrategy::InitNonCombatTriggers(triggers);
+    BuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void RogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

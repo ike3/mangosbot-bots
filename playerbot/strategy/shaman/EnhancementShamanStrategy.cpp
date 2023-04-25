@@ -16,7 +16,7 @@ public:
         creators["magma totem"] = &magma_totem;
         creators["strength of earth totem"] = &strength_of_earth_totem;
         creators["windfury totem"] = &windfury_totem;
-        creators["mana spring totem"] = &mana_spring_totem;
+        creators["windfury weapon"] = &windfury_weapon;
     }
 
 private:
@@ -32,7 +32,7 @@ private:
 
     ACTION_NODE_A(windfury_totem, "windfury totem", "wrath of air totem");
 
-    ACTION_NODE_A(mana_spring_totem, "mana spring totem", "mana spring totem");
+    ACTION_NODE_A(windfury_weapon, "windfury weapon", "rockbiter weapon");
 };
 
 EnhancementShamanStrategy::EnhancementShamanStrategy(PlayerbotAI* ai) : ShamanStrategy(ai)
@@ -52,10 +52,6 @@ void EnhancementShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
     ShamanStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "shaman weapon",
-        NextAction::array(0, new NextAction("windfury weapon", 22.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "shock",
         NextAction::array(0, new NextAction("earth shock", 20.0f), NULL)));
 
@@ -311,6 +307,68 @@ void EnhancementShamanTotemsRaidStrategy::InitNonCombatTriggers(std::list<Trigge
 {
     EnhancementShamanTotemsStrategy::InitNonCombatTriggers(triggers);
     ShamanTotemsRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "shaman weapon",
+        NextAction::array(0, new NextAction("windfury weapon", 22.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "lightning shield",
+        NextAction::array(0, new NextAction("lightning shield", 22.0f), NULL)));
+}
+
+void EnhancementShamanBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBuffStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "shaman weapon",
+        NextAction::array(0, new NextAction("windfury weapon", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "lightning shield",
+        NextAction::array(0, new NextAction("lightning shield", 1.0f), NULL)));
+}
+
+void EnhancementShamanBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitCombatTriggers(triggers);
+    ShamanBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitNonCombatTriggers(triggers);
+    ShamanBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitCombatTriggers(triggers);
+    ShamanBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitNonCombatTriggers(triggers);
+    ShamanBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitCombatTriggers(triggers);
+    ShamanBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitNonCombatTriggers(triggers);
+    ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 #elif MANGOSBOT_ONE // TBC
@@ -325,10 +383,6 @@ void EnhancementShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
     ShamanStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "shaman weapon",
-        NextAction::array(0, new NextAction("windfury weapon", 22.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "shock",
         NextAction::array(0, new NextAction("earth shock", 20.0f), NULL)));
 
@@ -584,6 +638,68 @@ void EnhancementShamanTotemsRaidStrategy::InitNonCombatTriggers(std::list<Trigge
 {
     EnhancementShamanTotemsStrategy::InitNonCombatTriggers(triggers);
     ShamanTotemsRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "shaman weapon",
+        NextAction::array(0, new NextAction("windfury weapon", 22.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "lightning shield",
+        NextAction::array(0, new NextAction("lightning shield", 22.0f), NULL)));
+}
+
+void EnhancementShamanBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBuffStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "shaman weapon",
+        NextAction::array(0, new NextAction("windfury weapon", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "lightning shield",
+        NextAction::array(0, new NextAction("lightning shield", 1.0f), NULL)));
+}
+
+void EnhancementShamanBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitCombatTriggers(triggers);
+    ShamanBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitNonCombatTriggers(triggers);
+    ShamanBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitCombatTriggers(triggers);
+    ShamanBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitNonCombatTriggers(triggers);
+    ShamanBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitCombatTriggers(triggers);
+    ShamanBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitNonCombatTriggers(triggers);
+    ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 #elif MANGOSBOT_TWO // WOTLK
@@ -598,10 +714,6 @@ void EnhancementShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
     ShamanStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "shaman weapon",
-        NextAction::array(0, new NextAction("windfury weapon", 22.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "shock",
         NextAction::array(0, new NextAction("earth shock", 20.0f), NULL)));
 
@@ -857,6 +969,68 @@ void EnhancementShamanTotemsRaidStrategy::InitNonCombatTriggers(std::list<Trigge
 {
     EnhancementShamanTotemsStrategy::InitNonCombatTriggers(triggers);
     ShamanTotemsRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "shaman weapon",
+        NextAction::array(0, new NextAction("windfury weapon", 22.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "lightning shield",
+        NextAction::array(0, new NextAction("lightning shield", 22.0f), NULL)));
+}
+
+void EnhancementShamanBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBuffStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "shaman weapon",
+        NextAction::array(0, new NextAction("windfury weapon", 1.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "lightning shield",
+        NextAction::array(0, new NextAction("lightning shield", 1.0f), NULL)));
+}
+
+void EnhancementShamanBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitCombatTriggers(triggers);
+    ShamanBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitNonCombatTriggers(triggers);
+    ShamanBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitCombatTriggers(triggers);
+    ShamanBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitNonCombatTriggers(triggers);
+    ShamanBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitCombatTriggers(triggers);
+    ShamanBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBuffStrategy::InitNonCombatTriggers(triggers);
+    ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 #endif

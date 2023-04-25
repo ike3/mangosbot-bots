@@ -370,7 +370,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 engine->addStrategies("enhancement", "aoe", "bdps", "threat", "close", NULL);
             }
 
-            engine->addStrategies("dps assist", "cure", "totems", NULL);
+            engine->addStrategies("dps assist", "cure", "totems", "buff", NULL);
             break;
         }
 
@@ -433,16 +433,18 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         {
             if (tab == 0)
             {
-                engine->addStrategies("assassination", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", "poisons", NULL);
+                engine->addStrategy("assassination");
             }
             else if (tab == 2)
             {
-                engine->addStrategies("subtlety", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", "poisons", NULL);
+                engine->addStrategy("subtlety");
             }
             else
             {
-                engine->addStrategies("combat", "threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", "poisons", NULL);
+                engine->addStrategy("combat");
             }
+
+            engine->addStrategies("threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", "poisons", "buff", NULL);
 
             break;
         }
@@ -604,7 +606,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         
         if (player->getClass() == CLASS_ROGUE)
         {
-            engine->addStrategies("behind", "stealth", "poisons", NULL);
+            engine->addStrategies("behind", "stealth", "poisons", "buff", NULL);
         }
     }
 }
@@ -672,7 +674,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategies("enhancement", "bdps", NULL);
             }
 
-            nonCombatEngine->addStrategies("dps assist", "cure", "totems", NULL);
+            nonCombatEngine->addStrategies("dps assist", "cure", "totems", "buff", NULL);
             break;
         }
 
@@ -691,7 +693,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategy("combat");
             }
 
-            nonCombatEngine->addStrategies("dps assist", "poisons", "stealth", NULL);
+            nonCombatEngine->addStrategies("dps assist", "poisons", "stealth", "buff", NULL);
             break;
     }
 

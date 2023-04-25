@@ -191,4 +191,47 @@ namespace ai
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
+
+    class ElementalShamanBuffStrategy : public ShamanBuffStrategy
+    {
+    public:
+        ElementalShamanBuffStrategy(PlayerbotAI* ai) : ShamanBuffStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ElementalShamanBuffPveStrategy : public ElementalShamanBuffStrategy
+    {
+    public:
+        ElementalShamanBuffPveStrategy(PlayerbotAI* ai) : ElementalShamanBuffStrategy(ai) {}
+        string getName() override { return "buff elemental pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ElementalShamanBuffPvpStrategy : public ElementalShamanBuffStrategy
+    {
+    public:
+        ElementalShamanBuffPvpStrategy(PlayerbotAI* ai) : ElementalShamanBuffStrategy(ai) {}
+        string getName() override { return "buff elemental pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ElementalShamanBuffRaidStrategy : public ElementalShamanBuffStrategy
+    {
+    public:
+        ElementalShamanBuffRaidStrategy(PlayerbotAI* ai) : ElementalShamanBuffStrategy(ai) {}
+        string getName() override { return "buff elemental raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
 }

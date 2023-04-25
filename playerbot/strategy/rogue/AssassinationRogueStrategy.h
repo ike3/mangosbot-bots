@@ -104,43 +104,43 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class AssassinationRogueBoostStrategy : public RogueBoostStrategy
+    class AssassinationRogueBuffStrategy : public RogueBuffStrategy
     {
     public:
-        AssassinationRogueBoostStrategy(PlayerbotAI* ai) : RogueBoostStrategy(ai) {}
+        AssassinationRogueBuffStrategy(PlayerbotAI* ai) : RogueBuffStrategy(ai) {}
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class AssassinationRogueBoostPveStrategy : public AssassinationRogueBoostStrategy
+    class AssassinationRogueBuffPveStrategy : public AssassinationRogueBuffStrategy
     {
     public:
-        AssassinationRogueBoostPveStrategy(PlayerbotAI* ai) : AssassinationRogueBoostStrategy(ai) {}
-        string getName() override { return "boost assassination pve"; }
+        AssassinationRogueBuffPveStrategy(PlayerbotAI* ai) : AssassinationRogueBuffStrategy(ai) {}
+        string getName() override { return "buff assassination pve"; }
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class AssassinationRogueBoostPvpStrategy : public AssassinationRogueBoostStrategy
+    class AssassinationRogueBuffPvpStrategy : public AssassinationRogueBuffStrategy
     {
     public:
-        AssassinationRogueBoostPvpStrategy(PlayerbotAI* ai) : AssassinationRogueBoostStrategy(ai) {}
-        string getName() override { return "boost assassination pvp"; }
+        AssassinationRogueBuffPvpStrategy(PlayerbotAI* ai) : AssassinationRogueBuffStrategy(ai) {}
+        string getName() override { return "buff assassination pvp"; }
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class AssassinationRogueBoostRaidStrategy : public AssassinationRogueBoostStrategy
+    class AssassinationRogueBuffRaidStrategy : public AssassinationRogueBuffStrategy
     {
     public:
-        AssassinationRogueBoostRaidStrategy(PlayerbotAI* ai) : AssassinationRogueBoostStrategy(ai) {}
-        string getName() override { return "boost assassination raid"; }
+        AssassinationRogueBuffRaidStrategy(PlayerbotAI* ai) : AssassinationRogueBuffStrategy(ai) {}
+        string getName() override { return "buff assassination raid"; }
 
     private:
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;

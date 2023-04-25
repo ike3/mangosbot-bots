@@ -499,10 +499,6 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe assassination pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe assassination pve", strategiesRequired);
 
-            strategiesRequired = { "assassination", "boost" };
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost assassination pve", strategiesRequired);
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost assassination pve", strategiesRequired);
-
             strategiesRequired = { "assassination", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc assassination pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc assassination pve", strategiesRequired);
@@ -515,6 +511,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "poisons assassination pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "poisons assassination pve", strategiesRequired);
 
+            strategiesRequired = { "assassination", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff assassination pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff assassination pve", strategiesRequired);
+
             strategiesRequired = { "combat" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "combat pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "combat pve", strategiesRequired);
@@ -524,10 +524,6 @@ namespace ai
             strategiesRequired = { "combat", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe combat pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe combat pve", strategiesRequired);
-
-            strategiesRequired = { "combat", "boost" };
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost combat pve", strategiesRequired);
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost combat pve", strategiesRequired);
 
             strategiesRequired = { "combat", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc combat pve", strategiesRequired);
@@ -541,6 +537,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "poisons combat pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "poisons combat pve", strategiesRequired);
 
+            strategiesRequired = { "combat", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff combat pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff combat pve", strategiesRequired);
+
             strategiesRequired = { "subtlety" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "subtlety pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "subtlety pve", strategiesRequired);
@@ -550,10 +550,6 @@ namespace ai
             strategiesRequired = { "subtlety", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe subtlety pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe subtlety pve", strategiesRequired);
-
-            strategiesRequired = { "subtlety", "boost" };
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost subtlety pve", strategiesRequired);
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost subtlety pve", strategiesRequired);
 
             strategiesRequired = { "subtlety", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc subtlety pve", strategiesRequired);
@@ -566,6 +562,10 @@ namespace ai
             strategiesRequired = { "subtlety", "poisons" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "poisons subtlety pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "poisons subtlety pve", strategiesRequired);
+
+            strategiesRequired = { "subtlety", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff subtlety pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff subtlety pve", strategiesRequired);
         }
     };
 
@@ -584,10 +584,6 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe assassination pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe assassination pvp", strategiesRequired);
 
-            strategiesRequired = { "assassination", "boost" };
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost assassination pvp", strategiesRequired);
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost assassination pvp", strategiesRequired);
-
             strategiesRequired = { "assassination", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc assassination pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc assassination pvp", strategiesRequired);
@@ -600,6 +596,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "poisons assassination pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "poisons assassination pvp", strategiesRequired);
 
+            strategiesRequired = { "assassination", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff assassination pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff assassination pvp", strategiesRequired);
+
             strategiesRequired = { "combat" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "combat pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "combat pvp", strategiesRequired);
@@ -609,10 +609,6 @@ namespace ai
             strategiesRequired = { "combat", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe combat pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe combat pvp", strategiesRequired);
-
-            strategiesRequired = { "combat", "boost" };
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost combat pvp", strategiesRequired);
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost combat pvp", strategiesRequired);
 
             strategiesRequired = { "combat", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc combat pvp", strategiesRequired);
@@ -626,6 +622,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "poisons combat pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "poisons combat pvp", strategiesRequired);
 
+            strategiesRequired = { "combat", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff combat pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff combat pvp", strategiesRequired);
+
             strategiesRequired = { "subtlety" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "subtlety pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "subtlety pvp", strategiesRequired);
@@ -635,10 +635,6 @@ namespace ai
             strategiesRequired = { "subtlety", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe subtlety pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe subtlety pvp", strategiesRequired);
-
-            strategiesRequired = { "subtlety", "boost" };
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost subtlety pvp", strategiesRequired);
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost subtlety pvp", strategiesRequired);
 
             strategiesRequired = { "subtlety", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc subtlety pvp", strategiesRequired);
@@ -651,6 +647,10 @@ namespace ai
             strategiesRequired = { "subtlety", "poisons" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "poisons subtlety pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "poisons subtlety pvp", strategiesRequired);
+
+            strategiesRequired = { "subtlety", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff subtlety pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff subtlety pvp", strategiesRequired);
         }
     };
 
@@ -669,10 +669,6 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe assassination raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe assassination raid", strategiesRequired);
 
-            strategiesRequired = { "assassination", "boost" };
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost assassination raid", strategiesRequired);
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost assassination raid", strategiesRequired);
-
             strategiesRequired = { "assassination", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc assassination raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc assassination raid", strategiesRequired);
@@ -685,6 +681,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "poisons assassination raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "poisons assassination raid", strategiesRequired);
 
+            strategiesRequired = { "assassination", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff assassination raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff assassination raid", strategiesRequired);
+
             strategiesRequired = { "combat" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "combat raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "combat raid", strategiesRequired);
@@ -694,10 +694,6 @@ namespace ai
             strategiesRequired = { "combat", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe combat raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe combat raid", strategiesRequired);
-
-            strategiesRequired = { "combat", "boost" };
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost combat raid", strategiesRequired);
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost combat raid", strategiesRequired);
 
             strategiesRequired = { "combat", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc combat raid", strategiesRequired);
@@ -711,6 +707,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "poisons combat raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "poisons combat raid", strategiesRequired);
 
+            strategiesRequired = { "combat", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff combat raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff combat raid", strategiesRequired);
+
             strategiesRequired = { "subtlety" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "subtlety raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "subtlety raid", strategiesRequired);
@@ -720,10 +720,6 @@ namespace ai
             strategiesRequired = { "subtlety", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe subtlety raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe subtlety raid", strategiesRequired);
-
-            strategiesRequired = { "subtlety", "boost" };
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost subtlety raid", strategiesRequired);
-            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost subtlety raid", strategiesRequired);
 
             strategiesRequired = { "subtlety", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc subtlety raid", strategiesRequired);
@@ -736,6 +732,10 @@ namespace ai
             strategiesRequired = { "subtlety", "poisons" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "poisons subtlety raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "poisons subtlety raid", strategiesRequired);
+
+            strategiesRequired = { "subtlety", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff subtlety raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff subtlety raid", strategiesRequired);
         }
     };
 }

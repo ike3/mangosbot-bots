@@ -189,4 +189,47 @@ namespace ai
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
+
+    class RestorationShamanBuffStrategy : public ShamanBuffStrategy
+    {
+    public:
+        RestorationShamanBuffStrategy(PlayerbotAI* ai) : ShamanBuffStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class RestorationShamanBuffPveStrategy : public RestorationShamanBuffStrategy
+    {
+    public:
+        RestorationShamanBuffPveStrategy(PlayerbotAI* ai) : RestorationShamanBuffStrategy(ai) {}
+        string getName() override { return "buff restoration pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class RestorationShamanBuffPvpStrategy : public RestorationShamanBuffStrategy
+    {
+    public:
+        RestorationShamanBuffPvpStrategy(PlayerbotAI* ai) : RestorationShamanBuffStrategy(ai) {}
+        string getName() override { return "buff restoration pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class RestorationShamanBuffRaidStrategy : public RestorationShamanBuffStrategy
+    {
+    public:
+        RestorationShamanBuffRaidStrategy(PlayerbotAI* ai) : RestorationShamanBuffStrategy(ai) {}
+        string getName() override { return "buff restoration raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
 }

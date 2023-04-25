@@ -19,12 +19,14 @@ namespace ai
             {
                 creators["aoe"] = &shaman::StrategyFactoryInternal::aoe;
                 creators["cure"] = &shaman::StrategyFactoryInternal::cure;
+                creators["buff"] = &shaman::StrategyFactoryInternal::buff;
                 creators["pull"] = &shaman::StrategyFactoryInternal::pull;
             }
 
         private:
             static Strategy* aoe(PlayerbotAI* ai) { return new ShamanAoePlaceholderStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new ShamanCurePlaceholderStrategy(ai); }
+            static Strategy* buff(PlayerbotAI* ai) { return new ShamanBuffPlaceholderStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "lightning bolt"); }            
         };
 
@@ -128,20 +130,6 @@ namespace ai
             static Strategy* totems_enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanTotemsPveStrategy(ai); }
             static Strategy* totems_enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanTotemsPvpStrategy(ai); }
             static Strategy* totems_enhancement_raid(PlayerbotAI* ai) { return new EnhancementShamanTotemsRaidStrategy(ai); }
-        };
-
-        class BuffStrategyFactoryInternal : public NamedObjectContext<Strategy>
-        {
-        public:
-            BuffStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
-            {
-                creators["bmana"] = &shaman::BuffStrategyFactoryInternal::bmana;
-                creators["bdps"] = &shaman::BuffStrategyFactoryInternal::bdps;
-            }
-
-        private:
-            static Strategy* bmana(PlayerbotAI* ai) { return new ShamanBuffManaStrategy(ai); }
-            static Strategy* bdps(PlayerbotAI* ai) { return new ShamanBuffDpsStrategy(ai); }
         };
 
         class ClassStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -430,8 +418,7 @@ ShamanAiObjectContext::ShamanAiObjectContext(PlayerbotAI* ai) : AiObjectContext(
     strategyContexts.Add(new ai::shaman::CureSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::ClassStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::ClassSituationStrategyFactoryInternal());
-    strategyContexts.Add(new ai::shaman::BuffStrategyFactoryInternal());
-    strategyContexts.Add(new ai::shaman::TotemStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::BuffSituationStrategyFactoryInternal());
     actionContexts.Add(new ai::shaman::AiObjectContextInternal());
     triggerContexts.Add(new ai::shaman::TriggerFactoryInternal());
 }
