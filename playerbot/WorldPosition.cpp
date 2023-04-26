@@ -28,14 +28,14 @@ using namespace MaNGOS;
 void WorldPosition::add()
 {
 #ifdef MEMORY_MONITOR
-    sMemoryMonitor.Add("WorldPosition", (int64)this,1);
+    sMemoryMonitor.Add("WorldPosition", (int64)this);
 #endif
 }
 
 void WorldPosition::rem()
 {
 #ifdef MEMORY_MONITOR
-    sMemoryMonitor.Rem("WorldPosition", (int64)this, 1);
+    sMemoryMonitor.Rem("WorldPosition", (int64)this);
 #endif
 }
 

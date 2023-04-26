@@ -1,54 +1,45 @@
 #pragma once
-#include "../botpch.h"
-#include "playerbot.h"
-#include "PlayerbotAIConfig.h"
+
 #include "MemoryMonitor.h"
-
-#include "../../modules/Bots/ahbot/AhBot.h"
-#include "DatabaseEnv.h"
-#include "PlayerbotAI.h"
-
-#include "../../modules/Bots/ahbot/AhBotConfig.h"
+#include <iostream>     // std::cout, std::ios
+#include <sstream>
+#include <time.h>
+#include <log.h>
 #define BOOST_STACKTRACE_LINK
 #include <boost/stacktrace.hpp>
 
-MemoryMonitor::MemoryMonitor() {}
-MemoryMonitor::~MemoryMonitor()
-{
-}
-
-void MemoryMonitor::Add(string objectType, uint64 object, uint32 level)
+void MemoryMonitor::Add(std::string objectType, uint64 object, int level)
 {
     objectnumbers[std::this_thread::get_id()][objectType]++;
-    if (level == 1 && object % 1000000 == 0)
+    if (level == 1 && (int)object % 1000000 == 0)
     {
-        ostringstream out; out << boost::stacktrace::stacktrace();
+        std::ostringstream out; out << boost::stacktrace::stacktrace();
         adds[std::this_thread::get_id()][objectType][object] = make_pair(out.str(), time(0));
     }
 }
 
-void MemoryMonitor::Rem(string objectType, uint64 object, uint32 level)
+void MemoryMonitor::Rem(std::string objectType, uint64 object, int level)
 {
     objectnumbers[std::this_thread::get_id()][objectType]--;
     
-    if (level == 1 && object % 1000000 == 0)
+    if (level == 1 && (int)object % 1000000 == 0)
     {
         if (adds[std::this_thread::get_id()][objectType].find(object) != adds[std::this_thread::get_id()][objectType].end())
             adds[std::this_thread::get_id()][objectType].erase(object);
         else
-            rems[std::this_thread::get_id()][objectType][object] = make_pair("rem", time(0));
+            rems[std::this_thread::get_id()][objectType][object] = std::make_pair("rem", time(0));
     }
 }
 
 void MemoryMonitor::Print()
 {
-    int32 div = 0;
+    int div = 0;
     for (auto& t : objectnumbers)
         div += t.second["PlayerbotAI"];
 
     if (!div) div = 1;
 
-    map<string, int32> nums;
+    std::map<std::string, int> nums;
 
     for (auto& t : objectnumbers)
         for (auto& object : t.second)
@@ -60,15 +51,15 @@ void MemoryMonitor::Print()
         objectnumbersHist.pop_front();
 
     for (auto& num : nums)
-        sLog.outString("%s : %d (%d)", num.first, num.second / (num.first == "PlayerbotAI" ? 1 : div), (objectnumbersHist.back()[num.first] - objectnumbersHist.front()[num.first]) / (num.first == "PlayerbotAI" ? 1 : div));
+        sLog.outString("%s : %dk (%dk)", num.first, num.second / 1000, (objectnumbersHist.back()[num.first] - objectnumbersHist.front()[num.first]) / 1000);
 
     Browse();
 }
 
 void MemoryMonitor::Browse()
 {
-    unordered_map<string,unordered_map<string, uint64>> here;
-    unordered_map<string, unordered_map<string, vector<time_t>>> hereTime;
+    std::unordered_map<std::string,std::unordered_map<std::string, double>> here;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::vector<time_t>>> hereTime;
 
     for (auto& add : adds)
         for(auto t : add.second)

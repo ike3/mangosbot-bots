@@ -2,16 +2,22 @@
 #define _MemoryMonitor_H
 //#define MEMORY_MONITOR
 
-#include "Common.h"
-#include "PlayerbotAIBase.h"
+#include <string>
+#include <unordered_map>
+#include <map>
+#include <thread>
 
-using namespace std;
+
+//#include "Common.h"
+//#include "PlayerbotAIBase.h"
+
+//using namespace std;
 
 class MemoryMonitor
 {
     public:
-        MemoryMonitor();
-        virtual ~MemoryMonitor();
+        MemoryMonitor() {};
+        virtual ~MemoryMonitor() {};
         static MemoryMonitor& instance()
         {
             static MemoryMonitor instance;
@@ -19,15 +25,14 @@ class MemoryMonitor
         }
 
 	public:        
-        void Add(string objectType, uint64 object, uint32 level = 0);
-        void Rem(string objectType, uint64 object, uint32 level = 0);
+        void Add(std::string objectType, uint64 object, int level = 0);
+        void Rem(std::string objectType, uint64 object, int level = 0);
         void Print();
         void Browse();
 	private:
-        unordered_map<thread::id, map<string, int32>> objectnumbers;
-        list<map<string, int32 >> objectnumbersHist;
-        unordered_map < thread::id, unordered_map<string, unordered_map<uint64,pair<string,time_t>>>> adds, rems;
-		std::mutex lock;
+        std::unordered_map<std::thread::id, std::map<std::string, int>> objectnumbers;
+        std::list<std::map<std::string, int >> objectnumbersHist;
+        std::unordered_map < std::thread::id, std::unordered_map<std::string, std::unordered_map<uint64,std::pair<std::string,time_t>>>> adds, rems;
 };
 
 
