@@ -487,6 +487,10 @@ void RandomPlayerbotMgr::LogPlayerLocation()
 
 void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 {
+#ifdef MEMORY_MONITOR
+    sMemoryMonitor.Print();
+#endif
+
     if (!sPlayerbotAIConfig.randomBotAutologin || !sPlayerbotAIConfig.enabled)
         return;
   

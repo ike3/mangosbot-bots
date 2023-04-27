@@ -3066,6 +3066,10 @@ void RandomItemMgr::BuildEquipCache()
                                 if (proto->Quality != key.quality)
                                     continue;
 
+                                // skip not available items
+                                if (proto->ExtraFlags & ITEM_EXTRA_NOT_OBTAINABLE)
+                                    continue;
+
                                 if ((slot == EQUIPMENT_SLOT_BODY || slot == EQUIPMENT_SLOT_TABARD))
                                 {
                                     set<InventoryType> slots = viableSlots[(EquipmentSlots)key.slot];

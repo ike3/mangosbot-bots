@@ -1662,6 +1662,10 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         }
     }
 
+    if (!ai->IsSafe(obj)) return false;
+
+    if (!endPosition.isValid()) return false;
+    if (angle > 20) angle = 0;
     mm.Clear(false, true);
     mm.MoveChase((Unit*)obj, distance, angle);
     float dist = sServerFacade.GetDistance2d(bot, obj);
