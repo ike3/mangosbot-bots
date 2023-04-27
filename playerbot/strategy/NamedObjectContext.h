@@ -11,15 +11,15 @@ namespace ai
     {
     public:
         Qualified() {};
-        Qualified(string qualifier) : qualifier(qualifier) {}
+        Qualified(const string& qualifier) : qualifier(qualifier) {}
         Qualified(int32 qualifier1) { Qualify(qualifier1); }
     public:
         virtual void Qualify(int32 qualifier) { ostringstream out; out << qualifier; this->qualifier = out.str(); }
-        virtual void Qualify(string qualifier) { this->qualifier = qualifier; }
+        virtual void Qualify(const string& qualifier) { this->qualifier = qualifier; }
         string getQualifier() { return qualifier; }
         void Reset() { qualifier.clear(); }
 
-        static string MultiQualify(vector<string> qualifiers, string separator, const string_view brackets = "{}")
+        static string MultiQualify(vector<string> qualifiers, const string& separator, const string_view brackets = "{}")
         { 
             ostringstream out; 
             for (auto& qualifier : qualifiers)
@@ -30,7 +30,7 @@ namespace ai
             return brackets[0] + out.str() + brackets[1];
         }
 
-        static vector<string> getMultiQualifiers(string qualifier1, string separator, const string_view brackets = "{}")
+        static vector<string> getMultiQualifiers(const string& qualifier1, const string& separator, const string_view brackets = "{}")
         { 
             vector<string> result;
 
@@ -82,13 +82,13 @@ namespace ai
             return result;
         }
         
-        static int32 getMultiQualifierInt(string qualifier1, uint32 pos, string separator)
+        static int32 getMultiQualifierInt(const string& qualifier1, uint32 pos, const string& separator)
         { 
             vector<string> qualifiers = getMultiQualifiers(qualifier1, separator);
             return (qualifiers.size() > pos) ? stoi(qualifiers[pos]) : 0;
         }
 
-        static string getMultiQualifierStr(string qualifier1, uint32 pos, string separator)
+        static string getMultiQualifierStr(const string& qualifier1, uint32 pos, const string& separator)
         { 
             vector<string> qualifiers = getMultiQualifiers(qualifier1, separator);
             return (qualifiers.size() > pos) ? qualifiers[pos] : "";
@@ -105,8 +105,9 @@ namespace ai
         map<string, ActionCreator> creators;
 
     public:
-        T* create(string name, PlayerbotAI* ai)
+        T* create(const string& inName, PlayerbotAI* ai)
         {
+            string name = inName;
             size_t found = name.find("::");
             string qualifier;
             if (found != string::npos)
@@ -116,16 +117,22 @@ namespace ai
             }
 
             if (creators.find(name) == creators.end())
+            {
                 return NULL;
+            }
 
             ActionCreator creator = creators[name];
             if (!creator)
+            {
                 return NULL;
+            }
 
             T *object = (*creator)(ai);
             Qualified *q = dynamic_cast<Qualified *>(object);
             if (q && found != string::npos)
+            {
                 q->Qualify(qualifier);
+            }
 
             return object;
         }
@@ -134,7 +141,10 @@ namespace ai
         {
             set<string> keys;
             for (typename map<string, ActionCreator>::iterator it = creators.begin(); it != creators.end(); it++)
+            {
                 keys.insert(it->first);
+            }
+
             return keys;
         }
     };
@@ -170,7 +180,7 @@ namespace ai
             created.clear();
         }
 
-        void Erase(string name)
+        void Erase(const string& name)
         {
             delete created[name];
             created.erase(name);
@@ -229,7 +239,7 @@ namespace ai
             contexts.push_back(context);
         }
 
-        T* GetObject(string name, PlayerbotAI* ai)
+        T* GetObject(const string& name, PlayerbotAI* ai)
         {
             for (typename list<NamedObjectContext<T>*>::iterator i = contexts.begin(); i != contexts.end(); i++)
             {
@@ -256,7 +266,7 @@ namespace ai
             }
         }
 
-        set<string> GetSiblings(string name)
+        set<string> GetSiblings(const string& name)
         {
             set<string> siblings;
             for (typename list<NamedObjectContext<T>*>::iterator i = contexts.begin(); i != contexts.end(); i++)
@@ -304,7 +314,7 @@ namespace ai
             return result;
         }
 
-        void Erase(string name)
+        void Erase(const string& name)
         {
             for (typename list<NamedObjectContext<T>*>::iterator i = contexts.begin(); i != contexts.end(); i++)
             {
@@ -330,7 +340,7 @@ namespace ai
             factories.push_front(context);
         }
 
-        T* GetObject(string name, PlayerbotAI* ai)
+        T* GetObject(const string& name, PlayerbotAI* ai)
         {
             for (typename list<NamedObjectFactory<T>*>::iterator i = factories.begin(); i != factories.end(); i++)
             {

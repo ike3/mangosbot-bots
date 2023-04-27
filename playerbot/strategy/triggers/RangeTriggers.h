@@ -63,9 +63,9 @@ namespace ai
                 if (target->IsPlayer())
                 {
                     if (!isVictim)
-                        coeff = 0.7f;
+                        coeff = 0.4f;
                     else
-                        coeff = 1.0f;
+                        coeff = 0.6f;
                 }
                 else
                 {

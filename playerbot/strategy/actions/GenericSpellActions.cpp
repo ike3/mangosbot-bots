@@ -42,7 +42,7 @@ bool CastSpellAction::Execute(Event& event)
                 continue;
 
             uint32 itemId = pSpellInfo->EffectItemType[0];
-            ItemPrototype const *proto = sObjectMgr.GetItemPrototype(itemId);
+            ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
             if (!proto)
                 continue;
 

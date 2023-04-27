@@ -728,7 +728,7 @@ bool UseItemIdAction::isPossible()
     if (HasSpellCooldown(itemId))
         return false;
 
-    if (!bot->HasItemCount(itemId, 1) && !ai->HasCheat(BotCheatMask::item))
+    if (!ai->HasCheat(BotCheatMask::item) && !bot->HasItemCount(itemId, 1))
         return false;
 
     uint32 spellCount = 0;

@@ -317,7 +317,6 @@ namespace ai
         }
     };
 
-    // dark rune
     class UseDarkRuneAction : public UseItemIdAction
     {
     public:

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../Action.h"
 #include "../../PlayerbotAIConfig.h"
 
