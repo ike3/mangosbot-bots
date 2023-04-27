@@ -67,6 +67,397 @@ RogueStealthStrategy::RogueStealthStrategy(PlayerbotAI* ai) : Strategy(ai)
 
 NextAction** RogueStrategy::GetDefaultCombatActions()
 {
+    return NextAction::array(0, new NextAction("melee", ACTION_IDLE), NULL);
+}
+
+void RogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("blind", ACTION_EMERGENCY + 2), 
+                             new NextAction("vanish", ACTION_EMERGENCY + 1), 
+                             new NextAction("vanish", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("evasion", ACTION_EMERGENCY), 
+                             new NextAction("feint", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "kick on enemy healer",
+        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "kick",
+        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "sprint",
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium health",
+        NextAction::array(0, new NextAction("gouge", ACTION_HIGH), NULL)));
+}
+
+void RogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassStrategy::InitReactionTriggers(triggers);
+}
+
+void RogueStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassStrategy::InitDeadTriggers(triggers);
+}
+
+void RoguePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassPvpStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy flagcarrier near",
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
+}
+
+void RoguePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassPvpStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy flagcarrier near",
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
+}
+
+void RoguePvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassPvpStrategy::InitReactionTriggers(triggers);
+}
+
+void RoguePvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassPvpStrategy::InitDeadTriggers(triggers);
+}
+
+void RoguePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassPveStrategy::InitCombatTriggers(triggers);
+}
+
+void RoguePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RoguePveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassPveStrategy::InitReactionTriggers(triggers);
+}
+
+void RoguePveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassPveStrategy::InitDeadTriggers(triggers);
+}
+
+void RogueRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassRaidStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "medium threat",
+        NextAction::array(0, new NextAction("feint", ACTION_DISPEL), NULL)));
+}
+
+void RogueRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassRaidStrategy::InitReactionTriggers(triggers);
+}
+
+void RogueRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ClassRaidStrategy::InitDeadTriggers(triggers);
+}
+
+void RogueAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AoeStrategy::InitCombatTriggers(triggers);
+}
+
+void RogueAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AoeStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AoePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void RogueAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AoePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AoePveStrategy::InitCombatTriggers(triggers);
+}
+
+void RogueAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AoePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AoeRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void RogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffStrategy::InitCombatTriggers(triggers);
+}
+
+void RogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void RogueBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void RogueBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void RogueBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "sap",
+        NextAction::array(0, new NextAction("sap", ACTION_INTERRUPT), NULL)));
+}
+
+void RogueCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPvpStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
+}
+
+void RogueCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void RogueCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void RogueCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RogueStealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "stealth",
+        NextAction::array(0, new NextAction("stealth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "behind target",
+        NextAction::array(0, new NextAction("ambush", ACTION_HIGH + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "not behind target",
+        NextAction::array(0, new NextAction("cheap shot", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "kick",
+        NextAction::array(0, new NextAction("cheap shot", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "no stealth",
+        NextAction::array(0, new NextAction("check stealth", ACTION_NORMAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "unstealth",
+        NextAction::array(0, new NextAction("unstealth", ACTION_NORMAL), NULL)));
+}
+
+void RogueStealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "no stealth",
+        NextAction::array(0, new NextAction("check stealth", ACTION_NORMAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "unstealth",
+        NextAction::array(0, new NextAction("unstealth", ACTION_NORMAL), NULL)));
+}
+
+void RogueStealthPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "enemy flagcarrier near",
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), 
+                             new NextAction("unstealth", ACTION_HIGH), NULL)));
+}
+
+void RogueStealthPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void RogueStealthPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void RogueStealthPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void RogueStealthRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void RogueStealthRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void RoguePoisonsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void RoguePoisonsStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void RoguePoisonsPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void RoguePoisonsPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "apply mind poison main hand",
+        NextAction::array(0, new NextAction("apply mind poison main hand", ACTION_NORMAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "apply crippling poison off hand",
+        NextAction::array(0, new NextAction("apply crippling poison off hand", ACTION_NORMAL), NULL)));
+}
+
+void RoguePoisonsPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void RoguePoisonsPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "apply instant poison main hand",
+        NextAction::array(0, new NextAction("apply instant poison main hand", ACTION_NORMAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "apply instant poison off hand",
+        NextAction::array(0, new NextAction("apply instant poison off hand", ACTION_NORMAL), NULL)));
+}
+
+void RoguePoisonsRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    
+}
+
+void RoguePoisonsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "apply instant poison main hand",
+        NextAction::array(0, new NextAction("apply instant poison main hand", ACTION_NORMAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "apply deadly poison off hand",
+        NextAction::array(0, new NextAction("apply deadly poison off hand", ACTION_NORMAL), NULL)));
+}
+
+#elif MANGOSBOT_ONE // TBC
+
+NextAction** RogueStrategy::GetDefaultCombatActions()
+{
     return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), NULL);
 }
 
@@ -87,29 +478,19 @@ void RogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "kick on enemy healer",
-        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 6), NULL)));
+        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "kick",
-        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT + 5), NULL)));
+        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "sprint",
-        NextAction::array(0, new NextAction("sprint", ACTION_HIGH + 10), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "enemy out of melee",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium health",
         NextAction::array(0, new NextAction("gouge", ACTION_HIGH), NULL)));
-
-    /*
-    triggers.push_back(new TriggerNode(
-        "tricks of the trade on tank",
-        NextAction::array(0, new NextAction("tricks of the trade on tank", ACTION_HIGH), NULL)));
-    */
 }
 
 void RogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -133,11 +514,11 @@ void RoguePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 2), NULL)));
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 1), NULL)));
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
 }
 
 void RoguePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -145,12 +526,12 @@ void RoguePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassPvpStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("sprint", ACTION_INTERRUPT + 2), NULL)));
+        "player has flag",
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "player has flag",
-        NextAction::array(0, new NextAction("sprint", ACTION_INTERRUPT + 1), NULL)));
+        "enemy flagcarrier near",
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
 }
 
 void RoguePvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -166,10 +547,6 @@ void RoguePvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 void RoguePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassPveStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "medium threat",
-        NextAction::array(0, new NextAction("feint", ACTION_HIGH), NULL)));
 }
 
 void RoguePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -190,6 +567,10 @@ void RoguePveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 void RogueRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassRaidStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "medium threat",
+        NextAction::array(0, new NextAction("feint", ACTION_DISPEL), NULL)));
 }
 
 void RogueRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -362,395 +743,6 @@ void RogueStealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
 {
     triggers.push_back(new TriggerNode(
         "no stealth",
-        NextAction::array(0, new NextAction("check stealth", 1.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "unstealth",
-        NextAction::array(0, new NextAction("unstealth", 1.0f), NULL)));
-}
-
-void RogueStealthPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("sprint", 81.0f), new NextAction("unstealth", 80.0f), NULL)));
-}
-
-void RogueStealthPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void RogueStealthPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void RogueStealthPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void RogueStealthRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void RogueStealthRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void RoguePoisonsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void RoguePoisonsStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void RoguePoisonsPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void RoguePoisonsPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "apply mind poison main hand",
-        NextAction::array(0, new NextAction("apply mind poison main hand", 1.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "apply crippling poison off hand",
-        NextAction::array(0, new NextAction("apply crippling poison off hand", 1.0f), NULL)));
-}
-
-void RoguePoisonsPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-
-}
-
-void RoguePoisonsPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "apply instant poison main hand",
-        NextAction::array(0, new NextAction("apply instant poison main hand", 1.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "apply instant poison off hand",
-        NextAction::array(0, new NextAction("apply instant poison off hand", 1.0f), NULL)));
-}
-
-void RoguePoisonsRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    
-}
-
-void RoguePoisonsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "apply instant poison main hand",
-        NextAction::array(0, new NextAction("apply instant poison main hand", 1.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "apply deadly poison off hand",
-        NextAction::array(0, new NextAction("apply deadly poison off hand", 1.0f), NULL)));
-}
-
-#elif MANGOSBOT_ONE // TBC
-
-NextAction** RogueStrategy::GetDefaultCombatActions()
-{
-    return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), NULL);
-}
-
-void RogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("blind", ACTION_EMERGENCY + 2),
-            new NextAction("vanish", ACTION_EMERGENCY + 1),
-            new NextAction("vanish", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("evasion", ACTION_EMERGENCY),
-            new NextAction("feint", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "kick on enemy healer",
-        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 6), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cloak of shadows",
-        NextAction::array(0, new NextAction("cloak of shadows", ACTION_INTERRUPT + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "kick",
-        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "sprint",
-        NextAction::array(0, new NextAction("sprint", ACTION_HIGH + 10), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "enemy out of melee",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "medium health",
-        NextAction::array(0, new NextAction("gouge", ACTION_HIGH), NULL)));
-
-    /*
-    triggers.push_back(new TriggerNode(
-        "tricks of the trade on tank",
-        NextAction::array(0, new NextAction("tricks of the trade on tank", ACTION_HIGH), NULL)));
-    */
-}
-
-void RogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassStrategy::InitReactionTriggers(triggers);
-}
-
-void RogueStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassStrategy::InitDeadTriggers(triggers);
-}
-
-void RoguePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassPvpStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "player has flag",
-        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 1), NULL)));
-}
-
-void RoguePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassPvpStrategy::InitNonCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("sprint", ACTION_INTERRUPT + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "player has flag",
-        NextAction::array(0, new NextAction("sprint", ACTION_INTERRUPT + 1), NULL)));
-}
-
-void RoguePvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassPvpStrategy::InitReactionTriggers(triggers);
-}
-
-void RoguePvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassPvpStrategy::InitDeadTriggers(triggers);
-}
-
-void RoguePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassPveStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "medium threat",
-        NextAction::array(0, new NextAction("feint", ACTION_HIGH), NULL)));
-}
-
-void RoguePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassPveStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RoguePveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassPveStrategy::InitReactionTriggers(triggers);
-}
-
-void RoguePveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassPveStrategy::InitDeadTriggers(triggers);
-}
-
-void RogueRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassRaidStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassRaidStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassRaidStrategy::InitReactionTriggers(triggers);
-}
-
-void RogueRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
-{
-    ClassRaidStrategy::InitDeadTriggers(triggers);
-}
-
-void RogueAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    AoeStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    AoeStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    AoePvpStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    AoePvpStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    AoePveStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    AoePveStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    AoeRaidStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    AoeRaidStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    BuffStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    BuffStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    BuffPvpStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    BuffPvpStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    BuffPveStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    BuffPveStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    BuffRaidStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    BuffRaidStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    CcStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "sap",
-        NextAction::array(0, new NextAction("sap", ACTION_INTERRUPT), NULL)));
-}
-
-void RogueCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    CcStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    CcPvpStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    CcPvpStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    CcPveStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    CcPveStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    CcRaidStrategy::InitCombatTriggers(triggers);
-}
-
-void RogueCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    CcRaidStrategy::InitNonCombatTriggers(triggers);
-}
-
-void RogueStealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "stealth",
-        NextAction::array(0, new NextAction("stealth", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "behind target",
-        NextAction::array(0, new NextAction("ambush", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "not behind target",
-        NextAction::array(0, new NextAction("cheap shot", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "kick",
-        NextAction::array(0, new NextAction("cheap shot", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "no stealth",
         NextAction::array(0, new NextAction("check stealth", ACTION_NORMAL), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -758,22 +750,12 @@ void RogueStealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("unstealth", ACTION_NORMAL), NULL)));
 }
 
-void RogueStealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        "no stealth",
-        NextAction::array(0, new NextAction("check stealth", 1.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "unstealth",
-        NextAction::array(0, new NextAction("unstealth", 1.0f), NULL)));
-}
-
 void RogueStealthPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("sprint", 81.0f), new NextAction("unstealth", 80.0f), NULL)));
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH),
+                             new NextAction("unstealth", ACTION_HIGH), NULL)));
 }
 
 void RogueStealthPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -820,11 +802,11 @@ void RoguePoisonsPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tri
 {
     triggers.push_back(new TriggerNode(
         "apply mind poison main hand",
-        NextAction::array(0, new NextAction("apply mind poison main hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply mind poison main hand", ACTION_NORMAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "apply crippling poison off hand",
-        NextAction::array(0, new NextAction("apply crippling poison off hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply crippling poison off hand", ACTION_NORMAL), NULL)));
 }
 
 void RoguePoisonsPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -836,11 +818,11 @@ void RoguePoisonsPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tri
 {
     triggers.push_back(new TriggerNode(
         "apply instant poison main hand",
-        NextAction::array(0, new NextAction("apply instant poison main hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply instant poison main hand", ACTION_NORMAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "apply instant poison off hand",
-        NextAction::array(0, new NextAction("apply instant poison off hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply instant poison off hand", ACTION_NORMAL), NULL)));
 }
 
 void RoguePoisonsRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -852,11 +834,11 @@ void RoguePoisonsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 {
     triggers.push_back(new TriggerNode(
         "apply instant poison main hand",
-        NextAction::array(0, new NextAction("apply instant poison main hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply instant poison main hand", ACTION_NORMAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "apply deadly poison off hand",
-        NextAction::array(0, new NextAction("apply deadly poison off hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply deadly poison off hand", ACTION_NORMAL), NULL)));
 }
 
 #elif MANGOSBOT_TWO // WOTLK
@@ -870,46 +852,36 @@ void RogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassStrategy::InitCombatTriggers(triggers);
 
-    triggers.push_back(new TriggerNode(
+        triggers.push_back(new TriggerNode(
         "low health",
-        NextAction::array(0, new NextAction("blind", ACTION_EMERGENCY + 2),
-            new NextAction("vanish", ACTION_EMERGENCY + 1),
-            new NextAction("vanish", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("blind", ACTION_EMERGENCY + 2), 
+                             new NextAction("vanish", ACTION_EMERGENCY + 1), 
+                             new NextAction("vanish", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low health",
-        NextAction::array(0, new NextAction("evasion", ACTION_EMERGENCY),
-            new NextAction("feint", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "kick on enemy healer",
-        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 6), NULL)));
+        NextAction::array(0, new NextAction("evasion", ACTION_EMERGENCY), 
+                             new NextAction("feint", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "cloak of shadows",
-        NextAction::array(0, new NextAction("cloak of shadows", ACTION_INTERRUPT + 5), NULL)));
+        NextAction::array(0, new NextAction("cloak of shadows", ACTION_INTERRUPT + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "kick on enemy healer",
+        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "kick",
-        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT + 5), NULL)));
+        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "sprint",
-        NextAction::array(0, new NextAction("sprint", ACTION_HIGH + 10), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "enemy out of melee",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium health",
         NextAction::array(0, new NextAction("gouge", ACTION_HIGH), NULL)));
-
-    /*
-    triggers.push_back(new TriggerNode(
-        "tricks of the trade on tank",
-        NextAction::array(0, new NextAction("tricks of the trade on tank", ACTION_HIGH), NULL)));
-    */
 }
 
 void RogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -933,11 +905,11 @@ void RoguePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "player has flag",
-        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 2), NULL)));
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("sprint", ACTION_EMERGENCY + 1), NULL)));
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
 }
 
 void RoguePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -945,12 +917,12 @@ void RoguePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassPvpStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("sprint", ACTION_INTERRUPT + 2), NULL)));
+        "player has flag",
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "player has flag",
-        NextAction::array(0, new NextAction("sprint", ACTION_INTERRUPT + 1), NULL)));
+        "enemy flagcarrier near",
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH), NULL)));
 }
 
 void RoguePvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -966,10 +938,6 @@ void RoguePvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 void RoguePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassPveStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "medium threat",
-        NextAction::array(0, new NextAction("feint", ACTION_HIGH), NULL)));
 }
 
 void RoguePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -990,6 +958,10 @@ void RoguePveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 void RogueRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassRaidStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "medium threat",
+        NextAction::array(0, new NextAction("feint", ACTION_DISPEL), NULL)));
 }
 
 void RogueRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1162,18 +1134,19 @@ void RogueStealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
 {
     triggers.push_back(new TriggerNode(
         "no stealth",
-        NextAction::array(0, new NextAction("check stealth", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("check stealth", ACTION_NORMAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "unstealth",
-        NextAction::array(0, new NextAction("unstealth", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("unstealth", ACTION_NORMAL), NULL)));
 }
 
 void RogueStealthPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
-        NextAction::array(0, new NextAction("sprint", 81.0f), new NextAction("unstealth", 80.0f), NULL)));
+        NextAction::array(0, new NextAction("sprint", ACTION_HIGH),
+                             new NextAction("unstealth", ACTION_HIGH), NULL)));
 }
 
 void RogueStealthPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1220,11 +1193,11 @@ void RoguePoisonsPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tri
 {
     triggers.push_back(new TriggerNode(
         "apply mind poison main hand",
-        NextAction::array(0, new NextAction("apply mind poison main hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply mind poison main hand", ACTION_NORMAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "apply crippling poison off hand",
-        NextAction::array(0, new NextAction("apply crippling poison off hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply crippling poison off hand", ACTION_NORMAL), NULL)));
 }
 
 void RoguePoisonsPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1236,11 +1209,11 @@ void RoguePoisonsPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tri
 {
     triggers.push_back(new TriggerNode(
         "apply instant poison main hand",
-        NextAction::array(0, new NextAction("apply instant poison main hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply instant poison main hand", ACTION_NORMAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "apply instant poison off hand",
-        NextAction::array(0, new NextAction("apply instant poison off hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply instant poison off hand", ACTION_NORMAL), NULL)));
 }
 
 void RoguePoisonsRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1252,11 +1225,11 @@ void RoguePoisonsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 {
     triggers.push_back(new TriggerNode(
         "apply instant poison main hand",
-        NextAction::array(0, new NextAction("apply instant poison main hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply instant poison main hand", ACTION_NORMAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "apply deadly poison off hand",
-        NextAction::array(0, new NextAction("apply deadly poison off hand", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("apply deadly poison off hand", ACTION_NORMAL), NULL)));
 }
 
 #endif
@@ -1280,6 +1253,7 @@ float RogueStealthedStrategyMultiplier::GetValue(Action* action)
         (actionName == "cold blood") ||
         (actionName == "preparation") ||
         (actionName == "premeditation") ||
+        (actionName == "shadowstep") ||
         (actionName == "sprint") ||
         (actionName == "ambush") ||
         (actionName == "cheap shot") ||
@@ -1309,5 +1283,5 @@ void RogueManualPoisonStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& t
 {
     triggers.push_back(new TriggerNode(
         triggerName,
-        NextAction::array(0, new NextAction(actionName, 1.0f), NULL)));
+        NextAction::array(0, new NextAction(actionName, ACTION_NORMAL), NULL)));
 }

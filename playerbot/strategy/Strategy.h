@@ -25,7 +25,7 @@ namespace ai
 
 	enum ActionPriority
 	{
-	    ACTION_IDLE = 0,
+	    ACTION_IDLE = 1,
 	    ACTION_NORMAL = 10,
 	    ACTION_HIGH = 20,
 	    ACTION_MOVE = 30,

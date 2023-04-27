@@ -12,29 +12,19 @@ void CombatRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "riposte",
-        NextAction::array(0, new NextAction("riposte", ACTION_HIGH + 5), NULL)));
+        NextAction::array(0, new NextAction("riposte", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "slice and dice",
-        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 5), NULL)));
+        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "eviscerate",
-        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 4), NULL)));
+        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "rupture",
-        NextAction::array(0, new NextAction("rupture", ACTION_HIGH + 3), NULL)));
-
-    /*
-    triggers.push_back(new TriggerNode(
-        "blade flurry with killing spree",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_NORMAL + 9), new NextAction("killing spree", ACTION_NORMAL + 8), NULL)));
-    */
-
-    triggers.push_back(new TriggerNode(
-        "killing spree",
-        NextAction::array(0, new NextAction("killing spree", ACTION_NORMAL + 8), NULL)));
+        NextAction::array(0, new NextAction("rupture", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "sinister strike",
@@ -134,7 +124,7 @@ void CombatRogueAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
 
     triggers.push_back(new TriggerNode(
         "light aoe",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 4), NULL)));
 }
 
 void CombatRogueAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -184,11 +174,11 @@ void CombatRogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 
     triggers.push_back(new TriggerNode(
         "adrenaline rush",
-        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
         "blade flurry",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_NORMAL + 9), NULL)));
+        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 4), NULL)));
 }
 
 void CombatRogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -378,29 +368,19 @@ void CombatRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "riposte",
-        NextAction::array(0, new NextAction("riposte", ACTION_HIGH + 5), NULL)));
+        NextAction::array(0, new NextAction("riposte", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "slice and dice",
-        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 5), NULL)));
+        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "eviscerate",
-        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 4), NULL)));
+        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "rupture",
-        NextAction::array(0, new NextAction("rupture", ACTION_HIGH + 3), NULL)));
-
-    /*
-    triggers.push_back(new TriggerNode(
-        "blade flurry with killing spree",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_NORMAL + 9), new NextAction("killing spree", ACTION_NORMAL + 8), NULL)));
-    */
-
-    triggers.push_back(new TriggerNode(
-        "killing spree",
-        NextAction::array(0, new NextAction("killing spree", ACTION_NORMAL + 8), NULL)));
+        NextAction::array(0, new NextAction("rupture", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "sinister strike",
@@ -500,7 +480,7 @@ void CombatRogueAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
 
     triggers.push_back(new TriggerNode(
         "light aoe",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 4), NULL)));
 }
 
 void CombatRogueAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -550,11 +530,11 @@ void CombatRogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 
     triggers.push_back(new TriggerNode(
         "adrenaline rush",
-        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
         "blade flurry",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_NORMAL + 9), NULL)));
+        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 4), NULL)));
 }
 
 void CombatRogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -744,29 +724,19 @@ void CombatRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "riposte",
-        NextAction::array(0, new NextAction("riposte", ACTION_HIGH + 5), NULL)));
+        NextAction::array(0, new NextAction("riposte", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "slice and dice",
-        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 5), NULL)));
+        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "eviscerate",
-        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 4), NULL)));
+        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "rupture",
-        NextAction::array(0, new NextAction("rupture", ACTION_HIGH + 3), NULL)));
-
-    /*
-    triggers.push_back(new TriggerNode(
-        "blade flurry with killing spree",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_NORMAL + 9), new NextAction("killing spree", ACTION_NORMAL + 8), NULL)));
-    */
-
-    triggers.push_back(new TriggerNode(
-        "killing spree",
-        NextAction::array(0, new NextAction("killing spree", ACTION_NORMAL + 8), NULL)));
+        NextAction::array(0, new NextAction("rupture", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "sinister strike",
@@ -866,7 +836,7 @@ void CombatRogueAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
 
     triggers.push_back(new TriggerNode(
         "light aoe",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 4), NULL)));
 }
 
 void CombatRogueAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -916,11 +886,15 @@ void CombatRogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 
     triggers.push_back(new TriggerNode(
         "adrenaline rush",
-        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 6), NULL)));
 
     triggers.push_back(new TriggerNode(
         "blade flurry",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_NORMAL + 9), NULL)));
+        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 5), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "killing spree",
+        NextAction::array(0, new NextAction("killing spree", ACTION_HIGH + 4), NULL)));
 }
 
 void CombatRogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

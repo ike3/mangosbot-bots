@@ -11,13 +11,16 @@ public:
     {
         creators["hemorrhage back"] = &hemorrhage_back;
         creators["hemorrhage front"] = &hemorrhage_front;
+        creators["hemorrhage"] = &hemorrhage;
         creators["backstab"] = &backstab;
     }
 
 private:
-    ACTION_NODE_A(hemorrhage_back, "hemorrhage", "backstab");
+    ACTION_NODE_A(hemorrhage_back, "backstab", "hemorrhage");
 
     ACTION_NODE_A(hemorrhage_front, "hemorrhage", "sinister strike");
+
+    ACTION_NODE_A(hemorrhage, "hemorrhage", "sinister strike");
 
     ACTION_NODE_A(backstab, "backstab", "sinister strike");
 };
@@ -33,45 +36,29 @@ void SubtletyRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
 {
     RogueStrategy::InitCombatTriggers(triggers);
 
-    /*
-    triggers.push_back(new TriggerNode(
-        "enemy out of melee",
-        NextAction::array(0, new NextAction("shadowstep", 62.0f), NULL)));
-    */
-
-    triggers.push_back(new TriggerNode(
-        "behind target",
-        NextAction::array(0, new NextAction("hemorrhage back", ACTION_HIGH + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "not behind target",
-        NextAction::array(0, new NextAction("hemorrhage front", ACTION_HIGH + 4), NULL)));
-
-    /*
     triggers.push_back(new TriggerNode(
         "eviscerate",
-        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rupture",
-        NextAction::array(0, new NextAction("rupture", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "random",
-        NextAction::array(0, new NextAction("preparation", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "slice and dice",
         NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "hemorrhage",
-        NextAction::array(0, new NextAction("hemorrhage or backstab", ACTION_NORMAL + 4), NULL)));
+        "3 combo",
+        NextAction::array(0, new NextAction("rupture", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("ghostly strike", ACTION_NORMAL + 4), NULL)));
-    */
+        "not behind target",
+        NextAction::array(0, new NextAction("ghostly strike", ACTION_NORMAL + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "behind target",
+        NextAction::array(0, new NextAction("hemorrhage back", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "not behind target",
+        NextAction::array(0, new NextAction("hemorrhage front", ACTION_NORMAL), NULL)));
 }
 
 void SubtletyRogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -210,6 +197,10 @@ void SubtletyRogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>
 void SubtletyRogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RogueBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("preparation", ACTION_HIGH + 3), NULL)));
 }
 
 void SubtletyRogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -401,45 +392,33 @@ void SubtletyRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
 {
     RogueStrategy::InitCombatTriggers(triggers);
 
-    /*
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("shadowstep", 62.0f), NULL)));
-    */
+        NextAction::array(0, new NextAction("shadowstep", ACTION_HIGH + 3), NULL)));
 
-    triggers.push_back(new TriggerNode(
-        "behind target",
-        NextAction::array(0, new NextAction("hemorrhage back", ACTION_HIGH + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "not behind target",
-        NextAction::array(0, new NextAction("hemorrhage front", ACTION_HIGH + 4), NULL)));
-
-    /*
     triggers.push_back(new TriggerNode(
         "eviscerate",
-        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rupture",
-        NextAction::array(0, new NextAction("rupture", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "random",
-        NextAction::array(0, new NextAction("preparation", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "slice and dice",
         NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "hemorrhage",
-        NextAction::array(0, new NextAction("hemorrhage or backstab", ACTION_NORMAL + 4), NULL)));
+        "3 combo",
+        NextAction::array(0, new NextAction("rupture", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("ghostly strike", ACTION_NORMAL + 4), NULL)));
-    */
+        "not behind target",
+        NextAction::array(0, new NextAction("ghostly strike", ACTION_NORMAL + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "behind target",
+        NextAction::array(0, new NextAction("hemorrhage back", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "not behind target",
+        NextAction::array(0, new NextAction("hemorrhage front", ACTION_NORMAL), NULL)));
 }
 
 void SubtletyRogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -670,6 +649,10 @@ void SubtletyRogueCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 void SubtletyRogueStealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RogueStealthStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("shadowstep", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "very often",
@@ -769,45 +752,33 @@ void SubtletyRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
 {
     RogueStrategy::InitCombatTriggers(triggers);
 
-    /*
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("shadowstep", 62.0f), NULL)));
-    */
+        NextAction::array(0, new NextAction("shadowstep", ACTION_HIGH + 3), NULL)));
 
-    triggers.push_back(new TriggerNode(
-        "behind target",
-        NextAction::array(0, new NextAction("hemorrhage back", ACTION_HIGH + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "not behind target",
-        NextAction::array(0, new NextAction("hemorrhage front", ACTION_HIGH + 4), NULL)));
-
-    /*
     triggers.push_back(new TriggerNode(
         "eviscerate",
-        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rupture",
-        NextAction::array(0, new NextAction("rupture", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "random",
-        NextAction::array(0, new NextAction("preparation", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "slice and dice",
         NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "hemorrhage",
-        NextAction::array(0, new NextAction("hemorrhage or backstab", ACTION_NORMAL + 4), NULL)));
+        "3 combo",
+        NextAction::array(0, new NextAction("rupture", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("ghostly strike", ACTION_NORMAL + 4), NULL)));
-    */
+        "not behind target",
+        NextAction::array(0, new NextAction("ghostly strike", ACTION_NORMAL + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "behind target",
+        NextAction::array(0, new NextAction("hemorrhage back", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "not behind target",
+        NextAction::array(0, new NextAction("hemorrhage front", ACTION_NORMAL), NULL)));
 }
 
 void SubtletyRogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1038,6 +1009,10 @@ void SubtletyRogueCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 void SubtletyRogueStealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RogueStealthStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("shadowstep", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "very often",

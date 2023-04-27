@@ -345,10 +345,6 @@ namespace ai
                 creators["earth totem"] = &TriggerFactoryInternal::earth_totem;
                 creators["water totem"] = &TriggerFactoryInternal::water_totem;
                 creators["air totem"] = &TriggerFactoryInternal::air_totem;
-                creators["air totem nc"] = &TriggerFactoryInternal::air_totem_nc;
-                creators["fire totem nc"] = &TriggerFactoryInternal::fire_totem_nc;
-                creators["earth totem nc"] = &TriggerFactoryInternal::earth_totem_nc;
-                creators["water totem nc"] = &TriggerFactoryInternal::water_totem_nc;
                 creators["call of the elements"] = &TriggerFactoryInternal::call_of_the_elements;
                 creators["call of the ancestors"] = &TriggerFactoryInternal::call_of_the_ancestors;
                 creators["call of the spirits"] = &TriggerFactoryInternal::call_of_the_spirits;
@@ -386,10 +382,6 @@ namespace ai
             static Trigger* earth_totem(PlayerbotAI* ai) { return new EarthTotemTrigger(ai); }
             static Trigger* water_totem(PlayerbotAI* ai) { return new WaterTotemTrigger(ai); }
             static Trigger* air_totem(PlayerbotAI* ai) { return new AirTotemTrigger(ai); }
-            static Trigger* fire_totem_nc(PlayerbotAI* ai) { return new FireTotemTrigger(ai, false); }
-            static Trigger* earth_totem_nc(PlayerbotAI* ai) { return new EarthTotemTrigger(ai, false); }
-            static Trigger* water_totem_nc(PlayerbotAI* ai) { return new WaterTotemTrigger(ai, false); }
-            static Trigger* air_totem_nc(PlayerbotAI* ai) { return new AirTotemTrigger(ai, false); }
             static Trigger* call_of_the_elements(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }
             static Trigger* call_of_the_ancestors(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }
             static Trigger* call_of_the_spirits(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }

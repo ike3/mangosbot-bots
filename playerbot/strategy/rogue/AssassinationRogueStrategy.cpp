@@ -20,7 +20,7 @@ private:
 
     ACTION_NODE_A(mutilate_back, "mutilate", "backstab");
 
-    ACTION_NODE_A(mutilate, "mutilate", "backstab");
+    ACTION_NODE_A(mutilate, "mutilate", "sinister strike");
 
     ACTION_NODE_A(backstab, "backstab", "sinister strike");
 };
@@ -37,32 +37,24 @@ void AssassinationRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
     RogueStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "behind target",
-        NextAction::array(0, new NextAction("mutilate back", ACTION_HIGH + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "not behind target",
-        NextAction::array(0, new NextAction("mutilate front", ACTION_HIGH + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "behind target",
-        NextAction::array(0, new NextAction("backstab", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "not behind target",
-        NextAction::array(0, new NextAction("sinister strike", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "eviscerate",
-        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "slice and dice",
-        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "3 combo",
-        NextAction::array(0, new NextAction("rupture", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("rupture", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "behind target",
+        NextAction::array(0, new NextAction("mutilate back", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "not behind target",
+        NextAction::array(0, new NextAction("mutilate front", ACTION_NORMAL), NULL)));
 }
 
 void AssassinationRogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -393,36 +385,24 @@ void AssassinationRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
     RogueStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("cold blood", ACTION_HIGH + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "behind target",
-        NextAction::array(0, new NextAction("mutilate back", ACTION_HIGH + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "not behind target",
-        NextAction::array(0, new NextAction("mutilate front", ACTION_HIGH + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "behind target",
-        NextAction::array(0, new NextAction("backstab", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "not behind target",
-        NextAction::array(0, new NextAction("sinister strike", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "eviscerate",
-        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "slice and dice",
-        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "3 combo",
-        NextAction::array(0, new NextAction("rupture", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("rupture", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "behind target",
+        NextAction::array(0, new NextAction("mutilate back", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "not behind target",
+        NextAction::array(0, new NextAction("mutilate front", ACTION_NORMAL), NULL)));
 }
 
 void AssassinationRogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -753,36 +733,24 @@ void AssassinationRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
     RogueStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("cold blood", ACTION_HIGH + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "behind target",
-        NextAction::array(0, new NextAction("mutilate back", ACTION_HIGH + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "not behind target",
-        NextAction::array(0, new NextAction("mutilate front", ACTION_HIGH + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "behind target",
-        NextAction::array(0, new NextAction("backstab", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "not behind target",
-        NextAction::array(0, new NextAction("sinister strike", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "eviscerate",
-        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("eviscerate", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "slice and dice",
-        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("slice and dice", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "3 combo",
-        NextAction::array(0, new NextAction("rupture", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction("rupture", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "behind target",
+        NextAction::array(0, new NextAction("mutilate back", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "not behind target",
+        NextAction::array(0, new NextAction("mutilate front", ACTION_NORMAL), NULL)));
 }
 
 void AssassinationRogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

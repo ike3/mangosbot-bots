@@ -8,9 +8,5 @@ void AttackEnemyPlayersStrategy::InitCombatTriggers(std::list<TriggerNode*> &tri
 {
     triggers.push_back(new TriggerNode(
         "enemy player near",
-        NextAction::array(0, new NextAction("attack enemy player", 69.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "random",
-        NextAction::array(0, new NextAction("free action potion", 69.0f), NULL)));
+        NextAction::array(0, new NextAction("attack enemy player", ACTION_EMERGENCY), NULL)));
 }
