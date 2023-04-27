@@ -15,7 +15,7 @@ namespace ai
     public:
         ReachTargetAction(PlayerbotAI* ai, string name, float range = 0.0f) : MovementAction(ai, name), Qualified(), range(range), spellName("") {}
 
-        virtual void Qualify(string qualifier)
+        virtual void Qualify(const string& qualifier) override
         {
             Qualified::Qualify(qualifier);
 
@@ -161,7 +161,7 @@ namespace ai
             }
         }
 
-        void Qualify(string qualifier) override
+        void Qualify(const string& qualifier) override
         {
             ReachTargetAction::Qualify(qualifier);
 

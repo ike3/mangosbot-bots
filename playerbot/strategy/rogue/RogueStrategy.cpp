@@ -332,20 +332,20 @@ void RogueStealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("stealth", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "no stealth",
+        NextAction::array(0, new NextAction("check stealth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "behind target",
-        NextAction::array(0, new NextAction("ambush", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("ambush", ACTION_NORMAL + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "not behind target",
-        NextAction::array(0, new NextAction("cheap shot", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("cheap shot", ACTION_NORMAL + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "kick",
-        NextAction::array(0, new NextAction("cheap shot", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "no stealth",
-        NextAction::array(0, new NextAction("check stealth", ACTION_NORMAL), NULL)));
+        NextAction::array(0, new NextAction("cheap shot", ACTION_NORMAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "unstealth",
@@ -356,7 +356,7 @@ void RogueStealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
 {
     triggers.push_back(new TriggerNode(
         "no stealth",
-        NextAction::array(0, new NextAction("check stealth", ACTION_NORMAL), NULL)));
+        NextAction::array(0, new NextAction("check stealth", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "unstealth",
@@ -719,20 +719,20 @@ void RogueStealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("stealth", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "no stealth",
+        NextAction::array(0, new NextAction("check stealth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "behind target",
-        NextAction::array(0, new NextAction("ambush", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("ambush", ACTION_NORMAL + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "not behind target",
-        NextAction::array(0, new NextAction("cheap shot", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("cheap shot", ACTION_NORMAL + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "kick",
-        NextAction::array(0, new NextAction("cheap shot", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "no stealth",
-        NextAction::array(0, new NextAction("check stealth", ACTION_NORMAL), NULL)));
+        NextAction::array(0, new NextAction("cheap shot", ACTION_NORMAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "unstealth",
@@ -743,7 +743,7 @@ void RogueStealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
 {
     triggers.push_back(new TriggerNode(
         "no stealth",
-        NextAction::array(0, new NextAction("check stealth", ACTION_NORMAL), NULL)));
+        NextAction::array(0, new NextAction("check stealth", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "unstealth",
@@ -1110,20 +1110,20 @@ void RogueStealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("stealth", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "no stealth",
+        NextAction::array(0, new NextAction("check stealth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "behind target",
-        NextAction::array(0, new NextAction("ambush", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("ambush", ACTION_NORMAL + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "not behind target",
-        NextAction::array(0, new NextAction("cheap shot", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("cheap shot", ACTION_NORMAL + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "kick",
-        NextAction::array(0, new NextAction("cheap shot", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "no stealth",
-        NextAction::array(0, new NextAction("check stealth", ACTION_NORMAL), NULL)));
+        NextAction::array(0, new NextAction("cheap shot", ACTION_NORMAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "unstealth",
@@ -1134,7 +1134,7 @@ void RogueStealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
 {
     triggers.push_back(new TriggerNode(
         "no stealth",
-        NextAction::array(0, new NextAction("check stealth", ACTION_NORMAL), NULL)));
+        NextAction::array(0, new NextAction("check stealth", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "unstealth",
