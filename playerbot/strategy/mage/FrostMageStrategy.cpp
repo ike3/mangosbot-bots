@@ -5,57 +5,933 @@
 
 using namespace ai;
 
+#ifdef MANGOSBOT_ZERO // Vanilla
+
 NextAction** FrostMageStrategy::GetDefaultCombatActions()
 {
-    return NextAction::array(0, new NextAction("frostbolt", 7.0f), NULL);
+    return NextAction::array(0, new NextAction("frostbolt", ACTION_NORMAL), NULL);
 }
 
-void FrostMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
+void FrostMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    GenericMageStrategy::InitCombatTriggers(triggers);
-
-#ifdef MANGOSBOT_TWO
-    triggers.push_back(new TriggerNode(
-        "fireball!",
-        NextAction::array(0, new NextAction("frostfire bolt", 55.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "finger of frost",
-        NextAction::array(0, new NextAction("deep freeze", 9.0f), NULL)));
-#endif
-
-    triggers.push_back(new TriggerNode(
-        "cold snap",
-        NextAction::array(0, new NextAction("cold snap", 55.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "icy veins",
-        NextAction::array(0, new NextAction("icy veins", 50.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "ice barrier",
-        NextAction::array(0, new NextAction("ice barrier", 9.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "ice lance",
-        NextAction::array(0, new NextAction("ice lance", 61.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "has aggro",
-        NextAction::array(0, new NextAction("fire blast", 6.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "summon water elemental",
-        NextAction::array(0, new NextAction("summon water elemental", 10.0f), NULL)));
+    MageStrategy::InitCombatTriggers(triggers);
 }
 
-void FrostMageAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
+void FrostMageStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-	triggers.push_back(new TriggerNode(
-		"medium aoe",
-		NextAction::array(0, new NextAction("blizzard", 40.0f), NULL)));
+    MageStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMageStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitCombatTriggers(triggers);
+    MagePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitNonCombatTriggers(triggers);
+    MagePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitReactionTriggers(triggers);
+    MagePveStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitDeadTriggers(triggers);
+    MagePveStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitCombatTriggers(triggers);
+    MagePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitNonCombatTriggers(triggers);
+    MagePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitReactionTriggers(triggers);
+    MagePvpStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitDeadTriggers(triggers);
+    MagePvpStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitCombatTriggers(triggers);
+    MageRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitNonCombatTriggers(triggers);
+    MageRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitReactionTriggers(triggers);
+    MageRaidStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitDeadTriggers(triggers);
+    MageRaidStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMageAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "medium aoe",
-        NextAction::array(0, new NextAction("flamestrike", 35.0f), NULL)));
+        NextAction::array(0, new NextAction("blizzard", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium aoe",
+        NextAction::array(0, new NextAction("flamestrike", ACTION_HIGH), NULL)));
 }
+
+void FrostMageAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "cold snap",
+        NextAction::array(0, new NextAction("cold snap", ACTION_HIGH + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "ice barrier",
+        NextAction::array(0, new NextAction("ice barrier", ACTION_HIGH), NULL)));
+}
+
+void FrostMageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCurePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitCombatTriggers(triggers);
+    MageCureRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCureRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+#elif MANGOSBOT_ONE // TBC
+
+NextAction** FrostMageStrategy::GetDefaultCombatActions()
+{
+    return NextAction::array(0, new NextAction("frostbolt", ACTION_NORMAL), NULL);
+}
+
+void FrostMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "ice lance",
+        NextAction::array(0, new NextAction("ice lance", ACTION_NORMAL), NULL)));
+}
+
+void FrostMageStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMageStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitCombatTriggers(triggers);
+    MagePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitNonCombatTriggers(triggers);
+    MagePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitReactionTriggers(triggers);
+    MagePveStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitDeadTriggers(triggers);
+    MagePveStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitCombatTriggers(triggers);
+    MagePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitNonCombatTriggers(triggers);
+    MagePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitReactionTriggers(triggers);
+    MagePvpStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitDeadTriggers(triggers);
+    MagePvpStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitCombatTriggers(triggers);
+    MageRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitNonCombatTriggers(triggers);
+    MageRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitReactionTriggers(triggers);
+    MageRaidStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitDeadTriggers(triggers);
+    MageRaidStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMageAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "medium aoe",
+        NextAction::array(0, new NextAction("blizzard", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium aoe",
+        NextAction::array(0, new NextAction("flamestrike", ACTION_HIGH), NULL)));
+}
+
+void FrostMageAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "cold snap",
+        NextAction::array(0, new NextAction("cold snap", ACTION_HIGH + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "summon water elemental",
+        NextAction::array(0, new NextAction("summon water elemental", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "icy veins",
+        NextAction::array(0, new NextAction("icy veins", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "ice barrier",
+        NextAction::array(0, new NextAction("ice barrier", ACTION_HIGH), NULL)));
+}
+
+void FrostMageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCurePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitCombatTriggers(triggers);
+    MageCureRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCureRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+#elif MANGOSBOT_TWO // WOTLK
+
+NextAction** FrostMageStrategy::GetDefaultCombatActions()
+{
+    return NextAction::array(0, new NextAction("frostbolt", ACTION_NORMAL), NULL);
+}
+
+void FrostMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "free fireball",
+        NextAction::array(0, new NextAction("frostfire bolt", ACTION_NORMAL + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "finger of frost",
+        NextAction::array(0, new NextAction("deep freeze", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "ice lance",
+        NextAction::array(0, new NextAction("ice lance", ACTION_NORMAL), NULL)));
+}
+
+void FrostMageStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMageStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitCombatTriggers(triggers);
+    MagePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitNonCombatTriggers(triggers);
+    MagePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitReactionTriggers(triggers);
+    MagePveStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMagePveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitDeadTriggers(triggers);
+    MagePveStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitCombatTriggers(triggers);
+    MagePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitNonCombatTriggers(triggers);
+    MagePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitReactionTriggers(triggers);
+    MagePvpStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMagePvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitDeadTriggers(triggers);
+    MagePvpStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitCombatTriggers(triggers);
+    MageRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitNonCombatTriggers(triggers);
+    MageRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitReactionTriggers(triggers);
+    MageRaidStrategy::InitReactionTriggers(triggers);
+}
+
+void FrostMageRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageStrategy::InitDeadTriggers(triggers);
+    MageRaidStrategy::InitDeadTriggers(triggers);
+}
+
+void FrostMageAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "medium aoe",
+        NextAction::array(0, new NextAction("blizzard", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium aoe",
+        NextAction::array(0, new NextAction("flamestrike", ACTION_HIGH), NULL)));
+}
+
+void FrostMageAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "cold snap",
+        NextAction::array(0, new NextAction("cold snap", ACTION_HIGH + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "summon water elemental",
+        NextAction::array(0, new NextAction("summon water elemental", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "icy veins",
+        NextAction::array(0, new NextAction("icy veins", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "ice barrier",
+        NextAction::array(0, new NextAction("ice barrier", ACTION_HIGH), NULL)));
+}
+
+void FrostMageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCurePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FrostMageCureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitCombatTriggers(triggers);
+    MageCureRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FrostMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FrostMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCureRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+#endif

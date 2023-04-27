@@ -322,18 +322,18 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         {
             if (tab == 0)
             {
-                engine->addStrategies("arcane", "arcane aoe", "threat", NULL);
+                engine->addStrategy("arcane");
             }
             else if (tab == 1)
             {
-                engine->addStrategies("fire", "fire aoe", "threat", NULL);
+                engine->addStrategy("fire");
             }
             else
             {
-                engine->addStrategies("frost", "frost aoe", "threat", NULL);
+                engine->addStrategy("frost");
             }
 
-            engine->addStrategies("dps", "dps assist", "flee", "cure", "ranged", "cc", "boost", NULL);
+            engine->addStrategies("dps", "dps assist", "threat", "flee", "cure", "ranged", "cc", "buff", "aoe", NULL);
             break;
         }
 
@@ -699,20 +699,20 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
 
         case CLASS_MAGE:
         {
-#ifdef MANGOSBOT_TWO
-            nonCombatEngine->addStrategies("dps assist", "cure", "bdps", NULL);
-#else
-            if (tab == 1)
+            if (tab == 0)
             {
-                nonCombatEngine->addStrategy("bdps");
+                nonCombatEngine->addStrategy("arcane");
+            }
+            else if (tab == 1)
+            {
+                nonCombatEngine->addStrategy("fire");
             }
             else
             {
-                nonCombatEngine->addStrategy("bmana");
+                nonCombatEngine->addStrategy("frost");
             }
 
-            nonCombatEngine->addStrategies("dps assist", "cure", NULL);
-#endif
+            nonCombatEngine->addStrategies("dps assist", "cure", "buff", NULL);
             break;
         }
 
@@ -1005,6 +1005,24 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
 
             break;
         }
+
+        case CLASS_MAGE:
+        {
+            if (tab == 0)
+            {
+                deadEngine->addStrategy("arcane");
+            }
+            else if (tab == 1)
+            {
+                deadEngine->addStrategy("fire");
+            }
+            else
+            {
+                deadEngine->addStrategy("frost");
+            }
+
+            break;
+        }
     }
 }
 
@@ -1053,6 +1071,24 @@ void AiFactory::AddDefaultReactionStrategies(Player* player, PlayerbotAI* const 
             else
             {
                 reactionEngine->addStrategy("combat");
+            }
+
+            break;
+        }
+
+        case CLASS_MAGE:
+        {
+            if (tab == 0)
+            {
+                reactionEngine->addStrategy("arcane");
+            }
+            else if (tab == 1)
+            {
+                reactionEngine->addStrategy("fire");
+            }
+            else
+            {
+                reactionEngine->addStrategy("frost");
             }
 
             break;

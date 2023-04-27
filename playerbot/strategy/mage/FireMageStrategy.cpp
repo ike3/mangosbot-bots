@@ -13,92 +13,965 @@ public:
         creators["fire blast"] = &fire_blast;
     }
 private:
-    static ActionNode* fire_blast(PlayerbotAI* ai)
-    {
-        return new ActionNode("fire blast",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("scorch"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(fire_blast, "fire blast", "scorch");
 };
 
-FireMageStrategy::FireMageStrategy(PlayerbotAI* ai) : GenericMageStrategy(ai)
+FireMageStrategy::FireMageStrategy(PlayerbotAI* ai) : MageStrategy(ai)
 {
     actionNodeFactories.Add(new FireMageStrategyActionNodeFactory());
 }
 
+#ifdef MANGOSBOT_ZERO // Vanilla
+
 NextAction** FireMageStrategy::GetDefaultCombatActions()
 {
-    return NextAction::array(0, new NextAction("fireball", 15.0f), NULL);
+    return NextAction::array(0, new NextAction("fireball", ACTION_NORMAL), NULL);
 }
 
-void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
+void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    GenericMageStrategy::InitCombatTriggers(triggers);
-
-#ifndef MANGOSBOT_ZERO
-    triggers.push_back(new TriggerNode(
-        "enemy player ten yards",
-        NextAction::array(0, new NextAction("blast wave", 62.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "enemy too close for spell",
-        NextAction::array(0, new NextAction("dragon's breath", 61.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "living bomb",
-        NextAction::array(0, new NextAction("living bomb", 30.0f), NULL)));
-#endif
-
-#ifndef MANGOSBOT_TWO
-    triggers.push_back(new TriggerNode(
-        "pyroblast",
-        NextAction::array(0, new NextAction("pyroblast", 10.0f), NULL)));
+    MageStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "no fire vulnerability",
-        NextAction::array(0, new NextAction("scorch", 55.0f), NULL)));
-#else
-    triggers.push_back(new TriggerNode(
-        "hot streak",
-        NextAction::array(0, new NextAction("pyroblast", 25.0f), NULL)));
+        NextAction::array(0, new NextAction("scorch", ACTION_NORMAL + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "no improved scorch",
-        NextAction::array(0, new NextAction("scorch", 20.0f), NULL)));
-#endif
-
-    triggers.push_back(new TriggerNode(
-        "combustion",
-        NextAction::array(0, new NextAction("combustion", 50.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "mana shield",
-        NextAction::array(0, new NextAction("mana shield", 15.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "has aggro",
-        NextAction::array(0, new NextAction("fire blast", ACTION_HIGH + 10), NULL)));
+        "pyroblast",
+        NextAction::array(0, new NextAction("pyroblast", ACTION_NORMAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "fire spells locked",
-        NextAction::array(0, new NextAction("frostbolt", 10.0f), NULL)));
+        NextAction::array(0, new NextAction("frostbolt", ACTION_NORMAL), NULL)));
 }
 
-void FireMageAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
+void FireMageStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-#ifndef MANGOSBOT_ZERO
-    triggers.push_back(new TriggerNode(
-        "living bomb",
-        NextAction::array(0, new NextAction("living bomb", 30.0f), NULL)));
-#endif
+    MageStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMageStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitCombatTriggers(triggers);
+    MagePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitNonCombatTriggers(triggers);
+    MagePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitReactionTriggers(triggers);
+    MagePveStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitDeadTriggers(triggers);
+    MagePveStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitCombatTriggers(triggers);
+    MagePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitNonCombatTriggers(triggers);
+    MagePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitReactionTriggers(triggers);
+    MagePvpStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitDeadTriggers(triggers);
+    MagePvpStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitCombatTriggers(triggers);
+    MageRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitNonCombatTriggers(triggers);
+    MageRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitReactionTriggers(triggers);
+    MageRaidStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitDeadTriggers(triggers);
+    MageRaidStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMageAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "medium aoe",
-        NextAction::array(0, new NextAction("flamestrike", 20.0f), NULL)));
+        NextAction::array(0, new NextAction("flamestrike", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "fire spells locked",
-        NextAction::array(0, new NextAction("blizzard", 20.0f), NULL)));
+        NextAction::array(0, new NextAction("blizzard", ACTION_HIGH), NULL)));
 }
 
+void FireMageAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "combustion",
+        NextAction::array(0, new NextAction("combustion", ACTION_HIGH + 1), NULL)));
+}
+
+void FireMageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCurePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitCombatTriggers(triggers);
+    MageCureRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCureRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+#elif MANGOSBOT_ONE // TBC
+
+NextAction** FireMageStrategy::GetDefaultCombatActions()
+{
+    return NextAction::array(0, new NextAction("fireball", ACTION_NORMAL), NULL);
+}
+
+void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy player ten yards",
+        NextAction::array(0, new NextAction("blast wave", ACTION_NORMAL + 6), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "no fire vulnerability",
+        NextAction::array(0, new NextAction("scorch", ACTION_NORMAL + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "living bomb",
+        NextAction::array(0, new NextAction("living bomb", ACTION_NORMAL + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "pyroblast",
+        NextAction::array(0, new NextAction("pyroblast", ACTION_NORMAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "fire spells locked",
+        NextAction::array(0, new NextAction("frostbolt", ACTION_NORMAL), NULL)));
+}
+
+void FireMageStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMageStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitCombatTriggers(triggers);
+    MagePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitNonCombatTriggers(triggers);
+    MagePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitReactionTriggers(triggers);
+    MagePveStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitDeadTriggers(triggers);
+    MagePveStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitCombatTriggers(triggers);
+    MagePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitNonCombatTriggers(triggers);
+    MagePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitReactionTriggers(triggers);
+    MagePvpStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitDeadTriggers(triggers);
+    MagePvpStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitCombatTriggers(triggers);
+    MageRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitNonCombatTriggers(triggers);
+    MageRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitReactionTriggers(triggers);
+    MageRaidStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitDeadTriggers(triggers);
+    MageRaidStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMageAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "living bomb",
+        NextAction::array(0, new NextAction("living bomb", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium aoe",
+        NextAction::array(0, new NextAction("flamestrike", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "fire spells locked",
+        NextAction::array(0, new NextAction("blizzard", ACTION_HIGH), NULL)));
+}
+
+void FireMageAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "combustion",
+        NextAction::array(0, new NextAction("combustion", ACTION_HIGH + 1), NULL)));
+}
+
+void FireMageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy too close for spell",
+        NextAction::array(0, new NextAction("dragon's breath", ACTION_EMERGENCY), NULL)));
+}
+
+void FireMageCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCurePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitCombatTriggers(triggers);
+    MageCureRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCureRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+#elif MANGOSBOT_TWO // WOTLK
+
+NextAction** FireMageStrategy::GetDefaultCombatActions()
+{
+    return NextAction::array(0, new NextAction("fireball", ACTION_NORMAL), NULL);
+}
+
+void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy player ten yards",
+        NextAction::array(0, new NextAction("blast wave", ACTION_NORMAL + 6), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "living bomb",
+        NextAction::array(0, new NextAction("living bomb", ACTION_NORMAL + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "hot streak",
+        NextAction::array(0, new NextAction("pyroblast", ACTION_NORMAL + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "no improved scorch",
+        NextAction::array(0, new NextAction("scorch", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "fire spells locked",
+        NextAction::array(0, new NextAction("frostbolt", ACTION_NORMAL), NULL)));
+}
+
+void FireMageStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMageStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitCombatTriggers(triggers);
+    MagePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitNonCombatTriggers(triggers);
+    MagePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitReactionTriggers(triggers);
+    MagePveStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMagePveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitDeadTriggers(triggers);
+    MagePveStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitCombatTriggers(triggers);
+    MagePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitNonCombatTriggers(triggers);
+    MagePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitReactionTriggers(triggers);
+    MagePvpStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMagePvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitDeadTriggers(triggers);
+    MagePvpStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitCombatTriggers(triggers);
+    MageRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitNonCombatTriggers(triggers);
+    MageRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitReactionTriggers(triggers);
+    MageRaidStrategy::InitReactionTriggers(triggers);
+}
+
+void FireMageRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageStrategy::InitDeadTriggers(triggers);
+    MageRaidStrategy::InitDeadTriggers(triggers);
+}
+
+void FireMageAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "living bomb",
+        NextAction::array(0, new NextAction("living bomb", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium aoe",
+        NextAction::array(0, new NextAction("flamestrike", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "fire spells locked",
+        NextAction::array(0, new NextAction("blizzard", ACTION_HIGH), NULL)));
+}
+
+void FireMageAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageAoeStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageAoeStrategy::InitNonCombatTriggers(triggers);
+    MageAoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "combustion",
+        NextAction::array(0, new NextAction("combustion", ACTION_HIGH + 1), NULL)));
+}
+
+void FireMageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBuffStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBuffStrategy::InitNonCombatTriggers(triggers);
+    MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy too close for spell",
+        NextAction::array(0, new NextAction("dragon's breath", ACTION_EMERGENCY), NULL)));
+}
+
+void FireMageCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitCombatTriggers(triggers);
+    MageCcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCcStrategy::InitNonCombatTriggers(triggers);
+    MageCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCureStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageCureStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCurePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCurePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCurePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitCombatTriggers(triggers);
+    MageCurePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCurePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCurePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageCureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitCombatTriggers(triggers);
+    MageCureRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageCureStrategy::InitNonCombatTriggers(triggers);
+    MageCureRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+#endif

@@ -43,6 +43,7 @@ namespace ai
             creators["medium health"] = &TriggerContext::MediumHealth;
             creators["almost full health"] = &TriggerContext::AlmostFullHealth;
 
+            creators["no mana"] = &TriggerContext::NoMana;
             creators["low mana"] = &TriggerContext::LowMana;
             creators["medium mana"] = &TriggerContext::MediumMana;
             creators["high mana"] = &TriggerContext::HighMana;
@@ -102,11 +103,8 @@ namespace ai
             creators["enemy five yards"] = &TriggerContext::enemy_five_yards;
             creators["wait for attack safe distance"] = &TriggerContext::wait_for_attack_safe_distance;
             creators["enemy player ten yards"] = &TriggerContext::enemy_player_ten_yards;
-
             creators["combo points available"] = &TriggerContext::ComboPointsAvailable;
-
             creators["medium threat"] = &TriggerContext::MediumThreat;
-
             creators["dead"] = &TriggerContext::Dead;
             creators["corpse near"] = &TriggerContext::corpse_near;
             creators["party member dead"] = &TriggerContext::PartyMemberDead;
@@ -114,10 +112,6 @@ namespace ai
             creators["has attackers"] = &TriggerContext::has_attackers;
             creators["no possible targets"] = &TriggerContext::no_possible_targets;
             creators["possible adds"] = &TriggerContext::possible_adds;
-
-            creators["no drink"] = &TriggerContext::no_drink;
-            creators["no food"] = &TriggerContext::no_food;
-
             creators["panic"] = &TriggerContext::panic;
             creators["outnumbered"] = &TriggerContext::outnumbered;
             creators["behind target"] = &TriggerContext::behind_target;
@@ -318,8 +312,6 @@ namespace ai
         static Trigger* not_facing_target(PlayerbotAI* ai) { return new IsNotFacingTargetTrigger(ai); }
         static Trigger* panic(PlayerbotAI* ai) { return new PanicTrigger(ai); }
         static Trigger* outnumbered(PlayerbotAI* ai) { return new OutNumberedTrigger(ai); }
-        static Trigger* no_drink(PlayerbotAI* ai) { return new NoDrinkTrigger(ai); }
-        static Trigger* no_food(PlayerbotAI* ai) { return new NoFoodTrigger(ai); }
         static Trigger* LightAoe(PlayerbotAI* ai) { return new LightAoeTrigger(ai); }
         static Trigger* MediumAoe(PlayerbotAI* ai) { return new MediumAoeTrigger(ai); }
         static Trigger* HighAoe(PlayerbotAI* ai) { return new HighAoeTrigger(ai); }
@@ -331,6 +323,7 @@ namespace ai
         static Trigger* AlmostFullHealth(PlayerbotAI* ai) { return new AlmostFullHealthTrigger(ai); }
         static Trigger* CriticalHealth(PlayerbotAI* ai) { return new CriticalHealthTrigger(ai); }
         static Trigger* TargetCriticalHealth(PlayerbotAI* ai) { return new TargetCriticalHealthTrigger(ai); }
+        static Trigger* NoMana(PlayerbotAI* ai) { return new NoManaTrigger(ai); }
         static Trigger* LowMana(PlayerbotAI* ai) { return new LowManaTrigger(ai); }
         static Trigger* MediumMana(PlayerbotAI* ai) { return new MediumManaTrigger(ai); }
         static Trigger* HighMana(PlayerbotAI* ai) { return new HighManaTrigger(ai); }

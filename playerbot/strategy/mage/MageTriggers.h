@@ -11,67 +11,90 @@ namespace ai
     {
     public:
         BlinkTrigger(PlayerbotAI* ai) : Trigger(ai, "blink", 2) {}
+
         virtual bool IsActive()
         {
             return bot->HasAuraType(SPELL_AURA_MOD_ROOT) ||
-                bot->HasAuraType(SPELL_AURA_MOD_STUN);
+                   bot->HasAuraType(SPELL_AURA_MOD_STUN);
         }
     };
 
-    class ArcaneIntellectOnPartyTrigger : public BuffOnPartyTrigger {
+    class ArcaneIntellectOnPartyTrigger : public BuffOnPartyTrigger
+    {
     public:
         ArcaneIntellectOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane intellect", 4) {}
-
         virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("arcane brilliance", GetTarget()); }
     };
 
-    class ArcaneIntellectTrigger : public BuffTrigger {
+    class ArcaneIntellectTrigger : public BuffTrigger 
+    {
     public:
         ArcaneIntellectTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "arcane intellect", 4) {}
-
         virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("arcane brilliance", GetTarget()); }
     };
 
-    class ArcaneBrillianceOnPartyTrigger : public BuffOnPartyTrigger {
+    class ArcaneBrillianceOnPartyTrigger : public BuffOnPartyTrigger 
+    {
     public:
         ArcaneBrillianceOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane brilliance", 4) {}
 
-        virtual bool IsActive() {
+        virtual bool IsActive() 
+        {
             return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&
-                !ai->HasAura("arcane intellect", GetTarget()) &&
-#ifdef MANGOS
-                (ai->GetBot()->IsInSameGroupWith((Player*)GetTarget()) || ai->GetBot()->IsInSameRaidWith((Player*)GetTarget())) &&
-#endif
-#ifdef CMANGOS
-                bot->IsInGroup((Player*)GetTarget()) &&
-#endif
-                (ai->GetBuffedCount((Player*)GetTarget(), "arcane brilliance") + ai->GetBuffedCount((Player*)GetTarget(), "arcane intellect")) < 4;
-            ;
+                   !ai->HasAura("arcane intellect", GetTarget()) &&
+                   bot->IsInGroup((Player*)GetTarget()) &&
+                   (ai->GetBuffedCount((Player*)GetTarget(), "arcane brilliance") + ai->GetBuffedCount((Player*)GetTarget(), "arcane intellect")) < 4;
         }
     };
 
-    class MageArmorTrigger : public BuffTrigger {
+    class AnyMageArmorTrigger : public BuffTrigger 
+    {
+    public:
+        AnyMageArmorTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "any mage armor", 5) {}
+        virtual bool IsActive();
+    };
+
+    class MageArmorTrigger : public BuffTrigger
+    {
     public:
         MageArmorTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "mage armor", 5) {}
         virtual bool IsActive();
     };
 
-    class FireballTrigger : public DebuffTrigger {
+    class IceArmorTrigger : public BuffTrigger
+    {
+    public:
+        IceArmorTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "ice armor", 5) {}
+        virtual bool IsActive();
+    };
+
+    class MoltenArmorTrigger : public BuffTrigger
+    {
+    public:
+        MoltenArmorTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "molten armor", 5) {}
+        virtual bool IsActive();
+    };
+
+    class FireballTrigger : public DebuffTrigger 
+    {
     public:
         FireballTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "fireball") {}
 	};
 
-    class PyroblastTrigger : public DebuffTrigger {
+    class PyroblastTrigger : public DebuffTrigger 
+    {
     public:
         PyroblastTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "pyroblast", 10) {}
     };
 
-    class MissileBarrageTrigger : public HasAuraTrigger {
+    class MissileBarrageTrigger : public HasAuraTrigger 
+    {
     public:
         MissileBarrageTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "missile barrage") {}
     };
 
-    class ArcaneBlastTrigger : public BuffTrigger {
+    class ArcaneBlastTrigger : public BuffTrigger 
+    {
     public:
         ArcaneBlastTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "arcane blast") {}
     };
@@ -155,6 +178,7 @@ namespace ai
     {
     public:
         FireSpellsLocked(PlayerbotAI* ai) : Trigger(ai, "fire spells locked", 2) {}
+
         virtual bool IsActive()
         {
             return !bot->IsSpellReady(133)      //fireball
@@ -163,9 +187,6 @@ namespace ai
     };
 
     DEBUFF_TRIGGER_A(IceLanceTrigger, "ice lance");
-    
-
-#ifdef MANGOSBOT_TWO
     BUFF_TRIGGER(MirrorImageTrigger, "mirror image");
     BUFF_TRIGGER_A(HotStreakTrigger, "hot streak");
     BUFF_TRIGGER_A(FireballOrFrostfireBoltFreeTrigger, "fireball!");
@@ -291,30 +312,34 @@ namespace ai
             ""                              //No strategy required
         ) {}
     };
-#else
+
     class NoFireVulnerabilityTrigger : public Trigger
     {
     public:
         NoFireVulnerabilityTrigger(PlayerbotAI* ai) : Trigger(ai, "no fire vulnerability") {}
+
         virtual bool IsActive()
         {
-            //Required Improved Scorch talent
+            // Required Improved Scorch talent
             if (!bot->HasSpell(11095) && !bot->HasSpell(12872) && !bot->HasSpell(12873))
+            {
                 return false;
+            }
 
-            //Required non-player target which dont have max stacks of fire vulnerability expiring in less than 7 seconds
+            // Required non-player target which don't have max stacks of fire vulnerability expiring in less than 7 seconds
             Unit* target = GetTarget();
             if (target && (target->IsPlayer() || ai->HasAura("fire vulnerability", target, true, false, -1, false, 7000)))
+            {
                 return false;
+            }
 
             return true;
         }
         virtual string GetTargetName() { return "current target"; }
     };
-#endif
 
-#ifndef MANGOSBOT_ZERO
-    class LivingBombTrigger : public DebuffTrigger {
+    class LivingBombTrigger : public DebuffTrigger 
+    {
     public:
         LivingBombTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "living bomb") {}
     };
@@ -323,22 +348,60 @@ namespace ai
     {
     public:
         ColdSnapTrigger(PlayerbotAI* ai) : Trigger(ai, "cold snap", 2) {}
+
         virtual bool IsActive()
         {
             return !bot->IsSpellReady(12472)    //icy veins on cooldown
                 && bot->IsSpellReady(11958);    //cold snap not on cooldown
         }
     };
-#else
-    class ColdSnapTrigger : public Trigger
+
+    class NoFoodTrigger : public Trigger
     {
     public:
-        ColdSnapTrigger(PlayerbotAI* ai) : Trigger(ai, "cold snap", 2) {}
+        NoFoodTrigger(PlayerbotAI* ai) : Trigger(ai, "no food trigger", 5) {}
+
         virtual bool IsActive()
         {
-            return !bot->IsSpellReady(11958)    //Ice Block on cooldown
-                && bot->IsSpellReady(12472);    //Cold Snap not on cooldown
+            return !ai->HasCheat(BotCheatMask::item) && AI_VALUE2(list<Item*>, "inventory items", "conjured food").empty();
         }
     };
-#endif
+
+    class NoDrinkTrigger : public Trigger
+    {
+    public:
+        NoDrinkTrigger(PlayerbotAI* ai) : Trigger(ai, "no drink trigger", 5) {}
+
+        virtual bool IsActive()
+        {
+            return !ai->HasCheat(BotCheatMask::item) && AI_VALUE2(list<Item*>, "inventory items", "conjured water").empty();
+        }
+    };
+
+    class NoManaGemTrigger : public Trigger
+    {
+    public:
+        NoManaGemTrigger(PlayerbotAI* ai) : Trigger(ai, "no mana gem trigger", 5) {}
+
+        virtual bool IsActive()
+        {
+            if (!ai->HasCheat(BotCheatMask::item))
+            {
+                uint32 itemId = 0;
+                const uint32 level = bot->GetLevel();
+                const std::vector<uint32> manaGemIds = { 5514, 5513, 8007, 8008, 22044, 33312 };
+                for (const uint32 manaGemId : manaGemIds)
+                {
+                    if (bot->HasItemCount(manaGemId, 1))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+    };
 }

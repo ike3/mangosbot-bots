@@ -190,24 +190,6 @@ namespace ai
         float range;
     };
 
-    class NoFoodTrigger : public Trigger {
-    public:
-        NoFoodTrigger(PlayerbotAI* ai) : Trigger(ai, "no food trigger") {}
-        virtual bool IsActive()
-        {
-            return AI_VALUE2(list<Item*>, "inventory items", "conjured food").empty();
-        }
-    };
-
-    class NoDrinkTrigger : public Trigger {
-    public:
-        NoDrinkTrigger(PlayerbotAI* ai) : Trigger(ai, "no drink trigger") {}
-        virtual bool IsActive()
-        {
-            return AI_VALUE2(list<Item*>, "inventory items", "conjured water").empty();
-        }
-    };
-
     class LightAoeTrigger : public AoeTrigger
     {
     public:
@@ -230,6 +212,7 @@ namespace ai
     {
     public:
         BuffTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1, bool checkIsOwner = false) : SpellTrigger(ai, spell, checkInterval) { this->checkIsOwner = checkIsOwner; }
+
     public:
 		virtual string GetTargetName() { return "self target"; }
         virtual bool IsActive();
@@ -242,6 +225,7 @@ namespace ai
     {
     public:
         MyBuffTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1) : BuffTrigger(ai, spell, checkInterval) {}
+
     public:
         virtual bool IsActive();
     };
@@ -432,6 +416,14 @@ namespace ai
     public:
         virtual Value<Unit*>* GetTargetValue();
         virtual string getName() { return spell + " on snare target"; }
+    };
+
+    class NoManaTrigger : public Trigger
+    {
+    public:
+        NoManaTrigger(PlayerbotAI* ai) : Trigger(ai, "no mana") {}
+
+        virtual bool IsActive();
     };
 
 	class LowManaTrigger : public Trigger

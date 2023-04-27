@@ -7,6 +7,11 @@
 
 using namespace ai;
 
+bool NoManaTrigger::IsActive()
+{
+    return AI_VALUE2(bool, "has mana", "self target") && AI_VALUE2(uint8, "mana", "self target") < 5;
+}
+
 bool LowManaTrigger::IsActive()
 {
     return AI_VALUE2(bool, "has mana", "self target") && AI_VALUE2(uint8, "mana", "self target") < sPlayerbotAIConfig.lowMana;
@@ -26,7 +31,6 @@ bool AlmostFullManaTrigger::IsActive()
 {
     return AI_VALUE2(bool, "has mana", "self target") && AI_VALUE2(uint8, "mana", "self target") > 85;
 }
-
 
 bool RageAvailable::IsActive()
 {
@@ -587,9 +591,12 @@ bool InPvpTrigger::IsActive()
         const bool inDuel = bot->duel && bot->duel->opponent;
         if (!inDuel)
         {
-            const Map* map = bot->GetMap();
-            const bool inBattleground = map ? map->IsBattleGround() : false;
-            if (!inBattleground)
+            const bool inBattleground = bot->InBattleGround();
+            bool inArena = false;
+#ifndef MANGOSBOT_ZERO
+            inArena = bot->InArena();
+#endif
+            if (!inBattleground && !inArena)
             {
                 const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
                 if (!isPlayerNear)
@@ -645,9 +652,12 @@ bool InPveTrigger::IsActive()
         const bool inDuel = bot->duel && bot->duel->opponent;
         if (!inDuel)
         {
-            const Map* map = bot->GetMap();
-            const bool inBattleground = map ? map->IsBattleGround() : false;
-            if (!inBattleground)
+            const bool inBattleground = bot->InBattleGround();
+            bool inArena = false;
+#ifndef MANGOSBOT_ZERO
+            inArena = bot->InArena();
+#endif
+            if (!inBattleground && !inArena)
             {
                 const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
                 if (!isPlayerNear)
@@ -670,9 +680,12 @@ bool InRaidFightTrigger::IsActive()
         const bool inDuel = bot->duel && bot->duel->opponent;
         if (!inDuel)
         {
-            const Map* map = bot->GetMap();
-            const bool inBattleground = map ? map->IsBattleGround() : false;
-            if (!inBattleground)
+            const bool inBattleground = bot->InBattleGround();
+            bool inArena = false;
+#ifndef MANGOSBOT_ZERO
+            inArena = bot->InArena();
+#endif
+            if (!inBattleground && !inArena)
             {
                 const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
                 if (!isPlayerNear)

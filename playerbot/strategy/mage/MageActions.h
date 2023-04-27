@@ -2,6 +2,7 @@
 
 #include "../../ServerFacade.h"
 #include "../actions/GenericActions.h"
+#include "../actions/UseItemAction.h"
 
 namespace ai
 {
@@ -148,6 +149,68 @@ namespace ai
 		CastConjureWaterAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "conjure water") {}
 	};
 
+    class CastConjureManaGemAction : public Action
+    {
+    public:
+        CastConjureManaGemAction(PlayerbotAI* ai) : Action(ai, "conjure mana gem") {}
+
+        bool Execute(Event& event) override
+        {
+            uint32 spellDuration = sPlayerbotAIConfig.globalCoolDown;
+            if (ai->CastSpell(spellId, bot, nullptr, false, &spellDuration))
+            {
+                if (ai->HasCheat(BotCheatMask::attackspeed))
+                {
+                    spellDuration = 1;
+                }
+
+                SetDuration(spellDuration);
+                return true;
+            }
+
+            return false;
+        }
+
+        bool isPossible() override 
+        { 
+            if (!ai->HasCheat(BotCheatMask::item))
+            {
+                const uint32 level = bot->GetLevel();
+                if (level >= 28 && level < 38)
+                {
+                    spellId = 759;
+                }
+                else if (level >= 38 && level < 48)
+                {
+                    spellId = 3552;
+                }
+                else if (level >= 48 && level < 58)
+                {
+                    spellId = 10053;
+                }
+                else if (level >= 58 && level < 68)
+                {
+                    spellId = 10054;
+                }
+                else if (level >= 68 && level < 77)
+                {
+                    spellId = 27101;
+                }
+                else if (level >= 77)
+                {
+                    spellId = 42985;
+                }
+
+                return ai->CanCastSpell(spellId, bot, 0);
+            }
+
+            return false;
+        }
+
+    private:
+        uint32 spellId;
+    };
+
 	class CastIceBlockAction : public CastBuffSpellAction
     {
 	public:
@@ -210,6 +273,12 @@ namespace ai
 	    CastInvisibilityAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "invisibility") {}
 	};
 
+    class CastLesserInvisibilityAction : public CastBuffSpellAction
+    {
+    public:
+        CastLesserInvisibilityAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "lesser invisibility") {}
+    };
+
 	class CastEvocationAction : public CastSpellAction
 	{
 	public:
@@ -253,9 +322,8 @@ namespace ai
         CastConeOfColdAction(PlayerbotAI* ai) : CastMeleeAoeSpellAction(ai, "cone of cold", 10.0f) {}
     };
     
-    BUFF_ACTION(CastSummonWaterElementalAction, "summon water elemental");
+    BUFF_ACTION(CastSummonWaterElementalAction, "summon water frost");
 
-#ifndef MANGOSBOT_ZERO
     class CastDragonsBreathAction : public CastMeleeAoeSpellAction
     {
     public:
@@ -273,9 +341,7 @@ namespace ai
     public:
         CastLivingBombAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "living bomb") {}
     };
-#endif
 
-#ifdef MANGOSBOT_TWO
     class CastFrostfireBoltAction : public CastSpellAction
     {
     public:
@@ -298,6 +364,7 @@ namespace ai
     {
     public:
         LearnGlyphOfFireballAction(PlayerbotAI* ai) : Action(ai, "learn glyph of fireball") {}
+
         virtual bool Execute(Event& event)
         {
             bot->learnSpell(56975, false);
@@ -314,6 +381,7 @@ namespace ai
     {
     public:
         RemoveGlyphOfFireballAction(PlayerbotAI* ai) : Action(ai, "remove glyph of fireball") {}
+
         virtual bool Execute(Event& event)
         {
             bot->removeSpell(56975);
@@ -330,6 +398,7 @@ namespace ai
     {
     public:
         LearnGlyphOfFrostboltAction(PlayerbotAI* ai) : Action(ai, "learn glyph of frostbolt") {}
+
         virtual bool Execute(Event& event)
         {
             bot->learnSpell(56370, false);
@@ -346,6 +415,7 @@ namespace ai
     {
     public:
         RemoveGlyphOfFrostboltAction(PlayerbotAI* ai) : Action(ai, "remove glyph of frostbolt") {}
+
         virtual bool Execute(Event& event)
         {
             bot->removeSpell(56370);
@@ -362,6 +432,7 @@ namespace ai
     {
     public:
         LearnGlyphOfLivingBombAction(PlayerbotAI* ai) : Action(ai, "learn glyph of living bomb") {}
+
         virtual bool Execute(Event& event)
         {
             bot->learnSpell(64275, false);
@@ -378,6 +449,7 @@ namespace ai
     {
     public:
         RemoveGlyphOfLivingBombAction(PlayerbotAI* ai) : Action(ai, "remove glyph of living bomb") {}
+
         virtual bool Execute(Event& event)
         {
             bot->removeSpell(64275);
@@ -394,6 +466,7 @@ namespace ai
     {
     public:
         LearnGlyphOfMirrorImageAction(PlayerbotAI* ai) : Action(ai, "learn glyph of mirror image") {}
+
         virtual bool Execute(Event& event)
         {
             bot->learnSpell(63093, false);
@@ -410,6 +483,7 @@ namespace ai
     {
     public:
         RemoveGlyphOfMirrorImageAction(PlayerbotAI* ai) : Action(ai, "remove glyph of mirror image") {}
+
         virtual bool Execute(Event& event)
         {
             bot->removeSpell(63093);
@@ -426,6 +500,7 @@ namespace ai
     {
     public:
         LearnGlyphOfMoltenArmorAction(PlayerbotAI* ai) : Action(ai, "learn glyph of molten armor") {}
+
         virtual bool Execute(Event& event)
         {
             bot->learnSpell(42751, false);
@@ -442,6 +517,7 @@ namespace ai
     {
     public:
         RemoveGlyphOfMoltenArmorAction(PlayerbotAI* ai) : Action(ai, "remove glyph of molten armor") {}
+
         virtual bool Execute(Event& event)
         {
             bot->removeSpell(42751);
@@ -453,5 +529,276 @@ namespace ai
             return true;
         }
     };
-#endif
+
+    class UseManaGemAction : public UseItemIdAction
+    {
+    public:
+        UseManaGemAction(PlayerbotAI* ai) : UseItemIdAction(ai, "mana gem") {}
+
+        uint32 GetItemId() override
+        {
+            uint32 itemId = 0;
+            if (ai->HasCheat(BotCheatMask::item))
+            {
+                const uint32 level = bot->GetLevel();
+                if (level >= 28 && level < 38)
+                {
+                    itemId = 5514;
+                }
+                else if (level >= 38 && level < 48)
+                {
+                    itemId = 5513;
+                }
+                else if (level >= 48 && level < 58)
+                {
+                    itemId = 8007;
+                }
+                else if (level >= 58 && level < 68)
+                {
+                    itemId = 8008;
+                }
+                else if (level >= 68 && level < 77)
+                {
+                    itemId = 22044;
+                }
+                else if (level >= 77)
+                {
+                    itemId = 33312;
+                }
+            }
+            else
+            {
+                const std::vector<uint32> manaGemIds = { 5514, 5513, 8007, 8008, 22044, 33312 };
+                for (const uint32 manaGemId : manaGemIds)
+                {
+                    if (bot->HasItemCount(manaGemId, 1))
+                    {
+                        itemId = manaGemId;
+                        break;
+                    }
+                }
+            }
+
+            return itemId;
+        }
+    };
+
+    class UpdateMagePveStrategiesAction : public UpdateStrategyDependenciesAction
+    {
+    public:
+        UpdateMagePveStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update pve strats")
+        {
+            std::vector<std::string> strategiesRequired = { "frost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "frost pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "frost pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "frost pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "frost pve", strategiesRequired);
+
+            strategiesRequired = { "frost", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe frost pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe frost pve", strategiesRequired);
+
+            strategiesRequired = { "frost", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure frost pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure frost pve", strategiesRequired);
+
+            strategiesRequired = { "frost", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff frost pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff frost pve", strategiesRequired);
+
+            strategiesRequired = { "frost", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc frost pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc frost pve", strategiesRequired);
+
+            strategiesRequired = { "fire" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "fire pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "fire pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "fire pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "fire pve", strategiesRequired);
+
+            strategiesRequired = { "fire", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe fire pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe fire pve", strategiesRequired);
+
+            strategiesRequired = { "fire", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure fire pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure fire pve", strategiesRequired);
+
+            strategiesRequired = { "fire", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff fire pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff fire pve", strategiesRequired);
+
+            strategiesRequired = { "fire", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc fire pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc fire pve", strategiesRequired);
+
+            strategiesRequired = { "arcane" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "arcane pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "arcane pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "arcane pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "arcane pve", strategiesRequired);
+
+            strategiesRequired = { "arcane", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe arcane pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe arcane pve", strategiesRequired);
+
+            strategiesRequired = { "arcane", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure arcane pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure arcane pve", strategiesRequired);
+
+            strategiesRequired = { "arcane", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff arcane pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff arcane pve", strategiesRequired);
+
+            strategiesRequired = { "arcane", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc arcane pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc arcane pve", strategiesRequired);
+        }
+    };
+
+    class UpdateMagePvpStrategiesAction : public UpdateStrategyDependenciesAction
+    {
+    public:
+        UpdateMagePvpStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update pvp strats")
+        {
+            std::vector<std::string> strategiesRequired = { "frost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "frost pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "frost pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "frost pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "frost pvp", strategiesRequired);
+
+            strategiesRequired = { "frost", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe frost pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe frost pvp", strategiesRequired);
+
+            strategiesRequired = { "frost", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure frost pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure frost pvp", strategiesRequired);
+
+            strategiesRequired = { "frost", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff frost pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff frost pvp", strategiesRequired);
+
+            strategiesRequired = { "frost", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc frost pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc frost pvp", strategiesRequired);
+
+            strategiesRequired = { "fire" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "fire pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "fire pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "fire pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "fire pvp", strategiesRequired);
+
+            strategiesRequired = { "fire", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe fire pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe fire pvp", strategiesRequired);
+
+            strategiesRequired = { "fire", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure fire pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure fire pvp", strategiesRequired);
+
+            strategiesRequired = { "fire", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff fire pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff fire pvp", strategiesRequired);
+
+            strategiesRequired = { "fire", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc fire pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc fire pvp", strategiesRequired);
+
+            strategiesRequired = { "arcane" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "arcane pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "arcane pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "arcane pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "arcane pvp", strategiesRequired);
+
+            strategiesRequired = { "arcane", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe arcane pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe arcane pvp", strategiesRequired);
+
+            strategiesRequired = { "arcane", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure arcane pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure arcane pvp", strategiesRequired);
+
+            strategiesRequired = { "arcane", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff arcane pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff arcane pvp", strategiesRequired);
+
+            strategiesRequired = { "arcane", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc arcane pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc arcane pvp", strategiesRequired);
+        }
+    };
+
+    class UpdateMageRaidStrategiesAction : public UpdateStrategyDependenciesAction
+    {
+    public:
+        UpdateMageRaidStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update raid strats")
+        {
+            std::vector<std::string> strategiesRequired = { "frost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "frost raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "frost raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "frost raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "frost raid", strategiesRequired);
+
+            strategiesRequired = { "frost", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe frost raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe frost raid", strategiesRequired);
+
+            strategiesRequired = { "frost", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure frost raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure frost raid", strategiesRequired);
+
+            strategiesRequired = { "frost", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff frost raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff frost raid", strategiesRequired);
+
+            strategiesRequired = { "frost", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc frost raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc frost raid", strategiesRequired);
+
+            strategiesRequired = { "fire" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "fire raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "fire raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "fire raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "fire raid", strategiesRequired);
+
+            strategiesRequired = { "fire", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe fire raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe fire raid", strategiesRequired);
+
+            strategiesRequired = { "fire", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure fire raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure fire raid", strategiesRequired);
+
+            strategiesRequired = { "fire", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff fire raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff fire raid", strategiesRequired);
+
+            strategiesRequired = { "fire", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc fire raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc fire raid", strategiesRequired);
+
+            strategiesRequired = { "arcane" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "arcane raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "arcane raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "arcane raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "arcane raid", strategiesRequired);
+
+            strategiesRequired = { "arcane", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe arcane raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe arcane raid", strategiesRequired);
+
+            strategiesRequired = { "arcane", "cure" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure arcane raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure arcane raid", strategiesRequired);
+
+            strategiesRequired = { "arcane", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff arcane raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff arcane raid", strategiesRequired);
+
+            strategiesRequired = { "arcane", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc arcane raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc arcane raid", strategiesRequired);
+        }
+    };
 }
