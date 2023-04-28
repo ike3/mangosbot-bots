@@ -2457,20 +2457,28 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
 
 bool PlayerbotAI::HasAura(uint32 spellId, const Unit* unit)
 {
-	if (!spellId || !unit)
-		return false;
-
-	for (uint32 effect = EFFECT_INDEX_0; effect <= EFFECT_INDEX_2; effect++)
-	{
-		Aura* aura = ((Unit*)unit)->GetAura(spellId, (SpellEffectIndex)effect);
-
-		if (IsRealAura(bot, aura, (Unit*)unit))
-			return true;
-	}
-
-	return false;
+    Aura* aura = GetAura(spellId, unit);
+    return aura != nullptr;
 }
 
+Aura* PlayerbotAI::GetAura(uint32 spellId, const Unit* unit)
+{
+    Aura* aura = nullptr;
+    if (!spellId || !unit)
+        return false;
+
+    for (uint32 effect = EFFECT_INDEX_0; effect <= EFFECT_INDEX_2; effect++)
+    {
+        Aura* auraTmp = ((Unit*)unit)->GetAura(spellId, (SpellEffectIndex)effect);
+        if (IsRealAura(bot, auraTmp, (Unit*)unit))
+        {
+            aura = auraTmp;
+            break;
+        }
+    }
+
+    return aura;
+}
 
 bool PlayerbotAI::HasAnyAuraOf(Unit* player, ...)
 {

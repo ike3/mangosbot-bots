@@ -383,6 +383,7 @@ public:
     bool HasSpell(string name) const;
     bool HasSpell(uint32 spellid) const;
     bool HasAura(uint32 spellId, const Unit* player);
+    Aura* GetAura(uint32 spellId, const Unit* player);
 
     virtual bool CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget = NULL, bool ignoreRange = false);
     bool CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell = true, Item* itemTarget = NULL, bool ignoreRange = false);

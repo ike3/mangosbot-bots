@@ -320,21 +320,37 @@ namespace ai
 
         virtual bool IsActive()
         {
-            // Required Improved Scorch talent
-            if (!bot->HasSpell(11095) && !bot->HasSpell(12872) && !bot->HasSpell(12873))
-            {
-                return false;
-            }
-
-            // Required non-player target which don't have max stacks of fire vulnerability expiring in less than 7 seconds
+            // Required non-player target
             Unit* target = GetTarget();
-            if (target && (target->IsPlayer() || ai->HasAura("fire vulnerability", target, true, false, -1, false, 7000)))
+            if (target && !target->IsPlayer())
             {
-                return false;
+                // Required Improved Scorch talent
+                if (bot->HasSpell(11095) || bot->HasSpell(12872) || bot->HasSpell(12873))
+                {
+                    // Check if have max stacks of fire vulnerability expiring in less than 7 seconds
+                    Aura* aura = ai->GetAura(22959, target);
+                    if (aura)
+                    {
+                        // Check if the stack is at the maximum
+                        const uint32 maxStackAmount = aura->GetSpellProto()->StackAmount;
+                        const uint32 stackAmount = aura->GetHolder()->GetStackAmount();
+                        if (stackAmount >= maxStackAmount)
+                        {
+                            // Check if the aura is about to expire
+                            if (aura->GetHolder()->GetAuraDuration() > 7000)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                    return true;
+                }                    
             }
 
-            return true;
+            return false;
         }
+
         virtual string GetTargetName() { return "current target"; }
     };
 
