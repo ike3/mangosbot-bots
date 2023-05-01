@@ -34,7 +34,7 @@ void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "no fire vulnerability",
-        NextAction::array(0, new NextAction("scorch", ACTION_NORMAL + 4), NULL)));
+        NextAction::array(0, new NextAction("scorch", ACTION_NORMAL + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "pyroblast",

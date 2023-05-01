@@ -179,7 +179,7 @@ void MageRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "has aggro",
-        NextAction::array(0, new NextAction("shoot", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("shoot", ACTION_HIGH + 9), NULL)));
 }
 
 void MageRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

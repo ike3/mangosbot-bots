@@ -451,12 +451,20 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
         case CLASS_WARLOCK:
         {
-            if (player->GetLevel() > 19)
+            if (tab == 0)
             {
-                engine->addStrategy("dps debuff");
+                engine->addStrategy("affliction");
+            }
+            else if (tab == 1)
+            {
+                engine->addStrategy("demonology");
+            }
+            else
+            {
+                engine->addStrategy("destruction");
             }
 
-            engine->addStrategies("dps assist", "dps", "flee", "ranged", "cc", "pet", "threat", "aoe", NULL);
+            engine->addStrategies("dps assist", "flee", "ranged", "cc", "pet", "threat", "aoe", "buff", "curse", NULL);
             break;
         }
 
@@ -695,7 +703,26 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
 
             nonCombatEngine->addStrategies("dps assist", "poisons", "stealth", "buff", NULL);
             break;
-    }
+        }
+
+        case CLASS_WARLOCK:
+        {
+            if (tab == 0)
+            {
+                nonCombatEngine->addStrategy("affliction");
+            }
+            else if (tab == 1)
+            {
+                nonCombatEngine->addStrategy("demonology");
+            }
+            else
+            {
+                nonCombatEngine->addStrategy("destruction");
+            }
+
+            nonCombatEngine->addStrategies("dps assist", "pet", "buff", NULL);
+            break;
+        }
 
         case CLASS_MAGE:
         {
@@ -741,12 +768,6 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategy("dps assist");
             }
 
-            break;
-        }
-
-        case CLASS_WARLOCK:
-        {
-            nonCombatEngine->addStrategies("pet", "dps assist", NULL);
             break;
         }
 
@@ -1006,6 +1027,24 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
             break;
         }
 
+        case CLASS_WARLOCK:
+        {
+            if (tab == 0)
+            {
+                deadEngine->addStrategy("affliction");
+            }
+            else if (tab == 1)
+            {
+                deadEngine->addStrategy("demonology");
+            }
+            else
+            {
+                deadEngine->addStrategy("destruction");
+            }
+
+            break;
+        }
+
         case CLASS_MAGE:
         {
             if (tab == 0)
@@ -1071,6 +1110,24 @@ void AiFactory::AddDefaultReactionStrategies(Player* player, PlayerbotAI* const 
             else
             {
                 reactionEngine->addStrategy("combat");
+            }
+
+            break;
+        }
+
+        case CLASS_WARLOCK:
+        {
+            if (tab == 0)
+            {
+                reactionEngine->addStrategy("affliction");
+            }
+            else if (tab == 1)
+            {
+                reactionEngine->addStrategy("demonology");
+            }
+            else
+            {
+                reactionEngine->addStrategy("destruction");
             }
 
             break;

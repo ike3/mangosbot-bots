@@ -299,7 +299,8 @@ namespace ai
         virtual bool IsActive();
     };
 
-    class TargetInSightTrigger : public Trigger {
+    class TargetInSightTrigger : public Trigger 
+    {
     public:
         TargetInSightTrigger(PlayerbotAI* ai) : Trigger(ai, "target in sight") {}
         virtual bool IsActive() { return AI_VALUE(Unit*, "grind target"); }

@@ -177,7 +177,7 @@ bool AoeTrigger::IsActive()
 
 bool DebuffTrigger::IsActive()
 {
-    return BuffTrigger::IsActive() && AI_VALUE2(uint8, "health", GetTargetName()) > 15;
+    return BuffTrigger::IsActive() && AI_VALUE2(uint8, "health", GetTargetName()) > 5;
 }
 
 bool SpellTrigger::IsActive()
@@ -616,7 +616,7 @@ bool InRaidFight(PlayerbotAI* ai)
 {
     bool inRaidFight = false;
     const Map* map = ai->GetBot()->GetMap();
-    if (map && map->IsRaid())
+    if (map && (map->IsDungeon()|| map->IsRaid()))
     {
         inRaidFight = true;
     }

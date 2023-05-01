@@ -3,38 +3,45 @@
 
 namespace ai
 {
-    class MageAoePlaceholderStrategy : public AoePlaceholderStrategy
+    class WarlockAoePlaceholderStrategy : public AoePlaceholderStrategy
     {
     public:
-        MageAoePlaceholderStrategy(PlayerbotAI* ai) : AoePlaceholderStrategy(ai) {}
+        WarlockAoePlaceholderStrategy(PlayerbotAI* ai) : AoePlaceholderStrategy(ai) {}
         string getName() override { return "aoe"; }
     };
 
-    class MageBuffPlaceholderStrategy : public BuffPlaceholderStrategy
+    class WarlockBuffPlaceholderStrategy : public BuffPlaceholderStrategy
     {
     public:
-        MageBuffPlaceholderStrategy(PlayerbotAI* ai) : BuffPlaceholderStrategy(ai) {}
+        WarlockBuffPlaceholderStrategy(PlayerbotAI* ai) : BuffPlaceholderStrategy(ai) {}
         string getName() override { return "buff"; }
     };
 
-    class MageCcPlaceholderStrategy : public CcPlaceholderStrategy
+    class WarlockCcPlaceholderStrategy : public CcPlaceholderStrategy
     {
     public:
-        MageCcPlaceholderStrategy(PlayerbotAI* ai) : CcPlaceholderStrategy(ai) {}
+        WarlockCcPlaceholderStrategy(PlayerbotAI* ai) : CcPlaceholderStrategy(ai) {}
         string getName() override { return "cc"; }
     };
 
-    class MageCurePlaceholderStrategy : public CurePlaceholderStrategy
+    class WarlockPetPlaceholderStrategy : public PlaceholderStrategy
     {
     public:
-        MageCurePlaceholderStrategy(PlayerbotAI* ai) : CurePlaceholderStrategy(ai) {}
-        string getName() override { return "cure"; }
+        WarlockPetPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
+        string getName() override { return "pet"; }
     };
 
-    class MageStrategy : public ClassStrategy
+    class WarlockCursePlaceholderStrategy : public PlaceholderStrategy
     {
     public:
-        MageStrategy(PlayerbotAI* ai);
+        WarlockCursePlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
+        string getName() override { return "curse"; }
+    };
+
+    class WarlockStrategy : public ClassStrategy
+    {
+    public:
+        WarlockStrategy(PlayerbotAI* ai);
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
@@ -43,7 +50,7 @@ namespace ai
         virtual void InitDeadTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class MagePvpStrategy : public ClassPvpStrategy
+    class WarlockPvpStrategy : public ClassPvpStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -52,7 +59,7 @@ namespace ai
         static void InitDeadTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MagePveStrategy : public ClassPveStrategy
+    class WarlockPveStrategy : public ClassPveStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -61,7 +68,7 @@ namespace ai
         static void InitDeadTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageRaidStrategy : public ClassRaidStrategy
+    class WarlockRaidStrategy : public ClassRaidStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -70,127 +77,194 @@ namespace ai
         static void InitDeadTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageAoeStrategy : public AoeStrategy
+    class WarlockAoeStrategy : public AoeStrategy
     {
     public:
-        MageAoeStrategy(PlayerbotAI* ai) : AoeStrategy(ai) {}
+        WarlockAoeStrategy(PlayerbotAI* ai) : AoeStrategy(ai) {}
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class MageAoePvpStrategy : public AoePvpStrategy
+    class WarlockAoePvpStrategy : public AoePvpStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageAoePveStrategy : public AoePveStrategy
+    class WarlockAoePveStrategy : public AoePveStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageAoeRaidStrategy : public AoeRaidStrategy
+    class WarlockAoeRaidStrategy : public AoeRaidStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageBuffStrategy : public BuffStrategy
+    class WarlockBuffStrategy : public BuffStrategy
     {
     public:
-        MageBuffStrategy(PlayerbotAI* ai) : BuffStrategy(ai) {}
+        WarlockBuffStrategy(PlayerbotAI* ai) : BuffStrategy(ai) {}
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class MageBuffPvpStrategy : public BuffPvpStrategy
+    class WarlockBuffPvpStrategy : public BuffPvpStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageBuffPveStrategy : public BuffPveStrategy
+    class WarlockBuffPveStrategy : public BuffPveStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageBuffRaidStrategy : public BuffRaidStrategy
+    class WarlockBuffRaidStrategy : public BuffRaidStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageCcStrategy : public CcStrategy
+    class WarlockCcStrategy : public CcStrategy
     {
     public:
-        MageCcStrategy(PlayerbotAI* ai) : CcStrategy(ai) {}
+        WarlockCcStrategy(PlayerbotAI* ai) : CcStrategy(ai) {}
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class MageCcPvpStrategy : public CcPvpStrategy
+    class WarlockCcPvpStrategy : public CcPvpStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageCcPveStrategy : public CcPveStrategy
+    class WarlockCcPveStrategy : public CcPveStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageCcRaidStrategy : public CcRaidStrategy
+    class WarlockCcRaidStrategy : public CcRaidStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageCureStrategy : public CureStrategy
+    class WarlockPetStrategy : public Strategy
     {
     public:
-        MageCureStrategy(PlayerbotAI* ai) : CureStrategy(ai) {}
+        WarlockPetStrategy(PlayerbotAI* ai) : Strategy(ai) {}
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class MageCurePvpStrategy : public CurePvpStrategy
+    class WarlockPetPvpStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageCurePveStrategy : public CurePveStrategy
+    class WarlockPetPveStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class MageCureRaidStrategy : public CureRaidStrategy
+    class WarlockPetRaidStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class WarlockCursesStrategy : public Strategy
+    {
+    public:
+        WarlockCursesStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class WarlockCursesPvpStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class WarlockCursesPveStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class WarlockCursesRaidStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class WarlockManualPetStrategy : public Strategy
+    {
+    public:
+        WarlockManualPetStrategy(PlayerbotAI* ai, std::string inName, std::string inTriggerName, std::string inActionName)
+        : Strategy(ai) 
+        , name(inName)
+        , triggerName(inTriggerName)
+        , actionName(inActionName) {}
+
+        string getName() override { return name; }
+
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+
+    private:
+        std::string name;
+        std::string triggerName;
+        std::string actionName;
+    };
+
+    class WarlockManualCurseStrategy : public Strategy
+    {
+    public:
+        WarlockManualCurseStrategy(PlayerbotAI* ai, std::string inName, std::string inTriggerName, std::string inActionName)
+        : Strategy(ai) 
+        , name(inName)
+        , triggerName(inTriggerName)
+        , actionName(inActionName) {}
+
+        string getName() override { return name; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+
+    private:
+        std::string name;
+        std::string triggerName;
+        std::string actionName;
     };
 }

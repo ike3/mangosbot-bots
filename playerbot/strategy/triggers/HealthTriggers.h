@@ -7,13 +7,17 @@ namespace ai
     class ValueInRangeTrigger : public Trigger
     {
     public:
-        ValueInRangeTrigger(PlayerbotAI* ai, string name, float maxValue, float minValue) : Trigger(ai, name) {
+        ValueInRangeTrigger(PlayerbotAI* ai, string name, float maxValue, float minValue) : Trigger(ai, name) 
+        {
             this->maxValue = maxValue;
             this->minValue = minValue;
         }
+
     public:
         virtual float GetValue() = 0;
-        virtual bool IsActive() {
+
+        virtual bool IsActive() 
+        {
             float value = GetValue();
             return value < maxValue && value >= minValue;
         }
@@ -25,8 +29,7 @@ namespace ai
 	class HealthInRangeTrigger : public ValueInRangeTrigger
 	{
 	public:
-		HealthInRangeTrigger(PlayerbotAI* ai, string name, float maxValue, float minValue = 0) :
-		  ValueInRangeTrigger(ai, name, maxValue, minValue) {}
+		HealthInRangeTrigger(PlayerbotAI* ai, string name, float maxValue, float minValue = 0) : ValueInRangeTrigger(ai, name, maxValue, minValue) {}
 
 		virtual bool IsActive()
 		{
