@@ -177,7 +177,29 @@ bool AoeTrigger::IsActive()
 
 bool DebuffTrigger::IsActive()
 {
-    return BuffTrigger::IsActive() && AI_VALUE2(uint8, "health", GetTargetName()) > 5;
+    Unit* target = GetTarget();
+    if(target && target->IsAlive())
+    {
+        if (!ai->HasAura(spell, target, false, checkIsOwner))
+        {
+            bool valid = true;
+
+#ifndef MANGOSBOT_TWO
+            uint32 debuffLimit = 100;
+#ifdef MANGOSBOT_ONE
+            debuffLimit = 16;
+#else
+            debuffLimit = 40;
+#endif
+            std::vector<Aura*> auras = ai->GetAuras(target);
+            valid = auras.size() < debuffLimit;
+#endif
+
+            return valid;
+        }
+    }
+
+    return false;
 }
 
 bool SpellTrigger::IsActive()
