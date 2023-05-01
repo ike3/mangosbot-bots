@@ -12,21 +12,11 @@ public:
         creators["healthstone"] = &healthstone;
         creators["healing potion"] = &healing_potion;
     }
+
 private:
-    static ActionNode* healthstone(PlayerbotAI* ai)
-    {
-        return new ActionNode("healthstone",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("healing potion"), NULL),
-            /*C*/ NULL);
-    }
-    static ActionNode* healing_potion(PlayerbotAI* ai)
-    {
-        return new ActionNode("healing potion",
-            /*P*/ NULL,
-            /*A*/ NextAction::array(0, new NextAction("use bandage"), NULL),
-            /*C*/ NULL);
-    }
+    ACTION_NODE_A(healthstone, "healthstone", "healing potion");
+
+    ACTION_NODE_A(healing_potion, "healing potion", "use bandage");
 };
 
 UsePotionsStrategy::UsePotionsStrategy(PlayerbotAI* ai) : Strategy(ai)
@@ -38,7 +28,7 @@ void UsePotionsStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "critical health",
-        NextAction::array(0, new NextAction("healthstone", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("healthstone", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low health",

@@ -2455,13 +2455,13 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
     return false;
 }
 
-bool PlayerbotAI::HasAura(uint32 spellId, const Unit* unit)
+bool PlayerbotAI::HasAura(uint32 spellId, Unit* unit, bool checkOwner)
 {
-    Aura* aura = GetAura(spellId, unit);
+    Aura* aura = GetAura(spellId, unit, checkOwner);
     return aura != nullptr;
 }
 
-Aura* PlayerbotAI::GetAura(uint32 spellId, const Unit* unit)
+Aura* PlayerbotAI::GetAura(uint32 spellId, Unit* unit, bool checkIsOwner)
 {
     Aura* aura = nullptr;
     if (!spellId || !unit)
@@ -2472,12 +2472,86 @@ Aura* PlayerbotAI::GetAura(uint32 spellId, const Unit* unit)
         Aura* auraTmp = ((Unit*)unit)->GetAura(spellId, (SpellEffectIndex)effect);
         if (IsRealAura(bot, auraTmp, (Unit*)unit))
         {
-            aura = auraTmp;
-            break;
+            if(checkIsOwner)
+            {
+                if(aura->GetHolder() && aura->GetHolder()->GetCasterGuid() == bot->GetObjectGuid())
+                {
+                    aura = auraTmp;
+                    break;
+                }
+            }
+            else
+            {
+                aura = auraTmp;
+                break;
+            }
         }
     }
 
     return aura;
+}
+
+Aura* PlayerbotAI::GetAura(std::string name, Unit* unit, bool checkIsOwner)
+{
+    if (name.empty() || !unit)
+        return false;
+
+    wstring wnamepart;
+
+    vector<uint32> ids = chatHelper.SpellIds(name);
+
+    if (ids.empty())
+    {
+        //sLog.outError("Please add %s to spell list", name.c_str());
+        if (!Utf8toWStr(name, wnamepart))
+            return 0;
+
+        wstrToLower(wnamepart);
+    }
+
+    for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
+    {
+        Unit::AuraList const& auras = unit->GetAurasByType((AuraType)auraType);
+
+        if (auras.empty())
+            continue;
+
+        for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
+        {
+            Aura* aura = *i;
+            if (!aura)
+                continue;
+
+            if (ids.empty())
+            {
+                const string auraName = aura->GetSpellProto()->SpellName[0];
+                if (auraName.empty() || auraName.length() != wnamepart.length() || !Utf8FitTo(auraName, wnamepart))
+                    continue;
+            }
+            else
+            {
+                if (std::find(ids.begin(), ids.end(), aura->GetSpellProto()->Id) == ids.end())
+                    continue;
+            }
+
+            if (IsRealAura(bot, aura, unit))
+            {
+                if (checkIsOwner && aura->GetHolder())
+                {
+                    if (aura->GetHolder()->GetCasterGuid() == bot->GetObjectGuid())
+                    {
+                        return aura;
+                    }
+                }
+                else
+                {
+                    return aura;
+                }
+            }
+        }
+    }
+
+    return nullptr;
 }
 
 bool PlayerbotAI::HasAnyAuraOf(Unit* player, ...)
@@ -2623,12 +2697,12 @@ bool PlayerbotAI::HasSpell(uint32 spellid) const
     return false;
 }
 
-bool PlayerbotAI::CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget, bool ignoreRange)
+bool PlayerbotAI::CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget, bool ignoreRange, bool ignoreReagents)
 {
-    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, 0, true, itemTarget, ignoreRange);
+    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, 0, true, itemTarget, ignoreRange, ignoreReagents);
 }
 
-bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange)
+bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange, bool ignoreReagents)
 {
     if (!spellid)
         return false;
@@ -2723,12 +2797,14 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
     case SPELL_FAILED_OUT_OF_RANGE:
     case SPELL_FAILED_LINE_OF_SIGHT:
         return ignoreRange;
+    case SPELL_FAILED_REAGENTS:
+        return ignoreReagents;
     default:
         return false;
     }
 }
 
-bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effectMask, bool checkHasSpell, bool ignoreRange)
+bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effectMask, bool checkHasSpell, bool ignoreRange, bool ignoreReagents)
 {
     if (!spellid)
         return false;
@@ -2794,12 +2870,14 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effec
         return true;
     case SPELL_FAILED_OUT_OF_RANGE:
         return ignoreRange;
+    case SPELL_FAILED_REAGENTS:
+        return ignoreReagents;
     default:
         return false;
     }
 }
 
-bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange)
+bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange, bool ignoreReagents)
 {
     if (!spellid)
         return false;
@@ -2846,6 +2924,8 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 
         return true;
     case SPELL_FAILED_OUT_OF_RANGE:
         return ignoreRange;
+    case SPELL_FAILED_REAGENTS:
+        return ignoreReagents;
     default:
         return false;
     }

@@ -11,7 +11,6 @@
 
 using namespace ai;
 
-
 SpellCastResult BotUseItemSpell::ForceSpellStart(SpellCastTargets const* targets, Aura* triggeredByAura)
 {
     WorldObject* truecaster = GetTrueCaster();
@@ -29,21 +28,29 @@ SpellCastResult BotUseItemSpell::ForceSpellStart(SpellCastTargets const* targets
 
     SpellCastResult result = PreCastCheck();
 
+    bool failed = result != SPELL_CAST_OK;
     if (result == SPELL_FAILED_BAD_TARGETS && OpenLockCheck())
     {
+        failed = false;
         m_IsTriggeredSpell = true;
         m_ignoreCastTime = true;
     }
-    else if (result != SPELL_CAST_OK)
+    if (result == SPELL_FAILED_REAGENTS && itemCheats)
+    {
+        failed = false;
+    }
+
+    if (failed)
     {
         SendCastResult(result);
         finish(false);
         return result;
     }
-
-    Prepare();
-
-    return SPELL_CAST_OK;
+    else
+    {
+        Prepare();
+        return SPELL_CAST_OK;
+    }
 }
 
 bool BotUseItemSpell::OpenLockCheck()

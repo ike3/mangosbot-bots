@@ -5,13 +5,16 @@
 
 namespace ai
 {
-    class BotUseItemSpell : public Spell //This class bypasses the requirement for a bot to have a key item in their inventory when opening a lock.
+    //This class bypasses the requirement for a bot to have a key item in their inventory when opening a lock.
+    class BotUseItemSpell : public Spell 
     {
     public:
-        BotUseItemSpell(WorldObject* caster, SpellEntry const* info, uint32 triggeredFlags, ObjectGuid originalCasterGUID = ObjectGuid(), SpellEntry const* triggeredBy = nullptr) : Spell(caster, info, triggeredFlags, originalCasterGUID, triggeredBy) {};
-
+        BotUseItemSpell(WorldObject* caster, SpellEntry const* info, uint32 triggeredFlags, ObjectGuid originalCasterGUID = ObjectGuid(), SpellEntry const* triggeredBy = nullptr, bool itemCheats = false) : Spell(caster, info, triggeredFlags, originalCasterGUID, triggeredBy), itemCheats(itemCheats) {};
         SpellCastResult ForceSpellStart(SpellCastTargets const* targets, Aura* triggeredByAura = nullptr);
         bool OpenLockCheck();
+
+    private:
+        bool itemCheats;
     };
 
     class UseItemAction : public ChatCommandAction 
