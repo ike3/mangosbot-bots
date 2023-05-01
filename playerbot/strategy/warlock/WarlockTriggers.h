@@ -34,7 +34,7 @@ namespace ai
         bool IsActive() override;
     };
 
-    DEBUFF_TRIGGER_A(CorruptionTrigger, "corruption");
+    DEBUFF_TRIGGER(CorruptionTrigger, "corruption");
     DEBUFF_TRIGGER(SiphonLifeTrigger, "siphon life");
     DEBUFF_TRIGGER(UnstableAfflictionTrigger, "unstable affliction");
 

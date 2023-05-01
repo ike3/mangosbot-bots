@@ -133,7 +133,6 @@ namespace ai
         virtual bool IsActive();
     };
 
-
     class AttackerCountTrigger : public Trigger
     {
     public:
@@ -142,11 +141,13 @@ namespace ai
             this->amount = amount;
             this->distance = distance;
         }
+
     public:
         virtual bool IsActive()
 		{
             return AI_VALUE(uint8, "attackers count") >= amount;
         }
+
         virtual string getName() { return "attackers count"; }
 
     protected:
@@ -234,15 +235,27 @@ namespace ai
     {
     public:
         BuffOnPartyTrigger(PlayerbotAI* ai, string spell, int checkInterval = 2) : BuffTrigger(ai, spell, checkInterval) {}
+
     public:
 		virtual Value<Unit*>* GetTargetValue();
 		virtual string getName() { return spell + " on party"; }
+    };
+
+    class BuffOnTankTrigger : public BuffTrigger
+    {
+    public:
+        BuffOnTankTrigger(PlayerbotAI* ai, string spell, int checkInterval = 2) : BuffTrigger(ai, spell, checkInterval) {}
+
+    public:
+        virtual Value<Unit*>* GetTargetValue();
+        virtual string getName() { return spell + " on tank"; }
     };
 
     class MyBuffOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         MyBuffOnPartyTrigger(PlayerbotAI* ai, string spell, int checkInterval = 2) : BuffOnPartyTrigger(ai, spell, checkInterval) {}
+
     public:
         virtual Value<Unit*>* GetTargetValue();
         virtual string getName() { return spell + " on party"; }

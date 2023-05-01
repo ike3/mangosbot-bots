@@ -121,18 +121,13 @@ bool OutNumberedTrigger::IsActive()
 bool BuffTrigger::IsActive()
 {
     Unit* target = GetTarget();
-	return target &&
-        !ai->HasAura(spell, target, false, checkIsOwner) && target->IsAlive()
-        /* &&
-        (!AI_VALUE2(bool, "has mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumMana)*/
-        ;
+	return target && !ai->HasAura(spell, target, false, checkIsOwner) && target->IsAlive();
 }
 
 bool MyBuffTrigger::IsActive()
 {
     Unit* target = GetTarget();
-    return target &&
-        !ai->HasMyAura(spell, target);
+    return target && !ai->HasMyAura(spell, target);
 }
 
 Value<Unit*>* BuffOnPartyTrigger::GetTargetValue()
@@ -143,6 +138,11 @@ Value<Unit*>* BuffOnPartyTrigger::GetTargetValue()
 Value<Unit*>* MyBuffOnPartyTrigger::GetTargetValue()
 {
     return context->GetValue<Unit*>("party member without my aura", spell);
+}
+
+ai::Value<Unit*>* BuffOnTankTrigger::GetTargetValue()
+{
+    return context->GetValue<Unit*>("party tank without aura", spell);
 }
 
 Value<Unit*>* DebuffOnAttackerTrigger::GetTargetValue()

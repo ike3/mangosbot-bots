@@ -748,12 +748,20 @@ void RestorationShamanBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode
 {
     RestorationShamanBuffStrategy::InitCombatTriggers(triggers);
     ShamanBuffRaidStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "earth shield on party tank",
+        NextAction::array(0, new NextAction("earth shield on party tank", ACTION_HIGH), NULL)));
 }
 
 void RestorationShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RestorationShamanBuffStrategy::InitNonCombatTriggers(triggers);
     ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "earth shield on party tank",
+        NextAction::array(0, new NextAction("earth shield on party tank", ACTION_NORMAL), NULL)));
 }
 
 #elif MANGOSBOT_TWO // WOTLK
@@ -1102,12 +1110,20 @@ void RestorationShamanBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode
 {
     RestorationShamanBuffStrategy::InitCombatTriggers(triggers);
     ShamanBuffRaidStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "earth shield on party tank",
+        NextAction::array(0, new NextAction("earth shield on party tank", ACTION_HIGH), NULL)));
 }
 
 void RestorationShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RestorationShamanBuffStrategy::InitNonCombatTriggers(triggers);
     ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "earth shield on party tank",
+        NextAction::array(0, new NextAction("earth shield on party tank", ACTION_NORMAL), NULL)));
 }
 
 #endif

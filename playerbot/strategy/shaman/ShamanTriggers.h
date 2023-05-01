@@ -478,4 +478,10 @@ namespace ai
     public:
         PartyMemberCureDiseaseTrigger(PlayerbotAI* ai) : PartyMemberNeedCureTrigger(ai, "cure disease", DISPEL_DISEASE) {}
     };
+
+    class PartyTankEarthShieldTrigger : public BuffOnTankTrigger
+    {
+    public:
+        PartyTankEarthShieldTrigger(PlayerbotAI* ai) : BuffOnTankTrigger(ai, "earth shield") {}
+    };
 }

@@ -451,6 +451,12 @@ namespace ai
         CastTotemicRecall(PlayerbotAI* ai) : CastBuffSpellAction(ai, "totemic recall") {}
     };
 
+    class CastEarthShieldOnPartyTankAction : public BuffOnTankAction
+    {
+    public:
+        CastEarthShieldOnPartyTankAction(PlayerbotAI* ai) : BuffOnTankAction(ai, "earth shield") {}
+    };
+
     class SetTotemBars : public Action
     {
     public:

@@ -246,6 +246,27 @@ namespace ai
 
     //---------------------------------------------------------------------------------------------------------------------
 
+    class PartyTankActionNameSupport
+    {
+    public:
+        PartyTankActionNameSupport(string spell) : name(spell + " on tank") {}
+        string getName() { return name; }
+
+    private:
+        string name;
+    };
+
+    class BuffOnTankAction : public CastBuffSpellAction, public PartyMemberActionNameSupport
+    {
+    public:
+        BuffOnTankAction(PlayerbotAI* ai, string spell) : CastBuffSpellAction(ai, spell), PartyMemberActionNameSupport(spell) {}
+
+    protected:
+        virtual string getName() override { return PartyMemberActionNameSupport::getName(); }
+        virtual string GetTargetName() override { return "party tank without aura"; }
+        virtual string GetTargetQualifier() override { return GetSpellName(); }
+    };
+
     class CastShootAction : public CastSpellAction
     {
     public:

@@ -349,6 +349,7 @@ namespace ai
                 creators["call of the ancestors"] = &TriggerFactoryInternal::call_of_the_ancestors;
                 creators["call of the spirits"] = &TriggerFactoryInternal::call_of_the_spirits;
                 creators["totemic recall"] = &TriggerFactoryInternal::totemic_recall;
+                creators["earth shield on party tank"] = &TriggerFactoryInternal::earth_shield_on_party_tank;
             }
 
         private:
@@ -386,6 +387,7 @@ namespace ai
             static Trigger* call_of_the_ancestors(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }
             static Trigger* call_of_the_spirits(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }
             static Trigger* totemic_recall(PlayerbotAI* ai) { return new ReadyToRemoveTotemsTrigger(ai); }
+            static Trigger* earth_shield_on_party_tank(PlayerbotAI* ai) { return new PartyTankEarthShieldTrigger(ai); }
         };
     };
 };
@@ -476,6 +478,7 @@ namespace ai
                 creators["update pve strats"] = &AiObjectContextInternal::update_pve_strats;
                 creators["update pvp strats"] = &AiObjectContextInternal::update_pvp_strats;
                 creators["update raid strats"] = &AiObjectContextInternal::update_raid_strats;
+                creators["earth shield on party tank"] = &AiObjectContextInternal::earth_shield_on_party_tank;
             }
 
         private:
@@ -554,6 +557,7 @@ namespace ai
             static Action* update_pve_strats(PlayerbotAI* ai) { return new UpdateShamanPveStrategiesAction(ai); }
             static Action* update_pvp_strats(PlayerbotAI* ai) { return new UpdateShamanPvpStrategiesAction(ai); }
             static Action* update_raid_strats(PlayerbotAI* ai) { return new UpdateShamanRaidStrategiesAction(ai); }
+            static Action* earth_shield_on_party_tank(PlayerbotAI* ai) { return new CastEarthShieldOnPartyTankAction(ai); }
         };
     };
 };

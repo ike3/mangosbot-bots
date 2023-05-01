@@ -128,6 +128,7 @@ namespace ai
             creators["nearest stealthed unit"] = &ValueContext::nearest_stealthed_unit;
             creators["log level"] = &ValueContext::log_level;
             creators["party member without aura"] = &ValueContext::party_member_without_aura;
+            creators["party tank without aura"] = &ValueContext::party_tank_without_aura;
             creators["party member without my aura"] = &ValueContext::party_member_without_my_aura;
             creators["attacker without aura"] = &ValueContext::attacker_without_aura;
             creators["party member to heal"] = &ValueContext::party_member_to_heal;
@@ -475,6 +476,7 @@ namespace ai
         static UntypedValue* nearest_adds(PlayerbotAI* ai) { return new NearestAddsValue(ai); }
         static UntypedValue* party_member_without_aura(PlayerbotAI* ai) { return new PartyMemberWithoutAuraValue(ai); }
         static UntypedValue* party_member_without_my_aura(PlayerbotAI* ai) { return new PartyMemberWithoutMyAuraValue(ai); }
+        static UntypedValue* party_tank_without_aura(PlayerbotAI* ai) { return new PartyTankWithoutAuraValue(ai); }
         static UntypedValue* attacker_without_aura(PlayerbotAI* ai) { return new AttackerWithoutAuraTargetValue(ai); }
         static UntypedValue* party_member_to_heal(PlayerbotAI* ai) { return new PartyMemberToHeal(ai); }
         static UntypedValue* party_member_to_resurrect(PlayerbotAI* ai) { return new PartyMemberToResurrect(ai); }

@@ -24,4 +24,14 @@ namespace ai
     protected:
         virtual Unit* Calculate();
     };
+
+    class PartyTankWithoutAuraValue : public PartyMemberValue, public Qualified
+    {
+    public:
+        PartyTankWithoutAuraValue(PlayerbotAI* ai, string name = "party tank without aura", float range = sPlayerbotAIConfig.sightDistance) :
+            PartyMemberValue(ai, name) {}
+
+    protected:
+        virtual Unit* Calculate();
+    };
 }
