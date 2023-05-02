@@ -112,7 +112,7 @@ namespace ai
 
         virtual bool Execute(Event& event) override;
 
-        bool isUseful() override { return !bot->InBattleGround() && sServerFacade.IsSpellReady(bot, 8690); }
+        bool isUseful() override;
     
         // Used when this action is executed as a reaction
         bool ShouldReactionInterruptMovement() const override { return true; }

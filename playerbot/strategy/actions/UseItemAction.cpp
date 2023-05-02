@@ -925,6 +925,24 @@ bool UseHearthStoneAction::Execute(Event& event)
     return used;
 }
 
+bool UseHearthStoneAction::isUseful() 
+{
+    if (!sServerFacade.IsSpellReady(bot, 8690))
+        return false;
+
+    if (bot->InBattleGround())
+        return false;
+
+    //Do not HS in dungeons when master is inside the dungeon or dead.
+    if (bot->GetMaster() && !WorldPosition(bot).isOverworld() && (bot->GetMapId() == bot->GetMaster()->GetMapId() || !bot->GetMaster()->IsAlive()))
+        return false;
+
+    if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
+        return false;
+
+    return true;
+}
+
 bool UseRandomRecipeAction::isUseful()
 {
    return !bot->IsInCombat() && !ai->HasActivePlayerMaster() && !bot->InBattleGround();
