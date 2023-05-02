@@ -18,7 +18,7 @@ namespace ai
     class PartyMemberWithoutMyAuraValue : public PartyMemberValue, public Qualified
     {
     public:
-        PartyMemberWithoutMyAuraValue(PlayerbotAI* ai, string name = "party member without my aura", float range = 30.f) :
+        PartyMemberWithoutMyAuraValue(PlayerbotAI* ai, string name = "party member without my aura", float range = 30.0f) :
             PartyMemberValue(ai, name) {}
 
     protected:
@@ -28,7 +28,7 @@ namespace ai
     class PartyTankWithoutAuraValue : public PartyMemberValue, public Qualified
     {
     public:
-        PartyTankWithoutAuraValue(PlayerbotAI* ai, string name = "party tank without aura", float range = sPlayerbotAIConfig.sightDistance) :
+        PartyTankWithoutAuraValue(PlayerbotAI* ai, string name = "party tank without aura", float range = 30.0f) :
             PartyMemberValue(ai, name) {}
 
     protected:

@@ -186,11 +186,17 @@ namespace ai
         }
     };
 
-    DEBUFF_TRIGGER_A(IceLanceTrigger, "ice lance");
+    class IceLanceTrigger : public Trigger
+    {
+    public:
+        IceLanceTrigger(PlayerbotAI* ai) : Trigger(ai, "ice lance") {}
+        bool IsActive() override;
+    };
+
     BUFF_TRIGGER(MirrorImageTrigger, "mirror image");
     BUFF_TRIGGER_A(HotStreakTrigger, "hot streak");
     BUFF_TRIGGER_A(FireballOrFrostfireBoltFreeTrigger, "fireball!");
-    DEBUFF_TRIGGER_A(NoImprovedScorchDebuffTrigger, "no improved scorch");
+    DEBUFF_TRIGGER_A(NoImprovedScorchDebuffTrigger, "improved scorch");
     HAS_AURA_TRIGGER(FingersOfFrostTrigger, "fingers of frost");
 
     class LearnGlyphOfFireballTrigger : public LearnGlyphTrigger

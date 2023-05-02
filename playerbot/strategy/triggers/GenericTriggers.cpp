@@ -182,24 +182,34 @@ bool DebuffTrigger::IsActive()
     {
         if (!ai->HasAura(spell, target, false, checkIsOwner))
         {
-            bool valid = true;
-
-#ifndef MANGOSBOT_TWO
-            uint32 debuffLimit = 100;
-#ifdef MANGOSBOT_ONE
-            debuffLimit = 16;
-#else
-            debuffLimit = 40;
-#endif
-            std::vector<Aura*> auras = ai->GetAuras(target);
-            valid = auras.size() < debuffLimit;
-#endif
-
-            return valid;
+            return !HasMaxDebuffs();
         }
     }
 
     return false;
+}
+
+bool DebuffTrigger::HasMaxDebuffs()
+{
+    bool maxDebuffs = false;
+
+#ifndef MANGOSBOT_TWO
+    Unit* target = GetTarget();
+    if(target)
+    {
+#ifdef MANGOSBOT_ONE
+        uint32 debuffLimit = 16;
+#else
+        uint32 debuffLimit = 40;
+#endif
+
+        std::vector<Aura*> auras = ai->GetAuras(target);
+        maxDebuffs = auras.size() >= debuffLimit;
+    }
+
+#endif
+
+    return maxDebuffs;
 }
 
 bool SpellTrigger::IsActive()

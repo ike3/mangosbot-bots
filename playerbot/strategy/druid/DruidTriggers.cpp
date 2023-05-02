@@ -27,5 +27,5 @@ bool EntanglingRootsKiteTrigger::IsActive()
             return false;
     }
 
-    return true;
+    return !HasMaxDebuffs();
 }

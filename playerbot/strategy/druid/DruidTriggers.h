@@ -82,7 +82,6 @@ namespace ai {
     {
     public:
         MoonfireTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "moonfire") {}
-
         virtual bool IsActive() { return DebuffTrigger::IsActive() && !GetTarget()->IsRooted(); }
     };
 
@@ -126,7 +125,6 @@ namespace ai {
     {
     public:
         EntanglingRootsKiteTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "entangling roots") {}
-
         virtual bool IsActive();
     };
 

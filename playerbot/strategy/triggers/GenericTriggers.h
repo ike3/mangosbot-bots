@@ -322,18 +322,21 @@ namespace ai
     class DebuffTrigger : public BuffTrigger
     {
     public:
-        DebuffTrigger(PlayerbotAI* ai, string spell, int checkInterval = 2, bool checkIsOwner = false) : BuffTrigger(ai, spell, checkInterval, checkIsOwner) {
-			checkInterval = 1;
-		}
+        DebuffTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1, bool checkIsOwner = false) : BuffTrigger(ai, spell, checkInterval, checkIsOwner) {}
+
     public:
 		virtual string GetTargetName() { return "current target"; }
         virtual bool IsActive();
+
+    protected:
+        bool HasMaxDebuffs();
     };
 
     class DebuffOnAttackerTrigger : public DebuffTrigger
     {
     public:
         DebuffOnAttackerTrigger(PlayerbotAI* ai, string spell) : DebuffTrigger(ai, spell) {}
+
     public:
         virtual Value<Unit*>* GetTargetValue();
         virtual string getName() { return spell + " on attacker"; }
@@ -342,11 +345,7 @@ namespace ai
 	class BoostTrigger : public BuffTrigger
 	{
 	public:
-		BoostTrigger(PlayerbotAI* ai, string spell, float balance = 50) : BuffTrigger(ai, spell, 3)
-		{
-			this->balance = balance;
-		}
-	public:
+		BoostTrigger(PlayerbotAI* ai, string spell, float balance = 50) : BuffTrigger(ai, spell, 3), balance(balance) {}
 		virtual bool IsActive();
 
 	protected:
@@ -427,9 +426,8 @@ namespace ai
     {
     public:
         SnareTargetTrigger(PlayerbotAI* ai, string spell, int interval = 1) : DebuffTrigger(ai, spell, interval) {}
-    public:
-        virtual Value<Unit*>* GetTargetValue();
         virtual string getName() { return spell + " on snare target"; }
+        virtual Value<Unit*>* GetTargetValue();
     };
 
     class NoManaTrigger : public Trigger

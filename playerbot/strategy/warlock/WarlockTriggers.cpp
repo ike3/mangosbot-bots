@@ -26,10 +26,7 @@ bool InfernoTrigger::IsActive()
 bool CorruptionTrigger::IsActive()
 {
 	Unit* target = GetTarget();
-	if (!target)
-		return false;
-
-	return !ai->HasAura("corruption", target) && !ai->HasAura("seed of corruption", target);
+	return target && !ai->HasAura("corruption", target) && !ai->HasAura("seed of corruption", target) && !HasMaxDebuffs();
 }
 
 bool LifeTapTrigger::IsActive()

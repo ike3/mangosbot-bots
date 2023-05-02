@@ -55,12 +55,12 @@ namespace ai
     };
 
     BEGIN_TRIGGER(HuntersPetDeadTrigger, Trigger)
-        END_TRIGGER()
+    END_TRIGGER()
 
-        BEGIN_TRIGGER(HuntersPetLowHealthTrigger, Trigger)
-        END_TRIGGER()
+    BEGIN_TRIGGER(HuntersPetLowHealthTrigger, Trigger)
+    END_TRIGGER()
 
-        class BlackArrowTrigger : public DebuffTrigger
+    class BlackArrowTrigger : public DebuffTrigger
     {
     public:
         BlackArrowTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "black arrow") {}
