@@ -198,9 +198,9 @@ bool DebuffTrigger::HasMaxDebuffs()
     if(target)
     {
 #ifdef MANGOSBOT_ONE
-        uint32 debuffLimit = 16;
-#else
         uint32 debuffLimit = 40;
+#else
+        uint32 debuffLimit = 16;
 #endif
 
         std::vector<Aura*> auras = ai->GetAuras(target);
