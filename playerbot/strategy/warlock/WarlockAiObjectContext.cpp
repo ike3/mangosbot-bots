@@ -460,6 +460,7 @@ namespace ai
                 creators["update pve strats"] = &AiObjectContextInternal::update_pve_strats;
                 creators["update pvp strats"] = &AiObjectContextInternal::update_pvp_strats;
                 creators["update raid strats"] = &AiObjectContextInternal::update_raid_strats;
+                creators["soulstone"] = &AiObjectContextInternal::soulstone;
             }
 
         private:
@@ -529,6 +530,7 @@ namespace ai
             static Action* update_pve_strats(PlayerbotAI* ai) { return new UpdateWarlockPveStrategiesAction(ai); }
             static Action* update_pvp_strats(PlayerbotAI* ai) { return new UpdateWarlockPvpStrategiesAction(ai); }
             static Action* update_raid_strats(PlayerbotAI* ai) { return new UpdateWarlockRaidStrategiesAction(ai); }
+            static Action* soulstone(PlayerbotAI* ai) { return new CastSoulstoneAction(ai); }
         };
     };
 };
