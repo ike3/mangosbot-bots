@@ -1323,7 +1323,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
         else
             startStub->currentGold = bot->GetMoney();
 
-        if (AI_VALUE2(bool, "isUseful", "hearthstone") && bot->IsAlive())
+        if (AI_VALUE2(bool, "action useful", "hearthstone") && bot->IsAlive())
         {
             TravelNode* homeNode = sTravelNodeMap.getNode(AI_VALUE(WorldPosition, "home bind"), nullptr, 10.0f);
             if (homeNode)
@@ -1519,7 +1519,7 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
     if (bot)
     {
         Player* player = bot;
-        if (PAI_VALUE2(bool, "isUseful", "hearthstone"))
+        if (PAI_VALUE2(bool, "action useful", "hearthstone"))
         {
             startPath.clear();
             TravelNode* botNode = new TravelNode(startPos, "Bot Pos", false);

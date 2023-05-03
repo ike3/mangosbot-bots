@@ -95,7 +95,6 @@
 #include "HazardsValue.h"
 #include "FocusTargetValue.h"
 #include "TalentSpecValue.h"
-#include "StrategyValues.h"
 
 namespace ai
 {
@@ -361,9 +360,10 @@ namespace ai
             creators["gos in sight"] = &ValueContext::gos_in_sight;
             creators["gos close"] = &ValueContext::gos_close;
             creators["has object"] = &ValueContext::has_object;   
-            creators["isUseful"] = &ValueContext::isUseful;
 
             creators["action possible"] = &ValueContext::action_possible;
+            creators["action useful"] = &ValueContext::action_useful;
+            creators["trigger active"] = &ValueContext::trigger_active;
         }
 
     private:
@@ -620,8 +620,9 @@ namespace ai
         static UntypedValue* gos_in_sight(PlayerbotAI* ai) { return new GosInSightValue(ai); }
         static UntypedValue* gos_close(PlayerbotAI* ai) { return new GoSCloseValue(ai); }
         static UntypedValue* has_object(PlayerbotAI* ai) { return new HasObjectValue(ai); }
-        static UntypedValue* isUseful(PlayerbotAI* ai) { return new IsUsefulValue(ai); }
 
         static UntypedValue* action_possible(PlayerbotAI* ai) { return new ActionPossibleValue(ai); }
+        static UntypedValue* action_useful(PlayerbotAI* ai) { return new ActionUsefulValue(ai); }
+        static UntypedValue* trigger_active(PlayerbotAI* ai) { return new TriggerActiveValue(ai); }
     };
 };

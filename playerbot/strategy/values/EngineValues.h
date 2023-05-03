@@ -10,4 +10,20 @@ namespace ai
 
         virtual bool Calculate();
     };
+
+    class ActionUsefulValue : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        ActionUsefulValue(PlayerbotAI* ai, string name = "action useful") : BoolCalculatedValue(ai, name) {}
+
+        virtual bool Calculate();
+    };
+
+    class TriggerActiveValue : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        TriggerActiveValue(PlayerbotAI* ai, string name = "trigger active") : BoolCalculatedValue(ai, name) {}
+
+        virtual bool Calculate();
+    };
 }
