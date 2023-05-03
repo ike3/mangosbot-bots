@@ -1323,7 +1323,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
         else
             startStub->currentGold = bot->GetMoney();
 
-        if (sServerFacade.IsSpellReady(bot, 8690) && bot->IsAlive())
+        if (AI_VALUE2(bool, "isUseful", "hearthstone") && bot->IsAlive())
         {
             TravelNode* homeNode = sTravelNodeMap.getNode(AI_VALUE(WorldPosition, "home bind"), nullptr, 10.0f);
             if (homeNode)
@@ -1516,22 +1516,26 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
         }
     }
 
-    if (bot && sServerFacade.IsSpellReady(bot, 8690) && (!bot->IsFlying() || WorldPosition(bot).currentHeight() > 10.0f))
+    if (bot)
     {
-        startPath.clear();
-        TravelNode* botNode = new TravelNode(startPos, "Bot Pos", false);
-        botNode->setPoint(startPos);
-
-        endI = 0;
-        while (endI < 5)
+        Player* player = bot;
+        if (PAI_VALUE2(bool, "isUseful", "hearthstone"))
         {
-            TravelNode* endNode = endNodes[endI];
-            TravelNodeRoute route = getRoute(botNode, endNode, bot);
-            route.addTempNodes({ botNode });
+            startPath.clear();
+            TravelNode* botNode = new TravelNode(startPos, "Bot Pos", false);
+            botNode->setPoint(startPos);
 
-            if (!route.isEmpty())
-                return route;
-            endI++;
+            endI = 0;
+            while (endI < 5)
+            {
+                TravelNode* endNode = endNodes[endI];
+                TravelNodeRoute route = getRoute(botNode, endNode, bot);
+                route.addTempNodes({ botNode });
+
+                if (!route.isEmpty())
+                    return route;
+                endI++;
+            }
         }
     }
 

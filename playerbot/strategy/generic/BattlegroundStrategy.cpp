@@ -26,7 +26,7 @@ void BattlegroundStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &trigge
         NextAction::array(0, new NextAction("check mount state", 2.0f), new NextAction("bg move to objective", 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "random",
+        "very often",
         NextAction::array(0, new NextAction("bg check objective", 10.0f), NULL)));
 
     /*triggers.push_back(new TriggerNode(

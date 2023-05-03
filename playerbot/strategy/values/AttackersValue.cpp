@@ -47,7 +47,7 @@ list<ObjectGuid> AttackersValue::Calculate()
         }
 
         Player* master = GetMaster();
-        if (master && (!group || master->GetGroup() != group))
+        if (master && !bot->InBattleGround() && (!group || master->GetGroup() != group))
             AddTargetsOf(master, targets, invalidTargets, getOne);
     }
 
@@ -250,7 +250,7 @@ bool AttackersValue::IsValid(Unit* target, Player* player, Player* owner, bool c
         }
 
         // Don't check distance on duel opponents
-        if (player->duel && (player->duel->opponent != target))
+        if (!player->duel || (player->duel && (player->duel->opponent != target)))
         {
             // If the enemy player is not within sight distance
             if (!enemyPlayer->IsWithinDist(playerToCheckAgainst, EnemyPlayerValue::GetMaxAttackDistance(playerToCheckAgainst), false))

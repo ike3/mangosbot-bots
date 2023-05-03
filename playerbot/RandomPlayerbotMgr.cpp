@@ -285,6 +285,13 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
         guildsDeleted = false;
         arenaTeamsDeleted = false;
 
+        list<uint32> availableBots = GetBots();
+
+        for (auto& bot : availableBots)
+        {
+            SetEventValue(bot, "login", 0, 0);
+        }
+
 #ifndef MANGOSBOT_ZERO
         // load random bot team members
         QueryResult* results = CharacterDatabase.PQuery("SELECT guid FROM arena_team_member");
@@ -493,7 +500,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     if (!sPlayerbotAIConfig.randomBotAutologin || !sPlayerbotAIConfig.enabled)
         return;
-  
+
     float activityPercentage = getActivityPercentage();
 
     //if (activityPercentage >= 100.0f || activityPercentage <= 0.0f) pid.reset(); //Stop integer buildup during max/min activity
@@ -567,12 +574,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     uint32 availableBotCount = availableBots.size();
     uint32 onlineBotCount = playerBots.size();
     
-    uint32 onlineBotFocus = 75;
-
-    if (onlineBotCount < (uint32)(sPlayerbotAIConfig.minRandomBots * 90 / 100))
-        onlineBotFocus = 25;
-
-    SetAIInternalUpdateDelay(sPlayerbotAIConfig.randomBotUpdateInterval * (onlineBotFocus+25) * 10);
+    SetAIInternalUpdateDelay(sPlayerbotAIConfig.randomBotUpdateInterval * 1000);
 
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TOTAL,
         onlineBotCount < maxAllowedBotCount ? "RandomPlayerbotMgr::Login" : "RandomPlayerbotMgr::UpdateAIInternal");
@@ -603,16 +605,13 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             CheckBgQueue();
     }
 
-    uint32 updateBots = std::max(uint32(1), sPlayerbotAIConfig.randomBotsPerInterval * onlineBotFocus / 100);
+    uint32 updateBots = sPlayerbotAIConfig.randomBotsPerInterval;
+    uint32 loginBots = sPlayerbotAIConfig.randomBotsMaxLoginsPerInterval;
+    if (onlineBotCount < sPlayerbotAIConfig.minRandomBots * sPlayerbotAIConfig.loginBoostPercentage / 100)
+        loginBots *= 2;
 
     uint32 maxNewBots = onlineBotCount < maxAllowedBotCount ? maxAllowedBotCount - onlineBotCount : 0;
-    int32 loginBotsTemp = sPlayerbotAIConfig.randomBotsPerInterval - updateBots;
-    uint32 loginBots = uint32(loginBotsTemp < 0 ? uint32(1) : uint32(loginBotsTemp)) * sPlayerbotAIConfig.randomBotsLoginSpeed;
     loginBots = std::min(loginBots, maxNewBots);
-
-   //More options to scale based on activity. Currently disabled.
-   //updateBots *= getActivityMod();
-   //loginBots *= getActivityMod();
 
     if(!availableBots.empty())
     {
@@ -632,15 +631,10 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
         if (loginBots)
         {
-            loginBots += updateBots;
-            loginBots = std::min(loginBots, maxNewBots);
-
-            sLog.outDetail("%d new bots", loginBots);
-            
             //Log in bots
             for (auto bot : availableBots)
             {
-               if (GetPlayerBot(bot))
+                if (GetPlayerBot(bot))
                     continue;
 
                 if (ProcessBot(bot)) {
@@ -751,7 +745,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
         currentAllowedBotCount -= currentBots.size();
 
-        currentAllowedBotCount = std::min((uint32)(sPlayerbotAIConfig.randomBotsPerInterval * sPlayerbotAIConfig.randomBotsLoginSpeed), currentAllowedBotCount);
+        currentAllowedBotCount = std::min(sPlayerbotAIConfig.randomBotsPerInterval * 2, currentAllowedBotCount);
 
         PlayerbotDatabase.AllowAsyncTransactions();
         PlayerbotDatabase.BeginTransaction();
@@ -1632,17 +1626,17 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     uint32 isValid = GetEventValue(bot, "add");
     if (!isValid)
     {
-		if (!player || !player->GetGroup())
-		{
+        if (!player || !player->GetGroup())
+        {
             if (player)
                 sLog.outDetail("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->GetLevel(), player->GetName());
             else
                 sLog.outDetail("Bot #%d: log out", bot);
 
-			SetEventValue(bot, "add", 0, 0);
-			currentBots.remove(bot);
-			if (player) LogoutPlayerBot(bot);
-		}
+            SetEventValue(bot, "add", 0, 0);
+            currentBots.remove(bot);
+            if (player) LogoutPlayerBot(bot);
+        }
         else if (player->GetGroup())
             SetEventValue(bot, "add", 1, 120);
         return false;
@@ -1650,12 +1644,12 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     uint32 isLogginIn = GetEventValue(bot, "login");
     if (isLogginIn)
-        return false;
+        return true; //Count bots that are still logging in so we don't keep adding more and more bots that are still logging in.
 
     if (!player)
     {
         AddPlayerBot(bot, 0);
-        SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval);
+        SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval * 100);
         uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
         SetEventValue(bot, "update", 1, randomTime);
 
@@ -2490,7 +2484,6 @@ void RandomPlayerbotMgr::Refresh(Player* bot)
     if (pmo) pmo->finish();
 }
 
-
 bool RandomPlayerbotMgr::IsRandomBot(Player* bot)
 {
     if (bot && bot->GetPlayerbotAI())
@@ -2976,6 +2969,7 @@ void RandomPlayerbotMgr::OnPlayerLogin(Player* player)
 void RandomPlayerbotMgr::OnPlayerLoginError(uint32 bot)
 {
     SetEventValue(bot, "add", 0, 0);
+    SetEventValue(bot, "login", 0, 0);
     currentBots.remove(bot);
 }
 

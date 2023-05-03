@@ -797,7 +797,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         {
             if (entry == 8690)
             {
-                if (sServerFacade.IsSpellReady(bot, 8690) && (!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f))
+                if (AI_VALUE2(bool, "isUseful", "hearthstone") && (!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f))
                 {
                     return ai->DoSpecificAction("hearthstone", Event("move action"), true);
 

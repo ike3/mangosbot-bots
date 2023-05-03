@@ -591,10 +591,13 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             engine->addStrategy("arena");
         }
 #endif
-        engine->addStrategies("boost", "racials", "default", "aoe", "conserve mana", "cast time", "dps assist", "pvp", NULL);
+        engine->addStrategies("boost", "racials", "default", "aoe", "dps assist", "pvp", NULL);
         engine->removeStrategy("custom::say");
         engine->removeStrategy("flee");
         engine->removeStrategy("threat");
+        engine->removeStrategy("follow");
+        engine->removeStrategy("conserve mana");
+        engine->removeStrategy("cast time");
         engine->addStrategy("boost");
 
         if (player->getClass() == CLASS_SHAMAN && tab == 2)
