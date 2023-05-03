@@ -289,7 +289,8 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
 
         for (auto& bot : availableBots)
         {
-            SetEventValue(bot, "login", 0, 0);
+            if(GetEventValue(bot,"login"))
+                SetEventValue(bot, "login", 0, 0);
         }
 
 #ifndef MANGOSBOT_ZERO
