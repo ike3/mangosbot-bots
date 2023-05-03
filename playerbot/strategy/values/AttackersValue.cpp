@@ -250,7 +250,7 @@ bool AttackersValue::IsValid(Unit* target, Player* player, Player* owner, bool c
         }
 
         // Don't check distance on duel opponents
-        if (player->duel && (player->duel->opponent != target))
+        if (!player->duel || (player->duel && (player->duel->opponent != target)))
         {
             // If the enemy player is not within sight distance
             if (!enemyPlayer->IsWithinDist(playerToCheckAgainst, EnemyPlayerValue::GetMaxAttackDistance(playerToCheckAgainst), false))
