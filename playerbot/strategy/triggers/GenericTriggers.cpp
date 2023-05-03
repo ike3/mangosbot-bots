@@ -170,6 +170,61 @@ bool MyAttackerCountTrigger::IsActive()
     return AI_VALUE2(bool, "combat", "self target") && AI_VALUE(uint8, "my attacker count") >= amount;
 }
 
+bool HighThreatTrigger::IsActive()
+{
+    uint8 relativeThreat = AI_VALUE2(uint8, "threat", "current target");
+
+    if (relativeThreat >= 80)
+    {
+        //Watch delta.
+        uint32 lastTime = MEM_AI_VALUE(float, "my threat::current target")->GetLastTime();
+
+        if (lastTime < time(0))
+        {
+            float deltaThreat = LOG_AI_VALUE(float, "my threat::current target")->GetDelta(5.0f);
+            float currentThreat = AI_VALUE2(float, "my threat", "current target");
+
+            if (deltaThreat > 0)
+            {
+                float tankThreat = AI_VALUE2(float, "tank threat", "current target");
+
+                float newThreat = currentThreat + deltaThreat * 5.0f; //No agro in 5 seconds.
+
+                if (newThreat < tankThreat)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool MediumThreatTrigger::IsActive()
+{
+    if (AI_VALUE2(uint8, "threat", "current target") >= 60)
+        return true;
+
+    return false;
+}
+
+bool SomeThreatTrigger::IsActive()
+{
+    if (AI_VALUE2(uint8, "threat", "current target") >= 25)
+        return true;
+
+    return false;
+}
+
+bool NoThreatTrigger::IsActive()
+{
+    if (SomeThreatTrigger::IsActive())
+        return false;
+
+    return true;
+}
+
 bool AoeTrigger::IsActive()
 {
     return AI_VALUE2(bool, "combat", "self target") && AI_VALUE(uint8, "aoe count") >= amount;

@@ -104,7 +104,11 @@ namespace ai
             creators["wait for attack safe distance"] = &TriggerContext::wait_for_attack_safe_distance;
             creators["enemy player ten yards"] = &TriggerContext::enemy_player_ten_yards;
             creators["combo points available"] = &TriggerContext::ComboPointsAvailable;
-            creators["medium threat"] = &TriggerContext::MediumThreat;
+            creators["multiple attackers"] = &TriggerContext::multiple_attackers;
+            creators["high threat"] = &TriggerContext::high_threat;
+            creators["medium threat"] = &TriggerContext::medium_threat;
+            creators["some threat"] = &TriggerContext::some_threat;
+            creators["no threat"] = &TriggerContext::no_threat;
             creators["dead"] = &TriggerContext::Dead;
             creators["corpse near"] = &TriggerContext::corpse_near;
             creators["party member dead"] = &TriggerContext::PartyMemberDead;
@@ -367,7 +371,11 @@ namespace ai
         static Trigger* party_member_to_heal_out_of_spell_range(PlayerbotAI* ai) { return new PartyMemberToHealOutOfSpellRangeTrigger(ai); }
         static Trigger* wait_for_attack_safe_distance(PlayerbotAI* ai) { return new WaitForAttackSafeDistanceTrigger(ai); }
         static Trigger* ComboPointsAvailable(PlayerbotAI* ai) { return new ComboPointsAvailableTrigger(ai); }
-        static Trigger* MediumThreat(PlayerbotAI* ai) { return new MediumThreatTrigger(ai); }
+        static Trigger* multiple_attackers(PlayerbotAI* ai) { return new MultipleAttackersTrigger(ai); }
+        static Trigger* high_threat(PlayerbotAI* ai) { return new HighThreatTrigger(ai); }
+        static Trigger* medium_threat(PlayerbotAI* ai) { return new MediumThreatTrigger(ai); }
+        static Trigger* some_threat(PlayerbotAI* ai) { return new SomeThreatTrigger(ai); }
+        static Trigger* no_threat(PlayerbotAI* ai) { return new NoThreatTrigger(ai); }
         static Trigger* Dead(PlayerbotAI* ai) { return new DeadTrigger(ai); }
         static Trigger* corpse_near(PlayerbotAI* ai) { return new CorpseNearTrigger(ai); }
         static Trigger* PartyMemberDead(PlayerbotAI* ai) { return new PartyMemberDeadTrigger(ai); }

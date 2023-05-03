@@ -180,6 +180,10 @@ void RogueRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "medium threat",
         NextAction::array(0, new NextAction("feint", ACTION_DISPEL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "high threat",
+        NextAction::array(0, new NextAction("vanish", ACTION_EMERGENCY), NULL)));
 }
 
 void RogueRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

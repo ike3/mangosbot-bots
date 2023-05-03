@@ -174,7 +174,11 @@ void MageRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassRaidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "medium threat",
+        "high threat",
+        NextAction::array(0, new NextAction("invisibility", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "multiple attackers",
         NextAction::array(0, new NextAction("invisibility", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -552,7 +556,11 @@ void MageRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassRaidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "medium threat",
+        "high threat",
+        NextAction::array(0, new NextAction("invisibility", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "multiple attackers",
         NextAction::array(0, new NextAction("invisibility", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -966,7 +974,11 @@ void MageRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassRaidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "medium threat",
+        "high threat",
+        NextAction::array(0, new NextAction("invisibility", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "multiple attackers",
         NextAction::array(0, new NextAction("invisibility", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(

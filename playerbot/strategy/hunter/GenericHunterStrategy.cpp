@@ -108,8 +108,12 @@ void GenericHunterStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers
         NextAction::array(0, new NextAction("explosive trap", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium threat",
+        "high threat",
         NextAction::array(0, new NextAction("feign death", ACTION_INTERRUPT + 1), new NextAction("shadowmeld", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "multiple attackers",
+        NextAction::array(0, new NextAction("feign death", ACTION_INTERRUPT + 1), new NextAction("shadowmeld", ACTION_INTERRUPT), NULL)));    
 
     triggers.push_back(new TriggerNode(
         "enemy is close",

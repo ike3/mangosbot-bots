@@ -6,10 +6,11 @@ namespace ai
     class MyThreatValue : public LogCalculatedValue<float>, public Qualified
     {
     public:
-        MyThreatValue(PlayerbotAI* ai, string name = "my threat") : LogCalculatedValue(ai, name) { minChangeInterval = 1; }
+        MyThreatValue(PlayerbotAI* ai, string name = "my threat") : LogCalculatedValue(ai, name) { minChangeInterval = 1; lastTarget = ObjectGuid(); }
         virtual bool EqualToLast(float value) { return value == lastValue; }
     public:
         virtual float Calculate();
+        ObjectGuid lastTarget;
     };
 
     class TankThreatValue : public FloatCalculatedValue, public Qualified
@@ -34,18 +35,4 @@ namespace ai
     protected:
     	uint8 Calculate(Unit* target);
     };
-
-    /* Abanoded attempt
-    class SpellThreatValue : public FloatCalculatedValue, public Qualified
-    {
-    public:
-        SpellThreatValue(PlayerbotAI* ai, string name = "spell threat") : FloatCalculatedValue(ai, name) {}
-
-    public:
-        virtual float Calculate();
-    protected:
-        bool IsEffectWithImplementedMultiplier(uint32 effectId) const;
-        int32 SpellDamage(SpellEntry const* spellInfo)
-    };
-    */
 }

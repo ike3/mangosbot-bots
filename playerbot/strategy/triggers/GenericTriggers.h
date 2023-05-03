@@ -170,10 +170,42 @@ namespace ai
         virtual string getName() { return "my attacker count"; }
     };
 
-    class MediumThreatTrigger : public MyAttackerCountTrigger
+    class MultipleAttackersTrigger : public MyAttackerCountTrigger
     {
     public:
-        MediumThreatTrigger(PlayerbotAI* ai) : MyAttackerCountTrigger(ai, 2) {}
+        MultipleAttackersTrigger(PlayerbotAI* ai) : MyAttackerCountTrigger(ai, 2) {}
+    };
+
+    class HighThreatTrigger : public Trigger
+    {
+    public:
+        HighThreatTrigger(PlayerbotAI* ai, string name = "high threat", int checkinterval = 1) : Trigger(ai, name, checkinterval) {}
+    public:
+        virtual bool IsActive();
+    };
+
+    class MediumThreatTrigger : public Trigger
+    {
+    public:
+        MediumThreatTrigger(PlayerbotAI* ai, string name = "medium threat", int checkinterval = 1) : Trigger(ai, name, checkinterval) {}
+    public:
+        virtual bool IsActive();
+    };
+
+    class SomeThreatTrigger : public Trigger
+    {
+    public:
+        SomeThreatTrigger(PlayerbotAI* ai, string name = "some threat", int checkinterval = 1) : Trigger(ai, name, checkinterval) {}
+    public:
+        virtual bool IsActive();
+    };
+
+    class NoThreatTrigger : public SomeThreatTrigger
+    {
+    public:
+        NoThreatTrigger(PlayerbotAI* ai, string name = "some threat", int checkinterval = 1) : SomeThreatTrigger(ai, name, checkinterval) {}
+    public:
+        virtual bool IsActive();
     };
 
     class AoeTrigger : public AttackerCountTrigger

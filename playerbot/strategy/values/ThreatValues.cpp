@@ -10,6 +10,11 @@ using namespace ai;
 float MyThreatValue::Calculate()
 {
     Unit* target = AI_VALUE(Unit*, qualifier);
+    
+    if (target->GetObjectGuid() != lastTarget) //Reset history if we switched target.
+        LogCalculatedValue::Reset();
+
+    lastTarget = target->GetObjectGuid();
       
     return ThreatValue::GetThreat(bot, target);
 }
@@ -149,107 +154,3 @@ uint8 ThreatValue::Calculate(Unit* target)
 
     return botThreat * 100 / maxThreat;
 }
-
-/*
-bool SpellThreatValue::IsEffectWithImplementedMultiplier(uint32 effectId) const
-{
-    // TODO: extend this for all effects that do damage and healing
-    switch (effectId)
-    {
-    case SPELL_EFFECT_SCHOOL_DAMAGE:
-    case SPELL_EFFECT_HEAL:
-    case SPELL_EFFECT_POWER_BURN:
-    case SPELL_EFFECT_HEAL_MECHANICAL:
-        // weapon based
-    case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
-    case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
-    case SPELL_EFFECT_WEAPON_DAMAGE:
-    case SPELL_EFFECT_NORMALIZED_WEAPON_DMG:
-        return true;
-    default:
-        return false;
-    }
-}
-
-
-int32 SpellThreatValue::SpellDamage(SpellEntry const* spellInfo, Unit* target)
-{
-    int32 m_damagePerEffect[MAX_EFFECT_INDEX], damagePerEffect[MAX_EFFECT_INDEX];
-    float m_damageMultipliers[MAX_EFFECT_INDEX];
-    int32 damage;
-    Spell* spell;
-
-    for (uint32 i = 0; i < MAX_EFFECT_INDEX; ++i)
-    {
-        uint8 eff = spellInfo->Effect[i];
-
-        if (spell->IsEffectWithImplementedMultiplier(eff))
-        {
-            m_damagePerEffect[i] = 0;
-            damage = spell->CalculateSpellEffectValue(i, target);
-        }
-        else
-            damage = int32(spell->CalculateSpellEffectValue(i, target) * m_damageMultipliers[i]);
-
-        if (eff < MAX_SPELL_EFFECTS)
-        {
-            damagePerEffect[i] = damage;
-                damagePerEffect[i] = damage;
-                m_damagePerEffect[i] = spell->CalculateSpellEffectDamage(target, damage);
-            }
-        }
-        else
-            sLog.outError("WORLD: Spell FX %d > MAX_SPELL_EFFECTS ", eff);
-
-        if (IsEffectWithImplementedMultiplier(eff))
-        {
-            if (m_damagePerEffect[i] > 0)
-                m_damage += int32(m_damagePerEffect[i] * DamageMultiplier);
-        }
-
-        // Get multiplier
-        float multiplier = spellInfo->DmgMultiplier[i];
-        // Apply multiplier mods
-        if (bot)
-            if (Player* modOwner = bot->GetSpellModOwner())
-                modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_EFFECT_PAST_FIRST, multiplier);
-        m_damageMultipliers[i] *= multiplier;
-    }
-}
-
-
-float SpellThreatValue::Calculate()
-{
-    int32 spellId = stoi(qualifier);
-
-    Unit* target = AI_VALUE(Unit*, "current target");
-
-    if (!target)
-        return 0.0f;
-
-    if (target->GetObjectGuid().IsPlayer())
-        return 0.0f;
-
-    //Lifted from Spell::HandleThreatSpells()
-    SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellId);
-
-    Spell* spell = new Spell(bot, spellInfo, false);  
-    spell->m_targets.setUnitTarget(target);
-    
-    
-    float threat = spell->GetDamage();
-
-    SpellThreatEntry const* threatEntry = sSpellMgr.GetSpellThreatEntry(spellInfo->Id);
-    if (threatEntry && threatEntry->threat && threatEntry->ap_bonus > 0.0f)
-        threat = threatEntry->threat;
-
-    if (threatEntry->ap_bonus != 0.0f)
-        threat += threatEntry->ap_bonus * bot->GetTotalAttackPowerValue(GetWeaponAttackType(spellInfo));
-
-    float calculatedThreat = ThreatCalcHelper::CalcThreat(target, bot, threat, false, GetSpellSchoolMask(spellInfo), spellInfo);
-
-    float botThreat = sServerFacade.GetThreatManager(target).getThreat(bot);
-
-    return botThreat;
-}
-*/
