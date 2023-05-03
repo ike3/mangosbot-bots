@@ -2720,12 +2720,12 @@ bool PlayerbotAI::HasSpell(uint32 spellid) const
     return false;
 }
 
-bool PlayerbotAI::CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget, bool ignoreRange, bool ignoreReagents)
+bool PlayerbotAI::CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget, bool ignoreRange)
 {
-    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, 0, true, itemTarget, ignoreRange, ignoreReagents);
+    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, 0, true, itemTarget, ignoreRange);
 }
 
-bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange, bool ignoreReagents)
+bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange)
 {
     if (!spellid)
         return false;
@@ -2808,6 +2808,8 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 	//if (oldSel)
 	//	bot->SetSelectionGuid(oldSel);
 
+    const bool ignoreReagents = HasCheat(BotCheatMask::item);
+
     switch (result)
     {
     case SPELL_FAILED_NOT_INFRONT:
@@ -2827,7 +2829,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
     }
 }
 
-bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effectMask, bool checkHasSpell, bool ignoreRange, bool ignoreReagents)
+bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effectMask, bool checkHasSpell, bool ignoreRange)
 {
     if (!spellid)
         return false;
@@ -2882,6 +2884,8 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effec
     //if (oldSel)
     //    bot->SetSelectionGuid(oldSel);
 
+    const bool ignoreReagents = HasCheat(BotCheatMask::item);
+
     switch (result)
     {
     case SPELL_FAILED_NOT_INFRONT:
@@ -2900,7 +2904,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effec
     }
 }
 
-bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange, bool ignoreReagents)
+bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange)
 {
     if (!spellid)
         return false;
@@ -2935,6 +2939,8 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 
 
     SpellCastResult result = spell->CheckCast(true);
     delete spell;
+
+    const bool ignoreReagents = HasCheat(BotCheatMask::item);
 
     switch (result)
     {
@@ -3138,7 +3144,57 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
         StopMoving();
     }
 
+    // Prepare the reagents if cheats enabled
+    std::vector<std::pair<int32, uint32>> spellReagents;
+    if (HasCheat(BotCheatMask::item))
+    {
+        for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
+        {
+            const int32 itemId = pSpellInfo->Reagent[i];
+            if (itemId)
+            {
+                const uint32 itemAmount = pSpellInfo->ReagentCount[i];
+                if (itemAmount > 0)
+                {
+                    const uint32 currentItemAmount = bot->GetItemCount(itemId);
+                    if (currentItemAmount < itemAmount)
+                    {
+                        spellReagents.emplace_back((uint32)itemId, itemAmount - currentItemAmount);
+                    }
+                }
+            }
+        }
+
+        if (!spellReagents.empty())
+        {
+            for (auto& pair : spellReagents)
+            {
+                // Check bag space and find places
+                const uint32 itemId = pair.first;
+                const uint32 amount = pair.second;
+                ItemPosCountVec dest;
+                uint8 msg = bot->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, amount);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    Item* item = bot->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId));
+                    bot->SendNewItem(item, amount, false, true, false);
+                }
+            }
+        }
+    }
+
     SpellCastResult spellSuccess = spell->SpellStart(&targets);
+
+    if(spellSuccess != SPELL_CAST_OK)
+    {
+        // Remove the reagents if the spell failed
+        for (auto& pair : spellReagents)
+        {
+            const uint32 itemId = pair.first;
+            const uint32 amount = pair.second;
+            bot->DestroyItemCount(itemId, amount, true, true);
+        }
+    }
 
     if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||
         pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)
@@ -3288,6 +3344,45 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
         pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)
     {
         return false;
+    }
+
+    // Prepare the reagents if cheats enabled
+    if (HasCheat(BotCheatMask::item))
+    {
+        std::vector<std::pair<int32, uint32>> spellReagents;
+        for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
+        {
+            const int32 itemId = pSpellInfo->Reagent[i];
+            if (itemId)
+            {
+                const uint32 itemAmount = pSpellInfo->ReagentCount[i];
+                if (itemAmount > 0)
+                {
+                    const uint32 currentItemAmount = bot->GetItemCount(itemId);
+                    if (currentItemAmount < itemAmount)
+                    {
+                        spellReagents.emplace_back((uint32)itemId, itemAmount - currentItemAmount);
+                    }
+                }
+            }
+        }
+
+        if (!spellReagents.empty())
+        {
+            for (auto& pair : spellReagents)
+            {
+                // Check bag space and find places
+                const uint32 itemId = pair.first;
+                const uint32 amount = pair.second;
+                ItemPosCountVec dest;
+                uint8 msg = bot->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, amount);
+                if (msg == EQUIP_ERR_OK)
+                {
+                    Item* item = bot->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId));
+                    bot->SendNewItem(item, amount, false, true, false);
+                }
+            }
+        }
     }
 
 #ifdef MANGOS

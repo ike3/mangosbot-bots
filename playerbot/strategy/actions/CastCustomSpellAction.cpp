@@ -21,10 +21,12 @@ int FindLastSeparator(string text, string sep)
     return pos;
 }
 
-static inline void ltrim(std::string& s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+static inline void ltrim(std::string& s) 
+{
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) 
+    {
         return !std::isspace(ch);
-        }));
+    }));
 }
 
 bool CastCustomSpellAction::Execute(Event& event)
@@ -126,7 +128,6 @@ bool CastCustomSpellAction::Execute(Event& event)
 
     if (CheckMountStateAction::CurrentMountSpeed(bot))
     {
-
         if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
             return false;
 
@@ -149,7 +150,7 @@ bool CastCustomSpellAction::Execute(Event& event)
     else if (target == bot) spellName << "self";
     else spellName << target->GetName();
 
-    if (!bot->GetTrader() && !ai->CanCastSpell(spell, target, 0, true, itemTarget))
+    if (!bot->GetTrader() && !ai->CanCastSpell(spell, target, 0, true, itemTarget, false))
     {
         msg << "Cannot cast " << spellName.str();
         ai->TellError(msg.str());

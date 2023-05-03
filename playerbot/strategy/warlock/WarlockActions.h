@@ -30,99 +30,84 @@ namespace ai
     BEGIN_RANGED_SPELL_ACTION(CastShadowBoltAction, "shadow bolt")
     END_SPELL_ACTION()
 
-	class CastSoulShardAction : public CastSpellAction
-	{
-	public:
-		CastSoulShardAction(PlayerbotAI* ai, std::string name) : CastSpellAction(ai, name) {}
-
-		bool Execute(Event& event) override
-		{
-			if (ai->HasCheat(BotCheatMask::item))
-			{
-                // Add a soul shard to the bag
-                const uint32 soulShardItemId = 6265;
-
-                // Check space and find places
-                ItemPosCountVec dest;
-                uint8 msg = bot->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, soulShardItemId, 1);
-                if (msg == EQUIP_ERR_OK)
-                {
-                    Item* item = bot->StoreNewItem(dest, soulShardItemId, true, Item::GenerateItemRandomPropertyId(soulShardItemId));
-                    bot->SendNewItem(item, 1, false, true, false);
-                }
-			}
-
-            return CastSpellAction::Execute(event);
-		}
-
-		virtual bool isPossible() override
-		{
-            Unit* spellTarget = GetTarget();
-			if (spellTarget)
-			{
-				bool canReach = true;
-				if (spellTarget != bot)
-				{
-					float dist = bot->GetDistance(spellTarget, true);
-                    float max_range, min_range;
-                    if (ai->GetSpellRange(GetSpellName(), &max_range, &min_range))
-                    {
-                        canReach = dist < max_range&& dist >= min_range;
-                    }
-				}
-
-				if (canReach)
-				{
-					const bool ignoreReagents = ai->HasCheat(BotCheatMask::item);
-					return ai->CanCastSpell(GetSpellName(), GetTarget(), 0, nullptr, true, ignoreReagents);
-				}
-			}
-
-			return false;
-		}
-
-		virtual bool isUseful() override
-		{
-            // If no item cheats enabled
-            if (!ai->HasCheat(BotCheatMask::item))
-            {
-                // Check if it has a soul shard
-                if (!bot->HasItemCount(6265, 1))
-                {
-					return false;
-				}
-			}
-
-			return CastSpellAction::isUseful();
-		}
-
-        virtual string GetTargetName() override { return "self target"; }
-	};
-
 	class CastDrainSoulAction : public CastSpellAction
 	{
 	public:
 		CastDrainSoulAction(PlayerbotAI* ai) : CastSpellAction(ai, "drain soul") {}
 	};
 
-    class CastShadowburnAction : public CastSoulShardAction
+    class CastShadowburnAction : public CastSpellAction
     {
     public:
-		CastShadowburnAction(PlayerbotAI* ai) : CastSoulShardAction(ai, "shadowburn") {}
-        string GetTargetName() override { return "current target"; }
+		CastShadowburnAction(PlayerbotAI* ai) : CastSpellAction(ai, "shadowburn") {}
     };
 
-    class CastSoulShatterAction : public CastSoulShardAction
+    class CastSoulstoneAction : public UseItemIdAction
     {
     public:
-		CastSoulShatterAction(PlayerbotAI* ai) : CastSoulShardAction(ai, "soulshatter") {}
+        CastSoulstoneAction(PlayerbotAI* ai) : UseItemIdAction(ai, "soulstone") {}
+
+    private:
+        uint32 GetItemId() override 
+        { 
+            uint32 itemId = 0;
+            const uint32 level = bot->GetLevel();
+            if (level >= 18 && level < 30)
+            {
+                itemId = 5232;
+            }
+            else if (level >= 30 && level < 40)
+            {
+                itemId = 16892;
+            }
+            else if (level >= 40 && level < 50)
+            {
+                itemId = 16893;
+            }
+            else if (level >= 50 && level < 60)
+            {
+                itemId = 16895;
+            }
+            else if (level >= 60 && level < 70)
+            {
+                itemId = 16896;
+            }
+            else if (level >= 70 && level < 80)
+            {
+                itemId = 22116;
+            }
+            else if (level >= 76)
+            {
+                itemId = 36895;
+            }
+
+            return itemId;
+        }
+
+        Unit* GetTarget() override
+        {
+            Unit* target = nullptr;
+            Player* master = ai->GetMaster();
+            if (master)
+            {
+                target = ai->GetUnit(master->GetSelectionGuid());
+            }
+
+            return target;
+        }
     };
 
-    class CastSoulFireAction : public CastSoulShardAction
+    class CastSoulShatterAction : public CastSpellAction
     {
     public:
-		CastSoulFireAction(PlayerbotAI* ai) : CastSoulShardAction(ai, "soul fire") {}
-        string GetTargetName() override { return "current target"; }
+		CastSoulShatterAction(PlayerbotAI* ai) : CastSpellAction(ai, "soulshatter") {}
+        string GetTargetName() override { return "self target"; }
+    };
+
+    class CastSoulFireAction : public CastSpellAction
+    {
+    public:
+		CastSoulFireAction(PlayerbotAI* ai) : CastSpellAction(ai, "soul fire") {}
     };
 
 	BUFF_ACTION(CastDarkPactAction, "dark pact");
@@ -253,18 +238,6 @@ namespace ai
         CastCurseOfShadowOnAttackerAction(PlayerbotAI* ai) : CastRangedDebuffSpellOnAttackerAction(ai, "curse of shadow") {}
     };
 
-	class CastSummonVoidwalkerAction : public CastSoulShardAction
-	{
-	public:
-		CastSummonVoidwalkerAction(PlayerbotAI* ai) : CastSoulShardAction(ai, "summon voidwalker") {}
-	};
-
-	class CastSummonFelguardAction : public CastSoulShardAction
-	{
-	public:
-		CastSummonFelguardAction(PlayerbotAI* ai) : CastSoulShardAction(ai, "summon felguard") {}
-	};
-
     class CastDemonicSacrificeAction : public CastBuffSpellAction
     {
     public:
@@ -281,19 +254,36 @@ namespace ai
 	{
 	public:
 		CastSummonImpAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "summon imp") {}
+        string GetTargetName() override { return "self target"; }
 	};
 
-    class CastSummonSuccubusAction : public CastSoulShardAction
+    class CastSummonSuccubusAction : public CastSpellAction
     {
     public:
-        CastSummonSuccubusAction(PlayerbotAI* ai) : CastSoulShardAction(ai, "summon succubus") {}
+        CastSummonSuccubusAction(PlayerbotAI* ai) : CastSpellAction(ai, "summon succubus") {}
+        string GetTargetName() override { return "self target"; }
     };
 
-	class CastSummonFelhunterAction : public CastSoulShardAction
+	class CastSummonFelhunterAction : public CastSpellAction
 	{
 	public:
-		CastSummonFelhunterAction(PlayerbotAI* ai) : CastSoulShardAction(ai, "summon felhunter") {}
+		CastSummonFelhunterAction(PlayerbotAI* ai) : CastSpellAction(ai, "summon felhunter") {}
+        string GetTargetName() override { return "self target"; }
 	};
+
+    class CastSummonVoidwalkerAction : public CastSpellAction
+    {
+    public:
+        CastSummonVoidwalkerAction(PlayerbotAI* ai) : CastSpellAction(ai, "summon voidwalker") {}
+        string GetTargetName() override { return "self target"; }
+    };
+
+    class CastSummonFelguardAction : public CastSpellAction
+    {
+    public:
+        CastSummonFelguardAction(PlayerbotAI* ai) : CastSpellAction(ai, "summon felguard") {}
+        string GetTargetName() override { return "self target"; }
+    };
 
 	class CastSummonInfernoAction : public CastSpellAction
 	{
@@ -302,28 +292,31 @@ namespace ai
 		virtual bool isPossible() { return true; }
 	};
 
-	class CastCreateHealthstoneAction : public CastSoulShardAction
+	class CastCreateHealthstoneAction : public CastSpellAction
 	{
 	public:
-		CastCreateHealthstoneAction(PlayerbotAI* ai) : CastSoulShardAction(ai, "create healthstone") {}
+		CastCreateHealthstoneAction(PlayerbotAI* ai) : CastSpellAction(ai, "create healthstone") {}
+        string GetTargetName() override { return "self target"; }
 	};
 
-	class CastCreateFirestoneAction : public CastSoulShardAction
+	class CastCreateFirestoneAction : public CastSpellAction
 	{
 	public:
-		CastCreateFirestoneAction(PlayerbotAI* ai) : CastSoulShardAction(ai, "create firestone") {}
+		CastCreateFirestoneAction(PlayerbotAI* ai) : CastSpellAction(ai, "create firestone") {}
+        string GetTargetName() override { return "self target"; }
 	};
 
-	class CastCreateSpellstoneAction : public CastSoulShardAction
+	class CastCreateSpellstoneAction : public CastSpellAction
 	{
 	public:
-		CastCreateSpellstoneAction(PlayerbotAI* ai) : CastSoulShardAction(ai, "create spellstone") {}
+		CastCreateSpellstoneAction(PlayerbotAI* ai) : CastSpellAction(ai, "create spellstone") {}
+        string GetTargetName() override { return "self target"; }
 	};
 
-    class CastBanishAction : public CastSoulShardAction
+    class CastBanishAction : public CastSpellAction
     {
     public:
-        CastBanishAction(PlayerbotAI* ai) : CastSoulShardAction(ai, "banish") {}
+        CastBanishAction(PlayerbotAI* ai) : CastSpellAction(ai, "banish") {}
         virtual string GetTargetName() override { return "snare target"; }
         virtual string GetTargetQualifier() override { return GetSpellName(); }
         virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }

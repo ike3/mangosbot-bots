@@ -172,7 +172,7 @@ bool CastSpellAction::isPossible()
     }
     
     // Check if the spell can be casted
-	return ai->CanCastSpell(spellName, GetTarget(), true);
+	return ai->CanCastSpell(spellName, GetTarget(), 0, nullptr, true);
 }
 
 bool CastSpellAction::isUseful()
