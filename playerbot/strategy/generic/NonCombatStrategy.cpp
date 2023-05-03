@@ -23,10 +23,6 @@ void NonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
         "at dark portal outland",
         NextAction::array(0, new NextAction("move from dark portal", 1.0f), NULL)));
 
-    triggers.push_back(new TriggerNode(
-        "need world buff",
-        NextAction::array(0, new NextAction("world buff", 1.0f), NULL)));
-
     /*
     triggers.push_back(new TriggerNode(
         "vehicle near",
@@ -58,4 +54,11 @@ void MountStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
     /*triggers.push_back(new TriggerNode(
         "often",
         NextAction::array(0, new NextAction("mount", 4.0f), NULL)));*/
+}
+
+void WorldBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "need world buff",
+        NextAction::array(0, new NextAction("world buff", 1.0f), NULL)));
 }

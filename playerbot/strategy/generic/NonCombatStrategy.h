@@ -43,4 +43,15 @@ namespace ai
         int GetType() override { return STRATEGY_TYPE_NONCOMBAT; }
         string getName() override { return "attack tagged"; }
     };
+
+    class WorldBuffStrategy : public Strategy
+    {
+    public:
+        WorldBuffStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        virtual int GetType() override { return STRATEGY_TYPE_NONCOMBAT; }
+        string getName() override { return "wbuff"; }
+
+    protected:
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
 }

@@ -129,6 +129,7 @@ namespace ai
             creators["wait for attack"] = &StrategyContext::wait_for_attack;
             creators["pull back"] = &StrategyContext::pull_back;
             creators["focus heal target"] = &StrategyContext::focus_heal_target;
+            creators["wbuff"] = &StrategyContext::world_buff;
 
             // Dungeon Strategies
             creators["dungeon"] = &StrategyContext::dungeon;
@@ -216,6 +217,7 @@ namespace ai
         static Strategy* wait_for_attack(PlayerbotAI* ai) { return new WaitForAttackStrategy(ai); }
         static Strategy* pull_back(PlayerbotAI* ai) { return new PullBackStrategy(ai); }
         static Strategy* focus_heal_target(PlayerbotAI* ai) { return new FocusHealTargetStrategy(ai); }
+        static Strategy* world_buff(PlayerbotAI* ai) { return new WorldBuffStrategy(ai); }
 
         // Dungeon Strategies
         static Strategy* dungeon(PlayerbotAI* ai) { return new DungeonStrategy(ai); }

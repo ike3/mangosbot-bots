@@ -797,6 +797,8 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         }
     }
 
+    nonCombatEngine->addStrategies("wbuff", NULL);
+
     if (!player->InBattleGround())
     {
         nonCombatEngine->addStrategies("racials", "nc", "food", "follow", "default", "quest", "loot", "gather", "duel", "emote", "buff", "mount", NULL);
