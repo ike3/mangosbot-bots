@@ -1224,7 +1224,7 @@ float MovementAction::GetFollowAngle()
 {
     Player* master = GetMaster();
     Group* group = master ? master->GetGroup() : bot->GetGroup();
-    if (!group)
+    if (!group || group->GetMembersCount() == 1)
         return 0.0f;
 
     int index = 1;
