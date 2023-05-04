@@ -40,6 +40,9 @@ WorldLocation ArrowFormation::GetLocationInternal()
     healers.PlaceUnits(&placer);
     healers.Move(-cos(orientation) * offset, -sin(orientation) * offset);
 
+    if (!masterUnit || !botUnit)
+        return Formation::NullLocation;
+
     float x = master->GetPositionX() - masterUnit->GetX() + botUnit->GetX();
     float y = master->GetPositionY() - masterUnit->GetY() + botUnit->GetY();
     float z = master->GetPositionZ();
