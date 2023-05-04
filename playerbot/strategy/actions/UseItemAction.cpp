@@ -963,7 +963,7 @@ bool UseHearthStoneAction::isUseful()
         return false;
 
     //Do not HS in dungeons when master is inside the dungeon or dead.
-    if (bot->GetMaster() && !WorldPosition(bot).isOverworld() && (bot->GetMapId() == bot->GetMaster()->GetMapId() || !bot->GetMaster()->IsAlive()))
+    if (ai->GetMaster() && !WorldPosition(bot).isOverworld() && (bot->GetMapId() == ai->GetMaster()->GetMapId() || !ai->GetMaster()->IsAlive()))
         return false;
 
     if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)

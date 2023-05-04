@@ -16,7 +16,7 @@ namespace ai
 
         Group* group = bot->GetGroup();
 
-        if (ai->HasActivePlayerMaster() && player != bot->GetMaster() && player->GetSession() && player->GetSession()->GetSecurity() < SEC_MODERATOR)
+        if (ai->HasActivePlayerMaster() && player != ai->GetMaster() && player->GetSession() && player->GetSession()->GetSecurity() < SEC_MODERATOR)
             return false;
 
         bool aiMaster = (ai->GetMaster() && ai->GetMaster()->GetPlayerbotAI());
