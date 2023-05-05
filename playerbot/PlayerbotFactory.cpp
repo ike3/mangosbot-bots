@@ -2460,8 +2460,6 @@ void PlayerbotFactory::SetRandomSkill(uint16 id)
     uint32 curValue = bot->GetSkillValue(id);
     if (!bot->HasSkill(id) || value > curValue)
         bot->SetSkill(id, value, maxValue);
-
-
 }
 
 void PlayerbotFactory::InitAvailableSpells()
@@ -2470,11 +2468,23 @@ void PlayerbotFactory::InitAvailableSpells()
     bot->learnClassLevelSpells();
 
 #ifndef MANGOSBOT_TWO
-    if (bot->getClass() == CLASS_PALADIN && !bot->HasSpell(20271)) // judgement missing
-        bot->learnSpell(20271, false);
+    if (bot->getClass() == CLASS_PALADIN)
+    {
+        // judgement missing
+        if(!bot->HasSpell(20271)) 
+        {
+            bot->learnSpell(20271, false);
+        }
+        
+        // crusader strike
+        if(!bot->HasSpell(33394)) 
+        {
+            bot->learnSpell(33394, false);
+        }
+    }
 #endif
 
-    // add polumorph pig/turtle
+    // add polymorph pig/turtle
     if (bot->getClass() == CLASS_MAGE && bot->GetLevel() >= 60)
     {
         bot->learnSpell(28271, false);

@@ -38,12 +38,19 @@ namespace ai
     public:
         ArcaneBrillianceOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane brilliance", 4) {}
 
-        virtual bool IsActive() 
+        bool IsActive() override
         {
-            return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&
-                   !ai->HasAura("arcane intellect", GetTarget()) &&
-                   bot->IsInGroup((Player*)GetTarget()) &&
-                   (ai->GetBuffedCount((Player*)GetTarget(), "arcane brilliance") + ai->GetBuffedCount((Player*)GetTarget(), "arcane intellect")) < 4;
+            Unit* target = GetTarget();
+            if (target && target->IsPlayer())
+            {
+                Player* player = (Player*)target;
+                if (bot->IsInGroup(player) && ai->GetBuffedCount((Player*)GetTarget(), spell) < 4)
+                {
+                    return BuffOnPartyTrigger::IsActive();
+                }
+            }
+
+            return false;
         }
     };
 

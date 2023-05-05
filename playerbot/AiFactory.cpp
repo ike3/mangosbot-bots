@@ -378,25 +378,18 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         {
             if (tab == 1)
             {
-                engine->addStrategies("tank", "tank assist", "pull", "pull back", "bthreat", "cure", "close", "cc", NULL);
+                engine->addStrategies("protection", "tank assist", "pull", "pull back", "bthreat", "close", NULL);
 			}
             else if(tab == 0)
             {
-                engine->addStrategies("heal", "dps assist", "cure", "flee", "cc", "ranged", NULL);
+                engine->addStrategies("holy", "dps assist", "flee", "ranged", NULL);
             }
             else
             {
-                engine->addStrategies("dps", "dps assist", "cure", "close", "cc", NULL);
+                engine->addStrategies("retribution", "dps assist", "close", NULL);
             }
 
-            /*if (player->GetLevel() < 14)
-            {
-                engine->addStrategy("bdps");
-            }
-            if (player->GetLevel() < 16)
-            {
-                engine->addStrategy("barmor");
-            }*/
+            engine->addStrategies("cure", "aoe", "cc", "buff", "aura", "blessing", NULL);
             break;
         }
 
@@ -522,8 +515,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
             if (player->getClass() == CLASS_PALADIN && tab == 0)
             {
-                engine->removeStrategy("ranged");
-                engine->addStrategies("dps", "close", NULL);
+                engine->addStrategies("retribution", "close", NULL);
                 engine->removeStrategy("ranged");
             }
         }
@@ -531,8 +523,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         // enable paladin fight at low level
         if (player->getClass() == CLASS_PALADIN && tab == 0 && player->GetLevel() < 10)
         {
-            engine->removeStrategy("ranged");
-            engine->addStrategies("dps", "close", NULL);
+            engine->addStrategies("retribution", "close", NULL);
             engine->removeStrategy("ranged");
         }
 
@@ -644,23 +635,18 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         {
             if (tab == 1)
             {
-                nonCombatEngine->addStrategies("bthreat", "tank assist", "bkings", "baoe", NULL);
+                nonCombatEngine->addStrategies("protection", "tank assist", NULL);
             }
             else if (tab == 0)
             {
-                nonCombatEngine->addStrategies("dps assist", "bwisdom", "bconcentration", NULL);
+                nonCombatEngine->addStrategies("holy", "dps assist", NULL);
             }
             else
             {
-                nonCombatEngine->addStrategies("dps assist", "bmight", "bsanctity", NULL);
+                nonCombatEngine->addStrategies("retribution", "dps assist", NULL);
             }
 
-            /*if (player->GetLevel() < 14)
-                nonCombatEngine->addStrategies("bdps", NULL);
-            if (player->GetLevel() < 16)
-                nonCombatEngine->addStrategies("barmor", NULL);*/
-
-            nonCombatEngine->addStrategies("cure", NULL);
+            nonCombatEngine->addStrategies("cure", "buff", "blessing", "aura", NULL);
             break;
         }
 
@@ -1068,6 +1054,24 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
 
             break;
         }
+
+        case CLASS_PALADIN:
+        {
+            if (tab == 1)
+            {
+                deadEngine->addStrategy("protection");
+            }
+            else if (tab == 0)
+            {
+                deadEngine->addStrategy("holy");
+            }
+            else
+            {
+                deadEngine->addStrategy("retribution");
+            }
+
+            break;
+        }
     }
 }
 
@@ -1152,6 +1156,24 @@ void AiFactory::AddDefaultReactionStrategies(Player* player, PlayerbotAI* const 
             else
             {
                 reactionEngine->addStrategy("frost");
+            }
+
+            break;
+        }
+
+        case CLASS_PALADIN:
+        {
+            if (tab == 1)
+            {
+                reactionEngine->addStrategy("protection");
+            }
+            else if (tab == 0)
+            {
+                reactionEngine->addStrategy("holy");
+            }
+            else
+            {
+                reactionEngine->addStrategy("retribution");
             }
 
             break;

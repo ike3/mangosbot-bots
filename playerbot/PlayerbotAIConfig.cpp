@@ -822,7 +822,7 @@ void PlayerbotAIConfig::logEvent(PlayerbotAI* ai, string eventName, ObjectGuid g
     logEvent(ai, eventName, info1, info2);
 };
 
-bool PlayerbotAIConfig::CanLogAction(PlayerbotAI* ai, string actionName, bool isExecute)
+bool PlayerbotAIConfig::CanLogAction(PlayerbotAI* ai, string actionName, bool isExecute, string lastActionName)
 {
     bool forRpg = (actionName.find("rpg") == 0) && ai->HasStrategy("debug rpg", BotState::BOT_STATE_NON_COMBAT);
 
@@ -833,6 +833,11 @@ bool PlayerbotAIConfig::CanLogAction(PlayerbotAI* ai, string actionName, bool is
 
         if (!isExecute && !ai->HasStrategy("debug action", BotState::BOT_STATE_NON_COMBAT))
             return false;
+
+        if ((lastActionName == actionName) && (actionName == "melee"))
+        {
+            return false;
+        }
     }
 
     return std::find(debugFilter.begin(), debugFilter.end(), actionName) == debugFilter.end(); 

@@ -7,6 +7,7 @@ namespace ai
     {
     public:
         AfflictionWarlockPlaceholderStrategy(PlayerbotAI* ai) : SpecPlaceholderStrategy(ai) {}
+        int GetType() override { return STRATEGY_TYPE_DPS | STRATEGY_TYPE_RANGED; }
         string getName() override { return "affliction"; }
     };
 

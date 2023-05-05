@@ -17,24 +17,95 @@ bool SealTrigger::IsActive()
         AI_VALUE2(bool, "combat", "self target");
 }
 
-bool CrusaderAuraTrigger::IsActive()
-{
-	Unit* target = GetTarget();
-	return AI_VALUE2(bool, "mounted", "self target") && !ai->HasAura("crusader aura", target);
-}
-
 bool BlessingTrigger::IsActive()
 {
     Unit* target = GetTarget();
+    if (target)
+    {
+        vector<std::string> altBlessings;
+        vector<std::string> haveBlessings;
+        altBlessings.push_back("blessing of might");
+        altBlessings.push_back("blessing of wisdom");
+        altBlessings.push_back("blessing of kings");
+        altBlessings.push_back("blessing of sanctuary");
+        altBlessings.push_back("blessing of salvation");
+        altBlessings.push_back("blessing of light");
 
-    return SpellTrigger::IsActive() &&
-        !(ai->HasMyAura("blessing of might", target) ||
-            ai->HasMyAura("blessing of wisdom", target) ||
-            ai->HasMyAura("blessing of kings", target) ||
-            ai->HasMyAura("blessing of sanctuary", target) ||
-            ai->HasMyAura("blessing of salvation", target) ||
-            ai->HasMyAura("blessing of light", target)
-            );
+        for (auto blessing : altBlessings)
+        {
+            if (AI_VALUE2(uint32, "spell id", blessing))
+            {
+                haveBlessings.push_back(blessing);
+
+                const std::string greaterBlessing = "greater " + blessing;
+                if (AI_VALUE2(uint32, "spell id", greaterBlessing))
+                {
+                    haveBlessings.push_back(greaterBlessing);
+                }
+            }
+        }
+
+        if (haveBlessings.empty())
+        {
+            return false;
+        }
+
+        bool noBlessings = true;
+        for (auto blessing : haveBlessings)
+        {
+            if (ai->HasMyAura(blessing, bot))
+            {
+                noBlessings = false;
+            }
+        }
+
+        return noBlessings;
+    }
+
+    return false;
+}
+
+bool GreaterBlessingTrigger::IsActive()
+{
+    Unit* target = GetTarget();
+    if (target)
+    {
+        vector<std::string> altBlessings;
+        vector<std::string> haveBlessings;
+        altBlessings.push_back("blessing of might");
+        altBlessings.push_back("blessing of wisdom");
+        altBlessings.push_back("blessing of kings");
+        altBlessings.push_back("blessing of sanctuary");
+        altBlessings.push_back("blessing of salvation");
+        altBlessings.push_back("blessing of light");
+
+        for (auto blessing : altBlessings)
+        {
+            const std::string greaterBlessing = "greater " + blessing;
+            if (AI_VALUE2(uint32, "spell id", greaterBlessing))
+            {
+                haveBlessings.push_back(greaterBlessing);
+            }
+        }
+
+        if (haveBlessings.empty())
+        {
+            return false;
+        }
+
+        bool noBlessings = true;
+        for (auto blessing : haveBlessings)
+        {
+            if (ai->HasMyAura(blessing, bot))
+            {
+                noBlessings = false;
+            }
+        }
+
+        return noBlessings;
+    }
+
+    return false;
 }
 
 bool BlessingOnPartyTrigger::IsActive()
@@ -44,6 +115,7 @@ bool BlessingOnPartyTrigger::IsActive()
     altBlessings.push_back("blessing of might");
     altBlessings.push_back("blessing of wisdom");
     altBlessings.push_back("blessing of kings");
+    altBlessings.push_back("blessing of sanctuary");
     altBlessings.push_back("blessing of salvation");
     altBlessings.push_back("blessing of light");
 
@@ -52,76 +124,74 @@ bool BlessingOnPartyTrigger::IsActive()
         if (AI_VALUE2(uint32, "spell id", blessing))
         {
             haveBlessings.push_back(blessing);
-            haveBlessings.push_back("greater " + blessing);
+
+            const std::string greaterBlessing = "greater " + blessing;
+            if (AI_VALUE2(uint32, "spell id", greaterBlessing))
+            {
+                haveBlessings.push_back(greaterBlessing);
+            }
         }
     }
-    if (haveBlessings.empty())
-        return false;
 
-    std::string blessList = "";
-    for (auto blessing : haveBlessings)
+    if (haveBlessings.empty())
     {
-        blessList += blessing;
-        if (blessing != haveBlessings[haveBlessings.size() - 1])
-            blessList += ",";
+        return false;
     }
 
-    return AI_VALUE2(Unit*, "party member without my aura", blessList);
+    std::string blessings = "";
+    for (auto blessing : haveBlessings)
+    {
+        blessings += blessing;
+        if (blessing != haveBlessings[haveBlessings.size() - 1])
+        {
+            blessings += ",";
+        }
+    }
+
+    // Doesn't have any of my blessings
+    return AI_VALUE2(Unit*, "party member without my aura", blessings);
 }
 
-bool ConcentrationAuraTrigger::IsActive()
+bool GreaterBlessingOnPartyTrigger::IsActive()
 {
-    uint32 concAura = AI_VALUE2(uint32, "spell id", "concentration aura");
-    uint32 devoAura = AI_VALUE2(uint32, "spell id", "devotion aura");
-    if (!(concAura || devoAura))
+    vector<std::string> altBlessings;
+    vector<std::string> haveBlessings;
+    altBlessings.push_back("blessing of might");
+    altBlessings.push_back("blessing of wisdom");
+    altBlessings.push_back("blessing of kings");
+    altBlessings.push_back("blessing of sanctuary");
+    altBlessings.push_back("blessing of salvation");
+    altBlessings.push_back("blessing of light");
+
+    for (auto blessing : altBlessings)
+    {
+        const std::string greaterBlessing = "greater " + blessing;
+        if (AI_VALUE2(uint32, "spell id", greaterBlessing))
+        {
+            haveBlessings.push_back(greaterBlessing);
+        }
+    }
+
+    if (haveBlessings.empty())
+    {
         return false;
+    }
 
-    if (bot->HasSpell(concAura))
-        return !ai->HasAura("concentration aura", bot);
+    std::string blessings = "";
+    for (auto blessing : haveBlessings)
+    {
+        blessings += blessing;
+        if (blessing != haveBlessings[haveBlessings.size() - 1])
+        {
+            blessings += ",";
+        }
+    }
 
-    if (bot->HasSpell(devoAura))
-        return !ai->HasAura("devotion aura", bot);
-
-    return false;
+    // Doesn't have any of my blessings
+    return AI_VALUE2(Unit*, "party member without my aura", blessings);
 }
 
-bool SanctityAuraTrigger::IsActive()
-{
-    uint32 sancAura = AI_VALUE2(uint32, "spell id", "sanctity aura");
-    uint32 retrAura = AI_VALUE2(uint32, "spell id", "retribution aura");
-    uint32 devoAura = AI_VALUE2(uint32, "spell id", "devotion aura");
-    if (!(sancAura || devoAura || retrAura))
-        return false;
-
-    if (bot->HasSpell(sancAura))
-        return !ai->HasAura("sanctity aura", bot);
-
-    if (bot->HasSpell(retrAura))
-        return !ai->HasAura("retribution aura", bot);
-
-    if (bot->HasSpell(devoAura))
-        return !ai->HasAura("devotion aura", bot);
-
-    return false;
-}
-
-bool RetributionAuraTrigger::IsActive()
-{
-    uint32 retrAura = AI_VALUE2(uint32, "spell id", "retribution aura");
-    uint32 devoAura = AI_VALUE2(uint32, "spell id", "devotion aura");
-    if (!(devoAura || retrAura))
-        return false;
-
-    if (bot->HasSpell(retrAura))
-        return !ai->HasAura("retribution aura", bot);
-
-    if (bot->HasSpell(devoAura))
-        return !ai->HasAura("devotion aura", bot);
-
-    return false;
-}
-
-bool PaladinAuraTrigger::IsActive()
+bool NoPaladinAuraTrigger::IsActive()
 {
     vector<std::string> altAuras;
     vector<std::string> haveAuras;
@@ -137,10 +207,15 @@ bool PaladinAuraTrigger::IsActive()
     for (auto aura : altAuras)
     {
         if (AI_VALUE2(uint32, "spell id", aura))
+        {
             haveAuras.push_back(aura);
+        }
     }
+
     if (haveAuras.empty())
+    {
         return false;
+    }
 
     bool hasAura = false;
     for (auto aura : haveAuras)
@@ -151,8 +226,11 @@ bool PaladinAuraTrigger::IsActive()
             break;
         }
     }
+
     if (hasAura)
+    {
         return false;
+    }
 
     bool needAura = false;
     for (auto aura : haveAuras)
@@ -163,6 +241,7 @@ bool PaladinAuraTrigger::IsActive()
             break;
         }
     }
+
     return needAura;
 }
 

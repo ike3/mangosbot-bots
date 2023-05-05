@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../AiObjectContext.h"
 
 namespace ai

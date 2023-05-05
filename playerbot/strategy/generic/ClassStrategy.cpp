@@ -21,14 +21,6 @@ void ClassStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("use lightwell", ACTION_LIGHT_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "combat long stuck",
         NextAction::array(0, new NextAction("hearthstone", ACTION_IDLE - 0.1f), new NextAction("repop", ACTION_IDLE - 0.2f), NULL)));
 
@@ -158,7 +150,13 @@ void ClassRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 void AoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("goblin sapper", ACTION_HIGH + 1), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
 }
 
 void AoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -278,7 +276,9 @@ void CcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 void BuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
 }
 
 void BuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -333,14 +333,6 @@ void ClassStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("use lightwell", ACTION_LIGHT_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "combat long stuck",
         NextAction::array(0, new NextAction("hearthstone", ACTION_IDLE - 0.1f), new NextAction("repop", ACTION_IDLE - 0.2f), NULL)));
 
@@ -468,7 +460,13 @@ void ClassRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 void AoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("goblin sapper", ACTION_HIGH + 1), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
 }
 
 void AoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -588,7 +586,9 @@ void CcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 void BuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
 }
 
 void BuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -643,10 +643,6 @@ void ClassStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("use lightwell", ACTION_LIGHT_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "often",
         NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
 
@@ -778,7 +774,13 @@ void ClassRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 void AoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("goblin sapper", ACTION_HIGH + 1), NULL)));
 
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
 }
 
 void AoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -898,7 +900,9 @@ void CcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 void BuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
 }
 
 void BuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

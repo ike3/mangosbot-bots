@@ -25,4 +25,14 @@ namespace ai
     protected:
         virtual Unit* Calculate();
     };
+
+    class PartyMemberToRemoveRoots : public PartyMemberValue
+    {
+    public:
+        PartyMemberToRemoveRoots(PlayerbotAI* ai, string name = "party member to remove roots") :
+            PartyMemberValue(ai, name) {}
+
+    protected:
+        virtual Unit* Calculate();
+    };
 }
