@@ -241,18 +241,21 @@ Unit* PartyMemberToRemoveRoots::Calculate()
 {
     Unit* target = nullptr;
     Group* group = bot->GetGroup();
-    for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
+    if(group)
     {
-        Player* player = gref->getSource();
-        if (sServerFacade.IsAlive(player))
+        for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
         {
-            if (player->duel && player->duel->opponent)
-                continue;
-
-            if (player->HasAuraType(SPELL_AURA_MOD_ROOT) || player->HasAuraType(SPELL_AURA_MOD_DECREASE_SPEED))
+            Player* player = gref->getSource();
+            if (sServerFacade.IsAlive(player))
             {
-                target = player;
-                break;
+                if (player->duel && player->duel->opponent)
+                    continue;
+
+                if (player->HasAuraType(SPELL_AURA_MOD_ROOT) || player->HasAuraType(SPELL_AURA_MOD_DECREASE_SPEED))
+                {
+                    target = player;
+                    break;
+                }
             }
         }
     }
