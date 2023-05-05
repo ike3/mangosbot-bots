@@ -597,19 +597,17 @@ namespace ai
         virtual Value<Unit*>* GetTargetValue() { return context->GetValue<Unit*>("cc target", getName()); }
     };
 
-#ifdef MANGOSBOT_TWO
 	class CastHandOfSacrificeAction : public BuffOnPartyAction
 	{
 	public:
 		CastHandOfSacrificeAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "hand of sacrifice") {}
 	};
-#else
+
 	class CastBlessingOfSacrificeAction : public BuffOnPartyAction
 	{
 	public:
 		CastBlessingOfSacrificeAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of sacrifice") {}
 	};
-#endif
 
     class CastBlessingOfFreedomOnPartyAction : public CastSpellAction
     {

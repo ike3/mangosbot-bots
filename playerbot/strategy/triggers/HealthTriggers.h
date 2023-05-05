@@ -37,9 +37,8 @@ namespace ai
 		virtual bool IsActive()
 		{
 		    return ValueInRangeTrigger::IsActive() 
-                && !AI_VALUE2(bool, "dead", GetTargetName())
-                && (!isTankRequired || 
-                    (GetTarget()->IsPlayer() && ai->IsTank((Player*)GetTarget(), false)));
+                && !AI_VALUE2(bool, "dead", GetTargetName()) 
+                && (!isTankRequired || (GetTarget()->IsPlayer() && ai->IsTank((Player*)GetTarget(), false)));
 		}
 
 		virtual float GetValue();
