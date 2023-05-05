@@ -185,11 +185,6 @@ void HolyPaladinBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 {
     PaladinBuffStrategy::InitCombatTriggers(triggers);
 
-    // MOVE THIS TO TBC + WOTLK
-    triggers.push_back(new TriggerNode(
-        "divine illumination",
-        NextAction::array(0, new NextAction("divine illumination", ACTION_HIGH + 1), NULL)));
-
     triggers.push_back(new TriggerNode(
         "divine favor",
         NextAction::array(0, new NextAction("divine favor", ACTION_HIGH), NULL)));
@@ -433,14 +428,14 @@ void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("divine favor", ACTION_MEDIUM_HEAL + 6),
-            new NextAction("holy shock on party", ACTION_MEDIUM_HEAL + 5),
-            new NextAction("holy light on party", ACTION_MEDIUM_HEAL + 4), NULL)));
+                             new NextAction("holy shock on party", ACTION_MEDIUM_HEAL + 5),
+                             new NextAction("holy light on party", ACTION_MEDIUM_HEAL + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("divine favor", ACTION_MEDIUM_HEAL + 3),
-            new NextAction("holy shock", ACTION_MEDIUM_HEAL + 2),
-            new NextAction("holy light", ACTION_MEDIUM_HEAL + 1), NULL)));
+                             new NextAction("holy shock", ACTION_MEDIUM_HEAL + 2),
+                             new NextAction("holy light", ACTION_MEDIUM_HEAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium health",
@@ -852,14 +847,14 @@ void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("divine favor", ACTION_MEDIUM_HEAL + 6),
-            new NextAction("holy shock on party", ACTION_MEDIUM_HEAL + 5),
-            new NextAction("holy light on party", ACTION_MEDIUM_HEAL + 4), NULL)));
+                             new NextAction("holy shock on party", ACTION_MEDIUM_HEAL + 5),
+                             new NextAction("holy light on party", ACTION_MEDIUM_HEAL + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("divine favor", ACTION_MEDIUM_HEAL + 3),
-            new NextAction("holy shock", ACTION_MEDIUM_HEAL + 2),
-            new NextAction("holy light", ACTION_MEDIUM_HEAL + 1), NULL)));
+                             new NextAction("holy shock", ACTION_MEDIUM_HEAL + 2),
+                             new NextAction("holy light", ACTION_MEDIUM_HEAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "medium health",

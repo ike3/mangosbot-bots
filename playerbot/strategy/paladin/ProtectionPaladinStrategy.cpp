@@ -103,6 +103,10 @@ void ProtectionPaladinPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& t
 {
     ProtectionPaladinStrategy::InitCombatTriggers(triggers);
     PaladinPvpStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy is close",
+        NextAction::array(0, new NextAction("consecration", ACTION_NORMAL + 4), NULL)));
 }
 
 void ProtectionPaladinPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -522,6 +526,10 @@ void ProtectionPaladinPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& t
 {
     ProtectionPaladinStrategy::InitCombatTriggers(triggers);
     PaladinPvpStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy is close",
+        NextAction::array(0, new NextAction("consecration", ACTION_NORMAL + 4), NULL)));
 }
 
 void ProtectionPaladinPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -957,6 +965,10 @@ void ProtectionPaladinPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& t
 {
     ProtectionPaladinStrategy::InitCombatTriggers(triggers);
     PaladinPvpStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "enemy is close",
+        NextAction::array(0, new NextAction("consecration", ACTION_NORMAL + 4), NULL)));
 }
 
 void ProtectionPaladinPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
