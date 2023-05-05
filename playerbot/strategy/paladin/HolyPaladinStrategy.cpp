@@ -46,6 +46,10 @@ void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "enemy is close",
         NextAction::array(0, new NextAction("judgement", ACTION_NORMAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "blessing of sacrifice",
+        NextAction::array(0, new NextAction("blessing of sacrifice", ACTION_MEDIUM_HEAL + 8), NULL)));
 }
 
 void HolyPaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -465,6 +469,10 @@ void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "enemy is close",
         NextAction::array(0, new NextAction("judgement", ACTION_NORMAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "blessing of sacrifice",
+        NextAction::array(0, new NextAction("blessing of sacrifice", ACTION_MEDIUM_HEAL + 8), NULL)));
 }
 
 void HolyPaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -884,6 +892,10 @@ void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "enemy is close",
         NextAction::array(0, new NextAction("judgement of light", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "hand of sacrifice",
+        NextAction::array(0, new NextAction("hand of sacrifice", ACTION_MEDIUM_HEAL + 8), NULL)));
 }
 
 void HolyPaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

@@ -120,3 +120,4 @@ ipch
 /dep/libmpq/compile
 
 botpch.pch
+/.vs
