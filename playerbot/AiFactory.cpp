@@ -888,6 +888,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         nonCombatEngine->removeStrategy("travel");
         nonCombatEngine->removeStrategy("rpg");
         nonCombatEngine->removeStrategy("rpg craft");
+        nonCombatEngine->removeStrategy("follow");
 
         nonCombatEngine->removeStrategy("grind");
 

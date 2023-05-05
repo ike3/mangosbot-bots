@@ -3098,7 +3098,6 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
 
     if (spellId == 1953) // simulate blink coordinates
     {
-        targets.setUnitTarget(nullptr);
         float angle = bot->GetOrientation();
         float distance = 20.0f;
         float fx = bot->GetPositionX() + cos(angle) * distance;
