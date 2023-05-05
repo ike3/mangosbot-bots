@@ -403,20 +403,7 @@ bool CastRandomSpellAction::Execute(Event& event)
         uint32 spellId = spell.first;
         WorldObject* wo = spell.second.second;
 
-        bool isCast = castSpell(spellId, wo);
-
-        if (isCast)
-        {
-            if (MultiCast && ((wo && sServerFacade.IsInFront(bot, wo, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))))
-            {               
-                ostringstream cmd;
-
-                cmd << "castnc " << chat->formatWorldobject(wo) + " " << spellId << " " << 19;
-
-                ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *bot);
-            }
-            return true;
-        }
+        return castSpell(spellId, wo);
     }
 
     return false;
@@ -427,11 +414,17 @@ bool CastRandomSpellAction::castSpell(uint32 spellId, WorldObject* wo)
     bool executed = false;
     uint32 spellDuration = sPlayerbotAIConfig.globalCoolDown;
 
-    if (wo->GetObjectGuid().IsUnit())
-        executed = ai->CastSpell(spellId, (Unit*)(wo), nullptr, false, &spellDuration);
+    if (wo)
+    {
+        if (wo && wo->GetObjectGuid().IsUnit())
+            executed = ai->CastSpell(spellId, (Unit*)(wo), nullptr, false, &spellDuration);
+
+        if (!executed)
+            executed = ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), nullptr, false, &spellDuration);
+    }
 
     if (!executed)
-        executed = ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), nullptr, false, &spellDuration);
+        executed = ai->CastSpell(spellId, nullptr, nullptr, false, &spellDuration);
 
     if (executed)
     {
@@ -439,6 +432,71 @@ bool CastRandomSpellAction::castSpell(uint32 spellId, WorldObject* wo)
     }
 
     return executed;
+}
+
+bool CraftRandomItemAction::Execute(Event& event)
+{
+    vector<uint32> spellIds = AI_VALUE(vector<uint32>, "craft spells");
+    std::shuffle(spellIds.begin(), spellIds.end(),*GetRandomGenerator());
+
+    list<ObjectGuid> wos = chat->parseGameobjects(name);
+    WorldObject* wot = nullptr;
+
+    for (auto wo : wos)
+    {
+        wot = ai->GetGameObject(wo);
+
+        if (wot)
+            break;
+    }
+
+    if (!wot)
+        wot = bot;
+
+    for (uint32 spellId : spellIds)
+    {
+        if (!AI_VALUE2(bool, "can craft spell", spellId))
+            continue;
+
+        if (!AI_VALUE2(bool, "should craft spell", spellId))
+            continue;
+
+        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+
+        bool isCast = castSpell(spellId, wot);
+
+        if (isCast)
+        {
+            uint32 newItemId = pSpellInfo->EffectItemType[0];
+
+            if (!newItemId)
+                return true;
+
+            ItemPrototype const* proto = ObjectMgr::GetItemPrototype(newItemId);
+
+            if (!proto)
+                return true;
+
+            if (proto->GetMaxStackSize() < 2)
+                return true;
+
+            ostringstream cmd;
+
+            cmd << "castnc ";
+
+            if (((wot && sServerFacade.IsInFront(bot, wot, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))))
+            {
+                cmd << chat->formatWorldobject(wot) << " ";
+            }
+
+            cmd << spellId << " " << proto->GetMaxStackSize() - 1;
+
+            ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *bot);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool DisEnchantRandomItemAction::Execute(Event& event)

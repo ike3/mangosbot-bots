@@ -1,5 +1,5 @@
 #pragma once
-#include "../values/CraftValue.h"
+#include "../values/CraftValues.h"
 #include "GenericActions.h"
 
 namespace ai

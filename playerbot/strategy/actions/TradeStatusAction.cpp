@@ -8,7 +8,7 @@
 #include "../../RandomPlayerbotMgr.h"
 #include "../../GuildTaskMgr.h"
 #include "../../ServerFacade.h"
-#include "../values/CraftValue.h"
+#include "../values/CraftValues.h"
 #include "../values/ItemUsageValue.h"
 #include "SetCraftAction.h"
 
