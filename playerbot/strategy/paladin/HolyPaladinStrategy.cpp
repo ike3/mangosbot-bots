@@ -599,7 +599,6 @@ void HolyPaladinBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 {
     PaladinBuffStrategy::InitCombatTriggers(triggers);
 
-    // MOVE THIS TO TBC + WOTLK
     triggers.push_back(new TriggerNode(
         "divine illumination",
         NextAction::array(0, new NextAction("divine illumination", ACTION_HIGH + 1), NULL)));
@@ -1018,7 +1017,6 @@ void HolyPaladinBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 {
     PaladinBuffStrategy::InitCombatTriggers(triggers);
 
-    // MOVE THIS TO TBC + WOTLK
     triggers.push_back(new TriggerNode(
         "divine illumination",
         NextAction::array(0, new NextAction("divine illumination", ACTION_HIGH + 1), NULL)));
