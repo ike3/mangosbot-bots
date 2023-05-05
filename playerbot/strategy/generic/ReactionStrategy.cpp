@@ -9,17 +9,17 @@ void ReactionStrategy::InitReactionTriggers(list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "combat start",
-        NextAction::array(0, new NextAction("set combat state", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("set combat state", ACTION_PASSTROUGH + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
         "combat end",
-        NextAction::array(0, new NextAction("set non combat state", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("set non combat state", ACTION_PASSTROUGH + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
         "death",
-        NextAction::array(0, new NextAction("set dead state", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("set dead state", ACTION_PASSTROUGH + 10), NULL)));
 
     triggers.push_back(new TriggerNode(
         "resurrect",
-        NextAction::array(0, new NextAction("set non combat state", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("set non combat state", ACTION_PASSTROUGH + 10), NULL)));
 }
