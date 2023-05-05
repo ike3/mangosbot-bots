@@ -75,7 +75,7 @@ void RogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "low health",
+        "critical health",
         NextAction::array(0, new NextAction("blind", ACTION_EMERGENCY + 2), 
                              new NextAction("vanish", ACTION_EMERGENCY + 1), 
                              new NextAction("vanish", ACTION_EMERGENCY), NULL)));

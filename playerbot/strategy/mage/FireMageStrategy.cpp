@@ -25,7 +25,7 @@ FireMageStrategy::FireMageStrategy(PlayerbotAI* ai) : MageStrategy(ai)
 
 NextAction** FireMageStrategy::GetDefaultCombatActions()
 {
-    return NextAction::array(0, new NextAction("fireball", ACTION_NORMAL), NULL);
+    return NextAction::array(0, new NextAction("fireball", ACTION_IDLE), NULL);
 }
 
 void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -332,7 +332,7 @@ void FireMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 
 NextAction** FireMageStrategy::GetDefaultCombatActions()
 {
-    return NextAction::array(0, new NextAction("fireball", ACTION_NORMAL), NULL);
+    return NextAction::array(0, new NextAction("fireball", ACTION_IDLE), NULL);
 }
 
 void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -655,7 +655,7 @@ void FireMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 
 NextAction** FireMageStrategy::GetDefaultCombatActions()
 {
-    return NextAction::array(0, new NextAction("fireball", ACTION_NORMAL), NULL);
+    return NextAction::array(0, new NextAction("fireball", ACTION_IDLE), NULL);
 }
 
 void FireMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
