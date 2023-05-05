@@ -154,7 +154,11 @@ namespace ai
                 creators["repentance on snare target"] = &TriggerFactoryInternal::repentance_on_snare_target;
                 creators["repentance interrupt"] = &TriggerFactoryInternal::repentance_interrupt;
                 creators["hammer of justice on enemy"] = &TriggerFactoryInternal::hammer_on_enemy;
-                creators["divine illumination"] = &TriggerFactoryInternal::divine_illumination;
+#ifdef MANGOSBOT_TWO
+                creators["hand of sacrifice"] = &TriggerFactoryInternal::hand_of_sacrifice;
+#else
+                creators["blessing of sacrifice"] = &TriggerFactoryInternal::blessing_of_sacrifice;
+#endif
             }
 
         private:
@@ -195,6 +199,12 @@ namespace ai
             static Trigger* repentance_on_enemy_healer(PlayerbotAI* ai) { return new RepentanceOnHealerTrigger(ai); }
             static Trigger* repentance_on_snare_target(PlayerbotAI* ai) { return new RepentanceSnareTrigger(ai); }
             static Trigger* repentance_interrupt(PlayerbotAI* ai) { return new RepentanceInterruptTrigger(ai); }
+            
+#ifdef MANGOSBOT_TWO
+            static Trigger* hand_of_sacrifice(PlayerbotAI* ai) { return new HandOfSacrificeTrigger(ai); }
+#else
+            static Trigger* blessing_of_sacrifice(PlayerbotAI* ai) { return new BlessingOfSacrificeTrigger(ai); }
+#endif
         };
     };
 };
@@ -288,6 +298,11 @@ namespace ai
                 creators["blessing of freedom"] = &AiObjectContextInternal::blessing_of_freedom;
                 creators["avenging wrath"] = &AiObjectContextInternal::avenging_wrath;
                 creators["divine illumination"] = &AiObjectContextInternal::divine_illumination;
+#ifdef MANGOSBOT_TWO
+                creators["hand of sacrifice"] = &AiObjectContextInternal::hand_of_sacrifice;
+#else
+                creators["blessing of sacrifice"] = &AiObjectContextInternal::blessing_of_sacrifice;
+#endif
             }
 
         private:
@@ -369,6 +384,11 @@ namespace ai
             static Action* sanctity_aura(PlayerbotAI* ai) { return new CastSanctityAuraAction(ai); }
             static Action* holy_shock(PlayerbotAI* ai) { return new CastHolyShockAction(ai); }
             static Action* holy_shock_on_party(PlayerbotAI* ai) { return new CastHolyShockOnPartyAction(ai); }
+#ifdef MANGOSBOT_TWO
+            static Action* hand_of_sacrifice(PlayerbotAI* ai) { return new CastHandOfSacrificeAction(ai); }
+#else
+            static Action* blessing_of_sacrifice(PlayerbotAI* ai) { return new CastBlessingOfSacrificeAction(ai); }
+#endif
         };
     };
 };

@@ -81,4 +81,14 @@ void HealPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "blessing",
         NextAction::array(0, new NextAction("blessing of wisdom", ACTION_HIGH + 9), NULL)));
+
+#ifdef MANGOSBOT_TWO
+    triggers.push_back(new TriggerNode(
+        "hand of sacrifice",
+        NextAction::array(0, new NextAction("hand of sacrifice", ACTION_MEDIUM_HEAL + 8), NULL)));
+#else
+    triggers.push_back(new TriggerNode(
+        "blessing of sacrifice",
+        NextAction::array(0, new NextAction("blessing of sacrifice", ACTION_MEDIUM_HEAL + 8), NULL)));
+#endif
 }

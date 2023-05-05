@@ -159,6 +159,20 @@ namespace ai
         TurnUndeadTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "turn undead") {}
     };
 
+#ifdef MANGOSBOT_TWO
+    class HandOfSacrificeTrigger : public PartyMemberLowHealthTrigger
+    {
+    public:
+        HandOfSacrificeTrigger(PlayerbotAI* ai) : PartyMemberLowHealthTrigger(ai, "hand of sacrifice", sPlayerbotAIConfig.lowHealth, 0, true) {}
+    };
+#else
+    class BlessingOfSacrificeTrigger : public PartyMemberLowHealthTrigger
+    {
+    public:
+        BlessingOfSacrificeTrigger(PlayerbotAI* ai) : PartyMemberLowHealthTrigger(ai, "blessing of sacrifice", sPlayerbotAIConfig.lowHealth, 0, true) {}
+    };
+#endif
+
     DEBUFF_TRIGGER(AvengerShieldTrigger, "avenger's shield");
     BOOST_TRIGGER(DivineIlluminationBoostTrigger, "divine illumination");
 }
