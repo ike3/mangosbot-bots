@@ -142,7 +142,6 @@ namespace ai
             this->distance = distance;
         }
 
-    public:
         virtual bool IsActive()
 		{
             return AI_VALUE(uint8, "attackers count") >= amount;
@@ -165,7 +164,6 @@ namespace ai
     {
     public:
         MyAttackerCountTrigger(PlayerbotAI* ai, int amount) : AttackerCountTrigger(ai, amount) {}
-    public:
         virtual bool IsActive();
         virtual string getName() { return "my attacker count"; }
     };
@@ -180,7 +178,6 @@ namespace ai
     {
     public:
         HighThreatTrigger(PlayerbotAI* ai, string name = "high threat", int checkinterval = 1) : Trigger(ai, name, checkinterval) {}
-    public:
         virtual bool IsActive();
     };
 
@@ -188,7 +185,6 @@ namespace ai
     {
     public:
         MediumThreatTrigger(PlayerbotAI* ai, string name = "medium threat", int checkinterval = 1) : Trigger(ai, name, checkinterval) {}
-    public:
         virtual bool IsActive();
     };
 
@@ -196,7 +192,6 @@ namespace ai
     {
     public:
         SomeThreatTrigger(PlayerbotAI* ai, string name = "some threat", int checkinterval = 1) : Trigger(ai, name, checkinterval) {}
-    public:
         virtual bool IsActive();
     };
 
@@ -204,18 +199,14 @@ namespace ai
     {
     public:
         NoThreatTrigger(PlayerbotAI* ai, string name = "some threat", int checkinterval = 1) : SomeThreatTrigger(ai, name, checkinterval) {}
-    public:
         virtual bool IsActive();
     };
 
     class AoeTrigger : public AttackerCountTrigger
     {
     public:
-        AoeTrigger(PlayerbotAI* ai, int amount = 3, float range = 15.0f) : AttackerCountTrigger(ai, amount)
-        {
-            this->range = range;
-        }
-    public:
+        AoeTrigger(PlayerbotAI* ai, int amount = 3, float range = 15.0f) : AttackerCountTrigger(ai, amount), range(range) {}
+
         virtual bool IsActive();
         virtual string getName() { return "aoe"; }
 
@@ -314,9 +305,10 @@ namespace ai
 
     class ProtectPartyMemberTrigger : public Trigger
     {
-    public:ProtectPartyMemberTrigger(PlayerbotAI* ai) : Trigger(ai, "protect party member") {}
     public:
+        ProtectPartyMemberTrigger(PlayerbotAI* ai) : Trigger(ai, "protect party member") {}
         virtual string GetTargetName() { return "party member to protect"; }
+
         virtual bool IsActive()
         {
             return AI_VALUE(Unit*, "party member to protect");
@@ -392,7 +384,7 @@ namespace ai
             this->probability = probability;
             lastCheck = time(0);
         }
-    public:
+
         virtual bool IsActive();
 
     protected:
@@ -404,21 +396,13 @@ namespace ai
     {
     public:
         TimeTrigger(PlayerbotAI* ai, string name, int interval = 2) : Trigger(ai, name, interval) {}
-    public:
-        virtual bool IsActive()
-        {
-            return true;
-        }
-
-    protected:
-        int interval;
+        virtual bool IsActive() { return true; }
     };
 
     class AndTrigger : public Trigger, public Qualified
     {
     public:
          AndTrigger(PlayerbotAI* ai, string name = "and", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
-    public:
         virtual bool IsActive();
         virtual string getName();
     };
@@ -427,7 +411,6 @@ namespace ai
     {
     public:
         OrTrigger(PlayerbotAI* ai, string name = "or", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
-    public:
         virtual bool IsActive();
         virtual string getName();
     };
@@ -440,8 +423,10 @@ namespace ai
             this->name1 = name1;
             this->name2 = name2;
         }
+
         virtual bool IsActive();
         virtual string getName();
+
     protected:
         std::string name1;
         std::string name2;
@@ -524,11 +509,12 @@ namespace ai
 	class ItemCountTrigger : public Trigger 
     {
 	public:
-		ItemCountTrigger(PlayerbotAI* ai, string item, int count, int interval = 30) : Trigger(ai, item, interval) {
+		ItemCountTrigger(PlayerbotAI* ai, string item, int count, int interval = 30) : Trigger(ai, item, interval) 
+        {
 			this->item = item;
 			this->count = count;
 		}
-	public:
+
 		virtual bool IsActive();
 		virtual string getName() { return "item count"; }
 
@@ -543,34 +529,27 @@ namespace ai
         AmmoCountTrigger(PlayerbotAI* ai, string item, uint32 count = 1, int interval = 30) : ItemCountTrigger(ai, item, count, interval) {}
     };
 
-	class HasAuraTrigger : public Trigger {
+	class HasAuraTrigger : public Trigger 
+    {
 	public:
 		HasAuraTrigger(PlayerbotAI* ai, string spell, int interval = 1) : Trigger(ai, spell, interval) {}
-
 		virtual string GetTargetName() { return "self target"; }
 		virtual bool IsActive();
-
 	};
 
     class HasNoAuraTrigger : public Trigger 
     {
     public:
         HasNoAuraTrigger(PlayerbotAI* ai, string spell) : Trigger(ai, spell) {}
-
         virtual string GetTargetName() { return "self target"; }
         virtual bool IsActive();
-
     };
 
     class TimerTrigger : public Trigger
     {
     public:
-        TimerTrigger(PlayerbotAI* ai) : Trigger(ai, "timer")
-        {
-            lastCheck = 0;
-        }
+        TimerTrigger(PlayerbotAI* ai) : Trigger(ai, "timer"), lastCheck(0) {}
 
-    public:
         virtual bool IsActive()
         {
             if (time(0) != lastCheck)
@@ -589,18 +568,13 @@ namespace ai
 	{
 	public:
         TankAssistTrigger(PlayerbotAI* ai) : NoAttackersTrigger(ai) {}
-
-	public:
 		virtual bool IsActive();
-
 	};
 
     class IsBehindTargetTrigger : public Trigger
     {
     public:
         IsBehindTargetTrigger(PlayerbotAI* ai) : Trigger(ai) {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -608,8 +582,6 @@ namespace ai
     {
     public:
         IsNotBehindTargetTrigger(PlayerbotAI* ai) : Trigger(ai) {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -617,8 +589,6 @@ namespace ai
     {
     public:
         IsNotFacingTargetTrigger(PlayerbotAI* ai) : Trigger(ai) {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -626,8 +596,6 @@ namespace ai
     {
     public:
         HasCcTargetTrigger(PlayerbotAI* ai, string name) : Trigger(ai, name) {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -635,8 +603,6 @@ namespace ai
 	{
 	public:
 		NoMovementTrigger(PlayerbotAI* ai, string name) : Trigger(ai, name) {}
-
-	public:
 		virtual bool IsActive();
 	};
 
@@ -644,8 +610,6 @@ namespace ai
     {
     public:
         NoPossibleTargetsTrigger(PlayerbotAI* ai) : Trigger(ai, "no possible targets") {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -653,8 +617,6 @@ namespace ai
     {
     public:
         NotDpsTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not dps target active", 2) {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -662,8 +624,6 @@ namespace ai
     {
     public:
         NotDpsAoeTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not dps aoe target active") {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -671,8 +631,6 @@ namespace ai
     {
     public:
         PossibleAddsTrigger(PlayerbotAI* ai) : Trigger(ai, "possible adds") {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -680,8 +638,6 @@ namespace ai
     {
     public:
         IsSwimmingTrigger(PlayerbotAI* ai) : Trigger(ai, "swimming") {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -689,8 +645,6 @@ namespace ai
     {
     public:
         HasNearestAddsTrigger(PlayerbotAI* ai) : Trigger(ai, "has nearest adds") {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -698,8 +652,6 @@ namespace ai
     {
     public:
         HasItemForSpellTrigger(PlayerbotAI* ai, string spell) : Trigger(ai, spell) {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -707,8 +659,6 @@ namespace ai
     {
     public:
         TargetChangedTrigger(PlayerbotAI* ai) : Trigger(ai, "target changed") {}
-
-    public:
         virtual bool IsActive();
     };
 
@@ -716,7 +666,6 @@ namespace ai
     {
     public:
         InterruptEnemyHealerTrigger(PlayerbotAI* ai, string spell) : SpellTrigger(ai, spell) {}
-    public:
         virtual Value<Unit*>* GetTargetValue();
         virtual string getName() { return spell + " on enemy healer"; }
     };
@@ -726,7 +675,6 @@ namespace ai
     public:
         RandomBotUpdateTrigger(PlayerbotAI* ai) : RandomTrigger(ai, "random bot update", 30) {}
 
-    public:
         virtual bool IsActive()
         {
             return RandomTrigger::IsActive() && AI_VALUE(bool, "random bot update");
@@ -738,7 +686,6 @@ namespace ai
     public:
         NoNonBotPlayersAroundTrigger(PlayerbotAI* ai) : Trigger(ai, "no non bot players around", 10) {}
 
-    public:
         virtual bool IsActive()
         {
             return !ai->HasPlayerNearby();
@@ -754,7 +701,6 @@ namespace ai
     public:
         NewPlayerNearbyTrigger(PlayerbotAI* ai) : Trigger(ai, "new player nearby", 10) {}
 
-    public:
         virtual bool IsActive()
         {
             return AI_VALUE(ObjectGuid, "new player nearby");
@@ -766,7 +712,6 @@ namespace ai
     public:
         CollisionTrigger(PlayerbotAI* ai) : Trigger(ai, "collision", 5) {}
 
-    public:
         virtual bool IsActive()
         {
             return AI_VALUE2(bool, "collision", "self target");
@@ -778,7 +723,6 @@ namespace ai
     public:
         StayTimeTrigger(PlayerbotAI* ai, uint32 delay, string name) : Trigger(ai, name, 5), delay(delay) {}
 
-    public:
         virtual bool IsActive();
 
     private:
@@ -818,7 +762,6 @@ namespace ai
     public:
         GiveItemTrigger(PlayerbotAI* ai, string name, string item) : Trigger(ai, name, 2), item(item) {}
 
-    public:
         virtual bool IsActive()
         {
             return AI_VALUE2(Unit*, "party member without item", item) && AI_VALUE2(uint32, "item count", item);
@@ -833,7 +776,6 @@ namespace ai
     public:
         GiveFoodTrigger(PlayerbotAI* ai) : GiveItemTrigger(ai, "give food", "conjured food") {}
 
-    public:
         virtual bool IsActive()
         {
             return AI_VALUE(Unit*, "party member without food") && AI_VALUE2(uint32, "item count", item);
@@ -844,7 +786,7 @@ namespace ai
     {
     public:
         GiveWaterTrigger(PlayerbotAI* ai) : GiveItemTrigger(ai, "give water", "conjured water") {}
-    public:
+
         virtual bool IsActive()
         {
             return AI_VALUE(Unit*, "party member without water") && AI_VALUE2(uint32, "item count", item);
@@ -891,12 +833,11 @@ namespace ai
     {
     public:
         UseTrinketTrigger(PlayerbotAI* ai) : BoostTrigger(ai, "use trinket", 3) {}
-
-    public:
         virtual bool IsActive() { return AI_VALUE(list<Item*>, "trinkets on use").size() > 0; }
     };
 
-    class HasAreaDebuffTrigger : public Trigger {
+    class HasAreaDebuffTrigger : public Trigger 
+    {
     public:
         HasAreaDebuffTrigger(PlayerbotAI* ai) : Trigger(ai, "has area debuff", 3) {}
         virtual bool IsActive();
@@ -920,6 +861,7 @@ namespace ai
     {
     public:
         CannibalizeTrigger(PlayerbotAI* ai) : Trigger(ai, "cannibalize") {}
+
         virtual bool IsActive()
         {
             if (AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.almostFullHealth)
@@ -950,6 +892,7 @@ namespace ai
     {
     public:
         WOtFTrigger(PlayerbotAI* ai) : Trigger(ai, "will of the forsaken") {}
+
         virtual bool IsActive()
         {
             return bot->HasAuraType(SPELL_AURA_MOD_FEAR);
@@ -963,10 +906,22 @@ namespace ai
     {
     public:
         RootedTrigger(PlayerbotAI* ai) : Trigger(ai, "rooted") {}
+
         virtual bool IsActive()
         {
             return bot->HasAuraType(SPELL_AURA_MOD_ROOT) ||
-                bot->HasAuraType(SPELL_AURA_MOD_DECREASE_SPEED);
+                   bot->HasAuraType(SPELL_AURA_MOD_DECREASE_SPEED);
+        }
+    };
+
+    class PartyMemberRootedTrigger : public Trigger
+    {
+    public:
+        PartyMemberRootedTrigger(PlayerbotAI* ai) : Trigger(ai, "party member rooted") {}
+
+        virtual bool IsActive()
+        {
+            return AI_VALUE(Unit*, "party member to remove roots");
         }
     };
 
@@ -974,6 +929,7 @@ namespace ai
     {
     public:
         StoneformTrigger(PlayerbotAI* ai) : Trigger(ai, "stoneform") {}
+
         virtual bool IsActive()
         {
             uint32 disMask = GetDispellMask(DISPEL_DISEASE);
@@ -999,6 +955,7 @@ namespace ai
     {
     public:
         ShadowmeldTrigger(PlayerbotAI* ai) : Trigger(ai, "shadowmeld") {}
+
         virtual bool IsActive()
         {
             Unit* master = ai->GetMaster();
@@ -1012,6 +969,7 @@ namespace ai
     {
     public:
         ManaTapTrigger(PlayerbotAI* ai) : Trigger(ai, "mana tap") {}
+
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
@@ -1023,18 +981,19 @@ namespace ai
     {
     public:
         ArcanetorrentTrigger(PlayerbotAI* ai) : InterruptSpellTrigger(ai, "arcane torrent") {}
+
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
             return InterruptSpellTrigger::IsActive() && target && AI_VALUE2(float, "distance", "current target") <= 8.0f;
         }
-
     };
 
     class WarStompTrigger : public Trigger
     {
     public:
         WarStompTrigger(PlayerbotAI* ai) : Trigger(ai, "war stomp") {}
+
         virtual bool IsActive()
         {
             Unit* target = AI_VALUE(Unit*, "current target");
@@ -1043,13 +1002,13 @@ namespace ai
                     AI_VALUE(uint8, "my attacker count") >= 3 ||
                     target->IsNonMeleeSpellCasted(true));
         }
-
     };
 
     class PerceptionTrigger : public BuffTrigger
     {
     public:
         PerceptionTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "perception") {}
+
         virtual bool IsActive()
         {
             for (auto& attacker : ai->GetAiObjectContext()->GetValue<list<ObjectGuid>>("possible attack targets")->Get())

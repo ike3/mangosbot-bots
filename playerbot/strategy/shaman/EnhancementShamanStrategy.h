@@ -7,6 +7,7 @@ namespace ai
     {
     public:
         EnhancementShamanPlaceholderStrategy(PlayerbotAI* ai) : SpecPlaceholderStrategy(ai) {}
+        int GetType() override { return STRATEGY_TYPE_DPS | STRATEGY_TYPE_MELEE; }
         string getName() override { return "enhancement"; }
     };
 

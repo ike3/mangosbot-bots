@@ -217,7 +217,7 @@ public:
     void logEvent(PlayerbotAI* ai, string eventName, string info1 = "", string info2 = "");
     void logEvent(PlayerbotAI* ai, string eventName, ObjectGuid guid, string info2);
 
-    bool CanLogAction(PlayerbotAI* ai, string actionName, bool isExecute);
+    bool CanLogAction(PlayerbotAI* ai, string actionName, bool isExecute, string lastActionName);
 private:
     Config config;
 };

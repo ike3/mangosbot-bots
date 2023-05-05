@@ -184,7 +184,8 @@ namespace ai
     {
     public:
         SpecPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
-    
+        int GetType() override = 0;
+
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;

@@ -224,6 +224,7 @@ namespace ai
             creators["cannibalize"] = &TriggerContext::cannibalize;
             creators["will of the forsaken"] = &TriggerContext::will_of_the_forsaken;
             creators["rooted"] = &TriggerContext::rooted;
+            creators["party member rooted"] = &TriggerContext::party_member_rooted;
             creators["stoneform"] = &TriggerContext::stoneform;
             creators["shadowmeld"] = &TriggerContext::shadowmeld;
             creators["mana tap"] = &TriggerContext::mana_tap;
@@ -259,6 +260,7 @@ namespace ai
         static Trigger* cannibalize(PlayerbotAI* ai) { return new CannibalizeTrigger(ai); }
         static Trigger* will_of_the_forsaken(PlayerbotAI* ai) { return new WOtFTrigger(ai); }
         static Trigger* rooted(PlayerbotAI* ai) { return new RootedTrigger(ai); }
+        static Trigger* party_member_rooted(PlayerbotAI* ai) { return new PartyMemberRootedTrigger(ai); }
         static Trigger* stoneform(PlayerbotAI* ai) { return new StoneformTrigger(ai); }
         static Trigger* shadowmeld(PlayerbotAI* ai) { return new ShadowmeldTrigger(ai); }
         static Trigger* mana_tap(PlayerbotAI* ai) { return new ManaTapTrigger(ai); }

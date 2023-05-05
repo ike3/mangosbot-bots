@@ -2980,9 +2980,9 @@ uint8 PlayerbotAI::GetManaPercent() const
    return GetManaPercent(*bot);
 }
 
-bool PlayerbotAI::CastSpell(string name, Unit* target, Item* itemTarget, bool waitForSpell, uint32* outSpellDuration)
+bool PlayerbotAI::CastSpell(string name, Unit* target, Item* itemTarget, bool waitForSpell, uint32* outSpellDuration, bool canUseReagentCheat)
 {
-    bool result = CastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, itemTarget, waitForSpell, outSpellDuration);
+    bool result = CastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, itemTarget, waitForSpell, outSpellDuration, canUseReagentCheat);
     if (result)
     {
         aiObjectContext->GetValue<time_t>("last spell cast time", name)->Set(time(0));
@@ -2991,7 +2991,7 @@ bool PlayerbotAI::CastSpell(string name, Unit* target, Item* itemTarget, bool wa
     return result;
 }
 
-bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool waitForSpell, uint32* outSpellDuration)
+bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool waitForSpell, uint32* outSpellDuration, bool canUseReagentCheat)
 {
     if (!spellId)
         return false;
@@ -3098,7 +3098,6 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
 
     if (spellId == 1953) // simulate blink coordinates
     {
-        targets.setUnitTarget(nullptr);
         float angle = bot->GetOrientation();
         float distance = 20.0f;
         float fx = bot->GetPositionX() + cos(angle) * distance;
@@ -3146,7 +3145,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
 
     // Prepare the reagents if cheats enabled
     std::vector<std::pair<int32, uint32>> spellReagents;
-    if (HasCheat(BotCheatMask::item))
+    if (HasCheat(BotCheatMask::item) && canUseReagentCheat)
     {
         for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
         {
@@ -3239,7 +3238,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
     return true;
 }
 
-bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* itemTarget, bool waitForSpell, uint32* outSpellDuration)
+bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* itemTarget, bool waitForSpell, uint32* outSpellDuration, bool canUseReagentCheat)
 {
     if (!spellId)
         return false;
@@ -3347,7 +3346,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
     }
 
     // Prepare the reagents if cheats enabled
-    if (HasCheat(BotCheatMask::item))
+    if (HasCheat(BotCheatMask::item) && canUseReagentCheat)
     {
         std::vector<std::pair<int32, uint32>> spellReagents;
         for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)

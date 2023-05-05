@@ -158,7 +158,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
 
             if (!action)
             {
-                if (sPlayerbotAIConfig.CanLogAction(ai,actionNode->getName(),false))
+                if (sPlayerbotAIConfig.CanLogAction(ai, actionNode->getName(), false, ""))
                 {
                     ostringstream out;
                     out << "try: ";
@@ -178,10 +178,10 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
             else
             {
                 PerformanceMonitorOperation* pmo2 = sPerformanceMonitor.start(PERF_MON_ACTION, "isUsefull", &aiObjectContext->performanceStack);
-                bool isUsefull = action->isUseful();
+                bool isUseful = action->isUseful();
                 if (pmo2) pmo2->finish();
 
-                if (isUsefull && (!isStunned || action->isUsefulWhenStunned()))
+                if (isUseful && (!isStunned || action->isUsefulWhenStunned()))
                 {
                     for (list<Multiplier*>::iterator i = multipliers.begin(); i != multipliers.end(); i++)
                     {
@@ -245,7 +245,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
                     }
                     else
                     {
-                        if (sPlayerbotAIConfig.CanLogAction(ai,actionNode->getName(), false))
+                        if (sPlayerbotAIConfig.CanLogAction(ai,actionNode->getName(), false, ""))
                         {
                             ostringstream out;
                             out << "try: ";
@@ -266,7 +266,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
                 }
                 else
                 {
-                    if (sPlayerbotAIConfig.CanLogAction(ai,actionNode->getName(), false))
+                    if (sPlayerbotAIConfig.CanLogAction(ai,actionNode->getName(), false, ""))
                     {
                         ostringstream out;
                         out << "try: ";
@@ -661,6 +661,7 @@ Action* Engine::InitializeAction(ActionNode* actionNode)
 bool Engine::ListenAndExecute(Action* action, Event& event)
 {
     bool actionExecuted = false;
+    Action* prevExecutedAction = lastExecutedAction;
     if (actionExecutionListeners.Before(action, event))
     {
         actionExecuted = actionExecutionListeners.AllowExecution(action, event) ? action->Execute(event) : true;
@@ -671,7 +672,8 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
         }
     }
 
-    if (sPlayerbotAIConfig.CanLogAction(ai, action->getName(), true))
+    string lastActionName = prevExecutedAction ? prevExecutedAction->getName() : "";
+    if (sPlayerbotAIConfig.CanLogAction(ai, action->getName(), true, lastActionName))
     {
         ostringstream out;
         out << "do: ";

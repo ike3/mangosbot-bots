@@ -21,26 +21,26 @@ namespace ai
         virtual ~AiObjectContext() {}
 
     public:
-        virtual Strategy* GetStrategy(string name) { return strategyContexts.GetObject(name, ai); }
-        virtual set<string> GetSiblingStrategy(string name) { return strategyContexts.GetSiblings(name); }
-        virtual Trigger* GetTrigger(string name) { return triggerContexts.GetObject(name, ai); }
-        virtual Action* GetAction(string name) { return actionContexts.GetObject(name, ai); }
-        virtual UntypedValue* GetUntypedValue(string name) { return valueContexts.GetObject(name, ai); }
+        virtual Strategy* GetStrategy(const string& name) { return strategyContexts.GetObject(name, ai); }
+        virtual set<string> GetSiblingStrategy(const string& name) { return strategyContexts.GetSiblings(name); }
+        virtual Trigger* GetTrigger(const string& name) { return triggerContexts.GetObject(name, ai); }
+        virtual Action* GetAction(const string& name) { return actionContexts.GetObject(name, ai); }
+        virtual UntypedValue* GetUntypedValue(const string& name) { return valueContexts.GetObject(name, ai); }
 
         template<class T>
-        Value<T>* GetValue(string name)
+        Value<T>* GetValue(const string& name)
         {
             return dynamic_cast<Value<T>*>(GetUntypedValue(name));
         }
 
         template<class T>
-        Value<T>* GetValue(string name, string param)
+        Value<T>* GetValue(const string& name, const string& param)
         {
             return GetValue<T>((string(name) + "::" + param));
         }
 
         template<class T>
-        Value<T>* GetValue(string name, int32 param)
+        Value<T>* GetValue(const string& name, int32 param)
         {
         	ostringstream out; out << param;
             return GetValue<T>(name, out.str());

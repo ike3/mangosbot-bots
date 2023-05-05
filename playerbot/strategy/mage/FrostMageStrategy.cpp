@@ -9,7 +9,7 @@ using namespace ai;
 
 NextAction** FrostMageStrategy::GetDefaultCombatActions()
 {
-    return NextAction::array(0, new NextAction("frostbolt", ACTION_NORMAL), NULL);
+    return NextAction::array(0, new NextAction("frostbolt", ACTION_IDLE), NULL);
 }
 
 void FrostMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -308,7 +308,7 @@ void FrostMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& t
 
 NextAction** FrostMageStrategy::GetDefaultCombatActions()
 {
-    return NextAction::array(0, new NextAction("frostbolt", ACTION_NORMAL), NULL);
+    return NextAction::array(0, new NextAction("frostbolt", ACTION_IDLE), NULL);
 }
 
 void FrostMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -619,7 +619,7 @@ void FrostMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& t
 
 NextAction** FrostMageStrategy::GetDefaultCombatActions()
 {
-    return NextAction::array(0, new NextAction("frostbolt", ACTION_NORMAL), NULL);
+    return NextAction::array(0, new NextAction("frostbolt", ACTION_IDLE), NULL);
 }
 
 void FrostMageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
