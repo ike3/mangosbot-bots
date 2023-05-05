@@ -7,6 +7,7 @@ namespace ai
     {
     public:
         ElementalShamanPlaceholderStrategy(PlayerbotAI* ai) : SpecPlaceholderStrategy(ai) {}
+        int GetType() override { return STRATEGY_TYPE_DPS | STRATEGY_TYPE_RANGED; }
         string getName() override { return "elemental"; }
     };
 
