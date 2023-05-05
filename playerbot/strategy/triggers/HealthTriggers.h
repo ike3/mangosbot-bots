@@ -29,14 +29,22 @@ namespace ai
 	class HealthInRangeTrigger : public ValueInRangeTrigger
 	{
 	public:
-		HealthInRangeTrigger(PlayerbotAI* ai, string name, float maxValue, float minValue = 0) : ValueInRangeTrigger(ai, name, maxValue, minValue) {}
+		HealthInRangeTrigger(PlayerbotAI* ai, string name, float maxValue, float minValue = 0, bool isTankRequired = false) : ValueInRangeTrigger(ai, name, maxValue, minValue) 
+        {
+            this->isTankRequired = isTankRequired;
+        }
 
 		virtual bool IsActive()
 		{
-		    return ValueInRangeTrigger::IsActive() && !AI_VALUE2(bool, "dead", GetTargetName());
+		    return ValueInRangeTrigger::IsActive() 
+                && !AI_VALUE2(bool, "dead", GetTargetName()) 
+                && (!isTankRequired || (GetTarget()->IsPlayer() && ai->IsTank((Player*)GetTarget(), false)));
 		}
 
 		virtual float GetValue();
+
+    protected:
+        bool isTankRequired;
 	};
 
     class LowHealthTrigger : public HealthInRangeTrigger
@@ -73,8 +81,8 @@ namespace ai
     class PartyMemberLowHealthTrigger : public HealthInRangeTrigger
     {
     public:
-        PartyMemberLowHealthTrigger(PlayerbotAI* ai, string name = "party member low health", float value = sPlayerbotAIConfig.lowHealth, float minValue = sPlayerbotAIConfig.criticalHealth) :
-            HealthInRangeTrigger(ai, name, value, minValue) {}
+        PartyMemberLowHealthTrigger(PlayerbotAI* ai, string name = "party member low health", float value = sPlayerbotAIConfig.lowHealth, float minValue = sPlayerbotAIConfig.criticalHealth, bool isTankRequired = false) :
+            HealthInRangeTrigger(ai, name, value, minValue, isTankRequired) {}
 
         virtual string GetTargetName() { return "party member to heal"; }
     };

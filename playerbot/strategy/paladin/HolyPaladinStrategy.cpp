@@ -12,6 +12,10 @@ void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     PaladinStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "blessing of sacrifice",
+        NextAction::array(0, new NextAction("blessing of sacrifice", ACTION_MEDIUM_HEAL + 8), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("divine favor", ACTION_MEDIUM_HEAL + 6), 
                              new NextAction("holy shock on party", ACTION_MEDIUM_HEAL + 5), 
@@ -419,11 +423,17 @@ void HolyPaladinBlessingRaidStrategy::InitNonCombatTriggers(std::list<TriggerNod
     PaladinBlessingRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+
+#ifdef MANGOSBOT_ONE // TBC
 
 void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     PaladinStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "blessing of sacrifice",
+        NextAction::array(0, new NextAction("blessing of sacrifice", ACTION_MEDIUM_HEAL + 8), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member low health",
@@ -837,11 +847,17 @@ void HolyPaladinBlessingRaidStrategy::InitNonCombatTriggers(std::list<TriggerNod
     PaladinBlessingRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+
+#ifdef MANGOSBOT_TWO // WOTLK
 
 void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     PaladinStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "hand of sacrifice",
+        NextAction::array(0, new NextAction("hand of sacrifice", ACTION_MEDIUM_HEAL + 8), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member low health",
@@ -1256,3 +1272,4 @@ void HolyPaladinBlessingRaidStrategy::InitNonCombatTriggers(std::list<TriggerNod
 }
 
 #endif
+
