@@ -1,6 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "ItemUsageValue.h"
+#include "CraftValues.h"
 
 #include "../../../ahbot/AhBot.h"
 #include "../../GuildTaskMgr.h"
@@ -109,7 +110,7 @@ ItemUsage ItemUsageValue::Calculate()
             bool lowBagSpace = AI_VALUE(uint8, "bag space") > 50;
 
             if (proto->Class == ITEM_CLASS_TRADE_GOODS || proto->Class == ITEM_CLASS_MISC || proto->Class == ITEM_CLASS_REAGENT)
-                needItem = IsItemNeededForUsefullSpell(proto, lowBagSpace);
+                needItem = IsItemNeededForUsefullCraft(proto, lowBagSpace);
             else if(proto->Class == ITEM_CLASS_RECIPE)
             {
                 if (bot->HasSpell(proto->Spells[2].SpellId))
@@ -152,7 +153,7 @@ ItemUsage ItemUsageValue::Calculate()
         }
     }
 
-    if (proto->Class == ITEM_CLASS_REAGENT && IsItemNeededForUsefullSpell(proto, false, false))
+    if (proto->Class == ITEM_CLASS_REAGENT && SpellsUsingItem(proto->ItemId,bot).size())
     {
         float stacks = CurrentStacks(ai, proto);
 
@@ -581,67 +582,50 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const* proto)
     return false;
 }
 
-bool ItemUsageValue::IsItemNeededForUsefullSpell(ItemPrototype const* proto, bool checkAllReagents, bool tradeSkill)
+bool ItemUsageValue::IsItemNeededForUsefullCraft(ItemPrototype const* proto, bool checkAllReagents)
 {    
-    for (auto spellId : SpellsUsingItem(proto->ItemId, bot, tradeSkill))
+    vector<uint32> spellIds = AI_VALUE(vector<uint32>, "craft spells");
+
+    for (uint32 spellId : spellIds)
     {
         const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
 
         if (!pSpellInfo)
             continue;
 
-        if (checkAllReagents && !HasItemsNeededForSpell(spellId, proto, bot))
-            continue;
+        bool isReagentFor = false;
+        bool hasOtherReagents = true;
 
-        if (tradeSkill)
+        for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
         {
-            if (SpellGivesSkillUp(spellId, bot))
-                return true;
-
-            uint32 newItemId = *pSpellInfo->EffectItemType;
-
-            if (newItemId && newItemId != proto->ItemId)
+            if (!pSpellInfo->ReagentCount[i] || !pSpellInfo->Reagent[i])
+                continue;
+                
+            if(pSpellInfo->Reagent[i] == proto->ItemId)
             {
-                ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", newItemId);
+                isReagentFor = true;
+            }
+            else if (checkAllReagents)
+            {
+                const ItemPrototype* reqProto = sObjectMgr.GetItemPrototype(pSpellInfo->Reagent[i]);
 
-                if (usage != ITEM_USAGE_REPLACE && usage != ITEM_USAGE_EQUIP && usage != ITEM_USAGE_AMMO && usage != ITEM_USAGE_QUEST && usage != ITEM_USAGE_SKILL && usage != ITEM_USAGE_USE)
-                    continue;
+                uint32 count = AI_VALUE2(uint32, "item count", reqProto->Name1);
 
-                return true;
+                if (count < pSpellInfo->ReagentCount[i])
+                    hasOtherReagents = false;
             }
         }
+
+        if (!isReagentFor || !hasOtherReagents)
+            continue;
+
+        if (!AI_VALUE2(bool, "should craft spell", spellId))
+            continue;
+
         return true;
     }
 
     return false;
-}
-
-bool ItemUsageValue::HasItemsNeededForSpell(uint32 spellId, ItemPrototype const* proto, Player* bot)
-{
-    PlayerbotAI* ai = bot->GetPlayerbotAI();
-
-    AiObjectContext* context = ai->GetAiObjectContext();
-
-    const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
-
-    if (!pSpellInfo)
-        return false;
-
-    for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
-        if (pSpellInfo->ReagentCount[i] > 0 && pSpellInfo->Reagent[i])
-        {
-            if (proto && proto->ItemId == pSpellInfo->Reagent[i] && pSpellInfo->ReagentCount[i] == 1) //If we only need 1 item then current item does not need to be checked since we are looting/buying or already have it.
-                continue;
-
-            const ItemPrototype* reqProto = sObjectMgr.GetItemPrototype(pSpellInfo->Reagent[i]);
-
-            uint32 count = AI_VALUE2(uint32, "item count", reqProto->Name1);
-
-            if (count < pSpellInfo->ReagentCount[i])
-                return false;
-        }
-
-    return true;
 }
 
 Item* ItemUsageValue::CurrentItem(ItemPrototype const* proto)
@@ -709,7 +693,7 @@ float ItemUsageValue::BetterStacks(ItemPrototype const* proto, string itemType)
 }
 
 
-vector<uint32> ItemUsageValue::SpellsUsingItem(uint32 itemId, Player* bot, bool tradeSkill)
+vector<uint32> ItemUsageValue::SpellsUsingItem(uint32 itemId, Player* bot)
 {
     vector<uint32> retSpells;
 
@@ -726,50 +710,12 @@ vector<uint32> ItemUsageValue::SpellsUsingItem(uint32 itemId, Player* bot, bool 
         if (!pSpellInfo)
             continue;
 
-        if (tradeSkill && pSpellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM)
-            continue;
-
         for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
             if (pSpellInfo->ReagentCount[i] > 0 && pSpellInfo->Reagent[i] == itemId)
                 retSpells.push_back(spellId);
     }
 
     return retSpells;
-}
-
-inline int SkillGainChance(uint32 SkillValue, uint32 GrayLevel, uint32 GreenLevel, uint32 YellowLevel)
-{
-    if (SkillValue >= GrayLevel)
-        return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_GREY) * 10;
-    if (SkillValue >= GreenLevel)
-        return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_GREEN) * 10;
-    if (SkillValue >= YellowLevel)
-        return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_YELLOW) * 10;
-    return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_ORANGE) * 10;
-}
-
-bool ItemUsageValue::SpellGivesSkillUp(uint32 spellId, Player* bot)
-{
-    SkillLineAbilityMapBounds bounds = sSpellMgr.GetSkillLineAbilityMapBoundsBySpellId(spellId);
-
-    for (SkillLineAbilityMap::const_iterator _spell_idx = bounds.first; _spell_idx != bounds.second; ++_spell_idx)
-    {
-        SkillLineAbilityEntry const* skill = _spell_idx->second;
-        if (skill->skillId)
-        {
-            uint32 SkillValue = bot->GetSkillValuePure(skill->skillId);
-
-            uint32 craft_skill_gain = sWorld.getConfig(CONFIG_UINT32_SKILL_GAIN_CRAFTING);
-
-            if (SkillGainChance(SkillValue,
-                skill->max_value,
-                (skill->max_value + skill->min_value) / 2,
-                skill->min_value) > 0)
-                return true;
-        }
-    }
-
-    return false;
 }
 
 string ItemUsageValue::GetConsumableType(ItemPrototype const* proto, bool hasMana)

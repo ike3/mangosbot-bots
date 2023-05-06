@@ -53,7 +53,7 @@
 #include "EnemyPlayerValue.h"
 #include "AttackerWithoutAuraTargetValue.h"
 #include "CollisionValue.h"
-#include "CraftValue.h"
+#include "CraftValues.h"
 #include "LastSpellCastTimeValue.h"
 #include "CombatStartTimeValue.h"
 #include "ManaSaveLevelValue.h"
@@ -320,6 +320,10 @@ namespace ai
             creators["can fight boss"] = &ValueContext::can_fight_boss;
 
             creators["vendor has useful item"] = &ValueContext::vendor_has_useful_item;
+            creators["craft spells"] = &ValueContext::craft_spells;
+            creators["has reagents for"] = &ValueContext::has_reagents_for;
+            creators["can craft spell"] = &ValueContext::can_craft_spell;
+            creators["should craft spell"] = &ValueContext::should_craft_spell;
 
             creators["group members"] = &ValueContext::group_members;
             creators["following party"] = &ValueContext::following_party;
@@ -581,6 +585,10 @@ namespace ai
         static UntypedValue* can_fight_boss(PlayerbotAI* ai) { return new CanFightBossValue(ai); }
 
         static UntypedValue* vendor_has_useful_item(PlayerbotAI* ai) { return new VendorHasUsefulItemValue(ai); }
+        static UntypedValue* craft_spells(PlayerbotAI* ai) { return new CraftSpellsValue(ai); }
+        static UntypedValue* has_reagents_for(PlayerbotAI* ai) { return new HasReagentsForValue(ai); }
+        static UntypedValue* can_craft_spell(PlayerbotAI* ai) { return new CanCraftSpellValue(ai); }
+        static UntypedValue* should_craft_spell(PlayerbotAI* ai) { return new ShouldCraftSpellValue(ai); }
 
         static UntypedValue* group_members(PlayerbotAI* ai) { return new GroupMembersValue(ai); }
         static UntypedValue* following_party(PlayerbotAI* ai) { return new IsFollowingPartyValue(ai); }

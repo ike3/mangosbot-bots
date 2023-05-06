@@ -138,7 +138,7 @@ bool MoveToRpgTargetAction::Execute(Event& event)
         if (!unit || !unit->IsMoving())
             angle = wo->GetAngle(bot) + (M_PI * irand(-25, 25) / 100.0); //Closest 45 degrees towards the target
         else if (!unit->HasInArc(bot))
-            angle = wo->GetOrientation() + (M_PI * irand(-25, 25) / 100.0); //45 degrees infront of target (leading it's movement)
+            angle = wo->GetOrientation() + (M_PI * irand(-10, 10) / 100.0); //20 degrees infront of target (leading it's movement)
         else
             angle = wo->GetAngle(bot); //Current approuch angle.
 
@@ -159,7 +159,7 @@ bool MoveToRpgTargetAction::Execute(Event& event)
 
     bool couldMove;
 
-    if (unit && unit->IsMoving() && bot->GetDistance(unit) < INTERACTION_DISTANCE  * 2 && unit->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+    if (false && unit && unit->IsMoving() && bot->GetDistance(unit) < INTERACTION_DISTANCE  * 2 && unit->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
         couldMove = Follow(unit, INTERACTION_DISTANCE * distance, unit->GetOrientation());
     else    
         couldMove = MoveTo(mapId, x, y, z, false, false);

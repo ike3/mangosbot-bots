@@ -4,7 +4,7 @@
 
 #include "../../../ahbot/AhBotConfig.h"
 #include "../../ServerFacade.h"
-#include "../values/CraftValue.h"
+#include "../values/CraftValues.h"
 using namespace ai;
 
 map<uint32, SkillLineAbilityEntry const*> SetCraftAction::skillSpells;

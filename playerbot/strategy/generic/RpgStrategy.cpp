@@ -25,11 +25,11 @@ float RpgActionMultiplier::GetValue(Action* action)
 
 void RpgStrategy::OnStrategyAdded(BotState state)
 {
-    ai->ChangeStrategy("+rpg quest,+rpg vendor,+rpg explore,+rpg maintenance,+rpg player,+rpg craft,+rpg bg", state);
+    ai->ChangeStrategy("+rpg quest,+rpg vendor,+rpg explore,+rpg maintenance,+rpg player,+rpg bg", state);
 }
 void RpgStrategy::OnStrategyRemoved(BotState state) 
 {
-    ai->ChangeStrategy("-rpg quest,-rpg vendor,-rpg explore,-rpg maintenance,-rpg player,-rpg craft,-rpg bg", state);
+    ai->ChangeStrategy("-rpg quest,-rpg vendor,-rpg explore,-rpg maintenance,-rpg player,-rpg bg", state);
 }
 
 void RpgStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
@@ -183,4 +183,8 @@ void RpgCraftStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "rpg item",
         NextAction::array(0, new NextAction("rpg item", 1.001f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "castnc",
+        NextAction::array(0, new NextAction("cast custom nc spell", 1.001f), NULL)));
 }

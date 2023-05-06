@@ -518,32 +518,31 @@ bool RpgCraftTrigger::IsActive()
     if (!guidP.GetWorldObject())
         return false;
 
-    //Need to go ai value "can craft item"
-    list<uint32> itemIds = AI_VALUE2_LAZY(list<uint32>, "inventory item ids", "usage " + to_string(ITEM_USAGE_SKILL));
+    vector<uint32> spellIds = AI_VALUE(vector<uint32>, "craft spells");
 
-    for (auto& itemId : itemIds)
+    for (uint32 spellId : spellIds)
     {
-        vector<uint32> spells = ItemUsageValue::SpellsUsingItem(itemId, bot);
+        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
 
-        for (auto& spell : spells)
+        if (pSpellInfo->RequiresSpellFocus)
         {
-            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spell);
+            if (!guidP.IsGameObject())
+                continue;
 
-            if (pSpellInfo->RequiresSpellFocus)
-            {
-                if (!guidP.IsGameObject())
-                    return false;
+            if (guidP.GetGameObjectInfo()->type != GAMEOBJECT_TYPE_SPELL_FOCUS)
+                continue;
 
-                if (guidP.GetGameObjectInfo()->type != GAMEOBJECT_TYPE_SPELL_FOCUS)
-                    return false;
-
-                if (guidP.GetGameObjectInfo()->spellFocus.focusId != pSpellInfo->RequiresSpellFocus)
-                    return false;
-            }           
-
-            if (ItemUsageValue::HasItemsNeededForSpell(spell, ObjectMgr::GetItemPrototype(itemId), bot))
-                return true;
+            if (guidP.GetGameObjectInfo()->spellFocus.focusId != pSpellInfo->RequiresSpellFocus)
+                continue;
         }
+
+        if (!AI_VALUE2(bool, "can craft spell", spellId))
+            continue;
+
+        if (!AI_VALUE2(bool, "should craft spell", spellId))
+            continue;
+
+        return true;
     }
 
     return false;
