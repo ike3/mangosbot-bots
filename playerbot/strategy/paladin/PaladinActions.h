@@ -618,7 +618,21 @@ namespace ai
         string GetTargetName() override { return "party member to remove roots"; }
     };
 
-    PROTECT_ACTION(CastBlessingOfProtectionProtectAction, "blessing of protection");
+    class CastBlessingOfProtectionOnPartyAction : public CastProtectSpellAction
+    {
+    public:
+        CastBlessingOfProtectionOnPartyAction(PlayerbotAI* ai) : CastProtectSpellAction(ai, "blessing of protection") {}
+        bool isUseful() override 
+        { 
+            Unit* target = GetTarget();
+            if(target && target->IsPlayer() && !ai->IsTank((Player*)target))
+            {
+                return CastProtectSpellAction::isUseful();
+            }
+
+            return false;
+        }
+    };
 
     class UpdatePaladinPveStrategiesAction : public UpdateStrategyDependenciesAction
     {
