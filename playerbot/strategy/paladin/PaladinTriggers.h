@@ -59,168 +59,78 @@ namespace ai
     {
     public:
         BlessingOfMightOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of might", 4) {}
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+        bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
     class GreaterBlessingOfMightOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         GreaterBlessingOfMightOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of might", 4) {}
-
-        bool IsActive() override
-        {
-            Unit* target = GetTarget();
-            if (target && target->IsPlayer())
-            {
-                Player* player = (Player*)target;
-                if (bot->IsInGroup(player) && ai->GetBuffedCount((Player*)GetTarget(), spell) < 4)
-                {
-                    return BuffOnPartyTrigger::IsActive();
-                }
-            }
-
-            return false;
-        }
     };
 
     class BlessingOfWisdomOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         BlessingOfWisdomOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of wisdom", 4) {}
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+        bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
     class GreaterBlessingOfWisdomOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         GreaterBlessingOfWisdomOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of wisdom", 4) {}
-
-        bool IsActive() override
-        {
-            Unit* target = GetTarget();
-            if (target && target->IsPlayer())
-            {
-                Player* player = (Player*)target;
-                if (bot->IsInGroup(player) && ai->GetBuffedCount((Player*)GetTarget(), spell) < 4)
-                {
-                    return BuffOnPartyTrigger::IsActive();
-                }
-            }
-
-            return false;
-        }
     };
 
     class BlessingOfKingsOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         BlessingOfKingsOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of kings", 4) {}
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+        bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
     class GreaterBlessingOfKingsOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         GreaterBlessingOfKingsOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of kings", 4) {}
-
-        bool IsActive() override
-        {
-            Unit* target = GetTarget();
-            if (target && target->IsPlayer())
-            {
-                Player* player = (Player*)target;
-                if (bot->IsInGroup(player) && ai->GetBuffedCount((Player*)GetTarget(), spell) < 4)
-                {
-                    return BuffOnPartyTrigger::IsActive();
-                }
-            }
-
-            return false;
-        }
     };
 
     class BlessingOfLightOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         BlessingOfLightOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of light", 4) {}
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+        bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
     class GreaterBlessingOfLightOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         GreaterBlessingOfLightOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of light", 4) {}
-
-        bool IsActive() override
-        {
-            Unit* target = GetTarget();
-            if (target && target->IsPlayer())
-            {
-                Player* player = (Player*)target;
-                if (bot->IsInGroup(player) && ai->GetBuffedCount((Player*)GetTarget(), spell) < 4)
-                {
-                    return BuffOnPartyTrigger::IsActive();
-                }
-            }
-
-            return false;
-        }
     };
 
     class BlessingOfSalvationOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         BlessingOfSalvationOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of salvation", 4) {}
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+        bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
     class GreaterBlessingOfSalvationOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         GreaterBlessingOfSalvationOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of salvation", 4) {}
-
-        bool IsActive() override
-        {
-            Unit* target = GetTarget();
-            if (target && target->IsPlayer())
-            {
-                Player* player = (Player*)target;
-                if (bot->IsInGroup(player) && ai->GetBuffedCount((Player*)GetTarget(), spell) < 4)
-                {
-                    return BuffOnPartyTrigger::IsActive();
-                }
-            }
-
-            return false;
-        }
     };
 
     class BlessingOfSanctuaryOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         BlessingOfSanctuaryOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of sanctuary", 4) {}
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+        bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
     class GreaterBlessingOfSanctuaryOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
         GreaterBlessingOfSanctuaryOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of sanctuary", 4) {}
-
-        bool IsActive() override
-        {
-            Unit* target = GetTarget();
-            if (target && target->IsPlayer())
-            {
-                Player* player = (Player*)target;
-                if (bot->IsInGroup(player) && ai->GetBuffedCount((Player*)GetTarget(), spell) < 4)
-                {
-                    return BuffOnPartyTrigger::IsActive();
-                }
-            }
-
-            return false;
-        }
     };
 
     class BlessingTrigger : public BuffTrigger

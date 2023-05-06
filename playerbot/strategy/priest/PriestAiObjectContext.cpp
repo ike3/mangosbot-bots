@@ -151,9 +151,9 @@ namespace ai
             static Trigger* shadow_protection_on_party(PlayerbotAI* ai) { return new ShadowProtectionOnPartyTrigger(ai); }
             static Trigger* shadow_protection(PlayerbotAI* ai) { return new ShadowProtectionTrigger(ai); }
             static Trigger* shackle_undead(PlayerbotAI* ai) { return new ShackleUndeadTrigger(ai); }
-            static Trigger* prayer_of_fortitude_on_party(PlayerbotAI* ai) { return new PrayerOfFortitudeTrigger(ai); }
-            static Trigger* prayer_of_spirit_on_party(PlayerbotAI* ai) { return new PrayerOfSpiritTrigger(ai); }
-            static Trigger* prayer_of_shadow_protection_on_party(PlayerbotAI* ai) { return new PrayerOfShadowProtectionTrigger(ai); }
+            static Trigger* prayer_of_fortitude_on_party(PlayerbotAI* ai) { return new PrayerOfFortitudeOnPartyTrigger(ai); }
+            static Trigger* prayer_of_spirit_on_party(PlayerbotAI* ai) { return new PrayerOfSpiritOnPartyTrigger(ai); }
+            static Trigger* prayer_of_shadow_protection_on_party(PlayerbotAI* ai) { return new PrayerOfShadowProtectionOnPartyTrigger(ai); }
         };
     };
 };
