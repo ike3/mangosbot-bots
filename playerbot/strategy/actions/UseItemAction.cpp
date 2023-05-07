@@ -1079,9 +1079,6 @@ bool UseRandomQuestItemAction::Execute(Event& event)
     if (!item)
         return false;
 
-    if (!goTarget && !unitTarget)
-        return false;
-
     bool used = UseItem(item, goTarget, nullptr, unitTarget);
     if (used)
     {
