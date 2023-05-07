@@ -106,6 +106,9 @@ Unit* CcTargetValue::Calculate()
         if (!add)
             continue;
 
+        if (!ai->IsSafe(add))
+            continue;
+
         if (ai->HasMyAura(qualifier, add))
             return NULL;
 
