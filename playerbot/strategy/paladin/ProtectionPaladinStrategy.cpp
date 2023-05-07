@@ -834,12 +834,12 @@ void ProtectionPaladinAuraRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
 
 void ProtectionPaladinBlessingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    ProtectionPaladinBlessingStrategy::InitCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitCombatTriggers(triggers);
 }
 
 void ProtectionPaladinBlessingStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    ProtectionPaladinBlessingStrategy::InitNonCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ProtectionPaladinBlessingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1278,12 +1278,12 @@ void ProtectionPaladinAuraRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
 
 void ProtectionPaladinBlessingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    ProtectionPaladinBlessingStrategy::InitCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitCombatTriggers(triggers);
 }
 
 void ProtectionPaladinBlessingStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    ProtectionPaladinBlessingStrategy::InitNonCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ProtectionPaladinBlessingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

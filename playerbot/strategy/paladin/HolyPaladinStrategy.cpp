@@ -12,10 +12,6 @@ void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     PaladinStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "blessing of sacrifice",
-        NextAction::array(0, new NextAction("blessing of sacrifice", ACTION_MEDIUM_HEAL + 8), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("divine favor", ACTION_MEDIUM_HEAL + 6), 
                              new NextAction("holy shock on party", ACTION_MEDIUM_HEAL + 5), 
@@ -432,10 +428,6 @@ void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     PaladinStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "blessing of sacrifice",
-        NextAction::array(0, new NextAction("blessing of sacrifice", ACTION_MEDIUM_HEAL + 8), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("divine favor", ACTION_MEDIUM_HEAL + 6),
                              new NextAction("holy shock on party", ACTION_MEDIUM_HEAL + 5),
@@ -803,12 +795,12 @@ void HolyPaladinAuraRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 
 void HolyPaladinBlessingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    HolyPaladinBlessingStrategy::InitCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitCombatTriggers(triggers);
 }
 
 void HolyPaladinBlessingStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    HolyPaladinBlessingStrategy::InitNonCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitNonCombatTriggers(triggers);
 }
 
 void HolyPaladinBlessingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1227,12 +1219,12 @@ void HolyPaladinAuraRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 
 void HolyPaladinBlessingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    HolyPaladinBlessingStrategy::InitCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitCombatTriggers(triggers);
 }
 
 void HolyPaladinBlessingStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    HolyPaladinBlessingStrategy::InitNonCombatTriggers(triggers);
+    PaladinBlessingStrategy::InitNonCombatTriggers(triggers);
 }
 
 void HolyPaladinBlessingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

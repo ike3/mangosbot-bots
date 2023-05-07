@@ -557,7 +557,7 @@ namespace ai
             static Action* divine_illumination(PlayerbotAI* ai) { return new CastDivineIlluminationAction(ai); }
             static Action* avenging_wrath(PlayerbotAI* ai) { return new CastAvengingWrathAction(ai); }
             static Action* blessing_of_freedom(PlayerbotAI* ai) { return new CastBlessingOfFreedomAction(ai); }
-            static Action* blessing_of_protection_on_party(PlayerbotAI* ai) { return new CastBlessingOfProtectionProtectAction(ai); }
+            static Action* blessing_of_protection_on_party(PlayerbotAI* ai) { return new CastBlessingOfProtectionOnPartyAction(ai); }
             static Action* blessing_of_freedom_on_party(PlayerbotAI* ai) { return new CastBlessingOfFreedomOnPartyAction(ai); }
             static Action* turn_undead(PlayerbotAI* ai) { return new CastTurnUndeadAction(ai); }
             static Action* divine_favor(PlayerbotAI* ai) { return new CastDivineFavorAction(ai); }

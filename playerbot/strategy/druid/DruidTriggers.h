@@ -7,37 +7,26 @@ namespace ai {
     {
     public:
         MarkOfTheWildOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "mark of the wild", 4) {}
-
-        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("mark of the wild", GetTarget()) && !ai->HasAura("gift of the wild", GetTarget()); }
+        virtual bool IsActive() { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("gift of the wild", GetTarget()); }
     };
 
     class MarkOfTheWildTrigger : public BuffTrigger 
     {
     public:
         MarkOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "mark of the wild", 4) {}
-
-        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("mark of the wild", GetTarget()) && !ai->HasAura("gift of the wild", GetTarget()); }
+        virtual bool IsActive() { return BuffTrigger::IsActive() &&  !ai->HasAura("gift of the wild", GetTarget()); }
     };
 
-    class GiftOfTheWildTrigger : public BuffOnPartyTrigger 
+    class GiftOfTheWildOnPartyTrigger : public BuffOnPartyTrigger 
     {
     public:
-        GiftOfTheWildTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "gift of the wild", 3) {}
-
-        virtual bool IsActive() 
-        {
-            return bot->GetGroup() && BuffOnPartyTrigger::IsActive() &&
-                !ai->HasAura("gift of the wild", GetTarget()) &&
-                bot->IsInGroup((Player*)GetTarget()) &&
-                (ai->GetBuffedCount((Player*)GetTarget(), "gift of the wild") + ai->GetBuffedCount((Player*)GetTarget(), "mark of the wild")) < 4;
-            ;
-        }
+        GiftOfTheWildOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "gift of the wild", 4) {}
     };
 
     class ThornsOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
-        ThornsOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "thorns", 2) {}
+        ThornsOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "thorns", 4) {}
 
         virtual bool IsActive()
         {
@@ -49,9 +38,7 @@ namespace ai {
     class ThornsTrigger : public BuffTrigger
     {
     public:
-        ThornsTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "thorns", 2) {}
-
-        virtual bool IsActive() { return BuffTrigger::IsActive() && !ai->HasAura("thorns", GetTarget()); }
+        ThornsTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "thorns", 4) {}
     };
 
     class OmenOfClarityTrigger : public BuffTrigger

@@ -140,7 +140,7 @@ namespace ai
             static Trigger* claw(PlayerbotAI* ai) { return new SpellCanBeCastTrigger(ai, "claw"); }
             static Trigger* mark_of_the_wild(PlayerbotAI* ai) { return new MarkOfTheWildTrigger(ai); }
             static Trigger* mark_of_the_wild_on_party(PlayerbotAI* ai) { return new MarkOfTheWildOnPartyTrigger(ai); }
-            static Trigger* gift_of_the_wild_on_party(PlayerbotAI* ai) { return new GiftOfTheWildTrigger(ai); }
+            static Trigger* gift_of_the_wild_on_party(PlayerbotAI* ai) { return new GiftOfTheWildOnPartyTrigger(ai); }
             static Trigger* cure_poison(PlayerbotAI* ai) { return new CurePoisonTrigger(ai); }
             static Trigger* party_member_cure_poison(PlayerbotAI* ai) { return new PartyMemberCurePoisonTrigger(ai); }
             static Trigger* remove_curse(PlayerbotAI* ai) { return new RemoveCurseTrigger(ai); }

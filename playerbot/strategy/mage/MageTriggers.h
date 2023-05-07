@@ -37,21 +37,6 @@ namespace ai
     {
     public:
         ArcaneBrillianceOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "arcane brilliance", 4) {}
-
-        bool IsActive() override
-        {
-            Unit* target = GetTarget();
-            if (target && target->IsPlayer())
-            {
-                Player* player = (Player*)target;
-                if (bot->IsInGroup(player) && ai->GetBuffedCount((Player*)GetTarget(), spell) < 4)
-                {
-                    return BuffOnPartyTrigger::IsActive();
-                }
-            }
-
-            return false;
-        }
     };
 
     class AnyMageArmorTrigger : public BuffTrigger 
