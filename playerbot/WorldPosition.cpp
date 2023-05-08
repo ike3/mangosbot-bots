@@ -25,6 +25,120 @@
 using namespace ai;
 using namespace MaNGOS;
 
+
+class TerrainInfoAccess : public Referencable<std::atomic_long>
+{
+public:
+    GridMap* Load(const uint32 x, const uint32 y, bool mapOnly = false);
+private:
+    GridMap* LoadMapAndVMap(const uint32 x, const uint32 y, bool mapOnly = false);
+
+    const uint32 m_mapId;
+
+    GridMap* m_GridMaps[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
+    bool m_GridMapsLoadAttempted[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
+    int16 m_GridRef[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
+
+    // global garbage collection timer
+    ShortIntervalTimer i_timer;
+
+    VMAP::IVMapManager* m_vmgr;
+
+    typedef std::mutex LOCK_TYPE;
+    typedef std::lock_guard<LOCK_TYPE> LOCK_GUARD;
+    LOCK_TYPE m_mutex;
+    LOCK_TYPE m_refMutex;
+};
+
+GridMap* TerrainInfoAccess::Load(const uint32 x, const uint32 y, bool mapOnly /*= false*/)
+{
+    MANGOS_ASSERT(x < MAX_NUMBER_OF_GRIDS);
+    MANGOS_ASSERT(y < MAX_NUMBER_OF_GRIDS);
+
+    //Do not reference the grid.
+    //RefGrid(x, y);
+
+    // quick check if GridMap already loaded
+    GridMap* pMap = m_GridMaps[x][y];
+    if (!pMap)
+    {
+        pMap = LoadMapAndVMap(x, y, mapOnly);
+        m_GridMapsLoadAttempted[x][y] = true;
+    }
+
+    return pMap;
+};
+
+GridMap* TerrainInfoAccess::LoadMapAndVMap(const uint32 x, const uint32 y, bool mapOnly /*= false*/)
+{
+    if ((m_GridMaps[x][y] && mapOnly)
+        || (VMAP::VMapFactory::createOrGetVMapManager()->IsTileLoaded(m_mapId, x, y) && MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(m_mapId, x, y)))
+    {
+        // nothing to load here
+        return m_GridMaps[x][y];
+    }
+
+    {
+        LOCK_GUARD lock(m_mutex);
+        // double checked lock pattern
+        if (!m_GridMaps[x][y])
+        {
+            GridMap* map = new GridMap();
+
+            // map file name
+            int len = sWorld.GetDataPath().length() + strlen("maps/%03u%02u%02u.map") + 1;
+            char* tmp = new char[len];
+            snprintf(tmp, len, (char*)(sWorld.GetDataPath() + "maps/%03u%02u%02u.map").c_str(), m_mapId, x, y);
+            DEBUG_FILTER_LOG(LOG_FILTER_MAP_LOADING, "Loading map %s", tmp);
+
+            if (!map->loadData(tmp))
+            {
+                sLog.outError("Error load map file: %s", tmp);
+                //assert(false);
+            }
+
+            delete[] tmp;
+            m_GridMaps[x][y] = map;
+        }
+    }
+
+    // we'll load the rest later
+    if (mapOnly)
+        return m_GridMaps[x][y];
+
+    if (!m_vmgr->IsTileLoaded(m_mapId, x, y))
+    {
+        // load VMAPs for current map/grid...
+        const MapEntry* i_mapEntry = sMapStore.LookupEntry(m_mapId);
+        const char* mapName = i_mapEntry ? i_mapEntry->name[sWorld.GetDefaultDbcLocale()] : "UNNAMEDMAP\x0";
+
+        int vmapLoadResult = m_vmgr->loadMap((sWorld.GetDataPath() + "vmaps").c_str(), m_mapId, x, y);
+        switch (vmapLoadResult)
+        {
+        case VMAP::VMAP_LOAD_RESULT_OK:
+            DEBUG_FILTER_LOG(LOG_FILTER_MAP_LOADING, "VMAP loaded name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, m_mapId, x, y, x, y);
+            break;
+        case VMAP::VMAP_LOAD_RESULT_ERROR:
+            DEBUG_FILTER_LOG(LOG_FILTER_MAP_LOADING, "Could not load VMAP name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, m_mapId, x, y, x, y);
+            break;
+        case VMAP::VMAP_LOAD_RESULT_IGNORED:
+            DEBUG_FILTER_LOG(LOG_FILTER_MAP_LOADING, "Ignored VMAP name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, m_mapId, x, y, x, y);
+            break;
+        }
+    }
+
+    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(m_mapId, x, y))
+    {
+        // load navmesh
+        MMAP::MMapFactory::createOrGetMMapManager()->loadMap(m_mapId, x, y);
+    }
+
+    if (m_GridMaps[x][y])
+        m_GridMaps[x][y]->SetFullyLoaded();
+
+    return  m_GridMaps[x][y];
+}
+
 void WorldPosition::add()
 {
 #ifdef MEMORY_MONITOR
@@ -341,6 +455,12 @@ WorldPosition WorldPosition::getDisplayLocation() const
 
 AreaTableEntry const* WorldPosition::getArea() const
 {
+    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(getMapId(), getmGridPair().first, getmGridPair().second))
+    {
+        TerrainInfoAccess* terrain = reinterpret_cast<TerrainInfoAccess*>(const_cast<TerrainInfo*>(getTerrain()));
+        terrain->Load(getmGridPair().first, getmGridPair().second);
+    }
+
     uint16 areaFlag = getAreaFlag();
 
     //if(!areaFlag)
@@ -570,94 +690,31 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y
 {
     string fileName = "load_map_grid.csv";
 
-    if (isOverworld() && false || false)
+#ifdef MANGOSBOT_TWO
+    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, instanceId, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
+#else
+    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
+#endif
     {
+        TerrainInfoAccess* terrain = reinterpret_cast<TerrainInfoAccess*>(const_cast<TerrainInfo*>(getTerrain()));
+        terrain->Load(x, y);
+        return;
+
+        // load navmesh
 #ifdef MANGOSBOT_TWO
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, instanceId, x, y))
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, instanceId, x, y, 0))
 #else
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, x, y))
 #endif
-            if (sPlayerbotAIConfig.hasLog(fileName))
-            {
-                ostringstream out;
-                out << sPlayerbotAIConfig.GetTimestampStr();
-                out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
-                printWKT(fromGridPair(GridPair(x, y)), out, 1, true);
-                sPlayerbotAIConfig.log(fileName, out.str().c_str());
-            }
+            sTravelMgr.addBadMmap(mapId, x, y);
 
-        int px = (float)(32 - x) * SIZE_OF_GRIDS;
-        int py = (float)(32 - y) * SIZE_OF_GRIDS;
-
-#ifdef MANGOSBOT_TWO
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, instanceId, x, y))
-#else
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
-#endif
-            if(getTerrain())
-                getTerrain()->GetTerrainType(px, py);
-
-    }
-    else
-    {
-
-        //This needs to be disabled or maps will not load.
-        //Needs more testing to check for impact on movement.
-        if (false)
-            if (!VMAP::VMapFactory::createOrGetVMapManager()->IsTileLoaded(mapId, x, y) && !sTravelMgr.isBadVmap(mapId, x, y))
-            {
-                // load VMAPs for current map/grid...
-                const MapEntry* i_mapEntry = sMapStore.LookupEntry(mapId);
-                const char* mapName = i_mapEntry ? i_mapEntry->name[sWorld.GetDefaultDbcLocale()] : "UNNAMEDMAP\x0";
-
-                int vmapLoadResult = VMAP::VMapFactory::createOrGetVMapManager()->loadMap((sWorld.GetDataPath() + "vmaps").c_str(), mapId, x, y);
-                switch (vmapLoadResult)
-                {
-                case VMAP::VMAP_LOAD_RESULT_OK:
-                    //sLog.outError("VMAP loaded name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, mapId, x, y, x, y);
-                    break;
-                case VMAP::VMAP_LOAD_RESULT_ERROR:
-                    //sLog.outError("Could not load VMAP name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, mapId, x, y, x, y);
-                    sTravelMgr.addBadVmap(mapId, x, y);
-                    break;
-                case VMAP::VMAP_LOAD_RESULT_IGNORED:
-                    sTravelMgr.addBadVmap(mapId, x, y);
-                    //sLog.outError("Ignored VMAP name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", mapName, mapId, x, y, x, y);
-                    break;
-                }
-
-                if (sPlayerbotAIConfig.hasLog(fileName))
-                {
-                    ostringstream out;
-                    out << sPlayerbotAIConfig.GetTimestampStr();
-                    out << "+00,\"vmap\", " << x << "," << y << ", " << (sTravelMgr.isBadVmap(mapId, x, y) ? "0" : "1") << ",";
-                    printWKT(fromGridPair(GridPair(x, y)), out, 1, true);
-                    sPlayerbotAIConfig.log(fileName, out.str().c_str());
-                }
-            }
-
-#ifdef MANGOSBOT_TWO
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, instanceId, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
-#else
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
-#endif
+        if (sPlayerbotAIConfig.hasLog(fileName))
         {
-            // load navmesh
-#ifdef MANGOSBOT_TWO
-            if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, instanceId, x, y, 0))
-#else
-            if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, x, y))
-#endif
-                sTravelMgr.addBadMmap(mapId, x, y);
-
-            if (sPlayerbotAIConfig.hasLog(fileName))
-            {
-                ostringstream out;
-                out << sPlayerbotAIConfig.GetTimestampStr();
-                out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
-                printWKT(frommGridPair(mGridPair(x, y)), out, 1, true);
-                sPlayerbotAIConfig.log(fileName, out.str().c_str());
-            }
+            ostringstream out;
+            out << sPlayerbotAIConfig.GetTimestampStr();
+            out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
+            printWKT(frommGridPair(mGridPair(x, y)), out, 1, true);
+            sPlayerbotAIConfig.log(fileName, out.str().c_str());
         }
     }
 }

@@ -1334,6 +1334,8 @@ void TravelMgr::LoadQuestTravelTable()
     sTravelNodeMap.printNodeStore();
     sTravelNodeMap.saveNodeStore();
 
+    sTerrainMgr.Update(60*60*24);
+
     //Creature/gos/zone export.
     if (sPlayerbotAIConfig.hasLog("creatures.csv"))
     {

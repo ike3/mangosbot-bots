@@ -164,7 +164,7 @@ namespace ai
         const MapEntry* getMapEntry() const { return sMapStore.LookupEntry(mapid); }
         uint32 getInstanceId() const { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
         Map* getMap() const { return sMapMgr.FindMap(mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
-        const TerrainInfo* getTerrain() const { return getMap() ? getMap()->GetTerrain() : NULL; }
+        const TerrainInfo* getTerrain() const { return getMap() ? getMap()->GetTerrain() : sTerrainMgr.LoadTerrain(getMapId()); }
         bool isDungeon() { return getMapEntry()->IsDungeon(); }
 
 #if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
