@@ -25,14 +25,17 @@ class MemoryMonitor
         }
 
 	public:        
-        void Add(std::string objectType, uint64 object, int level = 0);
-        void Rem(std::string objectType, uint64 object, int level = 0);
-        void Print();
+        //Objecttype is the name of the class/struct.
+        //Object is a pointer to the object or unique identifier.
+        //level = 0 only count total number of objects, otherwise log the creation stack of any (object%level) = 0 object.
+        void Add(std::string objectType, uint64_t object, int level = 0); //Method to call when object gets created.
+        void Rem(std::string objectType, uint64_t object, int level = 0); //Method to call when object gets destroyed.
+        void Print(); //Print number of objects that still exist and their creation call-stack.
         void Browse();
 	private:
         std::unordered_map<std::thread::id, std::map<std::string, int>> objectnumbers;
         std::list<std::map<std::string, int >> objectnumbersHist;
-        std::unordered_map < std::thread::id, std::unordered_map<std::string, std::unordered_map<uint64,std::pair<std::string,time_t>>>> adds, rems;
+        std::unordered_map < std::thread::id, std::unordered_map<std::string, std::unordered_map<uint64_t,std::pair<std::string,time_t>>>> adds, rems;
 };
 
 
