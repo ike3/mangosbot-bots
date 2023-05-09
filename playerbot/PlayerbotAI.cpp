@@ -3143,8 +3143,6 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
         StopMoving();
     }
 
-    // Prepare the reagents if cheats enabled
-    std::vector<std::pair<int32, uint32>> spellReagents;
     if (HasCheat(BotCheatMask::item) && canUseReagentCheat)
     {
         for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
@@ -3152,48 +3150,13 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
             const int32 itemId = pSpellInfo->Reagent[i];
             if (itemId)
             {
-                const uint32 itemAmount = pSpellInfo->ReagentCount[i];
-                if (itemAmount > 0)
-                {
-                    const uint32 currentItemAmount = bot->GetItemCount(itemId);
-                    if (currentItemAmount < itemAmount)
-                    {
-                        spellReagents.emplace_back((uint32)itemId, itemAmount - currentItemAmount);
-                    }
-                }
+                spell->m_ignoreCosts = true;
+                break;              
             }
-        }
-
-        if (!spellReagents.empty())
-        {
-            for (auto& pair : spellReagents)
-            {
-                // Check bag space and find places
-                const uint32 itemId = pair.first;
-                const uint32 amount = pair.second;
-                ItemPosCountVec dest;
-                uint8 msg = bot->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemId, amount);
-                if (msg == EQUIP_ERR_OK)
-                {
-                    Item* item = bot->StoreNewItem(dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId));
-                    bot->SendNewItem(item, amount, false, true, false);
-                }
-            }
-        }
-    }
+        }       
+    }   
 
     SpellCastResult spellSuccess = spell->SpellStart(&targets);
-
-    if(spellSuccess != SPELL_CAST_OK)
-    {
-        // Remove the reagents if the spell failed
-        for (auto& pair : spellReagents)
-        {
-            const uint32 itemId = pair.first;
-            const uint32 amount = pair.second;
-            bot->DestroyItemCount(itemId, amount, true, true);
-        }
-    }
 
     if (pSpellInfo->Effect[0] == SPELL_EFFECT_OPEN_LOCK ||
         pSpellInfo->Effect[0] == SPELL_EFFECT_SKINNING)
