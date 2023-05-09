@@ -3170,8 +3170,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
         }
     }
 
-    //if (spellSuccess != SPELL_CAST_OK)
-    //    return false;
+    if (spellSuccess != SPELL_CAST_OK)
+        return false;
 
     if(waitForSpell)
     {
