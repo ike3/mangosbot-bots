@@ -25,7 +25,7 @@ namespace ai
     {
     public:
         CastCustomNcSpellAction(PlayerbotAI* ai, string name = "cast custom nc spell") : CastCustomSpellAction(ai, name) {}
-        virtual bool isUseful() { return !bot->IsInCombat(); }
+        virtual bool isUseful() { return !bot->IsMoving(); }
         virtual string castString(WorldObject* target) { return "castnc" +(target ? " "+ chat->formatWorldobject(target):""); }
     };
 
@@ -72,7 +72,7 @@ namespace ai
     {
     public:
         EnchantRandomItemAction(PlayerbotAI* ai) : CastRandomSpellAction(ai, "enchant random item") {}
-        virtual bool isUseful() { return ai->HasSkill(SKILL_ENCHANTING) && !bot->IsInCombat() ; }
+        virtual bool isUseful() { return ai->HasSkill(SKILL_ENCHANTING); }
 
         virtual bool AcceptSpell(const SpellEntry* pSpellInfo)
         {
