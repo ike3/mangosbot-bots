@@ -127,11 +127,11 @@ GridMap* TerrainInfoAccess::LoadMapAndVMap(const uint32 x, const uint32 y, bool 
         }
     }
 
-    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
+    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(m_mapId, x, y))
     {
         // load navmesh
         if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(m_mapId, x, y))
-            return nulltrp;
+            return nullptr;
     }
 
     if (m_GridMaps[x][y])
@@ -699,7 +699,7 @@ bool WorldPosition::loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y
     bool isLoaded = false;
 
 #ifndef MANGOSBOT_TWO
-    TerrainInfoAccess* terrain = reinterpret_cast<TerrainInfoAccess*>(const_cast<TerrainInfo*>(getTerrain()));
+    TerrainInfoAccess* terrain = reinterpret_cast<TerrainInfoAccess*>(const_cast<TerrainInfo*>(sTerrainMgr.LoadTerrain(mapId)));
     isLoaded = terrain->Load(x, y);
 #else 
     isLoaded = MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, instanceId, x, y, 0);
