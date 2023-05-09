@@ -16,6 +16,8 @@ float RpgActionMultiplier::GetValue(Action* action)
     {
         if (!nextAction.empty() && name != nextAction)
             return 0.1f;
+        else if(nextAction.empty() && name == "rpg cancel")
+            return 0.1f;
         else
             return frand(0.8f, 1.0f);
     }
