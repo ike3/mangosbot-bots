@@ -31,6 +31,9 @@ bool TriggerActiveValue::Calculate()
     if (!trigger)
         return false;
 
-    return trigger->IsActive();
+    if (!trigger->Check())
+        return false;
+
+    return true;
 }
 
