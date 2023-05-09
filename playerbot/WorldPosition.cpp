@@ -52,7 +52,7 @@ private:
 
 bool TerrainInfoAccess::Load(const uint32 x, const uint32 y, bool mapOnly /*= false*/)
 {
-    if (x >= MAX_NUMBER_OF_GRIDS || y < MAX_NUMBER_OF_GRIDS) //just load navmesh                     
+    if (x >= MAX_NUMBER_OF_GRIDS || y >= MAX_NUMBER_OF_GRIDS) //just load navmesh                     
         return MMAP::MMapFactory::createOrGetMMapManager()->loadMap(m_mapId, x, y);
 
     //Do not reference the grid.
