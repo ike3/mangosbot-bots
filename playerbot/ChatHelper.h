@@ -34,6 +34,7 @@ namespace ai
         static uint32 parseSlot(string text);
 
         static string formatSpell(SpellEntry const *sInfo);
+        static string formatSpell(uint32 spellId) {const SpellEntry* const spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellId); if (!spellInfo) return ""; return formatSpell(spellInfo);};
         uint32 parseSpell(string& text);
 
         static string formatGameobject(GameObject* go);

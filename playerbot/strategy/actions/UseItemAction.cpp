@@ -926,7 +926,7 @@ bool UseHearthStoneAction::Execute(Event& event)
         ai->StopMoving();
     }
 
-    if (CheckMountStateAction::CurrentMountSpeed(bot))
+    if (AI_VALUE2(uint32, "current mount speed", "self target"))
     {
 
         if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)

@@ -332,6 +332,9 @@ namespace ai
         {
             for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
             {
+                if (proto->Spells[j].SpellId == 26656)
+                    return true;
+
                 const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
                 if (!spellInfo)
                     return false;

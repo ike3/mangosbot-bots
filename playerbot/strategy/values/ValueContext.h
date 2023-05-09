@@ -95,6 +95,7 @@
 #include "HazardsValue.h"
 #include "FocusTargetValue.h"
 #include "TalentSpecValue.h"
+#include "MountValues.h"
 
 namespace ai
 {
@@ -350,6 +351,8 @@ namespace ai
             creators["RTSC saved location"] = &ValueContext::RTSC_saved_location;
 
             creators["trainable class spells"] = &ValueContext::trainable_class_spells;
+            creators["mount list"] = &ValueContext::mount_list;
+            creators["current mount speed"] = &ValueContext::current_mount_speed;
 
             creators["has area debuff"] = &ValueContext::has_area_debuff;
             creators["combat start time"] = &ValueContext::combat_start_time;
@@ -615,6 +618,8 @@ namespace ai
         static UntypedValue* RTSC_saved_location(PlayerbotAI* ai) { return new RTSCSavedLocationValue(ai); }
 
         static UntypedValue* trainable_class_spells(PlayerbotAI* ai) { return new TrainableClassSpells(ai); }
+        static UntypedValue* mount_list(PlayerbotAI* ai) { return new MountListValue(ai); }
+        static UntypedValue* current_mount_speed(PlayerbotAI* ai) { return new CurrentMountSpeedValue(ai); }
 
         static UntypedValue* has_area_debuff(PlayerbotAI* ai) { return new HasAreaDebuffValue(ai); }
         static UntypedValue* combat_start_time(PlayerbotAI* ai) { return new CombatStartTimeValue(ai); }
