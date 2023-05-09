@@ -186,5 +186,5 @@ void RpgCraftStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "castnc",
-        NextAction::array(0, new NextAction("cast custom nc spell", 1.001f), NULL)));
+        NextAction::array(0, new NextAction("cast custom nc spell", 0.9f), NULL)));
 }
