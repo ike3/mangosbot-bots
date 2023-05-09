@@ -88,7 +88,7 @@ namespace ai
     public:
         RpgCancelAction(PlayerbotAI* ai, string name = "rpg cancel") : RpgSubAction(ai, name) {}
 
-        virtual bool isUseful() { return rpg->InRange(); }
+        virtual bool isUseful() {return rpg->InRange();}
 
         virtual bool Execute(Event& event) { rpg->OnCancel();  AI_VALUE(set<ObjectGuid>&, "ignore rpg target").insert(AI_VALUE(GuidPosition, "rpg target")); RESET_AI_VALUE(GuidPosition, "rpg target"); rpg->AfterExecute(false, false, ""); DoDelay(); return true; };
     };
@@ -256,7 +256,7 @@ namespace ai
         RpgSpellAction(PlayerbotAI* ai, string name = "rpg spell") : RpgSubAction(ai, name) {}
 
     private:
-        virtual bool isUseful() { return false; }
+        virtual bool isUseful() { return !urand(0,10); }
         virtual string ActionName() { return "cast random spell"; }
         virtual Event ActionEvent(Event event) { return Event("rpg action", chat->formatWorldobject(rpg->guidP().GetWorldObject())); }
     };
