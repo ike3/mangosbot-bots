@@ -52,8 +52,15 @@ private:
 
 GridMap* TerrainInfoAccess::Load(const uint32 x, const uint32 y, bool mapOnly /*= false*/)
 {
-    MANGOS_ASSERT(x < MAX_NUMBER_OF_GRIDS);
-    MANGOS_ASSERT(y < MAX_NUMBER_OF_GRIDS);
+    if (x >= MAX_NUMBER_OF_GRIDS || y < MAX_NUMBER_OF_GRIDS)
+    {
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(m_mapId, x, y))
+        {
+            // load navmesh
+            MMAP::MMapFactory::createOrGetMMapManager()->loadMap(m_mapId, x, y);
+        }
+        return nullptr;
+    }
 
     //Do not reference the grid.
     //RefGrid(x, y);
