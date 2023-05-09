@@ -229,7 +229,7 @@ bool MoveToRpgTargetAction::isUseful()
 
     guidP.updatePosition();
 
-    if(p != guidP)
+    if(WorldPosition(p) != WorldPosition(guidP))
         SET_AI_VALUE(GuidPosition, "rpg target", guidP);
 
     if (guidP.distance(bot) < INTERACTION_DISTANCE)
