@@ -508,7 +508,9 @@ bool DisEnchantRandomItemAction::Execute(Event& event)
     if (bot->IsMoving())
     {
         ai->StopMoving();
+        return true;
     }
+
     if (bot->IsMounted())
     {
         return false;
@@ -521,7 +523,12 @@ bool DisEnchantRandomItemAction::Execute(Event& event)
             return false;
 
         Event disenchantEvent = Event("disenchant random item", "13262 " + chat->formatQItem(item));
-        return CastCustomSpellAction::Execute(disenchantEvent);
+        bool didCast = CastCustomSpellAction::Execute(disenchantEvent);
+
+        if(didCast)
+            ai->TellMaster("Disenchanting " + chat->formatQItem(item), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+
+        return didCast;
     }
 
     return false;
