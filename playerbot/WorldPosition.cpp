@@ -25,11 +25,11 @@
 using namespace ai;
 using namespace MaNGOS;
 
-
+#ifndef MANGOSBOT_TWO
 class TerrainInfoAccess : public Referencable<std::atomic_long>
 {
 public:
-    GridMap* Load(const uint32 x, const uint32 y, bool mapOnly = false);
+    bool Load(const uint32 x, const uint32 y, bool mapOnly = false);
 private:
     GridMap* LoadMapAndVMap(const uint32 x, const uint32 y, bool mapOnly = false);
 
@@ -50,17 +50,10 @@ private:
     LOCK_TYPE m_refMutex;
 };
 
-GridMap* TerrainInfoAccess::Load(const uint32 x, const uint32 y, bool mapOnly /*= false*/)
+bool TerrainInfoAccess::Load(const uint32 x, const uint32 y, bool mapOnly /*= false*/)
 {
-    if (x >= MAX_NUMBER_OF_GRIDS || y < MAX_NUMBER_OF_GRIDS)
-    {
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(m_mapId, x, y))
-        {
-            // load navmesh
-            MMAP::MMapFactory::createOrGetMMapManager()->loadMap(m_mapId, x, y);
-        }
-        return nullptr;
-    }
+    if (x >= MAX_NUMBER_OF_GRIDS || y < MAX_NUMBER_OF_GRIDS) //just load navmesh                     
+        return MMAP::MMapFactory::createOrGetMMapManager()->loadMap(m_mapId, x, y);
 
     //Do not reference the grid.
     //RefGrid(x, y);
@@ -134,17 +127,19 @@ GridMap* TerrainInfoAccess::LoadMapAndVMap(const uint32 x, const uint32 y, bool 
         }
     }
 
-    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(m_mapId, x, y))
+    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
     {
         // load navmesh
-        MMAP::MMapFactory::createOrGetMMapManager()->loadMap(m_mapId, x, y);
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(m_mapId, x, y))
+            return nulltrp;
     }
 
     if (m_GridMaps[x][y])
         m_GridMaps[x][y]->SetFullyLoaded();
 
-    return  m_GridMaps[x][y];
+    return m_GridMaps[x][y];
 }
+#endif
 
 void WorldPosition::add()
 {
@@ -429,7 +424,7 @@ string WorldPosition::print() const
     return out.str();
 }
 
-void WorldPosition::printWKT(const vector<WorldPosition>& points, ostringstream& out, const uint32 dim, const bool loop) const
+void WorldPosition::printWKT(const vector<WorldPosition>& points, ostringstream& out, const uint32 dim, const bool loop)
 {
     switch (dim) {
     case 0:
@@ -462,16 +457,9 @@ WorldPosition WorldPosition::getDisplayLocation() const
 
 AreaTableEntry const* WorldPosition::getArea() const
 {
-    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(getMapId(), getmGridPair().first, getmGridPair().second))
-    {
-        TerrainInfoAccess* terrain = reinterpret_cast<TerrainInfoAccess*>(const_cast<TerrainInfo*>(getTerrain()));
-        terrain->Load(getmGridPair().first, getmGridPair().second);
-    }
+    loadMapAndVMap(0);
 
     uint16 areaFlag = getAreaFlag();
-
-    //if(!areaFlag)
-    //    return NULL;
 
     return GetAreaEntryByAreaFlagAndMap(areaFlag, getMapId());
 }
@@ -601,7 +589,7 @@ std::vector<GridPair> WorldPosition::getGridPairs(const WorldPosition& secondPos
     return retVec;
 }
 
-vector<WorldPosition> WorldPosition::fromGridPair(const GridPair& gridPair) const
+vector<WorldPosition> WorldPosition::fromGridPair(const GridPair& gridPair, uint32 mapId)
 {
     vector<WorldPosition> retVec;
     GridPair g;
@@ -615,7 +603,7 @@ vector<WorldPosition> WorldPosition::fromGridPair(const GridPair& gridPair) cons
         if (d == 2 || d == 3)
             g += 1;
 
-        retVec.push_back(WorldPosition(getMapId(), g));
+        retVec.push_back(WorldPosition(mapId, g));
     }
    
     return retVec;
@@ -644,7 +632,7 @@ vector<WorldPosition> WorldPosition::gridFromCellPair(const CellPair& cellPair) 
 {    
     Cell c(cellPair);
 
-    return fromGridPair(GridPair(c.GridX(), c.GridY()));
+    return fromGridPair(GridPair(c.GridX(), c.GridY()), getMapId());
 }
 
 vector<pair<int,int>> WorldPosition::getmGridPairs(const WorldPosition& secondPos) const
@@ -673,7 +661,7 @@ vector<pair<int,int>> WorldPosition::getmGridPairs(const WorldPosition& secondPo
     return retVec;
 }
 
-vector<WorldPosition> WorldPosition::frommGridPair(const mGridPair& gridPair) const
+vector<WorldPosition> WorldPosition::frommGridPair(const mGridPair& gridPair, uint32 mapId)
 {
     vector<WorldPosition> retVec;
     mGridPair g;
@@ -687,43 +675,49 @@ vector<WorldPosition> WorldPosition::frommGridPair(const mGridPair& gridPair) co
         if (d == 2 || d == 3)
             g.first++;
 
-        retVec.push_back(WorldPosition(getMapId(), g));
+        retVec.push_back(WorldPosition(mapId, g));
     }
 
     return retVec;
 }
 
-void WorldPosition::loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y) const
+bool WorldPosition::loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y)
 {
     string fileName = "load_map_grid.csv";
 
-#ifdef MANGOSBOT_TWO
-    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, instanceId, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
+#ifndef MANGOSBOT_TWO
+    if (MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
+        return true;
 #else
-    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y) && !sTravelMgr.isBadMmap(mapId, x, y))
+    if (MMAP::MMapFactory::createOrGetMMapManager()->IsMMapTileLoaded(mapId, instanceId, x, y))
+        return true;
 #endif
+
+    if (sTravelMgr.isBadMmap(mapId, x, y))
+        return false;
+
+    bool isLoaded = false;
+
+#ifndef MANGOSBOT_TWO
+    TerrainInfoAccess* terrain = reinterpret_cast<TerrainInfoAccess*>(const_cast<TerrainInfo*>(getTerrain()));
+    isLoaded = terrain->Load(x, y);
+#else 
+    isLoaded = MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, instanceId, x, y, 0);
+#endif
+
+    if(!isLoaded)
+        sTravelMgr.addBadMmap(mapId, x, y);
+
+    if (sPlayerbotAIConfig.hasLog(fileName))
     {
-        TerrainInfoAccess* terrain = reinterpret_cast<TerrainInfoAccess*>(const_cast<TerrainInfo*>(getTerrain()));
-        terrain->Load(x, y);
-        return;
-
-        // load navmesh
-#ifdef MANGOSBOT_TWO
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, instanceId, x, y, 0))
-#else
-        if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, x, y))
-#endif
-            sTravelMgr.addBadMmap(mapId, x, y);
-
-        if (sPlayerbotAIConfig.hasLog(fileName))
-        {
-            ostringstream out;
-            out << sPlayerbotAIConfig.GetTimestampStr();
-            out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
-            printWKT(frommGridPair(mGridPair(x, y)), out, 1, true);
-            sPlayerbotAIConfig.log(fileName, out.str().c_str());
-        }
+        ostringstream out;
+        out << sPlayerbotAIConfig.GetTimestampStr();
+        out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
+        printWKT(frommGridPair(mGridPair(x, y), mapId), out, 1, true);
+        sPlayerbotAIConfig.log(fileName, out.str().c_str());
     }
+
+    return isLoaded;
 }
 
 void WorldPosition::loadMapAndVMaps(const WorldPosition& secondPos, uint32 instanceId) const
@@ -732,6 +726,11 @@ void WorldPosition::loadMapAndVMaps(const WorldPosition& secondPos, uint32 insta
     {
         loadMapAndVMap(getMapId(), instanceId, grid.first, grid.second);
     }
+}
+
+void WorldPosition::unloadMapAndVMaps(uint32 mapId)
+{
+    MMAP::MMapFactory::createOrGetMMapManager()->unloadMap(mapId);
 }
 
 vector<WorldPosition> WorldPosition::fromPointsArray(const std::vector<G3D::Vector3>& path) const
