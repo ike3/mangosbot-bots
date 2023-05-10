@@ -3151,6 +3151,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
             if (itemId)
             {
                 spell->m_ignoreCosts = true;
+                spell->SetPowerCost(spell->CalculatePowerCost(spell->m_spellInfo, bot, spell, spell->GetCastItem(), false));
                 break;              
             }
         }       
