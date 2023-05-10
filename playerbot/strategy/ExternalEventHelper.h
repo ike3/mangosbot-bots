@@ -1,11 +1,11 @@
 #pragma once
-
 #include "Trigger.h"
-#include "Triggers/WorldPacketTrigger.h"
+#include "triggers/WorldPacketTrigger.h"
 
 namespace ai
 {
-    class ExternalEventHelper {
+    class ExternalEventHelper 
+    {
     public:
         ExternalEventHelper(AiObjectContext* aiObjectContext) : aiObjectContext(aiObjectContext) {}
 
