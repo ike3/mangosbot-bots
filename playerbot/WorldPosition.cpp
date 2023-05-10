@@ -78,7 +78,6 @@ GridMap* TerrainInfoAccess::LoadMapAndVMap(const uint32 x, const uint32 y, bool 
         return m_GridMaps[x][y];
     }
 
-    {
         LOCK_GUARD lock(m_mutex);
         // double checked lock pattern
         if (!m_GridMaps[x][y])
@@ -100,7 +99,6 @@ GridMap* TerrainInfoAccess::LoadMapAndVMap(const uint32 x, const uint32 y, bool 
             delete[] tmp;
             m_GridMaps[x][y] = map;
         }
-    }
 
     // we'll load the rest later
     if (mapOnly)
