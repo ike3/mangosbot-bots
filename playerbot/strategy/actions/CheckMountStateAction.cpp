@@ -3,6 +3,7 @@
 #include "CheckMountStateAction.h"
 #include "../values/PositionValue.h"
 #include "../../ServerFacade.h"
+#include "../values/MountValues.h"
 #include "BattleGroundWS.h"
 #include "../../TravelMgr.h"
 
@@ -37,6 +38,9 @@ bool CheckMountStateAction::Execute(Event& event)
         farFromTarget = sServerFacade.IsDistanceGreaterThan(distToTarget, 40.0f);
     }
 
+    bool IsMounted = AI_VALUE2(uint32, "current mount speed", "self target");
+    bool IsLeaderMounted = groupMaster && AI_VALUE2(uint32, "current mount speed", "master target");
+
     //Mount up in battle grounds
     if (bot->InBattleGround())
     {
@@ -46,7 +50,7 @@ bool CheckMountStateAction::Execute(Event& event)
             {
                 if (CanMountInBg())
                 {
-                    if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                    if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
                         ai->TellMasterNoFacing("Mount in bg. No attackers or far from target and not in combat.");
 
                     return Mount();
@@ -58,7 +62,7 @@ bool CheckMountStateAction::Execute(Event& event)
     //Unmounted when able to attack target
     if (canAttackTarget)
     {
-        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
             ai->TellMasterNoFacing("Unmount. Able to attack target.");
         return UnMount();
     }
@@ -70,15 +74,15 @@ bool CheckMountStateAction::Execute(Event& event)
     //Chase to current target.
     if (!canAttackTarget && (farFromTarget || shouldChaseTarget))
     {
-        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
             ai->TellMasterNoFacing("Mount. Unable to attack target and target is far or chasable.");
         return Mount();
     }
 
     //Following master and close to master that is unmounted.
-    if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && groupMaster && groupMaster != bot && !farFromMaster && !CurrentMountSpeed(groupMaster))
+    if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && groupMaster && groupMaster != bot && !farFromMaster && !IsLeaderMounted)
     {
-        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
             ai->TellMasterNoFacing("Unmount. Near umounted group master.");
         return UnMount();
     }
@@ -93,7 +97,7 @@ bool CheckMountStateAction::Execute(Event& event)
 
         if (guardPosition.isSet() && distance < ai->GetRange("follow"))
         {
-            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
                 ai->TellMasterNoFacing("Unmount. Near umounted guard position.");
             return UnMount();
         }
@@ -109,7 +113,7 @@ bool CheckMountStateAction::Execute(Event& event)
 
         if (stayPosition.isSet() && distance < ai->GetRange("follow"))
         {
-            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
                 ai->TellMasterNoFacing("Unmount. Near stay location.");
             return UnMount();
         }
@@ -118,7 +122,7 @@ bool CheckMountStateAction::Execute(Event& event)
     //Doing stuff nearby.
     if (travelTarget->isWorking())
     {
-        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
             ai->TellMasterNoFacing("Unmount. Near travel target.");
         return UnMount();
     }
@@ -126,7 +130,7 @@ bool CheckMountStateAction::Execute(Event& event)
     //Rping nearby.
     if (AI_VALUE(GuidPosition, "rpg target") && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.farDistance))
     {
-        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && CurrentMountSpeed(bot))
+        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
             ai->TellMasterNoFacing("Unmount. Near rpg target.");
         return UnMount();
     }
@@ -134,9 +138,9 @@ bool CheckMountStateAction::Execute(Event& event)
     if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && groupMaster)
     {
         //Mounting with master.
-        if (CurrentMountSpeed(groupMaster) && !hasAttackers)
+        if (IsLeaderMounted && !hasAttackers)
         {
-            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
                 ai->TellMasterNoFacing("Mount. Group master mounted and no attackers.");
             return Mount();
         }
@@ -144,7 +148,7 @@ bool CheckMountStateAction::Execute(Event& event)
         //Mounting to move to master.
         if (farFromMaster && !bot->IsInCombat())
         {
-            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
                 ai->TellMasterNoFacing("Mount. Far from group master and not in combat.");
             return Mount();
         }
@@ -155,7 +159,7 @@ bool CheckMountStateAction::Execute(Event& event)
         //Mounting to travel.
         if (travelTarget->isTraveling() && AI_VALUE(bool, "can move around"))
         {
-            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
                 ai->TellMasterNoFacing("Mount. Traveling some place.");
             return Mount();
         }
@@ -164,7 +168,7 @@ bool CheckMountStateAction::Execute(Event& event)
             //Mounting to move to rpg target.
             if (AI_VALUE(GuidPosition, "rpg target") && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.sightDistance))
             {
-                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
                     ai->TellMasterNoFacing("Mount. Rpg target far away.");
                 return Mount();
             }
@@ -172,7 +176,7 @@ bool CheckMountStateAction::Execute(Event& event)
             //Mounting in safe place.
             if (!ai->HasStrategy("guard", ai->GetState()) && !ai->HasStrategy("stay", ai->GetState()) && !AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty() && urand(0, 100) > 50)
             {
-                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
                     ai->TellMasterNoFacing("Mount. Near rpg targets.");
                 return Mount();
             }
@@ -188,7 +192,7 @@ bool CheckMountStateAction::Execute(Event& event)
 
             if (guardPosition.isSet() && distance > 40.0f)
             {
-                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
                     ai->TellMasterNoFacing("Mount. Move to guard.");
                 return Mount();
             }
@@ -204,7 +208,7 @@ bool CheckMountStateAction::Execute(Event& event)
 
             if (guardPosition.isSet() && distance > 40.0f)
             {
-                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !CurrentMountSpeed(bot))
+                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
                     ai->TellMasterNoFacing("Mount. Move to stay.");
                 return Mount();
             }
@@ -275,10 +279,10 @@ bool CheckMountStateAction::isUseful()
         }
     }
 
-    if (!bot->GetMap()->IsMountAllowed())
+    if (!bot->GetMap()->IsMountAllowed() && bot->GetMapId() != 531)
         return false;
 
-    if (GetBestMountSpells(false).empty() && GetBestMounts(false).empty() && GetBestMountSpells(true).empty() && GetBestMounts(true).empty())
+    if (AI_VALUE(vector<MountValue>, "mount list").empty())
         return false;
 
     return true;
@@ -304,10 +308,11 @@ bool CheckMountStateAction::CanFly() const
         return false;
 #endif
 
-    if (GetBestMountSpells(true).empty() && GetBestMounts(true).empty())
-        return false;
+    for (auto& mount : AI_VALUE(vector<MountValue>, "mount list"))
+        if (mount.GetSpeed(true))
+            return true;
 
-    return true;
+    return false;
 }
 
 bool CheckMountStateAction::CanMountInBg() const
@@ -361,269 +366,110 @@ float CheckMountStateAction::GetAttackDistance() const
     return 35.0f;
 }
 
-uint32 CheckMountStateAction::MountSpeed(const SpellEntry* const spellInfo, const bool canFly)
+bool CheckMountStateAction::Mount()
 {
-    bool isMount = false;
+    bool canFly = CanFly();
 
-#ifdef MANGOSBOT_ZERO
-    uint32 effect = SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED;
-#else
-    uint32 effect = canFly ? SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED : SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED; //If we can fly only look at flight speed. Normal mounts then don't get any speed.
-#endif
+    uint32 currentSpeed = AI_VALUE2(uint32, "current mount speed", "self target");
 
-    if (!spellInfo)
-        return 0;
+    vector<MountValue> mountList = AI_VALUE(vector<MountValue>, "mount list");
 
-    switch (spellInfo->Id) //Aura's hard coded in spell.cpp
+    std::shuffle(mountList.begin(), mountList.end(), *GetRandomGenerator());
+    std::sort(mountList.begin(), mountList.end(), [canFly](MountValue i, MountValue j) {return i.GetSpeed(canFly) > j.GetSpeed(canFly); });
+
+    for (auto& mount : mountList)
     {
-    case 783:  //travel form
-    case 2645: //ghost wolf
-        if (!canFly)
-            return 39;
-        break;
-    case 33943: //flight form
-        if (canFly)
-            return 59;
-        break;
-    case 40120: //swift flight form
-        if (canFly)
-            return 279;
-        break;
-    }
+        if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
+            ai->TellMasterNoFacing("Try to mount with " + chat->formatSpell(mount.GetSpellId()));
 
-    for (int i = 0; i < 3; i++)
-    {
-        if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOUNTED)
+        if (currentSpeed >= mount.GetSpeed(canFly))
         {
-            isMount = true;
-            break;
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMasterNoFacing("Speed not faster than current.");
+
+            return false;
         }
-    }
 
-#ifndef MANGOSBOT_ZERO
-    //This part stops bots from mounting flying mounts when they can't fly. This should be tweaked if bots ever are able to normally ride flying mounts in the old-world.
-    if(isMount && !canFly)
-    {
-        for (int i = 0; i < 3; i++)
+        if (currentSpeed) //Already mounted
         {
-            if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED)
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMasterNoFacing("Mounted, unmount to mount faster next time.");
+            return UnMount();
+        }
+
+        ai->RemoveShapeshift();
+
+        if (!bot->IsStopped())
+        {
+            ai->StopMoving();
+        }
+
+        bool didMount = false;
+
+        if (!mount.IsValidLocation())
+        {
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMasterNoFacing("Bot can not use this mount here.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+            continue;
+        }
+
+        if (mount.IsItem())
+        {
+            if (!mount.GetItem())
             {
-                return 0;
+                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
+                    ai->TellMasterNoFacing("Bot does not have this mount.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+                continue;
+            }
+
+            if (UseItemAuto(mount.GetItem()))
+            {
+                SetDuration(3000U); // 3s
+                didMount = true;
+            }
+            else
+            {
+                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
+                    ai->TellMasterNoFacing("Mounting failed.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
             }
         }
-    }
-#endif
-
-    if (isMount)
-    {
-        for (int i = 0; i < 3; i++)
+        else
         {
-            if (spellInfo->EffectApplyAuraName[i] == effect)
+            if (!ai->HasSpell(mount.GetSpellId()))
             {
-                return spellInfo->EffectBasePoints[i];
+                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
+                    ai->TellMasterNoFacing("Bot does not have this mount spell.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+                continue;
+            }
+
+            if (ai->CastSpell(mount.GetSpellId(), bot))
+            {
+                sPlayerbotAIConfig.logEvent(ai, "CheckMountStateAction", sServerFacade.LookupSpellInfo(mount.GetSpellId())->SpellName[0], to_string(mount.GetSpeed(canFly)));
+                SetDuration(GetSpellRecoveryTime(sServerFacade.LookupSpellInfo(mount.GetSpellId())));
+                didMount = true;
+            }
+            else
+            {
+                if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
+                    ai->TellMasterNoFacing("Mountingspell failed.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
             }
         }
-    }
 
-    return 0;
-}
-
-uint32 CheckMountStateAction::MountSpeed(const ItemPrototype* proto, const bool canFly)
-{
-    if (!proto)
-        return 0;
-
-    uint32 speed = 0;
-    for (int j = 0; j < MAX_ITEM_PROTO_SPELLS; j++)
-    {
-        const SpellEntry* const spellInfo = sServerFacade.LookupSpellInfo(proto->Spells[j].SpellId);
-        speed = MountSpeed(spellInfo, canFly);
-
-        if (speed)
-            return speed;
-    }
-
-    return 0;
-}
-
-vector<uint32> CheckMountStateAction::GetBestMountSpells(const bool canFly) const
-{
-    uint32 bestMountSpeed = 1;
-    vector<uint32> spells;
-    for (PlayerSpellMap::iterator itr = bot->GetSpellMap().begin(); itr != bot->GetSpellMap().end(); ++itr)
-    {
-        uint32 spellId = itr->first;
-        if (itr->second.state == PLAYERSPELL_REMOVED || itr->second.disabled || IsPassiveSpell(spellId))
-            continue;
-
-        const SpellEntry* spellInfo = sServerFacade.LookupSpellInfo(spellId);
-
-        uint32 mountSpeed = MountSpeed(spellInfo, canFly);
-
-        if (mountSpeed < bestMountSpeed)
-            continue;
-
-        if (mountSpeed > bestMountSpeed)
-            spells.clear();
-
-        spells.push_back(spellId);
-    }
-
-    return spells;
-}
-
-vector<Item*> CheckMountStateAction::GetBestMounts(const bool canFly) const
-{
-    list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "mount");
-
-    uint32 bestMountSpeed = 1;
-    vector<Item*> mounts;
-
-    for (auto& item : items)
-    {
-        uint32 mountSpeed = MountSpeed(item->GetProto(), canFly);
-
-        if (mountSpeed < bestMountSpeed)
-            continue;
-
-        if (mountSpeed > bestMountSpeed)
-            mounts.clear();
-
-        mounts.push_back(item);
-    }
-
-    return mounts;
-}
-
-uint32 CheckMountStateAction::GetBestMountSpeed(const bool canFly) const
-{
-    vector<uint32> mountSpells = GetBestMountSpells(canFly);
-    vector<Item*> mounts = GetBestMounts(canFly);
-
-    if (mountSpells.empty() && mounts.empty())
-        return 0;
-
-    SpellEntry const* mountSpell = nullptr;
-    ItemPrototype const* mountItemProto = nullptr;
-
-    if (!mountSpells.empty())
-        mountSpell = sServerFacade.LookupSpellInfo(mountSpells.front());
-
-    if (!mounts.empty())
-        mountItemProto = mounts.front()->GetProto();
-
-    return std::max(MountSpeed(mountSpell, canFly), MountSpeed(mountItemProto, canFly));
-}
-
-uint32 CheckMountStateAction::CurrentMountSpeed(const Unit* unit)
-{
-    uint32 mountSpeed = 0;
-
-    for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
-    {
-        Unit::AuraList const& auras = unit->GetAurasByType((AuraType)auraType);
-
-        if (auras.empty())
-            continue;
-
-        for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
+        if (didMount)
         {
-            Aura* aura = *i;
-            if (!aura)
-                continue;
+            if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellMasterNoFacing("Mounting.");
 
-            SpellEntry const* auraSpell = aura->GetSpellProto();
-
-            uint32 auraSpeed = std::max(MountSpeed(auraSpell, false), MountSpeed(auraSpell, true));
-
-            if (auraSpeed < mountSpeed)
-                continue;
-
-            mountSpeed = auraSpeed;
-        }
-    }
-
-    return mountSpeed;
-}
-
-bool CheckMountStateAction::MountWithBestMount(const bool canFly)
-{
-    vector<uint32> mountSpells = GetBestMountSpells(canFly);
-    vector<Item*> mounts = GetBestMounts(canFly);
-
-    if (mountSpells.empty() && mounts.empty())
-        return false;
-
-    SpellEntry const* mountSpell;
-    Item* mountItem;
-
-    if (!mountSpells.empty())
-        mountSpell = sServerFacade.LookupSpellInfo(mountSpells.front());
-
-    if (!mounts.empty())
-        mountItem = mounts.front();
-
-    if (!bot->IsStopped())
-    {
-        ai->StopMoving();
-    }  
-
-    if (mounts.empty() || (!mountSpells.empty() && MountSpeed(mountSpell, canFly) > MountSpeed(mountItem->GetProto(), canFly)))
-    {
-        uint32 spellId = mountSpells[urand(0, mountSpells.size() - 1)];
-        if (ai->CastSpell(spellId, bot))
-        {
-            sPlayerbotAIConfig.logEvent(ai, "CheckMountStateAction", sServerFacade.LookupSpellInfo(mountSpells.front())->SpellName[0], to_string(GetBestMountSpeed(canFly)));
-            SetDuration(GetSpellRecoveryTime(sServerFacade.LookupSpellInfo(mountSpells.front())));
-            return true;
-        }        
-        return false;
-    }
-    else
-    {
-        Item* mount = mounts[urand(0, mounts.size() - 1)];
-        if (UseItemAuto(mount))
-        {
-            sPlayerbotAIConfig.logEvent(ai, "CheckMountStateAction", mount->GetProto()->Name1, to_string(GetBestMountSpeed(canFly)));
-            SetDuration(3000U); // 3s
-            return true;
+            return didMount;
         }
     }
 
     return false;
 }
 
-bool CheckMountStateAction::Mount()
-{
-    uint32 currentSpeed = CurrentMountSpeed(bot);
-
-    if (currentSpeed) //Already mounted
-    {
-        if (CurrentMountSpeed(bot) < GetBestMountSpeed(CanFly())) //Dismount to speed up.
-            return UnMount();
-        else
-            return false;
-    }
-
-    Player* master = GetMaster();
-    ai->RemoveShapeshift();
-
-    bool didMount = false;
-
-    if (CanFly())
-    {
-       didMount = MountWithBestMount(true);
-    }
-
-    if (!didMount)
-        didMount = MountWithBestMount();
-
-    return didMount;
-}
-
 bool CheckMountStateAction::UnMount() const
 {
-    if (!CurrentMountSpeed(bot))
+    if (!AI_VALUE2(uint32, "current mount speed", "self target"))
         return false;
 
     if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)

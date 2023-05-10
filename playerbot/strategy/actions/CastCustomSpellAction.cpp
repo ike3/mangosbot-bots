@@ -126,7 +126,7 @@ bool CastCustomSpellAction::Execute(Event& event)
         ai->StopMoving();
     }
 
-    if (CheckMountStateAction::CurrentMountSpeed(bot))
+    if (AI_VALUE2(uint32, "current mount speed", "self target"))
     {
         if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
             return false;
@@ -144,11 +144,12 @@ bool CastCustomSpellAction::Execute(Event& event)
     ai->RemoveShapeshift();
 
     ostringstream spellName;
-    spellName << ChatHelper::formatSpell(pSpellInfo) << " on ";
-    if (bot->GetTrader()) spellName << "trade item";
-    else if (itemTarget) spellName << chat->formatItem(itemTarget);
-    else if (target == bot) spellName << "self";
-    else spellName << target->GetName();
+    spellName << ChatHelper::formatSpell(pSpellInfo);
+    if (bot->GetTrader()) spellName << " on " << "trade item";
+    else if (pSpellInfo->EffectItemType) spellName << "";
+    else if (itemTarget) spellName << " on " << chat->formatItem(itemTarget);
+    else if (target == bot) spellName << " on " << "self";
+    else spellName << " on " << target->GetName();
 
     if (!bot->GetTrader() && !ai->CanCastSpell(spell, target, 0, true, itemTarget, false))
     {
@@ -165,14 +166,17 @@ bool CastCustomSpellAction::Execute(Event& event)
     if (result)
     {
         SetDuration(spellDuration);
-        msg << "Casting " << spellName.str();
+        if (!pSpellInfo->EffectItemType)
+            msg << "Casting " << spellName.str();
+        else
+            msg << "Crafting " << spellName.str();
 
         if (castCount > 1)
         {
             ostringstream cmd;
             cmd << castString(target) << " " << text << " " << (castCount - 1);
             ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *master);
-            msg << "|cffffff00(x" << (castCount - 1) << " left)|r";
+            msg << " |cffffff00(x" << (castCount - 1) << " left)|r";
         }
         ai->TellMasterNoFacing(msg.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
@@ -414,17 +418,46 @@ bool CastRandomSpellAction::castSpell(uint32 spellId, WorldObject* wo)
     bool executed = false;
     uint32 spellDuration = sPlayerbotAIConfig.globalCoolDown;
 
-    if (wo)
+    SpellEntry const* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+
+    Item* spellItem = AI_VALUE2(Item*, "item for spell", spellId);
+
+    if (spellItem)
     {
-        if (wo && wo->GetObjectGuid().IsUnit())
-            executed = ai->CastSpell(spellId, (Unit*)(wo), nullptr, false, &spellDuration);
+        if (ai->CastSpell(spellId, nullptr, spellItem, false, &spellDuration))
+        {
+            ai->TellMaster("Casting " + ChatHelper::formatSpell(pSpellInfo) + " on " + ChatHelper::formatItem(spellItem), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            executed = true;
+        }
+    }
+
+    if (!executed && wo)
+    {
+        if (wo->GetObjectGuid().IsUnit())
+        {
+            if (ai->CastSpell(spellId, (Unit*)(wo), nullptr, false, &spellDuration))
+            {
+                ai->TellMaster("Casting " + ChatHelper::formatSpell(pSpellInfo) + " on " + ChatHelper::formatWorldobject(wo), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                executed = true;
+            }
+        }
 
         if (!executed)
-            executed = ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), nullptr, false, &spellDuration);
+        {
+            if (ai->CastSpell(spellId, wo->GetPositionX(), wo->GetPositionY(), wo->GetPositionZ(), nullptr, false, &spellDuration))
+            {
+                ai->TellMaster("Casting " + ChatHelper::formatSpell(pSpellInfo) + " on " + ChatHelper::formatWorldobject(wo), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                executed = true;
+            }
+        }
     }
 
     if (!executed)
-        executed = ai->CastSpell(spellId, nullptr, nullptr, false, &spellDuration);
+        if (ai->CastSpell(spellId, nullptr, nullptr, false, &spellDuration))
+        {
+            ai->TellMaster("Casting " + ChatHelper::formatSpell(pSpellInfo), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            executed = true;
+        }
 
     if (executed)
     {
@@ -463,37 +496,42 @@ bool CraftRandomItemAction::Execute(Event& event)
 
         const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
 
-        bool isCast = castSpell(spellId, wot);
-
-        if (isCast)
+        if (pSpellInfo->RequiresSpellFocus)
         {
-            uint32 newItemId = pSpellInfo->EffectItemType[0];
+            if (!GuidPosition(wot).IsGameObject())
+                continue;
 
-            if (!newItemId)
-                return true;
+            if (GuidPosition(wot).GetGameObjectInfo()->type != GAMEOBJECT_TYPE_SPELL_FOCUS)
+                continue;
 
-            ItemPrototype const* proto = ObjectMgr::GetItemPrototype(newItemId);
-
-            if (!proto)
-                return true;
-
-            if (proto->GetMaxStackSize() < 2)
-                return true;
-
-            ostringstream cmd;
-
-            cmd << "castnc ";
-
-            if (((wot && sServerFacade.IsInFront(bot, wot, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))))
-            {
-                cmd << chat->formatWorldobject(wot) << " ";
-            }
-
-            cmd << spellId << " " << proto->GetMaxStackSize() - 1;
-
-            ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *bot);
-            return true;
+            if (GuidPosition(wot).GetGameObjectInfo()->spellFocus.focusId != pSpellInfo->RequiresSpellFocus)
+                continue;
         }
+
+        uint32 newItemId = pSpellInfo->EffectItemType[0];
+
+        if (!newItemId)
+            continue;
+
+        ItemPrototype const* proto = ObjectMgr::GetItemPrototype(newItemId);
+
+        if (!proto)
+            continue;
+
+        ostringstream cmd;
+
+        cmd << "castnc ";
+
+        if (((wot && sServerFacade.IsInFront(bot, wot, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))))
+        {
+            cmd << chat->formatWorldobject(wot) << " ";
+        }
+
+        cmd << spellId << " " << proto->GetMaxStackSize();
+
+        ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *bot);
+        return true;
+
     }
 
     return false;
@@ -508,7 +546,9 @@ bool DisEnchantRandomItemAction::Execute(Event& event)
     if (bot->IsMoving())
     {
         ai->StopMoving();
+        return true;
     }
+
     if (bot->IsMounted())
     {
         return false;
@@ -521,7 +561,12 @@ bool DisEnchantRandomItemAction::Execute(Event& event)
             return false;
 
         Event disenchantEvent = Event("disenchant random item", "13262 " + chat->formatQItem(item));
-        return CastCustomSpellAction::Execute(disenchantEvent);
+        bool didCast = CastCustomSpellAction::Execute(disenchantEvent);
+
+        if(didCast)
+            ai->TellMaster("Disenchanting " + chat->formatQItem(item), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+
+        return didCast;
     }
 
     return false;

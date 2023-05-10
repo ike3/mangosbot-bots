@@ -63,6 +63,11 @@ namespace ai
         virtual string GetHelpDescription() { return "This value contains the [h:object|objectGuid] of a [h:object|unit] or [h:object|gameObject] to move to and rpg with.\nThis value is manually set."; }
         virtual vector<string> GetUsedValues() { return {}; }
 #endif 
+
+        virtual string Format()
+        {
+            return chat->formatGuidPosition(value);
+        }
     };
 
     class TravelTargetValue : public ManualSetValue<TravelTarget *>

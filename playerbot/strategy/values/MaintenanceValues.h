@@ -20,6 +20,9 @@ namespace ai
             if (!AI_VALUE(bool, "group ready"))
                 return false;
 
+            if (AI_VALUE2(bool, "trigger active", "castnc"))
+                return false;
+
             return true;
         }
     };

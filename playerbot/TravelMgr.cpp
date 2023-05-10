@@ -67,7 +67,6 @@ bool QuestRelationTravelDestination::isActive(Player* bot) {
         if (getPoints().front()->getMapId() != bot->GetMapId()) //CanTakeQuest will check required conditions which will fail on a different map.
             if (questTemplate->GetRequiredCondition())          //So we skip this quest for now.
                 return false;
-
             
         if (!bot->GetMap()->IsContinent() || !bot->CanTakeQuest(questTemplate, false))
             return false;
@@ -954,7 +953,8 @@ void TravelMgr::SetMobAvoidAreaMap(uint32 mapId)
         if (!point.getTerrain())
             continue;
 
-        point.loadMapAndVMap(0);
+        if (!point.loadMapAndVMap(0))
+            continue;
 
         path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 12, 50.0f);
         path.setArea(point.getMapId(), point.getX(), point.getY(), point.getZ(), 13, 20.0f);
@@ -1328,7 +1328,6 @@ void TravelMgr::LoadQuestTravelTable()
     sTravelNodeMap.loadNodeStore();
 
     sTravelNodeMap.generateAll();
-
 
     sTravelNodeMap.printMap();
     sTravelNodeMap.printNodeStore();
@@ -1944,6 +1943,23 @@ void TravelMgr::LoadQuestTravelTable()
     {
         sRandomPlayerbotMgr.PrintTeleportCache();
     }
+
+#ifndef MANGOSBOT_TWO    
+    sTerrainMgr.Update(60 * 60 * 24);
+#else
+    for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
+    {
+        if (!sMapStore.LookupEntry(i))
+            continue;
+
+        uint32 mapId = sMapStore.LookupEntry(i)->MapID;
+
+        if (WorldPosition(mapId, 0, 0).getMap())
+            continue;
+
+        WorldPosition::unloadMapAndVMaps(mapId);
+    }
+#endif
 
     /*
     bool printStrategyMap = false;
@@ -2861,12 +2877,10 @@ void TravelMgr::printGrid(uint32 mapId, int x, int y, string type)
 
     if (sPlayerbotAIConfig.hasLog(fileName))
     {
-        WorldPosition p = WorldPosition(mapId, 0, 0, 0, 0);
-
         ostringstream out;
         out << sPlayerbotAIConfig.GetTimestampStr();
         out << "+00, " << 0 << 0 << x << "," << y << ", " << type << ",";
-        p.printWKT(p.fromGridPair(GridPair(x, y)), out, 1, true);
+        WorldPosition::printWKT(WorldPosition::fromGridPair(GridPair(x, y), mapId), out, 1, true);
         sPlayerbotAIConfig.log(fileName, out.str().c_str());
     }
 }

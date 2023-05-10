@@ -112,7 +112,7 @@ bool IsMountedValue::Calculate()
     if (target->IsMounted())
         return true;
 
-    if (CheckMountStateAction::CurrentMountSpeed(target))
+    if (AI_VALUE2(uint32, "current mount speed", getQualifier()))
         return true;
 
     return false;

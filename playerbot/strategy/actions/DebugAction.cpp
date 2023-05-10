@@ -194,7 +194,7 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("motion" && isMod) == 0)
+    else if (text.find("motion") == 0 && isMod)
     {
         Unit* motionBot = bot;
         Unit* motionTarget = masterTarget;

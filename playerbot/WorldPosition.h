@@ -100,7 +100,7 @@ namespace ai
         virtual string print() const;
         virtual string to_string() const { char p = '|'; stringstream out; out << mapid << p << coord_x << p << coord_y << p << coord_z << p << orientation; return out.str(); };
 
-        void printWKT(const vector<WorldPosition>& points, ostringstream& out, const uint32 dim = 0, const bool loop = false) const;
+        static void printWKT(const vector<WorldPosition>& points, ostringstream& out, const uint32 dim = 0, const bool loop = false);
         void printWKT(ostringstream& out) const { printWKT({ *this }, out); }
 
         bool isOverworld() const { return mapid == 0 || mapid == 1 || mapid == 530 || mapid == 571; }
@@ -164,7 +164,7 @@ namespace ai
         const MapEntry* getMapEntry() const { return sMapStore.LookupEntry(mapid); }
         uint32 getInstanceId() const { for (auto& map : sMapMgr.Maps()) { if (map.second->GetId() == getMapId()) return map.second->GetInstanceId(); }; return 0; }
         Map* getMap() const { return sMapMgr.FindMap(mapid, getMapEntry()->Instanceable() ? getInstanceId() : 0); }
-        const TerrainInfo* getTerrain() const { return getMap() ? getMap()->GetTerrain() : NULL; }
+        const TerrainInfo* getTerrain() const { return getMap() ? getMap()->GetTerrain() : sTerrainMgr.LoadTerrain(getMapId()); }
         bool isDungeon() { return getMapEntry()->IsDungeon(); }
 
 #if defined(MANGOSBOT_TWO) || MAX_EXPANSION == 2
@@ -197,7 +197,7 @@ namespace ai
 
         GridPair getGridPair() const { return MaNGOS::ComputeGridPair(coord_x, coord_y); };
         std::vector<GridPair> getGridPairs(const WorldPosition& secondPos) const;
-        vector<WorldPosition> fromGridPair(const GridPair& gridPair) const;
+        static vector<WorldPosition> fromGridPair(const GridPair& gridPair, uint32 mapId);
 
         CellPair getCellPair() const { return MaNGOS::ComputeCellPair(coord_x, coord_y); }
         vector<WorldPosition> fromCellPair(const CellPair& cellPair) const;
@@ -207,11 +207,13 @@ namespace ai
             return make_pair((int)(32 - coord_x / SIZE_OF_GRIDS), (int)(32 - coord_y / SIZE_OF_GRIDS)); }
 
         vector<mGridPair> getmGridPairs(const WorldPosition& secondPos) const;
-        vector<WorldPosition> frommGridPair(const mGridPair& gridPair) const;
+        static vector<WorldPosition> frommGridPair(const mGridPair& gridPair, uint32 mapId);
 
-        void loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y) const;
-        void loadMapAndVMap(uint32 instanceId) const {loadMapAndVMap(getMapId(), instanceId, getmGridPair().first, getmGridPair().second); }
+
+        static bool loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y);
+        bool loadMapAndVMap(uint32 instanceId) const {return loadMapAndVMap(getMapId(), instanceId, getmGridPair().first, getmGridPair().second); }
         void loadMapAndVMaps(const WorldPosition& secondPos, uint32 instanceId) const;
+        static void unloadMapAndVMaps(uint32 mapId);
 
         //Display functions
         WorldPosition getDisplayLocation() const;

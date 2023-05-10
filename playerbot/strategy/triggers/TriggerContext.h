@@ -431,7 +431,7 @@ namespace ai
         static Trigger* rpg_queue_bg(PlayerbotAI* ai) { return new RpgQueueBGTrigger(ai); }
         static Trigger* rpg_buy_petition(PlayerbotAI* ai) { return new RpgBuyPetitionTrigger(ai); }
         static Trigger* rpg_use(PlayerbotAI* ai) { return new RpgUseTrigger(ai); }
-        static Trigger* rpg_spell(PlayerbotAI* ai) { return new RpgUseTrigger(ai); }
+        static Trigger* rpg_spell(PlayerbotAI* ai) { return new RpgSpellTrigger(ai); }
         static Trigger* rpg_craft(PlayerbotAI* ai) { return new RpgCraftTrigger(ai); }
         static Trigger* rpg_trade_useful(PlayerbotAI* ai) { return new RpgTradeUsefulTrigger(ai); }
         static Trigger* rpg_duel(PlayerbotAI* ai) { return new RpgDuelTrigger(ai); }

@@ -16,6 +16,8 @@ float RpgActionMultiplier::GetValue(Action* action)
     {
         if (!nextAction.empty() && name != nextAction)
             return 0.1f;
+        else if(nextAction.empty() && name == "rpg cancel")
+            return 0.1f;
         else
             return frand(0.8f, 1.0f);
     }
@@ -186,5 +188,5 @@ void RpgCraftStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "castnc",
-        NextAction::array(0, new NextAction("cast custom nc spell", 1.001f), NULL)));
+        NextAction::array(0, new NextAction("cast custom nc spell", 0.9f), NULL)));
 }
