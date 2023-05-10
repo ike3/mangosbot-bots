@@ -1662,6 +1662,12 @@ bool MovementAction::ChaseTo(WorldObject* obj, float distance, float angle)
         }
     }
 
+    // charge
+    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == EFFECT_MOTION_TYPE && !bot->IsStopped())
+    {
+        return false;
+    }
+
     if (!ai->IsSafe(obj)) return false;
 
     if (!endPosition.isValid()) return false;
