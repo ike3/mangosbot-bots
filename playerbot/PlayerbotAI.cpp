@@ -2464,26 +2464,26 @@ bool PlayerbotAI::HasAura(uint32 spellId, Unit* unit, bool checkOwner)
 Aura* PlayerbotAI::GetAura(uint32 spellId, Unit* unit, bool checkIsOwner)
 {
     Aura* aura = nullptr;
-    if (!spellId || !unit)
-        return false;
-
-    for (uint32 effect = EFFECT_INDEX_0; effect <= EFFECT_INDEX_2; effect++)
+    if (spellId != 0 && unit)
     {
-        Aura* auraTmp = ((Unit*)unit)->GetAura(spellId, (SpellEffectIndex)effect);
-        if (IsRealAura(bot, auraTmp, (Unit*)unit))
+        for (uint32 effect = EFFECT_INDEX_0; effect <= EFFECT_INDEX_2; effect++)
         {
-            if(checkIsOwner)
+            Aura* auraTmp = ((Unit*)unit)->GetAura(spellId, (SpellEffectIndex)effect);
+            if (IsRealAura(bot, auraTmp, (Unit*)unit))
             {
-                if(aura->GetHolder() && aura->GetHolder()->GetCasterGuid() == bot->GetObjectGuid())
+                if (checkIsOwner)
+                {
+                    if (aura->GetHolder() && aura->GetHolder()->GetCasterGuid() == bot->GetObjectGuid())
+                    {
+                        aura = auraTmp;
+                        break;
+                    }
+                }
+                else
                 {
                     aura = auraTmp;
                     break;
                 }
-            }
-            else
-            {
-                aura = auraTmp;
-                break;
             }
         }
     }
@@ -2493,59 +2493,58 @@ Aura* PlayerbotAI::GetAura(uint32 spellId, Unit* unit, bool checkIsOwner)
 
 Aura* PlayerbotAI::GetAura(std::string name, Unit* unit, bool checkIsOwner)
 {
-    if (name.empty() || !unit)
-        return false;
-
-    wstring wnamepart;
-
-    vector<uint32> ids = chatHelper.SpellIds(name);
-
-    if (ids.empty())
+    if (!name.empty() && unit)
     {
-        //sLog.outError("Please add %s to spell list", name.c_str());
-        if (!Utf8toWStr(name, wnamepart))
-            return 0;
+        wstring wnamepart;
+        vector<uint32> ids = chatHelper.SpellIds(name);
 
-        wstrToLower(wnamepart);
-    }
-
-    for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
-    {
-        Unit::AuraList const& auras = unit->GetAurasByType((AuraType)auraType);
-
-        if (auras.empty())
-            continue;
-
-        for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
+        if (ids.empty())
         {
-            Aura* aura = *i;
-            if (!aura)
+            //sLog.outError("Please add %s to spell list", name.c_str());
+            if (!Utf8toWStr(name, wnamepart))
+                return 0;
+
+            wstrToLower(wnamepart);
+        }
+
+        for (uint32 auraType = SPELL_AURA_BIND_SIGHT; auraType < TOTAL_AURAS; auraType++)
+        {
+            Unit::AuraList const& auras = unit->GetAurasByType((AuraType)auraType);
+
+            if (auras.empty())
                 continue;
 
-            if (ids.empty())
+            for (Unit::AuraList::const_iterator i = auras.begin(); i != auras.end(); i++)
             {
-                const string auraName = aura->GetSpellProto()->SpellName[0];
-                if (auraName.empty() || auraName.length() != wnamepart.length() || !Utf8FitTo(auraName, wnamepart))
+                Aura* aura = *i;
+                if (!aura)
                     continue;
-            }
-            else
-            {
-                if (std::find(ids.begin(), ids.end(), aura->GetSpellProto()->Id) == ids.end())
-                    continue;
-            }
 
-            if (IsRealAura(bot, aura, unit))
-            {
-                if (checkIsOwner && aura->GetHolder())
+                if (ids.empty())
                 {
-                    if (aura->GetHolder()->GetCasterGuid() == bot->GetObjectGuid())
-                    {
-                        return aura;
-                    }
+                    const string auraName = aura->GetSpellProto()->SpellName[0];
+                    if (auraName.empty() || auraName.length() != wnamepart.length() || !Utf8FitTo(auraName, wnamepart))
+                        continue;
                 }
                 else
                 {
-                    return aura;
+                    if (std::find(ids.begin(), ids.end(), aura->GetSpellProto()->Id) == ids.end())
+                        continue;
+                }
+
+                if (IsRealAura(bot, aura, unit))
+                {
+                    if (checkIsOwner && aura->GetHolder())
+                    {
+                        if (aura->GetHolder()->GetCasterGuid() == bot->GetObjectGuid())
+                        {
+                            return aura;
+                        }
+                    }
+                    else
+                    {
+                        return aura;
+                    }
                 }
             }
         }

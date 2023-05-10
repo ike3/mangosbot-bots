@@ -106,7 +106,7 @@ void MemoryMonitor::Browse()
 
     for (auto& t : here)
     {
-        sLog.outError("[%s] = %d", t.first.c_str(), t.second.size());
+        sLog.outError("[%s] = %zu", t.first.c_str(), t.second.size());
 
         std::vector<std::pair<std::string, int>> top(10);
         std::partial_sort_copy(here[t.first].begin(),
