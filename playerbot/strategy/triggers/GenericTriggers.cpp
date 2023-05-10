@@ -132,7 +132,12 @@ bool MyBuffTrigger::IsActive()
 
 Value<Unit*>* BuffOnPartyTrigger::GetTargetValue()
 {
-	return context->GetValue<Unit*>("party member without aura", spell);
+	return context->GetValue<Unit*>("friendly unit without aura", spell);
+}
+
+Value<Unit*>* GreaterBuffOnPartyTrigger::GetTargetValue()
+{
+    return context->GetValue<Unit*>("party member without aura", spell);
 }
 
 Value<Unit*>* MyBuffOnPartyTrigger::GetTargetValue()

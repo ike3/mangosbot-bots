@@ -56,10 +56,6 @@ void ClassStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "at dark portal outland",
         NextAction::array(0, new NextAction("move from dark portal", ACTION_IDLE), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "need world buff",
-        NextAction::array(0, new NextAction("world buff", ACTION_IDLE), NULL)));
 }
 
 void ClassStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -368,10 +364,6 @@ void ClassStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "at dark portal outland",
         NextAction::array(0, new NextAction("move from dark portal", ACTION_IDLE), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "need world buff",
-        NextAction::array(0, new NextAction("world buff", ACTION_IDLE), NULL)));
 }
 
 void ClassStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -682,10 +674,6 @@ void ClassStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "at dark portal outland",
         NextAction::array(0, new NextAction("move from dark portal", ACTION_IDLE), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "need world buff",
-        NextAction::array(0, new NextAction("world buff", ACTION_IDLE), NULL)));
 }
 
 void ClassStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)

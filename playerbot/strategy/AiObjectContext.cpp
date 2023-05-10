@@ -61,6 +61,9 @@ void AiObjectContext::ClearExpiredValues(string findName, uint32 interval)
         if (!value)
             continue;
 
+        if (value->Protected())
+            continue;
+
         if (!findName.empty() && i->find(findName) == string::npos)
             continue;
 
