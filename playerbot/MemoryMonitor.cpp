@@ -1,10 +1,8 @@
-#pragma once
-
 #include "MemoryMonitor.h"
 #include <iostream>     // std::cout, std::ios
 #include <sstream>
 #include <time.h>
-#include <log.h>
+#include <Log.h>
 #define BOOST_STACKTRACE_LINK
 #include <boost/stacktrace.hpp>
 
@@ -38,7 +36,7 @@ void MemoryMonitor::Print()
 
     std::map<std::string, int> nums;
 
-    for (auto& t : objectnumbers) //Aggergate object counts over all threads
+    for (auto& t : objectnumbers) // Aggregate object counts over all threads
         for (auto& object : t.second)
             nums[object.first]+=object.second;
 

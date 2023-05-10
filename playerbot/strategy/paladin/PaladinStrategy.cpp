@@ -2,8 +2,6 @@
 #include "../../playerbot.h"
 #include "PaladinStrategy.h"
 
-#pragma once
-
 namespace ai
 {
     class GenericPaladinStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>

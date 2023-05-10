@@ -1,5 +1,3 @@
-#pragma once
-
 #include "../Action.h"
 #include "ChooseTargetActions.h"
 #include "MovementGenerator.h"

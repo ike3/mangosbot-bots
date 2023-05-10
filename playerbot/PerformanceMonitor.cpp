@@ -1,4 +1,3 @@
-#pragma once
 #include "../botpch.h"
 #include "playerbot.h"
 #include "PlayerbotAIConfig.h"
@@ -10,9 +9,14 @@
 
 #include "../../modules/Bots/ahbot/AhBotConfig.h"
 
-PerformanceMonitor::PerformanceMonitor() {}
+PerformanceMonitor::PerformanceMonitor() 
+{
+
+}
+
 PerformanceMonitor::~PerformanceMonitor()
 {
+
 }
 
 PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric, string name, PerformanceStack* stack)

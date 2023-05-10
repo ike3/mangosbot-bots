@@ -1,16 +1,11 @@
-#pragma once
-
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "LeaveGroupAction.h"
 
-
-using namespace ai;
-
 namespace ai
 {
-	bool LeaveGroupAction::Leave(Player* player) {
-
+	bool LeaveGroupAction::Leave(Player* player) 
+    {
         if (!player)
             return false;
 

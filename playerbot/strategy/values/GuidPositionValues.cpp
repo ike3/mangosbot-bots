@@ -1,4 +1,3 @@
-#pragma once
 #include "GuidPositionValues.h"
 #include "../../TravelMgr.h"
 #include "NearestGameObjects.h"

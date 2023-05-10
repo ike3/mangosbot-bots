@@ -1,13 +1,8 @@
-#pragma once
-
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "InviteToGroupAction.h"
 #include "../../ServerFacade.h"
 #include "../values/Formations.h"
-
-
-using namespace ai;
 
 namespace ai
 {

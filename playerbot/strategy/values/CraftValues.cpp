@@ -1,4 +1,3 @@
-#pragma once
 #include "CraftValues.h"
 #include "ItemUsageValue.h"
 #include "../../ServerFacade.h"
