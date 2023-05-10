@@ -188,7 +188,8 @@ bool GreaterBlessingOnPartyTrigger::IsActive()
     }
 
     // Doesn't have any of my blessings
-    return AI_VALUE2(Unit*, "party member without my aura", blessings);
+    Unit* target = AI_VALUE2(Unit*, "party member without my aura", blessings);
+    return target && bot->IsInGroup(target);
 }
 
 bool NoPaladinAuraTrigger::IsActive()

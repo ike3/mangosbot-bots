@@ -62,10 +62,10 @@ namespace ai
         bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
-    class GreaterBlessingOfMightOnPartyTrigger : public BuffOnPartyTrigger
+    class GreaterBlessingOfMightOnPartyTrigger : public GreaterBuffOnPartyTrigger
     {
     public:
-        GreaterBlessingOfMightOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of might", 4) {}
+        GreaterBlessingOfMightOnPartyTrigger(PlayerbotAI* ai) : GreaterBuffOnPartyTrigger(ai, "greater blessing of might", "blessing of might", 4) {}
     };
 
     class BlessingOfWisdomOnPartyTrigger : public BuffOnPartyTrigger
@@ -75,10 +75,10 @@ namespace ai
         bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
-    class GreaterBlessingOfWisdomOnPartyTrigger : public BuffOnPartyTrigger
+    class GreaterBlessingOfWisdomOnPartyTrigger : public GreaterBuffOnPartyTrigger
     {
     public:
-        GreaterBlessingOfWisdomOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of wisdom", 4) {}
+        GreaterBlessingOfWisdomOnPartyTrigger(PlayerbotAI* ai) : GreaterBuffOnPartyTrigger(ai, "greater blessing of wisdom", "blessing of wisdom", 4) {}
     };
 
     class BlessingOfKingsOnPartyTrigger : public BuffOnPartyTrigger
@@ -88,10 +88,10 @@ namespace ai
         bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
-    class GreaterBlessingOfKingsOnPartyTrigger : public BuffOnPartyTrigger
+    class GreaterBlessingOfKingsOnPartyTrigger : public GreaterBuffOnPartyTrigger
     {
     public:
-        GreaterBlessingOfKingsOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of kings", 4) {}
+        GreaterBlessingOfKingsOnPartyTrigger(PlayerbotAI* ai) : GreaterBuffOnPartyTrigger(ai, "greater blessing of kings", "blessing of kings", 4) {}
     };
 
     class BlessingOfLightOnPartyTrigger : public BuffOnPartyTrigger
@@ -101,10 +101,10 @@ namespace ai
         bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
-    class GreaterBlessingOfLightOnPartyTrigger : public BuffOnPartyTrigger
+    class GreaterBlessingOfLightOnPartyTrigger : public GreaterBuffOnPartyTrigger
     {
     public:
-        GreaterBlessingOfLightOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of light", 4) {}
+        GreaterBlessingOfLightOnPartyTrigger(PlayerbotAI* ai) : GreaterBuffOnPartyTrigger(ai, "greater blessing of light", "blessing of light", 4) {}
     };
 
     class BlessingOfSalvationOnPartyTrigger : public BuffOnPartyTrigger
@@ -114,10 +114,10 @@ namespace ai
         bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
-    class GreaterBlessingOfSalvationOnPartyTrigger : public BuffOnPartyTrigger
+    class GreaterBlessingOfSalvationOnPartyTrigger : public GreaterBuffOnPartyTrigger
     {
     public:
-        GreaterBlessingOfSalvationOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of salvation", 4) {}
+        GreaterBlessingOfSalvationOnPartyTrigger(PlayerbotAI* ai) : GreaterBuffOnPartyTrigger(ai, "greater blessing of salvation", "blessing of salvation", 4) {}
     };
 
     class BlessingOfSanctuaryOnPartyTrigger : public BuffOnPartyTrigger
@@ -127,10 +127,10 @@ namespace ai
         bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
     };
 
-    class GreaterBlessingOfSanctuaryOnPartyTrigger : public BuffOnPartyTrigger
+    class GreaterBlessingOfSanctuaryOnPartyTrigger : public GreaterBuffOnPartyTrigger
     {
     public:
-        GreaterBlessingOfSanctuaryOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "greater blessing of sanctuary", 4) {}
+        GreaterBlessingOfSanctuaryOnPartyTrigger(PlayerbotAI* ai) : GreaterBuffOnPartyTrigger(ai, "greater blessing of sanctuary", "blessing of sanctuary", 4) {}
     };
 
     class BlessingTrigger : public BuffTrigger

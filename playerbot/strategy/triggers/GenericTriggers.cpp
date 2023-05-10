@@ -787,3 +787,9 @@ bool InRaidFightTrigger::IsActive()
 
     return false;
 }
+
+bool GreaterBuffOnPartyTrigger::IsActive()
+{
+    Unit* target = GetTarget();
+    return target && bot->IsInGroup(target) && BuffOnPartyTrigger::IsActive() && !ai->HasAura(lowerSpell, target, false, checkIsOwner);
+}

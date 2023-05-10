@@ -264,6 +264,16 @@ namespace ai
 		virtual string getName() { return spell + " on party"; }
     };
 
+    class GreaterBuffOnPartyTrigger : public BuffOnPartyTrigger
+    {
+    public:
+        GreaterBuffOnPartyTrigger(PlayerbotAI* ai, string spell, string lowerSpell, int checkInterval = 2) : BuffOnPartyTrigger(ai, spell, checkInterval) {}
+        virtual bool IsActive() override;
+
+    private:
+        string lowerSpell;
+    };
+
     class BuffOnTankTrigger : public BuffTrigger
     {
     public:
