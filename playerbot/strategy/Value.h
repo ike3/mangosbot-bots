@@ -269,11 +269,7 @@ namespace ai
         ObjectGuidCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
             CalculatedValue<ObjectGuid>(ai, name, checkInterval) { this->lastCheckTime = time(0) - checkInterval / 2; }
 
-        virtual string Format()
-        {
-            GuidPosition guid = GuidPosition(this->Calculate(), bot->GetMapId());
-            return guid ? chat->formatGuidPosition(guid) : "<none>";
-        }
+        virtual string Format();
     };
 
     class ObjectGuidListCalculatedValue : public CalculatedValue<list<ObjectGuid> >
@@ -282,18 +278,7 @@ namespace ai
         ObjectGuidListCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
             CalculatedValue<list<ObjectGuid> >(ai, name, checkInterval) { this->lastCheckTime = time(0) - checkInterval/2; }
 
-        virtual string Format()
-        {
-            ostringstream out; out << "{";
-            list<ObjectGuid> guids = this->Calculate();
-            for (list<ObjectGuid>::iterator i = guids.begin(); i != guids.end(); ++i)
-            {
-                GuidPosition guid = GuidPosition(*i, bot->GetMapId());
-                out << chat->formatGuidPosition(guid) << ",";
-            }
-            out << "}";
-            return out.str();
-        }
+        virtual string Format();
     };
 
     class GuidPositionCalculatedValue : public CalculatedValue<GuidPosition>
@@ -302,12 +287,7 @@ namespace ai
         GuidPositionCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
             CalculatedValue<GuidPosition>(ai, name, checkInterval) { this->lastCheckTime = time(0) - checkInterval / 2; }
 
-        virtual string Format()
-        {
-            ostringstream out;
-            GuidPosition guidP = this->Calculate();
-            return chat->formatGuidPosition(guidP);
-        }
+        virtual string Format();
     };
 
     class GuidPositionListCalculatedValue : public CalculatedValue<list<GuidPosition> >
@@ -316,18 +296,7 @@ namespace ai
         GuidPositionListCalculatedValue(PlayerbotAI* ai, string name = "value", int checkInterval = 1) :
             CalculatedValue<list<GuidPosition> >(ai, name, checkInterval) { this->lastCheckTime = time(0) - checkInterval / 2; }
 
-        virtual string Format()
-        {
-            ostringstream out; out << "{";
-            list<GuidPosition> guids = this->Calculate();
-            for (list<GuidPosition>::iterator i = guids.begin(); i != guids.end(); ++i)
-            {
-                GuidPosition guidP = *i;
-                out << chat->formatGuidPosition(guidP) << ",";
-            }
-            out << "}";
-            return out.str();
-        }
+        virtual string Format();
     };
 
     template<class T>
