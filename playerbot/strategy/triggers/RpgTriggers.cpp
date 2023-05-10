@@ -515,6 +515,9 @@ bool RpgCraftTrigger::IsActive()
 {
     GuidPosition guidP(getGuidP());
 
+    if (AI_VALUE(uint8, "bag space") > 80)
+        return false;
+
     if (!guidP.GetWorldObject())
         return false;
 
