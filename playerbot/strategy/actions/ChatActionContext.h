@@ -71,7 +71,7 @@
 #include "GuildManagementActions.h"
 #include "RtscAction.h"
 #include "WaitForAttackAction.h"
-#include "BattlegroundJoinAction.h"
+#include "BattleGroundJoinAction.h"
 #include "FocusTargetAction.h"
 
 namespace ai
