@@ -50,7 +50,7 @@ namespace ai
 
         virtual string print();
 
-        operator bool() const { return  WorldPosition(*this) && !IsEmpty(); }
+        operator bool() const { return (getX() != 0 || getY() != 0 || getZ() != 0) && !IsEmpty(); }
         bool operator== (ObjectGuid const& guid) const { return GetRawValue() == guid.GetRawValue(); }
         bool operator!= (ObjectGuid const& guid) const { return GetRawValue() != guid.GetRawValue(); }
         bool operator< (ObjectGuid const& guid) const { return GetRawValue() < guid.GetRawValue(); }
