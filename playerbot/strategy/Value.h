@@ -19,6 +19,7 @@ namespace ai
         virtual string Save() { return "?"; }
         virtual bool Load(string value) { return false; }
         virtual bool Expired(uint32 interval = 0) { return false; }
+        virtual bool Protected() { return false; }
 
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "dummy"; } //Must equal iternal name
@@ -123,6 +124,7 @@ namespace ai
         virtual T GetDelta() { T lVal = lastValue; time_t lTime = lastChangeTime; if (lastChangeTime == time(0)) return Get() - Get(); return (Get() - lVal) / float(time(0) - lTime); }
 
         virtual void Reset() { CalculatedValue<T>::Reset(); lastChangeTime = time(0); }
+        virtual bool Protected() override { return true; }
     protected:
         T lastValue;
         uint32 minChangeInterval = 0; //Change will not be checked untill this interval has passed.
