@@ -268,6 +268,7 @@ namespace ai
     {
     public:
         GreaterBuffOnPartyTrigger(PlayerbotAI* ai, string spell, string lowerSpell, int checkInterval = 2) : BuffOnPartyTrigger(ai, spell, checkInterval) {}
+        virtual Value<Unit*>* GetTargetValue() override;
         virtual bool IsActive() override;
 
     private:

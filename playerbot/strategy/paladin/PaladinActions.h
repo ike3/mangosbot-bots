@@ -275,10 +275,10 @@ namespace ai
         bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
     };
 
-    class CastGreaterBlessingOfMightOnPartyAction : public BuffOnPartyAction
+    class CastGreaterBlessingOfMightOnPartyAction : public GreaterBuffOnPartyAction
     {
     public:
-		CastGreaterBlessingOfMightOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "greater blessing of might") {}
+		CastGreaterBlessingOfMightOnPartyAction(PlayerbotAI* ai) : GreaterBuffOnPartyAction(ai, "greater blessing of might") {}
     };
 
 	class CastBlessingOfWisdomAction : public CastBuffSpellAction
@@ -301,10 +301,10 @@ namespace ai
         bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
     };
 
-    class CastGreaterBlessingOfWisdomOnPartyAction : public BuffOnPartyAction
+    class CastGreaterBlessingOfWisdomOnPartyAction : public GreaterBuffOnPartyAction
     {
     public:
-        CastGreaterBlessingOfWisdomOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "greater blessing of wisdom") {}
+        CastGreaterBlessingOfWisdomOnPartyAction(PlayerbotAI* ai) : GreaterBuffOnPartyAction(ai, "greater blessing of wisdom") {}
     };
 
 	class CastBlessingOfKingsAction : public CastBuffSpellAction
@@ -327,10 +327,10 @@ namespace ai
         bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
     };
 
-    class CastGreaterBlessingOfKingsOnPartyAction : public BuffOnPartyAction
+    class CastGreaterBlessingOfKingsOnPartyAction : public GreaterBuffOnPartyAction
     {
     public:
-        CastGreaterBlessingOfKingsOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "greater blessing of kings") {}
+        CastGreaterBlessingOfKingsOnPartyAction(PlayerbotAI* ai) : GreaterBuffOnPartyAction(ai, "greater blessing of kings") {}
     };
 
 	class CastBlessingOfSanctuaryAction : public CastBuffSpellAction
@@ -353,10 +353,10 @@ namespace ai
         bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
     };
 
-    class CastGreaterBlessingOfSanctuaryOnPartyAction : public BuffOnPartyAction
+    class CastGreaterBlessingOfSanctuaryOnPartyAction : public GreaterBuffOnPartyAction
     {
     public:
-        CastGreaterBlessingOfSanctuaryOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "greater blessing of sanctuary") {}
+        CastGreaterBlessingOfSanctuaryOnPartyAction(PlayerbotAI* ai) : GreaterBuffOnPartyAction(ai, "greater blessing of sanctuary") {}
     };
 
     class CastBlessingOfLightAction : public CastBuffSpellAction
@@ -379,10 +379,10 @@ namespace ai
         bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
     };
 
-    class CastGreaterBlessingOfLightOnPartyAction : public BuffOnPartyAction
+    class CastGreaterBlessingOfLightOnPartyAction : public GreaterBuffOnPartyAction
     {
     public:
-        CastGreaterBlessingOfLightOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "greater blessing of light") {}
+        CastGreaterBlessingOfLightOnPartyAction(PlayerbotAI* ai) : GreaterBuffOnPartyAction(ai, "greater blessing of light") {}
     };
 
     class CastBlessingOfSalvationAction : public CastBuffSpellAction
@@ -405,10 +405,10 @@ namespace ai
         bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
     };
 
-    class CastGreaterBlessingOfSalvationOnPartyAction : public BuffOnPartyAction
+    class CastGreaterBlessingOfSalvationOnPartyAction : public GreaterBuffOnPartyAction
     {
     public:
-        CastGreaterBlessingOfSalvationOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "greater blessing of salvation") {}
+        CastGreaterBlessingOfSalvationOnPartyAction(PlayerbotAI* ai) : GreaterBuffOnPartyAction(ai, "greater blessing of salvation") {}
     };
 
     class CastHolyLightAction : public CastHealingSpellAction

@@ -382,6 +382,13 @@ class clazz : public super \
         clazz(PlayerbotAI* ai) : BuffOnPartyAction(ai, spell) {} \
     }
 
+#define GREATER_BUFF_PARTY_ACTION(clazz, spell) \
+    class clazz : public GreaterBuffOnPartyAction \
+    { \
+    public: \
+        clazz(PlayerbotAI* ai) : GreaterBuffOnPartyAction(ai, spell) {} \
+    }
+
 #define CURE_ACTION(clazz, spell) \
     class clazz : public CastCureSpellAction \
     { \

@@ -35,10 +35,16 @@ private:
     vector<string> auras;
 };
 
+Unit* FriendlyUnitWithoutAuraValue::Calculate()
+{
+    PlayerWithoutAuraPredicate predicate(ai, qualifier);
+    return FindPartyMember(predicate);
+}
+
 Unit* PartyMemberWithoutAuraValue::Calculate()
 {
 	PlayerWithoutAuraPredicate predicate(ai, qualifier);
-    return FindPartyMember(predicate);
+    return FindPartyMember(predicate, true);
 }
 
 class PlayerWithoutMyAuraPredicate : public FindPlayerPredicate, public PlayerbotAIAware

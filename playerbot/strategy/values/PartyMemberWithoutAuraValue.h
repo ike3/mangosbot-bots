@@ -5,6 +5,16 @@
 
 namespace ai
 {
+    class FriendlyUnitWithoutAuraValue : public PartyMemberValue, public Qualified
+    {
+    public:
+        FriendlyUnitWithoutAuraValue(PlayerbotAI* ai, string name = "friendly unit without aura", float range = sPlayerbotAIConfig.sightDistance) :
+            PartyMemberValue(ai, name) {}
+
+    protected:
+        virtual Unit* Calculate();
+    };
+
     class PartyMemberWithoutAuraValue : public PartyMemberValue, public Qualified
 	{
 	public:

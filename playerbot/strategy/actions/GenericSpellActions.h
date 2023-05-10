@@ -240,6 +240,19 @@ namespace ai
         
     protected:
         virtual string getName() override { return PartyMemberActionNameSupport::getName(); }
+        virtual string GetTargetName() override { return "friendly unit without aura"; }
+        virtual string GetTargetQualifier() override { return GetSpellName(); }
+    };
+
+    //---------------------------------------------------------------------------------------------------------------------
+
+    class GreaterBuffOnPartyAction : public CastBuffSpellAction, public PartyMemberActionNameSupport
+    {
+    public:
+        GreaterBuffOnPartyAction(PlayerbotAI* ai, string spell) : CastBuffSpellAction(ai, spell), PartyMemberActionNameSupport(spell) {}
+
+    protected:
+        virtual string getName() override { return PartyMemberActionNameSupport::getName(); }
         virtual string GetTargetName() override { return "party member without aura"; }
         virtual string GetTargetQualifier() override { return GetSpellName(); }
     };
