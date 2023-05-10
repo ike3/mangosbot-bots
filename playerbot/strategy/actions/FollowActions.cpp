@@ -1,5 +1,3 @@
-#pragma once
-
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "FollowActions.h"
@@ -10,7 +8,6 @@
 #include "../../LootObjectStack.h"
 
 using namespace ai;
-
 
 bool FollowAction::Execute(Event& event)
 {

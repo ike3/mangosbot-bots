@@ -1963,7 +1963,7 @@ bool MovementAction::IsValidPosition(const WorldPosition& position, const WorldP
 bool MovementAction::IsHazardNearPosition(const WorldPosition& position, HazardPosition* outHazard)
 {
     AiObjectContext* context = bot->GetPlayerbotAI()->GetAiObjectContext();
-    list<HazardPosition>& hazards = AI_VALUE(list<HazardPosition>, "hazards");
+    list<HazardPosition> hazards = AI_VALUE(list<HazardPosition>, "hazards");
     if (!hazards.empty())
     {
         for (const HazardPosition& hazard : hazards)
@@ -1990,7 +1990,7 @@ bool MovementAction::GeneratePathAvoidingHazards(const WorldPosition& endPositio
 {
     if (generatePath)
     {
-        list<HazardPosition>& hazards = AI_VALUE(list<HazardPosition>, "hazards");
+        list<HazardPosition> hazards = AI_VALUE(list<HazardPosition>, "hazards");
         if (!hazards.empty())
         {
             PathFinder path(bot);
