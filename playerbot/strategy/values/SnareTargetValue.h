@@ -7,7 +7,7 @@ namespace ai
 	{
 	public:
         SnareTargetValue(PlayerbotAI* ai) :
-            UnitCalculatedValue(ai, "snare target") {}
+            UnitCalculatedValue(ai, "snare target"), Qualified() {}
 
     protected:
         virtual Unit* Calculate();

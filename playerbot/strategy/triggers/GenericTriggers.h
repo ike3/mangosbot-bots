@@ -413,7 +413,7 @@ namespace ai
     class AndTrigger : public Trigger, public Qualified
     {
     public:
-         AndTrigger(PlayerbotAI* ai, string name = "and", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
+         AndTrigger(PlayerbotAI* ai, string name = "and", int checkInterval = 1) : Trigger(ai, name, checkInterval), Qualified() {}
         virtual bool IsActive();
         virtual string getName();
     };
@@ -421,7 +421,7 @@ namespace ai
     class OrTrigger : public Trigger, public Qualified
     {
     public:
-        OrTrigger(PlayerbotAI* ai, string name = "or", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
+        OrTrigger(PlayerbotAI* ai, string name = "or", int checkInterval = 1) : Trigger(ai, name, checkInterval), Qualified() {}
         virtual bool IsActive();
         virtual string getName();
     };
@@ -446,7 +446,7 @@ namespace ai
     class ValueTrigger : public Trigger, public Qualified
     {
     public:
-        ValueTrigger(PlayerbotAI* ai, string name = "val", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
+        ValueTrigger(PlayerbotAI* ai, string name = "val", int checkInterval = 1) : Trigger(ai, name, checkInterval), Qualified() {}
         virtual bool IsActive() { return AI_VALUE(bool, getQualifier()); }
     };
 

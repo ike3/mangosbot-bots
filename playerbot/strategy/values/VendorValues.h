@@ -10,7 +10,7 @@ namespace ai
     class VendorHasUsefulItemValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        VendorHasUsefulItemValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "vendor has useful item",2) {}
+        VendorHasUsefulItemValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "vendor has useful item",2), Qualified() {}
         virtual bool Calculate();
     };
 }

@@ -10,7 +10,7 @@ namespace ai
 	{
 	public:
         PossibleTargetsValue(PlayerbotAI* ai, string name = "possible targets", float range = sPlayerbotAIConfig.sightDistance, bool ignoreLos = false) :
-          NearestUnitsValue(ai, name, range, ignoreLos) {}
+          NearestUnitsValue(ai, name, range, ignoreLos), Qualified() {}
 
         list<ObjectGuid> Calculate() override;
         static bool IsValid(Unit* target, Player* player, bool ignoreLos = false);

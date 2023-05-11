@@ -8,9 +8,8 @@ namespace ai
     class HaveAnyTotemValue : public BoolCalculatedValue, public Qualified
 	{
 	public:
-        HaveAnyTotemValue(PlayerbotAI* ai, string name = "have any totem") : BoolCalculatedValue(ai, name) {}
+        HaveAnyTotemValue(PlayerbotAI* ai, string name = "have any totem") : BoolCalculatedValue(ai, name), Qualified() {}
 
-    public:
         bool Calculate()
         {
             list<ObjectGuid> units = *context->GetValue<list<ObjectGuid> >("nearest npcs");
@@ -21,10 +20,12 @@ namespace ai
                     continue;
 
                 Creature* creature = dynamic_cast<Creature*>(unit);
-                if (creature && creature->IsTotem()) {
+                if (creature && creature->IsTotem()) 
+                {
                     return true;
                 }
             }
+
             return false;
         }
     };

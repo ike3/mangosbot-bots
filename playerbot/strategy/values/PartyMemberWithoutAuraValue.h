@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         FriendlyUnitWithoutAuraValue(PlayerbotAI* ai, string name = "friendly unit without aura", float range = sPlayerbotAIConfig.sightDistance) :
-            PartyMemberValue(ai, name) {}
+            PartyMemberValue(ai, name), Qualified() {}
 
     protected:
         virtual Unit* Calculate();
@@ -19,7 +19,7 @@ namespace ai
 	{
 	public:
         PartyMemberWithoutAuraValue(PlayerbotAI* ai, string name = "party member without aura", float range = sPlayerbotAIConfig.sightDistance) :
-          PartyMemberValue(ai, name) {}
+          PartyMemberValue(ai, name), Qualified() {}
 
     protected:
         virtual Unit* Calculate();
@@ -29,7 +29,7 @@ namespace ai
     {
     public:
         PartyMemberWithoutMyAuraValue(PlayerbotAI* ai, string name = "party member without my aura", float range = 30.0f) :
-            PartyMemberValue(ai, name) {}
+            PartyMemberValue(ai, name), Qualified() {}
 
     protected:
         virtual Unit* Calculate();
@@ -39,7 +39,7 @@ namespace ai
     {
     public:
         PartyTankWithoutAuraValue(PlayerbotAI* ai, string name = "party tank without aura", float range = 30.0f) :
-            PartyMemberValue(ai, name) {}
+            PartyMemberValue(ai, name), Qualified() {}
 
     protected:
         virtual Unit* Calculate();

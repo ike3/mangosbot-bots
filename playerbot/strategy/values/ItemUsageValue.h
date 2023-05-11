@@ -65,7 +65,7 @@ namespace ai
     {
         FORCE_USAGE_NONE = 0,  //Normal usage.
         FORCE_USAGE_KEEP = 1,  //Do not sell item.
-        FORCE_USAGE_EQUIP = 2, //Equip item. Need if no other forced equiped.
+        FORCE_USAGE_EQUIP = 2, //Equip item. Need if no other forced equipped.
         FORCE_USAGE_GREED = 3,  //Get more and greed for rolls.
         FORCE_USAGE_NEED = 4    //Get more and need for rolls.
     };
@@ -73,13 +73,11 @@ namespace ai
     class ItemUsageValue : public CalculatedValue<ItemUsage>, public Qualified
 	{
 	public:
-        ItemUsageValue(PlayerbotAI* ai, string name = "item usage") : CalculatedValue<ItemUsage>(ai, name) {}
-
-    public:
+        ItemUsageValue(PlayerbotAI* ai, string name = "item usage") : CalculatedValue<ItemUsage>(ai, name), Qualified() {}
         virtual ItemUsage Calculate();
+
     private:
         ItemUsage QueryItemUsageForEquip(ItemQualifier& itemQualifier);
-
         uint32 GetSmallestBagSize();
         bool IsItemUsefulForQuest(Player* player, ItemPrototype const* proto, bool ignoreInventory = false);
         bool IsItemNeededForSkill(ItemPrototype const* proto);
@@ -87,15 +85,18 @@ namespace ai
         bool IsItemNeededForUsefullCraft(ItemPrototype const* proto, bool checkAllReagents);
         Item* CurrentItem(ItemPrototype const* proto);
         float BetterStacks(ItemPrototype const* proto, string usageType = "");
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "item usage"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "item"; }
         virtual string GetHelpDescription() 
-        { return "This value gives the reason why a bot finds an item usefull.\n"
-            "Based on this value bots will equip/unequip/need/greed/loot/destroy/sell/ah/craft items."; 
+        { 
+            return "This value gives the reason why a bot finds an item useful.\n"
+                   "Based on this value bots will equip/unequip/need/greed/loot/destroy/sell/ah/craft items."; 
         }
         virtual vector<string> GetUsedValues() { return {"bag space", "force item usage", "inventory items", "item count" }; }
-#endif 
+#endif
+
     public:
         static float CurrentStacks(PlayerbotAI* ai, ItemPrototype const* proto);
         static vector<uint32> SpellsUsingItem(uint32 itemId, Player* bot);
@@ -106,17 +107,19 @@ namespace ai
     class ForceItemUsageValue : public ManualSetValue<ForceItemUsage>, public Qualified
     {
     public:
-        ForceItemUsageValue(PlayerbotAI* ai, string name = "force item usage") : ManualSetValue<ForceItemUsage>(ai, ForceItemUsage::FORCE_USAGE_NONE, name) {}
+        ForceItemUsageValue(PlayerbotAI* ai, string name = "force item usage") : ManualSetValue<ForceItemUsage>(ai, ForceItemUsage::FORCE_USAGE_NONE, name), Qualified() {}
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "force item usage"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "item"; }
         virtual string GetHelpDescription()
         {
-            return "This value overrides some reasons why a bot finds an item usefull\n"
-                "Based on this value bots will no longer sell/ah/destroy/unequip items.";
+            return "This value overrides some reasons why a bot finds an item useful\n"
+                    "Based on this value bots will no longer sell/ah/destroy/unequip items.";
         }
         virtual vector<string> GetUsedValues() { return {}; }
-#endif 
+#endif
+
         virtual string Save() { return (uint8)value ? to_string((uint8)value) : "?"; }
         virtual bool Load(string force) { if (!force.empty()) value = ForceItemUsage(stoi(force)); return !force.empty(); }
     };

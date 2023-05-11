@@ -9,15 +9,14 @@ namespace ai
     class PossibleAttackTargetsValue : public ObjectGuidListCalculatedValue, public Qualified
 	{
 	public:
-        PossibleAttackTargetsValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "possible attack targets", 2) {}
+        PossibleAttackTargetsValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "possible attack targets", 2), Qualified() {}
         list<ObjectGuid> Calculate();
-
         static bool IsValid(Unit* target, Player* player, float range = sPlayerbotAIConfig.sightDistance, bool ignoreCC = false, bool checkAttackerValid = true);
         static bool IsPossibleTarget(Unit* target, Player* player, float range, bool ignoreCC);
-
         static bool HasBreakableCC(Unit* target, Player* player);
         static bool HasUnBreakableCC(Unit* target, Player* player);
         virtual string Format();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "possible attack targets"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "combat"; }
@@ -27,9 +26,9 @@ namespace ai
         }
         virtual vector<string> GetUsedValues() { return { "attackers", "attack target"}; }
 #endif 
+
 	private:
 		void RemoveNonThreating(list<ObjectGuid>& targets, bool getOne);
-
         static bool HasIgnoreCCRti(Unit* target, Player* player);
         static bool IsTapped(Unit* target, Player* player);
     };
@@ -39,6 +38,7 @@ namespace ai
     public:
         PossibleAddsValue(PlayerbotAI* const ai, string name = "possible adds") : BoolCalculatedValue(ai, name) {}
         virtual bool Calculate();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "possible adds"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "combat"; }

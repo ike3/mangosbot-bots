@@ -28,7 +28,7 @@ namespace ai
     class RTSCSavedLocationValue : public ManualSetValue<WorldPosition>, public Qualified
     {
     public:
-        RTSCSavedLocationValue(PlayerbotAI* ai, WorldPosition defaultvalue = WorldPosition(), string name = "RTSC saved location") : ManualSetValue(ai, defaultvalue, name) {};
+        RTSCSavedLocationValue(PlayerbotAI* ai, WorldPosition defaultvalue = WorldPosition(), string name = "RTSC saved location") : ManualSetValue(ai, defaultvalue, name), Qualified() {};
         virtual string Save() { return value.to_string(); }
         virtual bool Load(string text) { value = WorldPosition(text); return true; }
     };

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "WorldPosition.h"
 
 namespace ai

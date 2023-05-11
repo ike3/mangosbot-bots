@@ -8,7 +8,7 @@ namespace ai
     class MCRunesValue : public StringCalculatedValue, public Qualified
     {
     public:
-        MCRunesValue(PlayerbotAI* ai, string name = "mc runes") : StringCalculatedValue(ai, name, 1) {}
+        MCRunesValue(PlayerbotAI* ai, string name = "mc runes") : StringCalculatedValue(ai, name, 1), Qualified() {}
 
         virtual string Calculate() { return "176951,176952,176953,176954,176955,176956,176957"; };
 

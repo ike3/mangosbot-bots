@@ -26,16 +26,14 @@ namespace ai
     class BgMastersValue : public SingleCalculatedValue<list<CreatureDataPair const*>>, public Qualified
     {
     public:
-        BgMastersValue(PlayerbotAI* ai) : SingleCalculatedValue<list<CreatureDataPair const*>>(ai, "bg masters") {}
-
+        BgMastersValue(PlayerbotAI* ai) : SingleCalculatedValue<list<CreatureDataPair const*>>(ai, "bg masters"), Qualified() {}
         virtual list<CreatureDataPair const*> Calculate();
     };
 
     class BgMasterValue : public CDPairCalculatedValue, public Qualified
     {
     public:
-        BgMasterValue(PlayerbotAI* ai) : CDPairCalculatedValue(ai, "bg master", 60) {}
-
+        BgMasterValue(PlayerbotAI* ai) : CDPairCalculatedValue(ai, "bg master", 60), Qualified() {}
         virtual CreatureDataPair const* Calculate();
         virtual CreatureDataPair const* NearestBm(bool allowDead = true);
     };

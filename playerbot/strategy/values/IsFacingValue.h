@@ -6,7 +6,7 @@ namespace ai
     class IsFacingValue : public BoolCalculatedValue, public Qualified
 	{
 	public:
-        IsFacingValue(PlayerbotAI* ai, string name = "is facing") : BoolCalculatedValue(ai, name) {}
+        IsFacingValue(PlayerbotAI* ai, string name = "is facing") : BoolCalculatedValue(ai, name), Qualified() {}
 
         virtual bool Calculate()
         {

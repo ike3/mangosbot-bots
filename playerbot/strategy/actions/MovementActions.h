@@ -128,7 +128,7 @@ namespace ai
     class MoveToAction : public MovementAction, public Qualified
     {
     public:
-        MoveToAction(PlayerbotAI* ai, string name = "move to") : MovementAction(ai, "name") {}
+        MoveToAction(PlayerbotAI* ai, string name = "move to") : MovementAction(ai, "name"), Qualified() {}
         virtual bool Execute(Event& event);
     };
 }

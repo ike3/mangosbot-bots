@@ -41,14 +41,14 @@ namespace ai
     class MoneyNeededForValue : public Uint32CalculatedValue, public Qualified
     {
     public:
-        MoneyNeededForValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "money needed for",60) {}
+        MoneyNeededForValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "money needed for", 60), Qualified() {}
         virtual uint32 Calculate();
     };
 
     class TotalMoneyNeededForValue : public Uint32CalculatedValue, public Qualified
     {
     public:
-        TotalMoneyNeededForValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "total money needed for", 60) {}
+        TotalMoneyNeededForValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "total money needed for", 60), Qualified() {}
         virtual uint32 Calculate();
     private:
         vector<NeedMoneyFor> saveMoneyFor = { NeedMoneyFor::repair,NeedMoneyFor::ammo, NeedMoneyFor::ah, NeedMoneyFor::guild, NeedMoneyFor::spells, NeedMoneyFor::travel };
@@ -57,7 +57,7 @@ namespace ai
     class FreeMoneyForValue : public Uint32CalculatedValue, public Qualified
     {
     public:
-        FreeMoneyForValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "free money for") {}
+        FreeMoneyForValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "free money for"), Qualified() {}
         virtual uint32 Calculate();
     };
     

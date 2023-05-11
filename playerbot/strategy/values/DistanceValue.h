@@ -10,7 +10,7 @@ namespace ai
     class DistanceValue : public FloatCalculatedValue, public Qualified
 	{
 	public:
-        DistanceValue(PlayerbotAI* ai, string name = "distance") : FloatCalculatedValue(ai, name) {}
+        DistanceValue(PlayerbotAI* ai, string name = "distance") : FloatCalculatedValue(ai, name), Qualified() {}
 
     public:
         float Calculate()
@@ -91,7 +91,7 @@ namespace ai
     class InsideTargetValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        InsideTargetValue(PlayerbotAI* ai, string name = "inside target") : BoolCalculatedValue(ai, name) {}
+        InsideTargetValue(PlayerbotAI* ai, string name = "inside target") : BoolCalculatedValue(ai, name), Qualified() {}
 
     public:
         bool Calculate()

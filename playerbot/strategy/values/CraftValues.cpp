@@ -2,6 +2,8 @@
 #include "ItemUsageValue.h"
 #include "../../ServerFacade.h"
 
+using namespace ai;
+
 vector<uint32> CraftSpellsValue::Calculate()
 {
     vector<uint32> spellIds;
@@ -23,11 +25,13 @@ vector<uint32> CraftSpellsValue::Calculate()
             continue;      
 
         for (uint8 i = 0; i < MAX_EFFECT_INDEX; i++)
+        {
             if (pSpellInfo->EffectItemType[i])
             {
                 spellIds.push_back(spellId);
                 break;
             }
+        }
     }
 
     return spellIds;
@@ -46,6 +50,7 @@ bool HasReagentsForValue::Calculate()
         return false;
 
     for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
+    {
         if (pSpellInfo->ReagentCount[i] > 0 && pSpellInfo->Reagent[i])
         {
             const ItemPrototype* reqProto = sObjectMgr.GetItemPrototype(pSpellInfo->Reagent[i]);
@@ -55,6 +60,7 @@ bool HasReagentsForValue::Calculate()
             if (count < pSpellInfo->ReagentCount[i])
                 return false;
         }
+    }
 
     return true;
 }
@@ -86,6 +92,7 @@ bool ShouldCraftSpellValue::Calculate()
         return false;
 
     for (uint8 i = 0; i < MAX_EFFECT_INDEX; i++)
+    {
         if (pSpellInfo->EffectItemType[i])
         {
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", to_string(pSpellInfo->EffectItemType[i]));
@@ -94,62 +101,73 @@ bool ShouldCraftSpellValue::Calculate()
 
             switch (usage)
             {
-            case ITEM_USAGE_EQUIP:
-            case ITEM_USAGE_REPLACE:
-            case ITEM_USAGE_BAD_EQUIP:
-            case ITEM_USAGE_QUEST:
-            case ITEM_USAGE_USE:
-                needItem = true;
-                break;
-            case ITEM_USAGE_FORCE:
-            {
-                ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", to_string(pSpellInfo->EffectItemType[i]));
+                case ITEM_USAGE_EQUIP:
+                case ITEM_USAGE_REPLACE:
+                case ITEM_USAGE_BAD_EQUIP:
+                case ITEM_USAGE_QUEST:
+                case ITEM_USAGE_USE:
+                {
+                    needItem = true;
+                    break;
+                }
 
-                needItem = forceUsage == ForceItemUsage::FORCE_USAGE_NEED;
-                break;
-            }
-            case ITEM_USAGE_SKILL:
-            case ITEM_USAGE_AMMO:
-            case ITEM_USAGE_DISENCHANT:
-            case ITEM_USAGE_AH:
-            case ITEM_USAGE_VENDOR:
-                needItem = !ai->HasCheat(BotCheatMask::item);
-                break;
-            case ITEM_USAGE_NONE:
-            case ITEM_USAGE_KEEP:
-            case ITEM_USAGE_BROKEN_EQUIP:
-            case ITEM_USAGE_GUILD_TASK:
+                case ITEM_USAGE_FORCE:
+                {
+                    ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", to_string(pSpellInfo->EffectItemType[i]));
 
-                needItem = false;
-            default:
-                needItem = false;
+                    needItem = forceUsage == ForceItemUsage::FORCE_USAGE_NEED;
+                    break;
+                }
+
+                case ITEM_USAGE_SKILL:
+                case ITEM_USAGE_AMMO:
+                case ITEM_USAGE_DISENCHANT:
+                case ITEM_USAGE_AH:
+                case ITEM_USAGE_VENDOR:
+                {
+                    needItem = !ai->HasCheat(BotCheatMask::item);
+                    break;
+                }
+
+                case ITEM_USAGE_NONE:
+                case ITEM_USAGE_KEEP:
+                case ITEM_USAGE_BROKEN_EQUIP:
+                case ITEM_USAGE_GUILD_TASK:
+                {
+                    needItem = false;
+                    break;
+                }
+
+                default:
+                {
+                    needItem = false;
+                    break;
+                }
             }
 
             if (needItem)
                 return true;
         }
+    }
 
     return false;
 }
-
-
-
 
 inline int SkillGainChance(uint32 SkillValue, uint32 GrayLevel, uint32 GreenLevel, uint32 YellowLevel)
 {
     if (SkillValue >= GrayLevel)
         return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_GREY) * 10;
-    if (SkillValue >= GreenLevel)
+    else if (SkillValue >= GreenLevel)
         return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_GREEN) * 10;
-    if (SkillValue >= YellowLevel)
+    else if (SkillValue >= YellowLevel)
         return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_YELLOW) * 10;
+
     return sWorld.getConfig(CONFIG_UINT32_SKILL_CHANCE_ORANGE) * 10;
 }
 
 bool ShouldCraftSpellValue::SpellGivesSkillUp(uint32 spellId, Player* bot)
 {
     SkillLineAbilityMapBounds bounds = sSpellMgr.GetSkillLineAbilityMapBoundsBySpellId(spellId);
-
     for (SkillLineAbilityMap::const_iterator _spell_idx = bounds.first; _spell_idx != bounds.second; ++_spell_idx)
     {
         SkillLineAbilityEntry const* skill = _spell_idx->second;

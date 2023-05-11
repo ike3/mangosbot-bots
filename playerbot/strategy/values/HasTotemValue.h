@@ -8,9 +8,8 @@ namespace ai
     class HasTotemValue : public BoolCalculatedValue, public Qualified
 	{
 	public:
-        HasTotemValue(PlayerbotAI* ai, string name = "has totem") : BoolCalculatedValue(ai, name) {}
+        HasTotemValue(PlayerbotAI* ai, string name = "has totem") : BoolCalculatedValue(ai, name), Qualified() {}
 
-    public:
         bool Calculate()
         {
             list<ObjectGuid> units = *context->GetValue<list<ObjectGuid> >("nearest npcs");

@@ -9,13 +9,11 @@
 
 using namespace ai;
 
-SpellIdValue::SpellIdValue(PlayerbotAI* ai) :
-        CalculatedValue<uint32>(ai, "spell id", 10)
+SpellIdValue::SpellIdValue(PlayerbotAI* ai) : CalculatedValue<uint32>(ai, "spell id", 10), Qualified()
 {
 }
 
-VehicleSpellIdValue::VehicleSpellIdValue(PlayerbotAI* ai) :
-    CalculatedValue<uint32>(ai, "vehicle spell id")
+VehicleSpellIdValue::VehicleSpellIdValue(PlayerbotAI* ai) : CalculatedValue<uint32>(ai, "vehicle spell id"), Qualified()
 {
 }
 

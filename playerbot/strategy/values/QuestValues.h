@@ -83,12 +83,11 @@ namespace ai
         virtual questGuidpMap Calculate();
     };       
     
-    //All questgivers and their quests that are usefull for a specific level
+    //All questgivers and their quests that are useful for a specific level
     class QuestGiversValue : public SingleCalculatedValue<questGiverMap>, public Qualified
 	{
 	public:
-        QuestGiversValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "quest givers") {}
-
+        QuestGiversValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "quest givers"), Qualified() {}
         virtual questGiverMap Calculate();
     };
     
@@ -97,7 +96,6 @@ namespace ai
     {
     public:
         ActiveQuestGiversValue(PlayerbotAI* ai) : CalculatedValue(ai, "active quest givers", 5) {}
-
         virtual list<GuidPosition> Calculate();
     };    
     
@@ -106,7 +104,6 @@ namespace ai
     {
     public:
         ActiveQuestTakersValue(PlayerbotAI* ai) : CalculatedValue(ai, "active quest takers", 5) {}
-
         virtual list<GuidPosition> Calculate();
     };
 
@@ -115,7 +112,6 @@ namespace ai
     {
     public:
         ActiveQuestObjectivesValue(PlayerbotAI* ai) : CalculatedValue(ai, "active quest objectives", 5) {}
-
         virtual list<GuidPosition> Calculate();
     };
     
@@ -124,7 +120,6 @@ namespace ai
     {
     public:
         FreeQuestLogSlotValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai, "free quest log slots", 2) {}
-
         virtual uint8 Calculate();
     };
     
@@ -132,10 +127,8 @@ namespace ai
     class DialogStatusValue : public Uint32CalculatedValue, public Qualified
     {
     public:
-        DialogStatusValue(PlayerbotAI* ai, string name = "dialog status") : Uint32CalculatedValue(ai, name , 2) {}
-
+        DialogStatusValue(PlayerbotAI* ai, string name = "dialog status") : Uint32CalculatedValue(ai, name , 2), Qualified() {}
         static uint32 getDialogStatus(Player* bot, int32 questgiver, uint32 questId = 0);
-
         virtual uint32 Calculate() { return getDialogStatus(bot, stoi(getQualifier())); }
     };
 
@@ -144,7 +137,6 @@ namespace ai
     {
     public:
         DialogStatusQuestValue(PlayerbotAI* ai) : DialogStatusValue(ai, "dialog status quest") {}
-
         virtual uint32 Calculate() { return getDialogStatus(bot, getMultiQualifierInt(getQualifier(), 0, " "), getMultiQualifierInt(getQualifier(), 1, " ")); }
     };
 
@@ -152,8 +144,7 @@ namespace ai
     class CanAcceptQuestValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        CanAcceptQuestValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can accept quest npc") {}
-
+        CanAcceptQuestValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can accept quest npc"), Qualified() {}
         virtual bool Calculate() { return AI_VALUE2(uint32, "dialog status", getQualifier()) == DIALOG_STATUS_AVAILABLE;};
     };
 
@@ -161,7 +152,8 @@ namespace ai
     class CanAcceptQuestLowLevelValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        CanAcceptQuestLowLevelValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can accept quest low level npc") {}
+        CanAcceptQuestLowLevelValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can accept quest low level npc"), Qualified() {}
+
         virtual bool Calculate()
         {
             uint32 dialogStatus = AI_VALUE2(uint32, "dialog status", getQualifier());
@@ -177,7 +169,7 @@ namespace ai
     class NeedQuestRewardValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        NeedQuestRewardValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "need quest reward") {}
+        NeedQuestRewardValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "need quest reward"), Qualified() {}
         virtual bool Calculate();
     };
 
@@ -185,7 +177,7 @@ namespace ai
     class CanTurnInQuestValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        CanTurnInQuestValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can turn in quest npc") {}
+        CanTurnInQuestValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can turn in quest npc"), Qualified() {}
 
         virtual bool Calculate()
         {
@@ -202,7 +194,7 @@ namespace ai
     class CanRepeatQuestValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        CanRepeatQuestValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can repeat quest npc") {}
+        CanRepeatQuestValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can repeat quest npc"), Qualified() {}
 
         virtual bool Calculate()
         {
@@ -214,8 +206,7 @@ namespace ai
     class NeedQuestObjectiveValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        NeedQuestObjectiveValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "need quest objective") {}
-
+        NeedQuestObjectiveValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "need quest objective"), Qualified() {}
         virtual bool Calculate();
     };
 }

@@ -6,8 +6,7 @@ namespace ai
     class AttackerWithoutAuraTargetValue : public UnitCalculatedValue, public Qualified
 	{
 	public:
-        AttackerWithoutAuraTargetValue(PlayerbotAI* ai) :
-            UnitCalculatedValue(ai, "attacker without aura") {}
+        AttackerWithoutAuraTargetValue(PlayerbotAI* ai) : UnitCalculatedValue(ai, "attacker without aura"), Qualified() {}
 
     protected:
         virtual Unit* Calculate();

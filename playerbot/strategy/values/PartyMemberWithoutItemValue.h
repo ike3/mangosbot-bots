@@ -9,7 +9,7 @@ namespace ai
     {
     public:
         PartyMemberWithoutItemValue(PlayerbotAI* ai, string name = "party member without item", float range = sPlayerbotAIConfig.farDistance) :
-          PartyMemberValue(ai, name) {}
+          PartyMemberValue(ai, name), Qualified() {}
 
     protected:
         virtual Unit* Calculate();

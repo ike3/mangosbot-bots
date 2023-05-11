@@ -24,7 +24,7 @@ namespace ai
     class HasAreaDebuffValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        HasAreaDebuffValue(PlayerbotAI* ai) : BoolCalculatedValue(ai) {}
+        HasAreaDebuffValue(PlayerbotAI* ai) : BoolCalculatedValue(ai), Qualified() {}
 
         Unit* GetTarget()
         {

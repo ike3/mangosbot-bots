@@ -6,9 +6,9 @@ namespace ai
     class BoolAndValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        BoolAndValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "bool and") {}
-
+        BoolAndValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "bool and"), Qualified() {}
         virtual bool Calculate();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "bool and"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "operator"; }
@@ -23,9 +23,9 @@ namespace ai
     class NotValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        NotValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "not") {}
-
+        NotValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "not"), Qualified() {}
         virtual bool Calculate();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "not"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "operator"; }

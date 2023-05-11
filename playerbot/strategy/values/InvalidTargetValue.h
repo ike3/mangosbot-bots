@@ -6,9 +6,7 @@ namespace ai
     class InvalidTargetValue : public BoolCalculatedValue, public Qualified
 	{
 	public:
-        InvalidTargetValue(PlayerbotAI* ai, string name = "invalid target") : BoolCalculatedValue(ai, name) {}
-
-	public:
+        InvalidTargetValue(PlayerbotAI* ai, string name = "invalid target") : BoolCalculatedValue(ai, name), Qualified() {}
         virtual bool Calculate();
     };
 }

@@ -9,7 +9,7 @@ namespace ai
     class EnemyPlayersValue : public ObjectGuidListCalculatedValue, public Qualified
     {
     public:
-        EnemyPlayersValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "enemy players") {}
+        EnemyPlayersValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "enemy players"), Qualified() {}
         list<ObjectGuid> Calculate();
 
         static bool IsValid(Unit* target, Player* player);
@@ -21,7 +21,7 @@ namespace ai
     class HasEnemyPlayersValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        HasEnemyPlayersValue(PlayerbotAI* ai, string name = "has enemy players") : BoolCalculatedValue(ai, name, 3) {}
+        HasEnemyPlayersValue(PlayerbotAI* ai, string name = "has enemy players") : BoolCalculatedValue(ai, name, 3), Qualified() {}
         virtual bool Calculate();
     };
 

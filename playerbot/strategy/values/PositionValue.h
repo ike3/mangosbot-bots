@@ -16,6 +16,7 @@ namespace ai
         void Reset() { valueSet = false; }
         bool isSet() { return valueSet; }
 
+    public:
         float x, y, z;
         bool valueSet;
         uint32 mapId;
@@ -27,7 +28,6 @@ namespace ai
 	{
 	public:
         PositionValue(PlayerbotAI* ai, string name = "position");
-
         virtual string Save();
         virtual bool Load(string value);
 
@@ -38,21 +38,18 @@ namespace ai
     class SinglePositionValue : public CalculatedValue<PositionEntry>, public Qualified
     {
     public: 
-        SinglePositionValue(PlayerbotAI* ai, string name = "pos") : CalculatedValue(ai, name) {};
-
+        SinglePositionValue(PlayerbotAI* ai, string name = "pos") : CalculatedValue(ai, name), Qualified() {};
         virtual PositionEntry Calculate() override;
         virtual void Set(PositionEntry value) override;
         virtual void Reset() override;
     };
 
-    
     class CurrentPositionValue : public LogCalculatedValue<WorldPosition>
     {
     public:
         CurrentPositionValue(PlayerbotAI* ai, string name = "current position", uint32 checkInterval = 1) : LogCalculatedValue<WorldPosition>(ai, name, checkInterval) { minChangeInterval = 60;  logLength = 30; };
         virtual bool EqualToLast(WorldPosition value) { return value.fDist(lastValue) < sPlayerbotAIConfig.tooCloseDistance; }
-
-        virtual WorldPosition Calculate() {return WorldPosition(bot);};
+        virtual WorldPosition Calculate() { return WorldPosition(bot); };
     };  
 
     class MasterPositionValue : public MemoryCalculatedValue<WorldPosition>
@@ -60,15 +57,13 @@ namespace ai
     public:
         MasterPositionValue(PlayerbotAI* ai, string name = "master position", uint32 checkInterval = 1) : MemoryCalculatedValue<WorldPosition>(ai, name, checkInterval) { minChangeInterval = 1; };
         virtual bool EqualToLast(WorldPosition value) { return value.fDist(lastValue) < sPlayerbotAIConfig.lootDistance; }
-
         virtual WorldPosition Calculate() { Player* master = GetMaster();  if (master) return WorldPosition(master); return WorldPosition(); };
     };
 
     class CustomPositionValue : public ManualSetValue<WorldPosition>, public Qualified
     {
     public:
-        CustomPositionValue(PlayerbotAI* ai, string name = "custom position") : ManualSetValue<WorldPosition>(ai, WorldPosition(), name) { };
-
+        CustomPositionValue(PlayerbotAI* ai, string name = "custom position") : ManualSetValue<WorldPosition>(ai, WorldPosition(), name), Qualified() { };
         virtual WorldPosition Calculate() { return WorldPosition(bot); };
     };
 }

@@ -8,8 +8,6 @@ namespace ai
 	{
 	public:
         SpellIdValue(PlayerbotAI* ai);
-
-    public:
         virtual uint32 Calculate();
     };
 
@@ -17,8 +15,6 @@ namespace ai
     {
     public:
         VehicleSpellIdValue(PlayerbotAI* ai);
-
-    public:
         virtual uint32 Calculate();
     };
 }

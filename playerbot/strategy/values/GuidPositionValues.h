@@ -18,7 +18,7 @@ namespace ai
     class EntryFilterValue : public GuidPositionListCalculatedValue, public Qualified
     {
     public:
-        EntryFilterValue(PlayerbotAI* ai, string name = "entry filter") : GuidPositionListCalculatedValue(ai, name, 1) {}
+        EntryFilterValue(PlayerbotAI* ai, string name = "entry filter") : GuidPositionListCalculatedValue(ai, name, 1), Qualified() {}
 
         virtual list<GuidPosition> Calculate();
 
@@ -36,7 +36,7 @@ namespace ai
     class RangeFilterValue : public GuidPositionListCalculatedValue, public Qualified
     {
     public:
-        RangeFilterValue(PlayerbotAI* ai, string name = "range filter") : GuidPositionListCalculatedValue(ai, name, 1) {}
+        RangeFilterValue(PlayerbotAI* ai, string name = "range filter") : GuidPositionListCalculatedValue(ai, name, 1), Qualified() {}
 
         virtual list<GuidPosition> Calculate();
 
@@ -54,7 +54,7 @@ namespace ai
     class GoUsableFilterValue : public GuidPositionListCalculatedValue, public Qualified
     {
     public:
-        GoUsableFilterValue(PlayerbotAI* ai, string name = "go usable filter") : GuidPositionListCalculatedValue(ai, name, 1) {}
+        GoUsableFilterValue(PlayerbotAI* ai, string name = "go usable filter") : GuidPositionListCalculatedValue(ai, name, 1), Qualified() {}
 
         virtual list<GuidPosition> Calculate();
 
@@ -72,7 +72,7 @@ namespace ai
     class GoTrappedFilterValue : public GuidPositionListCalculatedValue, public Qualified
     {
     public:
-        GoTrappedFilterValue(PlayerbotAI* ai, string name = "go trapped filter") : GuidPositionListCalculatedValue(ai, name, 1) {}
+        GoTrappedFilterValue(PlayerbotAI* ai, string name = "go trapped filter") : GuidPositionListCalculatedValue(ai, name, 1), Qualified() {}
 
         virtual list<GuidPosition> Calculate();
 
@@ -99,7 +99,7 @@ namespace ai
     class GoSCloseValue : public GuidPositionListCalculatedValue, public Qualified
     {
     public:
-        GoSCloseValue(PlayerbotAI* ai, string name = "gos close") : GuidPositionListCalculatedValue(ai, name, 3) {}
+        GoSCloseValue(PlayerbotAI* ai, string name = "gos close") : GuidPositionListCalculatedValue(ai, name, 3), Qualified() {}
 
         virtual list<GuidPosition> Calculate() { return AI_VALUE2(list<GuidPosition>, "range filter", "gos," + to_string(INTERACTION_DISTANCE)); }
     };
@@ -109,7 +109,7 @@ namespace ai
     class HasObjectValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        HasObjectValue(PlayerbotAI* ai, string name = "has object") : BoolCalculatedValue(ai, name, 3) {}
+        HasObjectValue(PlayerbotAI* ai, string name = "has object") : BoolCalculatedValue(ai, name, 3), Qualified() {}
 
         virtual bool Calculate() { return !AI_VALUE(list<GuidPosition>, getQualifier()).empty(); }
     };

@@ -7,7 +7,6 @@ namespace ai
 	{
 	public:
         WaitForAttackTimeValue(PlayerbotAI* ai) : ManualSetValue<uint8>(ai, 10), Qualified() {}
-
         virtual string Save() { return std::to_string(value); }
         virtual bool Load(string inValue) { value = stoi(inValue); return true; }
     };

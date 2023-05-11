@@ -82,9 +82,10 @@ namespace ai
     class ItemDropListValue : public SingleCalculatedValue<list<int32>>, public Qualified
     {
     public:
-        ItemDropListValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "item drop list") {}
+        ItemDropListValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "item drop list"), Qualified() {}
 
         virtual list<int32> Calculate();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "item drop list"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
@@ -100,9 +101,9 @@ namespace ai
     class EntryLootListValue : public SingleCalculatedValue<list<uint32>>, public Qualified
     {
     public:
-        EntryLootListValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "entry loot list") {}
-
+        EntryLootListValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "entry loot list"), Qualified() {}
         virtual list<uint32> Calculate();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "entry loot list"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
@@ -117,9 +118,9 @@ namespace ai
     class LootChanceValue : public SingleCalculatedValue<float>, public Qualified
     {
     public:
-        LootChanceValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "loot chance") {}
-
+        LootChanceValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "loot chance"), Qualified() {}
         virtual float Calculate();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "loot chance"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
@@ -136,15 +137,15 @@ namespace ai
     class EntryLootUsageValue : public CalculatedValue<itemUsageMap>, public Qualified
     {
     public:
-        EntryLootUsageValue(PlayerbotAI* ai) : CalculatedValue(ai, "entry loot usage",2) {}
-
+        EntryLootUsageValue(PlayerbotAI* ai) : CalculatedValue(ai, "entry loot usage",2), Qualified() {}
         virtual itemUsageMap Calculate();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "entry loot usage" ; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
         virtual string GetHelpDescription()
         {
-            return "This value returns all the items a creature or game object drops and if the bot thinks this item is usefull somehow.";
+            return "This value returns all the items a creature or game object drops and if the bot thinks this item is useful somehow.";
         }
         virtual vector<string> GetUsedValues() { return { "entry loot list", "item usage" }; }
 #endif 
@@ -153,9 +154,9 @@ namespace ai
     class HasUpgradeValue : public BoolCalculatedValue, public Qualified
     {
     public:
-        HasUpgradeValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "has upgrade", 2) {}
-
+        HasUpgradeValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "has upgrade", 2), Qualified() {}
         virtual bool Calculate() { itemUsageMap uMap = AI_VALUE2(itemUsageMap, "entry loot usage", getQualifier()); return uMap.find(ITEM_USAGE_EQUIP) != uMap.end() || uMap.find(ITEM_USAGE_REPLACE) != uMap.end(); };
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "has upgrade"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
@@ -172,16 +173,16 @@ namespace ai
     class StackSpaceForItem : public Uint32CalculatedValue, public Qualified
     {
     public:
-        StackSpaceForItem(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "stack space for item", 2) {}
-
+        StackSpaceForItem(PlayerbotAI* ai) : Uint32CalculatedValue(ai, "stack space for item", 2), Qualified() {}
         virtual uint32 Calculate();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "stack space for item"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "item"; }
         virtual string GetHelpDescription()
         {
             return "This value returns the number of items of a specific type it can store.\n"
-                "Without a player bots are limited to 80% bag space and will only have space for items in exsisting stacks";
+                "Without a player bots are limited to 80% bag space and will only have space for items in existing stacks";
         }
         virtual vector<string> GetUsedValues() { return { "bag space" , "inventory items" }; }
 #endif 
@@ -190,16 +191,16 @@ namespace ai
     class ShouldLootObject : public BoolCalculatedValue, public Qualified
     {
     public:
-        ShouldLootObject(PlayerbotAI* ai) : BoolCalculatedValue(ai, "should loot object") {}
-
+        ShouldLootObject(PlayerbotAI* ai) : BoolCalculatedValue(ai, "should loot object"), Qualified() {}
         virtual bool Calculate();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "should loot object"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
         virtual string GetHelpDescription()
         {
             return "This value checks if an lootable object might hold something the bot can loot.\n"
-                "It returns true if the object has unkown loot, gold or an item it is allowed to loot and can store in an empty space or a stack of simular items.";
+                "It returns true if the object has unknown loot, gold or an item it is allowed to loot and can store in an empty space or a stack of similar items.";
         }
         virtual vector<string> GetUsedValues() { return { "stack space for item" }; }
 #endif 
@@ -211,10 +212,9 @@ namespace ai
     {
     public:
         ActiveRolls(PlayerbotAI* ai) : ManualSetValue(ai, {}, "active rolls") {}
-
         static void CleanUp(Player* bot, LootRollMap& value, ObjectGuid guid = ObjectGuid(), uint32 slot = 0);
-
         virtual string Format();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "active rolls"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "loot"; }
