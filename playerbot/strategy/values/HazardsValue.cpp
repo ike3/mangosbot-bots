@@ -106,7 +106,7 @@ const WorldObject* Hazard::GetObject(PlayerbotAI* ai) const
 void AddHazardValue::Set(Hazard hazard)
 {
     AiObjectContext* context = ai->GetAiObjectContext();
-    std::list<Hazard>& storedHazards = AI_VALUE(std::list<Hazard>, "stored hazards");
+    std::list<Hazard> storedHazards = AI_VALUE(std::list<Hazard>, "stored hazards");
 
     // Check if the hazard already exists
     auto it = std::find(storedHazards.begin(), storedHazards.end(), hazard);
@@ -120,7 +120,7 @@ void AddHazardValue::Set(Hazard hazard)
 std::list<HazardPosition> HazardsValue::Calculate()
 {
     AiObjectContext* context = ai->GetAiObjectContext();
-    std::list<Hazard>& storedHazards = AI_VALUE(std::list<Hazard>, "stored hazards");
+    std::list<Hazard> storedHazards = AI_VALUE(std::list<Hazard>, "stored hazards");
 
     // Create an updated hazard positions list
     bool hazardsUpdated = false;
