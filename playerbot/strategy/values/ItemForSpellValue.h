@@ -12,6 +12,7 @@ namespace ai
         virtual Item* Calculate();
 
     private:
+        Item* ItemForSpellValue::GetItemFitsToSpellRequirements(Item* itemForSpell, SpellEntry const* spellInfo);
         Item* GetItemFitsToSpellRequirements(uint8 slot, SpellEntry const *spellInfo);
     };
 }

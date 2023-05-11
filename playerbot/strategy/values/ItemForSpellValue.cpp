@@ -68,22 +68,57 @@ Item* ItemForSpellValue::Calculate()
     if (!strcmpi(spellInfo->SpellName[0], "disenchant"))
         return NULL;
 
-    for( uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++ ) {
+    vector<uint32> slots;
+
+    for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
+    {
+        slots.push_back(slot);
+    }
+
+    std::shuffle(slots.begin(), slots.end(), *GetRandomGenerator());
+
+    for( auto& slot : slots ) {
         itemForSpell = GetItemFitsToSpellRequirements(slot, spellInfo);
         if (itemForSpell)
             return itemForSpell;
     }
+
+    vector<Item*> items;
+
+    for (auto& item : AI_VALUE2(list<Item*>, "inventory items", "all"))
+        items.push_back(item);
+
+    std::shuffle(items.begin(), items.end(), *GetRandomGenerator());
+
+    for(auto& item: items)
+    {
+        if (GetItemFitsToSpellRequirements(item, spellInfo))
+            return item;
+    }
+
     return NULL;
 }
 
-Item* ItemForSpellValue::GetItemFitsToSpellRequirements(uint8 slot, SpellEntry const *spellInfo)
+Item* ItemForSpellValue::GetItemFitsToSpellRequirements(Item* itemForSpell, SpellEntry const* spellInfo)
 {
-    Item* const itemForSpell = bot->GetItemByPos( INVENTORY_SLOT_BAG_0, slot );
-    if (!itemForSpell || itemForSpell->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT))
+    if (!itemForSpell)
+        return nullptr;
+
+    if(spellInfo->Effect[0] != SPELL_EFFECT_ENCHANT_ITEM && itemForSpell->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT))
+        return NULL;
+
+    if (spellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM && itemForSpell->GetEnchantmentId(PERM_ENCHANTMENT_SLOT) &&  urand(0,5))
         return NULL;
 
     if (itemForSpell->IsFitToSpellRequirements(spellInfo))
         return itemForSpell;
 
     return NULL;
+}
+
+Item* ItemForSpellValue::GetItemFitsToSpellRequirements(uint8 slot, SpellEntry const* spellInfo)
+{
+    Item* const itemForSpell = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);    
+
+    return GetItemFitsToSpellRequirements(itemForSpell, spellInfo);
 }
