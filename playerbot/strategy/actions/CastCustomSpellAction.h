@@ -3,6 +3,7 @@
 #include "../values/CraftValues.h"
 #include "../values/ItemUsageValue.h"
 #include "GenericActions.h"
+#include "../../RandomItemMgr.h"
 
 namespace ai
 {
@@ -79,14 +80,51 @@ namespace ai
             return pSpellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM && pSpellInfo->ReagentCount[0] > 0;
         }
 
-        virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) {
-            if (pSpellInfo->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM)
-            {
-                if(AI_VALUE2(Item*, "item for spell", pSpellInfo->Id) && ShouldCraftSpellValue::SpellGivesSkillUp(pSpellInfo->Id, bot))
-                   return 10;
-            }
-            return 1;
-        }
+        virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo)
+        {
+            if (pSpellInfo->Effect[0] != SPELL_EFFECT_ENCHANT_ITEM)
+                return 0;
 
+            uint32 enchant_id = pSpellInfo->EffectMiscValue[0];
+
+            Item* item = AI_VALUE2(Item*, "item for spell", pSpellInfo->Id);
+
+            if (!item)
+                return 0;
+
+            ItemPrototype const* proto = item->GetProto();
+
+            //Upgrade current equiped item enchantment.
+            if (item->GetBagSlot() == INVENTORY_SLOT_BAG_0) 
+            {
+                ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", proto->ItemId);
+
+                if (forceUsage != ForceItemUsage::FORCE_USAGE_NONE)
+                    return 0;
+
+
+                uint32 currentEnchnatWeight = 0;
+                if (item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT))
+                    currentEnchnatWeight = sRandomItemMgr.CalculateEnchantWeight(bot->getClass(), sRandomItemMgr.GetPlayerSpecId(bot), item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
+
+                uint32 newEnchantWeight = sRandomItemMgr.CalculateEnchantWeight(bot->getClass(), sRandomItemMgr.GetPlayerSpecId(bot), enchant_id);
+
+                if (currentEnchnatWeight >= newEnchantWeight)
+                    return 0;
+
+                return 100;
+            }
+
+            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", proto->ItemId);
+
+            if (usage != ITEM_USAGE_AH && usage != ITEM_USAGE_VENDOR && usage != ITEM_USAGE_DISENCHANT && usage != ITEM_USAGE_NONE)
+                return 0;
+
+            //Enchant for skillup
+            if (ShouldCraftSpellValue::SpellGivesSkillUp(pSpellInfo->Id, bot))
+                return 10;
+
+            return 0;
+        }
     };
 }

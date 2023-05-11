@@ -375,6 +375,9 @@ bool CastRandomSpellAction::Execute(Event& event)
         {
             uint32 spellPriority = GetSpellPriority(pSpellInfo);
 
+            if (!spellPriority)
+                continue;
+
             if (target && ai->CanCastSpell(spellId, target, true))
                 spellList.push_back(make_pair(spellId,make_pair(spellPriority, target)));
             if (target && ai->CanCastSpell(spellId, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), true))
