@@ -77,7 +77,8 @@ Item* ItemForSpellValue::Calculate()
 
     std::shuffle(slots.begin(), slots.end(), *GetRandomGenerator());
 
-    for( auto& slot : slots ) {
+    for( auto& slot : slots ) 
+    {
         itemForSpell = GetItemFitsToSpellRequirements(slot, spellInfo);
         if (itemForSpell)
             return itemForSpell;
@@ -119,6 +120,5 @@ Item* ItemForSpellValue::GetItemFitsToSpellRequirements(Item* itemForSpell, Spel
 Item* ItemForSpellValue::GetItemFitsToSpellRequirements(uint8 slot, SpellEntry const* spellInfo)
 {
     Item* const itemForSpell = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);    
-
     return GetItemFitsToSpellRequirements(itemForSpell, spellInfo);
 }
