@@ -7,7 +7,7 @@
 #include "AttackersValue.h"
 #include "PossibleAttackTargetsValue.h"
 #include "../actions/ChooseTargetActions.h"
-#include "tools/Formulas.h"
+#include "Formulas.h"
 
 using namespace ai;
 
@@ -27,7 +27,6 @@ Unit* GrindTargetValue::Calculate()
 
     return target;
 }
-
 
 Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
 {
@@ -309,4 +308,3 @@ int GrindTargetValue::GetTargetingPlayerCount( Unit* unit )
 
     return count;
 }
-
