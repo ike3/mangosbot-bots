@@ -1,6 +1,7 @@
 #include "CraftValues.h"
 #include "ItemUsageValue.h"
 #include "../../ServerFacade.h"
+#include "PlayerbotAI.h"
 
 using namespace ai;
 

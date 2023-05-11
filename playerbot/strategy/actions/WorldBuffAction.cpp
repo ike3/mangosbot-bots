@@ -1,9 +1,7 @@
-#pragma once
 #include "../Action.h"
 #include "WorldBuffAction.h"
 #include "AiFactory.h"
 #include "PlayerbotAIConfig.h"
-
 
 using namespace ai;
 

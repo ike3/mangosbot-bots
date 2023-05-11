@@ -1,5 +1,4 @@
 #pragma once
-
 #include "PlayerbotAIAware.h"
 
 class Player;

@@ -13,6 +13,7 @@ namespace ai
         Qualified() {};
         Qualified(const string& qualifier) : qualifier(qualifier) {}
         Qualified(int32 qualifier1) { Qualify(qualifier1); }
+
     public:
         virtual void Qualify(int32 qualifier) { ostringstream out; out << qualifier; this->qualifier = out.str(); }
         virtual void Qualify(const string& qualifier) { this->qualifier = qualifier; }
