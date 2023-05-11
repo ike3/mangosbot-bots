@@ -56,6 +56,65 @@ void MemoryMonitor::Print()
     }
 }
 
+void MemoryMonitor::LogCount(std::string filename)
+{
+    FILE* file = fopen(filename.c_str(), headers ? "a" : "w");
+
+    time_t t = time(nullptr);
+    tm* aTm = localtime(&t);
+    //       YYYY   year
+    //       MM     month (2 digits 01-12)
+    //       DD     day (2 digits 01-31)
+    //       HH     hour (2 digits 00-23)
+    //       MM     minutes (2 digits 00-59)
+    //       SS     seconds (2 digits 00-59)
+    char buf[20];
+    snprintf(buf, 20, "%04d-%02d-%02d %02d:%02d:%02d", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
+    std::string timestamp = std::string(buf);
+
+    std::map<std::string, int> nums;
+
+    for (auto& t : objectnumbers) // Aggregate object counts over all threads
+        for (auto& object : t.second)
+            nums[object.first] += object.second;
+
+    objectnumbersHist.push_back(nums);
+
+    if (objectnumbersHist.size() > 10)
+        objectnumbersHist.pop_front();
+
+    std::string line = "time";
+
+    if (!headers)
+    {
+        for (auto& num : nums)
+        {
+            line += ";" + num.first;
+        }
+
+        fprintf(file, line.c_str());
+        fprintf(file, "\n");
+        fflush(file);
+
+        fflush(stdout);
+        headers = true;
+    }
+        
+    line = timestamp.c_str();
+
+    for (auto& num : nums)
+    {
+        line += ";" + to_string(num.second);
+    }
+
+    fprintf(file, line.c_str());
+    fprintf(file, "\n");
+    fflush(file);
+    fflush(stdout);
+
+    fclose(file);
+}
+
 void MemoryMonitor::Browse()
 {
     std::unordered_map<std::string, std::unordered_map<std::string, double>> here;

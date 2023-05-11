@@ -7,12 +7,6 @@
 #include <map>
 #include <thread>
 
-
-//#include "Common.h"
-//#include "PlayerbotAIBase.h"
-
-//using namespace std;
-
 class MemoryMonitor
 {
     public:
@@ -32,10 +26,12 @@ class MemoryMonitor
         void Rem(std::string objectType, uint64_t object, int level = 0); //Method to call when object gets destroyed.
         void Print(); //Print number of objects that still exist and their creation call-stack.
         void Browse();
+        void LogCount(std::string filename);
 	private:
         std::unordered_map<std::thread::id, std::map<std::string, int>> objectnumbers;
         std::list<std::map<std::string, int >> objectnumbersHist;
         std::unordered_map < std::thread::id, std::unordered_map<std::string, std::unordered_map<uint64_t,std::pair<std::string,time_t>>>> adds, rems;
+        bool headers = false;
 };
 
 
