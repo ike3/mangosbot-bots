@@ -104,7 +104,7 @@ void MemoryMonitor::LogCount(std::string filename)
 
     for (auto& num : nums)
     {
-        line += ";" + to_string(num.second);
+        line += ";" + std::to_string(num.second);
     }
 
     fprintf(file, line.c_str());
