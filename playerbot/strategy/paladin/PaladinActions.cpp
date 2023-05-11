@@ -182,7 +182,7 @@ Unit* CastBlessingOnPartyAction::GetTarget()
 
     if (haveBlessings.empty())
     {
-        return false;
+        return nullptr;
     }
 
     std::string blessList = "";
