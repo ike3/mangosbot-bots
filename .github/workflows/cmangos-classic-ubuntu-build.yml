@@ -1,17 +1,17 @@
 name: CMaNGOS Classic Ubuntu Build
 
 # use manual run
-on: [workflow_dispatch]
+#on: [workflow_dispatch]
 
 # use schedule
-#on:
-#  schedule:
-#    # every day at 6am
-#    - cron:  '0 6 * * *'
+on:
+  schedule:
+    # every day at 6am
+    - cron:  '15 6 * * *'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+  BUILD_TYPE: Debug
   CORE_TYPE: "cmangos"
   CORE_EXPANSION: "classic"
   CORE_BRANCH: "ike3-bots"
