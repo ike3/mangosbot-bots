@@ -89,7 +89,7 @@ namespace ai
 
         void calculateCost(bool distanceOnly = false);
 
-        float getCost(Player* bot = nullptr, uint32 cGold = 0);
+        float getCost(Unit* unit = nullptr, uint32 cGold = 0);
         uint32 getPrice();
     private:
         //Does the path have all the points to get to the destination?
@@ -358,13 +358,13 @@ namespace ai
         TravelNode* getRandomNode(WorldPosition pos) { vector<TravelNode*> rNodes = getNodes(pos); if (rNodes.empty()) return nullptr; return  rNodes[urand(0, rNodes.size() - 1)]; }
 
         //Finds the best nodePath between two nodes
-        TravelNodeRoute getRoute(TravelNode* start, TravelNode* goal, Player* bot = nullptr);
+        TravelNodeRoute getRoute(TravelNode* start, TravelNode* goal, Unit* unit = nullptr);
 
         //Find the best node between two positions
-        TravelNodeRoute getRoute(WorldPosition startPos, WorldPosition endPos, vector<WorldPosition>& startPath, Player* bot = nullptr);
+        TravelNodeRoute getRoute(WorldPosition startPos, WorldPosition endPos, vector<WorldPosition>& startPath, Unit* unit = nullptr);
 
         //Find the full path between those locations
-        static TravelPath getFullPath(WorldPosition startPos, WorldPosition endPos, Player* bot = nullptr);
+        static TravelPath getFullPath(WorldPosition startPos, WorldPosition endPos, Unit* unit = nullptr);
 
         //Manage/update nodes
         void manageNodes(Unit* bot, bool mapFull = false);

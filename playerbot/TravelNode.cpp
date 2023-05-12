@@ -98,7 +98,7 @@ void TravelNodePath::calculateCost(bool distanceOnly)
 }
 
 //The cost to travel this path. 
-float TravelNodePath::getCost(Player* bot, uint32 cGold)
+float TravelNodePath::getCost(Unit* unit, uint32 cGold)
 {
     float modifier = 1.0f; //Global modifier
     float timeCost = 0.1f;
@@ -106,6 +106,7 @@ float TravelNodePath::getCost(Player* bot, uint32 cGold)
     float speed = 8.0f; //default run speed
     float swimSpeed = 4.0f; //default swim speed.
 
+    Player* bot = dynamic_cast<Player*>(unit);
     if (bot)
     {
         //Check if we can use this area trigger.
@@ -1287,9 +1288,9 @@ TravelNode* TravelNodeMap::getNode(WorldPosition pos, vector<WorldPosition>& ppa
     return NULL;
 }
 
-TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Player* bot)
+TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Unit* unit)
 {
-    float botSpeed = bot ? bot->GetSpeed(MOVE_RUN) : 7.0f;
+    float unitSpeed = unit ? unit->GetSpeed(MOVE_RUN) : 7.0f;
 
     if (start == goal)
         return TravelNodeRoute();
@@ -1307,42 +1308,44 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
 
     std::vector<TravelNode*> portNodes;
 
+    Player* bot = dynamic_cast<Player*>(unit);
     if (bot)
     {
         PlayerbotAI* ai = bot->GetPlayerbotAI();
-        AiObjectContext* context = ai->GetAiObjectContext();
         if (ai)
         {
+            AiObjectContext* context = ai->GetAiObjectContext();
+
             if (ai->HasCheat(BotCheatMask::gold))
                 startStub->currentGold = 10000000;
             else {
                 AiObjectContext* context = ai->GetAiObjectContext();
                 startStub->currentGold = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::travel);
             }
-        }
-        else
-            startStub->currentGold = bot->GetMoney();
 
-        if (AI_VALUE2(bool, "action useful", "hearthstone") && bot->IsAlive())
-        {
-            TravelNode* homeNode = sTravelNodeMap.getNode(AI_VALUE(WorldPosition, "home bind"), nullptr, 10.0f);
-            if (homeNode)
+            if (AI_VALUE2(bool, "action useful", "hearthstone") && bot->IsAlive())
             {
-                PortalNode* portNode = new PortalNode(start);
-                portNode->SetPortal(start, homeNode, 8690);
+                TravelNode* homeNode = sTravelNodeMap.getNode(AI_VALUE(WorldPosition, "home bind"), nullptr, 10.0f);
+                if (homeNode)
+                {
+                    PortalNode* portNode = new PortalNode(start);
+                    portNode->SetPortal(start, homeNode, 8690);
 
-                childNode = &m_stubs.insert(make_pair(portNode, TravelNodeStub(portNode))).first->second;
+                    childNode = &m_stubs.insert(make_pair(portNode, TravelNodeStub(portNode))).first->second;
 
-                childNode->m_g = std::max((uint32)2, (10- AI_VALUE(uint32, "death count")) * MINUTE); //If we can walk there in 10 minutes, walk instead.
-                childNode->m_h = childNode->dataNode->fDist(goal) / botSpeed;
-                childNode->m_f = childNode->m_g + childNode->m_h;
+                    childNode->m_g = std::max((uint32)2, (10 - AI_VALUE(uint32, "death count")) * MINUTE); //If we can walk there in 10 minutes, walk instead.
+                    childNode->m_h = childNode->dataNode->fDist(goal) / unitSpeed;
+                    childNode->m_f = childNode->m_g + childNode->m_h;
 
-                open.push_back(childNode);
-                std::push_heap(open.begin(), open.end(), [](TravelNodeStub* i, TravelNodeStub* j) {return i->m_f < j->m_f; });
-                childNode->open = true;
-                portNodes.push_back(portNode);
+                    open.push_back(childNode);
+                    std::push_heap(open.begin(), open.end(), [](TravelNodeStub* i, TravelNodeStub* j) {return i->m_f < j->m_f; });
+                    childNode->open = true;
+                    portNodes.push_back(portNode);
+                }
             }
         }
+        else
+            startStub->currentGold = bot->GetMoney();       
 
         vector<uint32> teleSpells = { 3561,3562,3563,3565,3566,3567,18960 };
 
@@ -1373,7 +1376,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
             childNode = &m_stubs.insert(make_pair(portNode, TravelNodeStub(portNode))).first->second;
 
             childNode->m_g = MINUTE; //If we can walk there in a minute. Walk instead.
-            childNode->m_h = childNode->dataNode->fDist(goal) / botSpeed;
+            childNode->m_h = childNode->dataNode->fDist(goal) / unitSpeed;
             childNode->m_f = childNode->m_g + childNode->m_h;
 
             open.push_back(childNode);
@@ -1431,7 +1434,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
         {
             TravelNode* linkNode = link.first;
 
-            float linkCost = link.second->getCost(bot, currentNode->currentGold);
+            float linkCost = link.second->getCost(unit, currentNode->currentGold);
 
             if (linkCost <= 0)
                 continue;
@@ -1442,7 +1445,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
             if ((childNode->open || childNode->close) && childNode->m_g <= g) // n' is already in opend or closed with a lower cost g(n')
                 continue; // consider next successor
 
-            h = childNode->dataNode->fDist(goal) / botSpeed;
+            h = childNode->dataNode->fDist(goal) / unitSpeed;
             f = g + h; // compute f(n')
             childNode->m_f = f;
             childNode->m_g = g;
@@ -1468,7 +1471,7 @@ TravelNodeRoute TravelNodeMap::getRoute(TravelNode* start, TravelNode* goal, Pla
     return TravelNodeRoute();
 }
 
-TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition endPos, vector<WorldPosition>& startPath, Player* bot)
+TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition endPos, vector<WorldPosition>& startPath, Unit* unit)
 {
     if (m_nodes.empty())
         return TravelNodeRoute();
@@ -1491,13 +1494,13 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
 
         float maxStartDistance = startNode->isTransport() ? 20.0f : sPlayerbotAIConfig.targetPosRecalcDistance;
 
-        TravelNodeRoute route = getRoute(startNode, endNode, bot);
+        TravelNodeRoute route = getRoute(startNode, endNode, unit);
 
         if (!route.isEmpty())
         {
             //Check if the bot can actually walk to this start position.
             newStartPath = startPath;
-            if (startNodePosition.cropPathTo(newStartPath, maxStartDistance) || startNode->getPosition()->isPathTo(newStartPath = startPos.getPathTo(startNodePosition, bot), maxStartDistance))
+            if (startNodePosition.cropPathTo(newStartPath, maxStartDistance) || startNode->getPosition()->isPathTo(newStartPath = startPos.getPathTo(startNodePosition, unit), maxStartDistance))
             {
                 startPath = newStartPath;
                 return route;
@@ -1516,6 +1519,7 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
         }
     }
 
+    Player* bot = dynamic_cast<Player*>(unit);
     if (bot)
     {
         Player* player = bot;
@@ -1542,13 +1546,12 @@ TravelNodeRoute TravelNodeMap::getRoute(WorldPosition startPos, WorldPosition en
     return TravelNodeRoute();
 }
 
-TravelPath TravelNodeMap::getFullPath(WorldPosition startPos, WorldPosition endPos, Player* bot)
+TravelPath TravelNodeMap::getFullPath(WorldPosition startPos, WorldPosition endPos, Unit* unit)
 {
     TravelPath movePath;
-    PlayerbotAI* ai = bot->GetPlayerbotAI();
     vector<WorldPosition> beginPath, endPath;
 
-    beginPath = endPos.getPathFromPath({ startPos }, bot, 40);
+    beginPath = endPos.getPathFromPath({ startPos }, unit, 40);
 
     if (endPos.isPathTo(beginPath,sPlayerbotAIConfig.spellDistance)) //If we can get within spell distance a longer route won't help.
         return TravelPath(beginPath);
@@ -1560,7 +1563,7 @@ TravelPath TravelNodeMap::getFullPath(WorldPosition startPos, WorldPosition endP
 
     //Find the route of nodes starting at a node closest to the start position and ending at a node closest to the endposition.
     //Also returns longPath: The path from the start position to the first node in the route.
-    TravelNodeRoute route = sTravelNodeMap.getRoute(startPos, endPos, beginPath, bot);
+    TravelNodeRoute route = sTravelNodeMap.getRoute(startPos, endPos, beginPath, unit);
 
     if (route.isEmpty())
     {
@@ -1570,10 +1573,18 @@ TravelPath TravelNodeMap::getFullPath(WorldPosition startPos, WorldPosition endP
 
     if (sPlayerbotAIConfig.hasLog("bot_pathfinding.csv"))
     {
-        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+        Player* bot = dynamic_cast<Player*>(unit);
+        if (bot)
         {
-            sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
-            sPlayerbotAIConfig.log("bot_pathfinding.csv", route.print().str().c_str());
+            PlayerbotAI* ai = bot->GetPlayerbotAI();
+            if (ai)
+            {
+                if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                {
+                    sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
+                    sPlayerbotAIConfig.log("bot_pathfinding.csv", route.print().str().c_str());
+                }
+            }
         }
     }
 
@@ -1585,10 +1596,18 @@ TravelPath TravelNodeMap::getFullPath(WorldPosition startPos, WorldPosition endP
 
     if (sPlayerbotAIConfig.hasLog("bot_pathfinding.csv"))
     {
-        if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+        Player* bot = dynamic_cast<Player*>(unit);
+        if (bot)
         {
-            sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
-            sPlayerbotAIConfig.log("bot_pathfinding.csv", movePath.print().str().c_str());
+            PlayerbotAI* ai = bot->GetPlayerbotAI();
+            if (ai)
+            {
+                if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
+                {
+                    sPlayerbotAIConfig.openLog("bot_pathfinding.csv", "w");
+                    sPlayerbotAIConfig.log("bot_pathfinding.csv", movePath.print().str().c_str());
+                }
+            }
         }
     }
 
