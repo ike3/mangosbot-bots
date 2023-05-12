@@ -144,6 +144,11 @@ namespace ai
 
         virtual bool EqualToLast(bool value) { return value == lastValue; }
         virtual bool Calculate();
+
+        virtual string Format()
+        {
+            return this->Calculate() ? "true" : "false";
+        }
     };
 
     class BagSpaceValue : public Uint8CalculatedValue
@@ -185,6 +190,12 @@ namespace ai
     {
     public:
         DeathCountValue(PlayerbotAI* ai, string name = "death count") : ManualSetValue<uint32>(ai, 0, name) {}
+
+        virtual string Format()
+        {
+            ostringstream out; out << (int)this->value;
+            return out.str();
+        }
     };
 
 
@@ -194,12 +205,18 @@ namespace ai
         ExperienceValue(PlayerbotAI* ai, string name = "experience", uint32 checkInterval = 60) : MemoryCalculatedValue<uint32>(ai, name, checkInterval) {}
         virtual bool EqualToLast(uint32 value) { return value != lastValue; }
         virtual uint32 Calculate() { return bot->GetUInt32Value(PLAYER_XP);}
+
+        virtual string Format()
+        {
+            ostringstream out; out << (int)this->Calculate() << " last change:" << LastChangeDelay() << "s";
+            return out.str();
+        }
     };
 
-    class HonorValue : public MemoryCalculatedValue<uint32>
+    class HonorValue : public ExperienceValue
     {
     public:
-        HonorValue(PlayerbotAI* ai, string name = "honor", uint32 checkInterval = 60) : MemoryCalculatedValue<uint32>(ai, name, checkInterval) {}
+        HonorValue(PlayerbotAI* ai, string name = "honor", uint32 checkInterval = 60) : ExperienceValue(ai, name, checkInterval) {}
         virtual bool EqualToLast(uint32 value) { return value != lastValue; }
 
 #ifdef MANGOSBOT_ZERO
