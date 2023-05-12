@@ -126,7 +126,7 @@ namespace ai
     {
     public:
         CanFightEqualValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can fight equal",2) {}
-        virtual bool Calculate() { return AI_VALUE(uint8, "durability") > 20; };
+        virtual bool Calculate() { return AI_VALUE(uint8, "durability") > 20 && !ai->HasAura(SPELL_ID_PASSIVE_RESURRECTION_SICKNESS,bot); };
     };
 
     class CanFightEliteValue : public BoolCalculatedValue
