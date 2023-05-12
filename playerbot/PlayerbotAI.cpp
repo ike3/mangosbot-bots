@@ -3882,8 +3882,11 @@ GuilderType PlayerbotAI::GetGuilderType()
     return GuilderType::HUGE;
 }
 
-bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
+bool PlayerbotAI::HasPlayerNearby(WorldPosition pos, float range)
 {
+    if (!range)
+        range = pos.getVisibilityDistance();
+
     float sqRange = range * range;
     bool nearPlayer = false;
     for (auto& i : sRandomPlayerbotMgr.GetPlayers())
@@ -3894,7 +3897,7 @@ bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
             if (player->GetMapId() != bot->GetMapId())
                 continue;
 
-            if (pos->sqDistance(WorldPosition(player)) < sqRange)
+            if (pos.sqDistance(WorldPosition(player)) < sqRange)
                 nearPlayer = true;
 
             // if player is far check farsight/cinematic camera
@@ -3902,7 +3905,7 @@ bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
             WorldObject* viewObj = viewPoint.GetBody();
             if (viewObj && viewObj != player)
             {
-                if (pos->sqDistance(WorldPosition(viewObj)) < sqRange)
+                if (pos.sqDistance(WorldPosition(viewObj)) < sqRange)
                     nearPlayer = true;
             }
         }
@@ -3913,8 +3916,7 @@ bool PlayerbotAI::HasPlayerNearby(WorldPosition* pos, float range)
 
 bool PlayerbotAI::HasPlayerNearby(float range)
 { 
-    WorldPosition botPos(bot);  
-    return HasPlayerNearby(&botPos, range); 
+    return HasPlayerNearby(bot, range); 
 }
 
 bool PlayerbotAI::HasManyPlayersNearby(uint32 trigerrValue, float range)
@@ -3989,13 +3991,13 @@ ActivePiorityType PlayerbotAI::GetPriorityType()
     if (!WorldPosition(bot).isOverworld()) 
         return ActivePiorityType::IN_INSTANCE;
 
-    if (HasPlayerNearby(250.0f)) 
+    if (HasPlayerNearby()) 
         return ActivePiorityType::VISIBLE_FOR_PLAYER;
 
     if (sServerFacade.IsInCombat(bot))
         return ActivePiorityType::IN_COMBAT;
 
-    if (HasPlayerNearby(450.0f)) 
+    if (HasPlayerNearby(WorldPosition(bot).getVisibilityDistance() + sPlayerbotAIConfig.reactDistance)) 
         return ActivePiorityType::NEARBY_PLAYER;
 
     if (sPlayerbotAIConfig.IsFreeAltBot(bot) || HasStrategy("travel once", BotState::BOT_STATE_NON_COMBAT))

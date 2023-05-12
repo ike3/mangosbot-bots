@@ -19,7 +19,7 @@ namespace ai
             if (bot->GetGroup() && ai->GetGroupMaster() && (!ai->GetGroupMaster()->GetPlayerbotAI() || ai->GetGroupMaster()->GetPlayerbotAI()->IsRealPlayer()))
                 return true;
 
-            if (ai->HasPlayerNearby(sPlayerbotAIConfig.grindDistance))
+            if (ai->HasPlayerNearby())
                 return true;
 
             return sRandomPlayerbotMgr.ProcessBot(bot);

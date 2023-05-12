@@ -1004,7 +1004,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         }
     }
 
-    if (totalDistance > maxDist && !detailedMove && !ai->HasPlayerNearby(&movePosition)) //Why walk if you can fly?
+    if (totalDistance > maxDist && !detailedMove && !ai->HasPlayerNearby(movePosition)) //Why walk if you can fly?
     {
         time_t now = time(0);
 

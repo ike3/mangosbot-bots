@@ -1692,7 +1692,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
             if (player->GetGroup() && ai->GetGroupMaster() && (!ai->GetGroupMaster()->GetPlayerbotAI() || ai->GetGroupMaster()->GetPlayerbotAI()->IsRealPlayer()))
                 update = false;
 
-            if (ai->HasPlayerNearby(sPlayerbotAIConfig.grindDistance))
+            if (ai->HasPlayerNearby())
                 update = false;
         }
         if (update)
@@ -1840,7 +1840,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     if (bot->GetGroup() && !bot->GetGroup()->IsLeader(bot->GetObjectGuid()))
         return;
 
-    if (bot->IsTaxiFlying() && bot->GetPlayerbotAI()->HasPlayerNearby(300))
+    if (bot->IsTaxiFlying() && bot->GetPlayerbotAI()->HasPlayerNearby())
         return;
 
     if (sPlayerbotAIConfig.randomBotRpgChance < 0)
