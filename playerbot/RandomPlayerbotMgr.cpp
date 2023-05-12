@@ -351,7 +351,7 @@ inline ostringstream generate_ostringstream(Unit* bot, vector<pair<int, int>>& l
     out << bot->GetOrientation() << ",";
     out << to_string(bot->getRace()) << ",";
     out << to_string(bot->getClass()) << ",";
-    out << is_sqDist_greater_200 ? "1" : "0";
+    out << (is_sqDist_greater_200 ? "1" : "0");
     return out;
 }
 
@@ -660,7 +660,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
             if (!player)
             {
-                sLog.outDetail("Add player %d", bot);
+                sLog.outDetail("Add player %d", bot.second);
                 AddPlayerBot(bot.second, bot.first);
             }
         }
@@ -879,7 +879,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                 sLog.outError("Not enough accounts to meet selection criteria. A random selection of bots was activated to fill the server.");
 
                 if (sPlayerbotAIConfig.syncLevelWithPlayers)
-                    sLog.outError("Only bots between level %d and %d are selected to sync with player level", (currentAvgLevel + 1 < wantedAvgLevel) ? wantedAvgLevel : 1, maxLevel);
+                    sLog.outError("Only bots between level %d and %d are selected to sync with player level", uint32((currentAvgLevel + 1 < wantedAvgLevel) ? wantedAvgLevel : 1), maxLevel);
 
                 ChatHelper chat(nullptr);
 
@@ -892,7 +892,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                         {
                             int32 totalWanted = ((sPlayerbotAIConfig.classRaceProbability[cls][race] * maxAllowedBotCount / sPlayerbotAIConfig.classRaceProbabilityTotal) + 1);
                             float percentage = float(sPlayerbotAIConfig.classRaceProbability[cls][race]) * 100.0f / sPlayerbotAIConfig.classRaceProbabilityTotal;
-                            sLog.outError("%d %s %ss needed to get %3.2f%% of total but only %d found.", totalWanted, chat.formatRace(race), chat.formatClass(cls), percentage, totalWanted - moreWanted);
+                            sLog.outError("%d %s %ss needed to get %3.2f%% of total but only %d found.", totalWanted, chat.formatRace(race).c_str(), chat.formatClass(cls).c_str(), percentage, totalWanted - moreWanted);
                         }
                     }
                 }
@@ -3332,7 +3332,7 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot, bool activeOnly)
 void RandomPlayerbotMgr::Remove(Player* bot)
 {
     uint32 owner = bot->GetGUIDLow();
-    PlayerbotDatabase.PExecute("delete from ai_playerbot_random_bots where owner = 0 and bot = '%lu'", owner);
+    PlayerbotDatabase.PExecute("delete from ai_playerbot_random_bots where owner = 0 and bot = '%d'", owner);
     eventCache[owner].clear();
 
     LogoutPlayerBot(owner);
