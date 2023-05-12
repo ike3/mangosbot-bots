@@ -96,6 +96,7 @@
 #include "FocusTargetValue.h"
 #include "TalentSpecValue.h"
 #include "MountValues.h"
+#include "DeadValues.h"
 
 namespace ai
 {
@@ -282,6 +283,9 @@ namespace ai
 
             creators["home bind"] = &ValueContext::home_bind;
             creators["last long move"] = &ValueContext::last_long_move;
+            creators["graveyard"] = &ValueContext::graveyard;
+            creators["best graveyard"] = &ValueContext::best_graveyard;
+            creators["should spirit healer"] = &ValueContext::should_spirit_healer;
 
             creators["bot roles"] = &ValueContext::bot_roles;
             creators["talent spec"] = &ValueContext::talent_spec;
@@ -549,6 +553,9 @@ namespace ai
 
         static UntypedValue* last_long_move(PlayerbotAI* ai) { return new LastLongMoveValue(ai); }
         static UntypedValue* home_bind(PlayerbotAI* ai) { return new HomeBindValue(ai); }
+        static UntypedValue* graveyard(PlayerbotAI* ai) { return new GraveyardValue(ai); }
+        static UntypedValue* best_graveyard(PlayerbotAI* ai) { return new BestGraveyardValue(ai); }
+        static UntypedValue* should_spirit_healer(PlayerbotAI* ai) { return new ShouldSpiritHealerValue(ai); }
 
         static UntypedValue* bot_roles(PlayerbotAI* ai) { return new BotRolesValue(ai); }
         static UntypedValue* talent_spec(PlayerbotAI* ai) { return new TalentSpecValue(ai); }

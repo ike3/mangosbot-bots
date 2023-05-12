@@ -15,7 +15,11 @@ void DeadStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "very often",
-        NextAction::array(0, new NextAction("self resurrect", relevance+1.0f), NULL)));
+        NextAction::array(0, new NextAction("self resurrect", relevance + 2.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "val::should spirit healer",
+        NextAction::array(0, new NextAction("spirit healer", relevance + 1.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "dead",

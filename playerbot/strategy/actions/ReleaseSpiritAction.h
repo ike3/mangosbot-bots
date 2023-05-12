@@ -127,24 +127,12 @@ namespace ai
         {
             sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
 
-            int64 deadTime;
+            GuidPosition grave = AI_VALUE(GuidPosition, "best graveyard");
 
-            Corpse* corpse = bot->GetCorpse();
-            if (corpse)
-                deadTime = time(nullptr) - corpse->GetGhostTime();
-            else if (bot->IsDead())
-                deadTime = 0;
-            else
-                deadTime = 60 * MINUTE;
-
-            uint32 dCount = AI_VALUE(uint32, "death count");
-
-            WorldSafeLocsEntry const* ClosestGrave = GetGrave(dCount > 10 || deadTime > 30 * MINUTE);
-
-            if (!ClosestGrave)
+            if (!grave)
                 return false;
 
-            bot->TeleportTo(ClosestGrave->map_id, ClosestGrave->x, ClosestGrave->y, ClosestGrave->z, ClosestGrave->o);
+            bot->TeleportTo(grave.getMapId(), grave.getX(), grave.getY(), grave.getZ(), grave.getO());
 
             RESET_AI_VALUE(bool,"combat::self target");
             RESET_AI_VALUE(WorldPosition, "current position");
@@ -157,7 +145,7 @@ namespace ai
             if (bot->InBattleGround())
                 return false;
 
-            return true;
+            return AI_VALUE(bool, "should spirit healer");
         }
     };
 
