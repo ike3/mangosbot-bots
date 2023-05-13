@@ -1548,12 +1548,14 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool syncWithMaster)
                         for (auto id : ids)
                         {
                             ItemPrototype const* proto = sObjectMgr.GetItemPrototype(id);
+                            if(proto)
+                            {
+                                if (proto->ItemLevel > maxItemLevel)
+                                    continue;
 
-                            if (proto->ItemLevel > maxItemLevel)
-                                continue;
-
-                            hasProperLevel = true;
-                            break;
+                                hasProperLevel = true;
+                                break;
+                            }
                         }
 
                         if (!hasProperLevel)
