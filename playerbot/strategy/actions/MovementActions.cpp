@@ -278,7 +278,7 @@ bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endP
         sPlayerbotAIConfig.log("bot_movement.csv", out.str().c_str());
     }
 
-    if (totalDistance > maxDist && !detailedMove && !ai->HasPlayerNearby(&movePosition)) //Why walk if you can fly?
+    if (totalDistance > maxDist && !detailedMove && !ai->HasPlayerNearby(movePosition)) //Why walk if you can fly?
     {
         time_t now = time(0);
 

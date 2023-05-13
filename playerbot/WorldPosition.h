@@ -4,6 +4,7 @@
 #include "SpellMgr.h"
 #include "PlayerbotAIConfig.h"
 #include "MemoryMonitor.h"
+#include "World.h"
 
 class ByteBuffer;
 
