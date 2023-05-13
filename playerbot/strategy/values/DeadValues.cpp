@@ -69,14 +69,13 @@ GuidPosition BestGraveyardValue::Calculate()
         return AI_VALUE2(GuidPosition, "graveyard", "master");
 
     uint32 deathCount = AI_VALUE(uint32, "death count");
-    uint8 durability = AI_VALUE(uint8, "durability");
 
     //Revive nearby.
     if (deathCount < 5)
         return AI_VALUE2(GuidPosition, "graveyard", "self");
 
-    //Revive near travel target.
-    if (AI_VALUE2(GuidPosition, "graveyard", "travel"))
+    //Revive near travel target if it's far away from last death.
+    if (AI_VALUE2(GuidPosition, "graveyard", "travel") && AI_VALUE2(GuidPosition, "graveyard", "travel").fDist(corpse) > sPlayerbotAIConfig.sightDistance)
         return AI_VALUE2(GuidPosition, "graveyard", "travel");
 
     //Revive near Inn.
