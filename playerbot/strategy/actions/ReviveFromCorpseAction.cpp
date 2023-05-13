@@ -203,30 +203,39 @@ bool SpiritHealerAction::Execute(Event& event)
 
     if (grave && grave.fDist(bot) < sPlayerbotAIConfig.sightDistance)
     {
+        bool foundSpiritHealer = false;
         list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
         for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
         {
             Unit* unit = ai->GetUnit(*i);
             if (unit && unit->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER))
             {
-                sLog.outBasic("Bot #%d %s:%d <%s> revives at spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
-                PlayerbotChatHandler ch(bot);
-                bot->ResurrectPlayer(0.5f, !ai->HasCheat(BotCheatMask::repair));
-                if(!ai->HasCheat(BotCheatMask::repair))
-                    bot->DurabilityLossAll(0.25f, true);
-                bot->SpawnCorpseBones();
-                bot->SaveToDB();
-                context->GetValue<Unit*>("current target")->Set(NULL);
-                bot->SetSelectionGuid(ObjectGuid());
-                ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
-                sPlayerbotAIConfig.logEvent(ai, "ReviveFromSpiritHealerAction");
-
-                return true;
+                foundSpiritHealer = true;
+                break;
             }
         }
 
-        sLog.outBasic("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
-        ai->TellError("Cannot find any spirit healer nearby");
+
+        if (!foundSpiritHealer)
+        {
+            sLog.outBasic("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
+            ai->TellError("Cannot find any spirit healer nearby");
+        }
+
+
+        sLog.outBasic("Bot #%d %s:%d <%s> revives at spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
+        PlayerbotChatHandler ch(bot);
+        bot->ResurrectPlayer(0.5f, !ai->HasCheat(BotCheatMask::repair));
+        if (!ai->HasCheat(BotCheatMask::repair))
+            bot->DurabilityLossAll(0.25f, true);
+        bot->SpawnCorpseBones();
+        bot->SaveToDB();
+        context->GetValue<Unit*>("current target")->Set(NULL);
+        bot->SetSelectionGuid(ObjectGuid());
+        ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        sPlayerbotAIConfig.logEvent(ai, "ReviveFromSpiritHealerAction");
+
+        return true;            
     }
 
     if (!grave)
