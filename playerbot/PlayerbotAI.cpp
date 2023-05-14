@@ -1531,12 +1531,9 @@ void PlayerbotAI::DoNextAction(bool min)
                 if (!member->IsInGroup(bot, true))
                     continue;
 
+                //Do not make bots your master if they are nog group leader.
                 if (member->GetPlayerbotAI() && !bot->InBattleGround())
-                {
-                    if (member->GetPlayerbotAI()->IsRealPlayer())
-                        playerMaster = member;
                     continue;
-                }
 
                 if (bot->InBattleGround())
                     continue;
