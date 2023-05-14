@@ -5440,32 +5440,46 @@ static const uint32 uPriorizedManaOilIds[4] =
 
 Item* PlayerbotAI::FindOilFor(Item* weapon) const
 {
-   Item* oil;
-   ItemPrototype const* pProto = weapon->GetProto();
-   if (pProto && (pProto->SubClass == ITEM_SUBCLASS_WEAPON_SWORD || pProto->SubClass == ITEM_SUBCLASS_WEAPON_STAFF || pProto->SubClass == ITEM_SUBCLASS_WEAPON_DAGGER))
-   {
-      for (uint8 i = 0; i < countof(uPriorizedWizardOilIds); ++i)
-      {
-         oil = FindConsumable(uPriorizedWizardOilIds[i]);
-         if (!oil)
-            oil = FindConsumable(uPriorizedManaOilIds[i]);
-         if (oil)
-            return oil;
-      }
-   }
-   else if (pProto && (pProto->SubClass == ITEM_SUBCLASS_WEAPON_MACE || pProto->SubClass == ITEM_SUBCLASS_WEAPON_MACE2))
-   {
-      for (uint8 i = 0; i < countof(uPriorizedManaOilIds); ++i)
-      {
-         oil = FindConsumable(uPriorizedManaOilIds[i]);
-         if (!oil)
-            oil = FindConsumable(uPriorizedWizardOilIds[i]);
-         if (oil)
-            return oil;
-      }
-   }
+    Item* oil = nullptr;
+    ItemPrototype const* pProto = weapon->GetProto();
 
-   return nullptr;
+    const std::vector<uint32> uPriorizedWizardOilIds = { MINOR_WIZARD_OIL, LESSER_WIZARD_OIL, BRILLIANT_WIZARD_OIL, WIZARD_OIL, SUPERIOR_WIZARD_OIL };
+    const std::vector<uint32> uPriorizedManaOilIds = { MINOR_MANA_OIL, LESSER_MANA_OIL, BRILLIANT_MANA_OIL, SUPERIOR_MANA_OIL };
+
+    if (pProto && (pProto->SubClass == ITEM_SUBCLASS_WEAPON_SWORD || pProto->SubClass == ITEM_SUBCLASS_WEAPON_STAFF || pProto->SubClass == ITEM_SUBCLASS_WEAPON_DAGGER))
+    {
+        for (uint8 i = 0; i < uPriorizedWizardOilIds.size(); i++)
+        {
+            oil = FindConsumable(uPriorizedWizardOilIds[i]);
+            if (!oil && i < uPriorizedManaOilIds.size())
+            {
+                oil = FindConsumable(uPriorizedManaOilIds[i]);
+            }
+
+            if(oil)
+            {
+                break;
+            }
+        }
+    }
+    else if (pProto && (pProto->SubClass == ITEM_SUBCLASS_WEAPON_MACE || pProto->SubClass == ITEM_SUBCLASS_WEAPON_MACE2))
+    {
+        for (uint8 i = 0; i < uPriorizedManaOilIds.size(); i++)
+        {
+            oil = FindConsumable(uPriorizedManaOilIds[i]);
+            if (!oil && i < uPriorizedWizardOilIds.size())
+            {
+                oil = FindConsumable(uPriorizedWizardOilIds[i]);
+            }
+
+            if (oil)
+            {
+                break;
+            }
+        }
+    }
+
+    return oil;
 }
 
 //  on self
