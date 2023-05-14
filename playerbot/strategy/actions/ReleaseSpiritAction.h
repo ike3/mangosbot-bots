@@ -145,7 +145,7 @@ namespace ai
             if (bot->InBattleGround())
                 return false;
 
-            return AI_VALUE(bool, "should spirit healer");
+            return true;
         }
     };
 
