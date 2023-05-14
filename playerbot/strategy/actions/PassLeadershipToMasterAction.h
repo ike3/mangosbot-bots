@@ -50,7 +50,7 @@ namespace ai
 
         virtual bool isUseful()
         {
-            return ai->HasActivePlayerMaster() && bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetObjectGuid());
+            return ai->HasRealPlayerMaster() && bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetObjectGuid());
         }
     };    
 }
