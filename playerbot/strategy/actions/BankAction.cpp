@@ -8,6 +8,7 @@ using namespace ai;
 
 bool BankAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
 
     list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs no los");
@@ -17,18 +18,18 @@ bool BankAction::Execute(Event& event)
         if (!npc || !npc->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BANKER))
             continue;
 
-        return ExecuteCommand(text, npc);
+        return ExecuteCommand(requester, text, npc);
     }
 
     ai->TellError("Cannot find banker nearby");
     return false;
 }
 
-bool BankAction::ExecuteCommand(string text, Unit* bank)
+bool BankAction::ExecuteCommand(Player* requester, const string& text, Unit* bank)
 {
     if (text.empty() || text == "?")
     {
-        ListItems();
+        ListItems(requester);
         return true;
     }
 
@@ -39,7 +40,7 @@ bool BankAction::ExecuteCommand(string text, Unit* bank)
         for (list<Item*>::iterator i = found.begin(); i != found.end(); i++)
         {
             Item* item = *i;
-            result &= Withdraw(item->GetProto()->ItemId);
+            result &= Withdraw(requester, item->GetProto()->ItemId);
         }
     }
     else
@@ -54,14 +55,14 @@ bool BankAction::ExecuteCommand(string text, Unit* bank)
             if (!item)
                 continue;
 
-            result &= Deposit(item);
+            result &= Deposit(requester, item);
         }
     }
 
     return result;
 }
 
-bool BankAction::Withdraw(const uint32 itemid)
+bool BankAction::Withdraw(Player* requester, const uint32 itemid)
 {
     Item* pItem = FindItemInBank(itemid);
     if (!pItem)
@@ -80,11 +81,11 @@ bool BankAction::Withdraw(const uint32 itemid)
 
     std::ostringstream out;
     out << "got " << chat->formatItem(pItem, pItem->GetCount()) << " from bank";
-    ai->TellMaster(out.str());
+    ai->TellPlayer(requester, out.str());
     return true;
 }
 
-bool BankAction::Deposit(Item* pItem)
+bool BankAction::Deposit(Player* requester, Item* pItem)
 {
     std::ostringstream out;
 
@@ -100,36 +101,50 @@ bool BankAction::Deposit(Item* pItem)
     bot->BankItem(dest, pItem, true);
 
     out << "put " << chat->formatItem(pItem, pItem->GetCount()) << " to bank";
-    ai->TellMaster(out.str());
+    ai->TellPlayer(requester, out.str());
 	return true;
 }
 
-void BankAction::ListItems()
+void BankAction::ListItems(Player* requester)
 {
-    ai->TellMaster("=== Bank ===");
+    ai->TellPlayer(requester, "=== Bank ===");
 
     map<uint32, int> items;
     map<uint32, bool> soulbound;
     for (int i = BANK_SLOT_ITEM_START; i < BANK_SLOT_ITEM_END; ++i)
+    {
         if (Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
             if (pItem)
             {
                 items[pItem->GetProto()->ItemId] += pItem->GetCount();
                 soulbound[pItem->GetProto()->ItemId] = pItem->IsSoulBound();
             }
+        }
+    }
 
     for (int i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END; ++i)
+    {
         if (Bag* pBag = (Bag*)bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
             if (pBag)
+            {
                 for (uint32 j = 0; j < pBag->GetBagSize(); ++j)
+                {
                     if (Item* pItem = pBag->GetItemByPos(j))
+                    {
                         if (pItem)
                         {
                             items[pItem->GetProto()->ItemId] += pItem->GetCount();
                             soulbound[pItem->GetProto()->ItemId] = pItem->IsSoulBound();
                         }
+                    }
+                }
+            }
+        }
+    }
 
-    ai->InventoryTellItems(items, soulbound);
+    ai->InventoryTellItems(requester, items, soulbound);
 }
 
 Item* BankAction::FindItemInBank(uint32 ItemId)
@@ -152,6 +167,7 @@ Item* BankAction::FindItemInBank(uint32 ItemId)
     {
         const Bag* const pBag = (Bag *) bot->GetItemByPos(INVENTORY_SLOT_BAG_0, bag);
         if (pBag)
+        {
             for (uint8 slot = 0; slot < pBag->GetBagSize(); ++slot)
             {
                 Item* const pItem = bot->GetItemByPos(bag, slot);
@@ -165,6 +181,8 @@ Item* BankAction::FindItemInBank(uint32 ItemId)
                         return pItem;
                 }
             }
+        }
     }
+
     return NULL;
 }

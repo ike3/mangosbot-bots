@@ -14,7 +14,7 @@ class TellMailProcessor : public MailProcessor
 public:
     virtual bool Before(PlayerbotAI* ai)
     {
-        ai->TellMaster("=== Mailbox ===", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(ai->GetMaster(), "=== Mailbox ===", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         tells.clear();
         return true;
     }
@@ -58,7 +58,7 @@ public:
     virtual bool After(PlayerbotAI* ai)
     {
         for (list<string>::iterator i = tells.begin(); i != tells.end(); ++i)
-            ai->TellMaster(*i, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(ai->GetMaster(), *i, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
         return true;
     }
@@ -86,7 +86,7 @@ public:
         {
             ostringstream out;
             out << mail->subject << ", |cffffff00" << ChatHelper::formatMoney(mail->money) << "|cff00ff00 processed";
-            ai->TellMaster(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(ai->GetMaster(), out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
             WorldPacket packet;
             packet << mailbox;
@@ -117,7 +117,7 @@ public:
                 out << mail->subject << ", " << ChatHelper::formatItem(item) << "|cff00ff00 processed";
 
                 bot->GetSession()->HandleMailTakeItem(packet);
-                ai->TellMaster(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayer(ai->GetMaster(), out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             }
 
             RemoveMail(bot, mail->messageID, mailbox);
@@ -160,7 +160,7 @@ public:
         ostringstream out;
         out << "|cffffffff" << mail->subject << "|cffff0000 deleted";
         RemoveMail(ai->GetBot(), mail->messageID, FindMailbox(ai));
-        ai->TellMaster(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(ai->GetMaster(), out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         return true;
     }
 
@@ -174,14 +174,14 @@ public:
     {
         ostringstream out, body;
         out << "|cffffffff" << mail->subject;
-        ai->TellMaster(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(ai->GetMaster(), out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 #ifdef MANGOSBOT_TWO
 
 #else
         if (mail->itemTextId)
         {
             body << "\n" << sObjectMgr.GetItemText(mail->itemTextId);
-            ai->TellMaster(body.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(ai->GetMaster(), body.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
 #endif
         return true;
@@ -217,7 +217,7 @@ bool MailAction::Execute(Event& event)
     string text = event.getParam();
     if (text.empty())
     {
-        ai->TellMaster("whisper 'mail ?' to query mailbox, 'mail take/delete/read filter' to take/delete/read mails by filter");
+        ai->TellPlayer(GetMaster(), "whisper 'mail ?' to query mailbox, 'mail take/delete/read filter' to take/delete/read mails by filter");
         return false;
     }
 
@@ -228,7 +228,7 @@ bool MailAction::Execute(Event& event)
     if (!processor)
     {
         ostringstream out; out << action << ": I don't know how to do that";
-        ai->TellMaster(out.str());
+        ai->TellPlayer(GetMaster(), out.str());
         return false;
     }
 

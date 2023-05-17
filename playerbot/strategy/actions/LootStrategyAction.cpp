@@ -22,7 +22,7 @@ bool LootStrategyAction::Execute(Event& event)
             ostringstream out;
             out << "Loot strategy: ";
             out << lootStrategy->Get()->GetName();
-            ai->TellMaster(out);
+            ai->TellPlayer(GetMaster(), out);
         }
 
         {
@@ -37,7 +37,7 @@ bool LootStrategyAction::Execute(Event& event)
 
                 out << chat->formatItem(proto);
             }
-            ai->TellMaster(out);
+            ai->TellPlayer(GetMaster(), out);
         }
     }
     else
@@ -49,7 +49,7 @@ bool LootStrategyAction::Execute(Event& event)
             lootStrategy->Set(LootStrategyValue::instance(strategy));
             ostringstream out;
             out << "Loot strategy set to " << lootStrategy->Get()->GetName();
-            ai->TellMaster(out);
+            ai->TellPlayer(GetMaster(), out);
             return true;
         }
 
@@ -64,7 +64,7 @@ bool LootStrategyAction::Execute(Event& event)
                 {
                     ostringstream out;
                     out << (StoreLootAction::IsLootAllowed(itemQualifier, ai) ? "|cFF000000Will loot " : "|c00FF0000Won't loot ") << ChatHelper::formatItem(itemQualifier);
-                    ai->TellMaster(out.str());
+                    ai->TellPlayer(GetMaster(), out.str());
                 }
             }
             else if (remove)
@@ -73,12 +73,12 @@ bool LootStrategyAction::Execute(Event& event)
                 if (j != alwaysLootItems.end())
                     alwaysLootItems.erase(j);
 
-                ai->TellMaster("Item(s) removed from always loot list");
+                ai->TellPlayer(GetMaster(), "Item(s) removed from always loot list");
             }
             else
             {
                 alwaysLootItems.insert(itemQualifier.GetId());
-                ai->TellMaster("Item(s) added to always loot list");
+                ai->TellPlayer(GetMaster(), "Item(s) added to always loot list");
             }
         }
     }

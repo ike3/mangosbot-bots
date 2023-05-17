@@ -222,7 +222,7 @@ bool SetStanceAction::Execute(Event& event)
     if (stance == "?" || stance.empty())
     {
         ostringstream str; str << "Stance: |cff00ff00" << value->Get()->getName();
-        ai->TellMaster(str);
+        ai->TellPlayer(GetMaster(), str);
         return true;
     }
 
@@ -238,12 +238,12 @@ bool SetStanceAction::Execute(Event& event)
     if (!value->Load(stance))
     {
         ostringstream str; str << "Invalid stance: |cffff0000" << stance;
-        ai->TellMaster(str);
-        ai->TellMaster("Please set to any of:|cffffffff near (default), tank, turnback, behind");
+        ai->TellPlayer(GetMaster(), str);
+        ai->TellPlayer(GetMaster(), "Please set to any of:|cffffffff near (default), tank, turnback, behind");
         return false;
     }
 
     ostringstream str; str << "Stance set to: " << stance;
-    ai->TellMaster(str);
+    ai->TellPlayer(GetMaster(), str);
     return true;
 }

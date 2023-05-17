@@ -22,7 +22,7 @@ bool ReviveFromCorpseAction::Execute(Event& event)
         {
             if (!ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
             {
-                ai->TellMasterNoFacing("Welcome back!", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayerNoFacing(GetMaster(), "Welcome back!", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 ai->ChangeStrategy("+follow,-stay", BotState::BOT_STATE_NON_COMBAT);
                 return true;
             }
@@ -189,10 +189,11 @@ bool FindCorpseAction::isUseful()
 
 bool SpiritHealerAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     Corpse* corpse = bot->GetCorpse();
     if (!corpse)
     {
-        ai->TellError("I am not a spirit");
+        ai->TellPlayerNoFacing(requester, "I am not a spirit");
         return false;
     }
 
@@ -215,11 +216,10 @@ bool SpiritHealerAction::Execute(Event& event)
             }
         }
 
-
         if (!foundSpiritHealer)
         {
             sLog.outBasic("Bot #%d %s:%d <%s> can't find a spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
-            ai->TellError("Cannot find any spirit healer nearby");
+            ai->TellPlayerNoFacing(requester, "Cannot find any spirit healer nearby");
         }
 
 
@@ -227,12 +227,15 @@ bool SpiritHealerAction::Execute(Event& event)
         PlayerbotChatHandler ch(bot);
         bot->ResurrectPlayer(0.5f, !ai->HasCheat(BotCheatMask::repair));
         if (!ai->HasCheat(BotCheatMask::repair))
+        {
             bot->DurabilityLossAll(0.25f, true);
+        }
+
         bot->SpawnCorpseBones();
         bot->SaveToDB();
         context->GetValue<Unit*>("current target")->Set(NULL);
         bot->SetSelectionGuid(ObjectGuid());
-        ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(requester, BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         sPlayerbotAIConfig.logEvent(ai, "ReviveFromSpiritHealerAction");
 
         return true;            

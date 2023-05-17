@@ -90,13 +90,13 @@ bool SummonAction::Execute(Event& event)
 
     if (SummonUsingGos(master, bot) || SummonUsingNpcs(master, bot))
     {
-        ai->TellMasterNoFacing(BOT_TEXT("hello"));
+        ai->TellPlayerNoFacing(GetMaster(), BOT_TEXT("hello"));
         return true;
     }
 
     if (SummonUsingGos(bot, master) || SummonUsingNpcs(bot, master))
     {
-        ai->TellMasterNoFacing("Welcome!");
+        ai->TellPlayerNoFacing(GetMaster(), "Welcome!");
         return true;
     }
 
@@ -194,7 +194,7 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
                 {
                     player->ResurrectPlayer(1.0f, false);
                     player->SpawnCorpseBones();
-                    ai->TellMasterNoFacing("I live, again!");
+                    ai->TellPlayerNoFacing(GetMaster(), "I live, again!");
                 }                
 
                 if (player->IsTaxiFlying())

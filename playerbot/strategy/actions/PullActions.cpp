@@ -16,20 +16,22 @@ bool PullMyTargetAction::Execute(Event& event)
         return false;
     }
 
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+
     Unit* target = nullptr;
     if (event.getSource() == "attack anything")
     {
         ObjectGuid guid = event.getObject();
         target = ai->GetCreature(guid);
     }
-    else if (Player* master = GetMaster())
+    else if (requester)
     {
-        target = ai->GetUnit(master->GetSelectionGuid());
+        target = ai->GetUnit(requester->GetSelectionGuid());
     }
 
     if (!target)
     {
-        ai->TellError("You have no target");
+        ai->TellPlayerNoFacing(requester, "You have no target");
         return false;
     }
 
@@ -37,20 +39,20 @@ bool PullMyTargetAction::Execute(Event& event)
     const float distanceToPullTarget = target->GetDistance(ai->GetBot());
     if (distanceToPullTarget > maxPullDistance)
     {
-        ai->TellError("The target is too far away");
+        ai->TellPlayerNoFacing(requester, "The target is too far away");
         return false;
     }
 
     if (!AttackersValue::IsValid(target, bot, nullptr, false))
     {
-        ai->TellError("The target can't be pulled");
+        ai->TellPlayerNoFacing(requester, "The target can't be pulled");
         return false;
     }
 
     if (!strategy->CanDoPullAction(target))
     {
         ostringstream out; out << "Can't perform pull action '" << strategy->GetPullActionName() << "'";
-        ai->TellError(out.str());
+        ai->TellPlayerNoFacing(requester, out.str());
         return false;
     }
 

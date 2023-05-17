@@ -7,15 +7,15 @@ using namespace ai;
 
 bool TellReputationAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
-    ObjectGuid selection = master->GetSelectionGuid();
+    ObjectGuid selection = requester->GetSelectionGuid();
     if (selection.IsEmpty())
         return false;
 
-    Unit* unit = master->GetMap()->GetUnit(selection);
+    Unit* unit = requester->GetMap()->GetUnit(selection);
     if (!unit)
         return false;
 
@@ -69,7 +69,7 @@ bool TellReputationAction::Execute(Event& event)
         base -= ReputationMgr::PointsInRank[i];
 
     out << " (" << (reputation - base) << "/" << ReputationMgr::PointsInRank[rank] << ")";
-    ai->TellMaster(out);
+    ai->TellPlayer(requester, out);
 
     return true;
 }

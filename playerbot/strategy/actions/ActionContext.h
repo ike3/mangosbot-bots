@@ -416,7 +416,7 @@ namespace ai
         static Action* use_random_quest_item(PlayerbotAI* ai) { return new UseRandomQuestItemAction(ai); }
         static Action* craft_random_item(PlayerbotAI* ai) { return new CraftRandomItemAction(ai); }
         static Action* smart_destroy_item(PlayerbotAI* ai) { return new SmartDestroyItemAction(ai); }
-        static Action* disenchant_random_item(PlayerbotAI* ai) { return new DisEnchantRandomItemAction(ai); }
+        static Action* disenchant_random_item(PlayerbotAI* ai) { return new DisenchantRandomItemAction(ai); }
         static Action* enchant_random_item(PlayerbotAI* ai) { return new EnchantRandomItemAction(ai); }
         static Action* reset_instances(PlayerbotAI* ai) { return new ResetInstancesAction(ai); }
         static Action* reset_raids(PlayerbotAI* ai) { return new ResetRaidsAction(ai); }

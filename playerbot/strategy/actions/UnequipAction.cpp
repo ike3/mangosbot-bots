@@ -10,8 +10,8 @@ vector<string> split(const string &s, char delim);
 
 bool UnequipAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
-
     ItemIds ids = chat->parseItems(text);
     if (ids.empty())
     {
@@ -22,35 +22,34 @@ bool UnequipAction::Execute(Event& event)
             if (slot != EQUIPMENT_SLOT_END)
             {
                 Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
-                if (pItem) UnequipItem(pItem);
+                if (pItem) UnequipItem(requester, pItem);
             }
         }
     }
     else
     {
-        for (ItemIds::iterator i =ids.begin(); i != ids.end(); i++)
+        for (ItemIds::iterator i = ids.begin(); i != ids.end(); i++)
         {
             FindItemByIdVisitor visitor(*i);
-            UnequipItem(&visitor);
+            UnequipItem(requester, &visitor);
         }
     }
 
     return true;
 }
 
-void UnequipAction::UnequipItem(FindItemVisitor* visitor)
+void UnequipAction::UnequipItem(Player* requester, FindItemVisitor* visitor)
 {
     ai->InventoryIterateItems(visitor, ITERATE_ALL_ITEMS);
     list<Item*> items = visitor->GetResult();
-	if (!items.empty()) UnequipItem(*items.begin());
+	if (!items.empty()) UnequipItem(requester, *items.begin());
 }
 
-void UnequipAction::UnequipItem(Item* item)
+void UnequipAction::UnequipItem(Player* requester, Item* item)
 {
     uint8 bagIndex = item->GetBagSlot();
     uint8 slot = item->GetSlot();
     uint8 dstBag = NULL_BAG;
-
 
     WorldPacket packet(CMSG_AUTOSTORE_BAG_ITEM, 3);
     packet << bagIndex << slot << dstBag;
@@ -58,5 +57,5 @@ void UnequipAction::UnequipItem(Item* item)
 
     ostringstream out; out << chat->formatItem(item) << " unequipped";
 
-    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }

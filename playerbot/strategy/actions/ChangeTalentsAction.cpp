@@ -7,6 +7,7 @@ using namespace ai;
 
 bool ChangeTalentsAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     ostringstream out;
     TalentSpec botSpec(bot);
     string param = event.getParam();
@@ -143,7 +144,7 @@ bool ChangeTalentsAction::Execute(Event& event)
         out << botSpec.GetTalentLink();
     }
 
-    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     return true;
 }
@@ -382,7 +383,7 @@ bool AutoSetTalentsAction::Execute(Event& event)
 
     AutoSelectTalents(&out);
 
-    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     return true;
 }

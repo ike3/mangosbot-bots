@@ -13,9 +13,9 @@ bool OutfitAction::Execute(Event& event)
     if (param == "?")
     {
         List();
-        ai->TellMaster("outfit <name> +[item] to add items");
-        ai->TellMaster("outfit <name> -[item] to remove items");
-        ai->TellMaster("outfit <name> equip/replace to equip items");
+        ai->TellPlayer(GetMaster(), "outfit <name> +[item] to add items");
+        ai->TellPlayer(GetMaster(), "outfit <name> -[item] to remove items");
+        ai->TellPlayer(GetMaster(), "outfit <name> equip/replace to equip items");
     }
     else
     {
@@ -26,7 +26,7 @@ bool OutfitAction::Execute(Event& event)
             Save(name, items);
             ostringstream out;
             out << "Setting outfit " << name << " as " << param;
-            ai->TellMaster(out);
+            ai->TellPlayer(GetMaster(), out);
             return true;
         }
 
@@ -43,15 +43,15 @@ bool OutfitAction::Execute(Event& event)
         {
             ostringstream out;
             out << "Equipping outfit " << name;
-            ai->TellMaster(out);
-            EquipItems(outfit);
+            ai->TellPlayer(GetMaster(), out);
+            EquipItems(GetMaster(), outfit);
             return true;
         }
         else if (command == "replace")
         {
             ostringstream out;
             out << "Replacing current equip with outfit " << name;
-            ai->TellMaster(out);
+            ai->TellPlayer(GetMaster(), out);
             for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
             {
                 Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
@@ -65,14 +65,14 @@ bool OutfitAction::Execute(Event& event)
                 packet << bagIndex << slot << dstBag;
                 bot->GetSession()->HandleAutoStoreBagItemOpcode(packet);
             }
-            EquipItems(outfit);
+            EquipItems(GetMaster(), outfit);
             return true;
         }
         else if (command == "reset")
         {
             ostringstream out;
             out << "Resetting outfit " << name;
-            ai->TellMaster(out);
+            ai->TellPlayer(GetMaster(), out);
             Save(name, ItemIds());
             return true;
         }
@@ -80,7 +80,7 @@ bool OutfitAction::Execute(Event& event)
         {
             ostringstream out;
             out << "Updating with current items outfit " << name;
-            ai->TellMaster(out);
+            ai->TellPlayer(GetMaster(), out);
             Update(name);
             return true;
         }
@@ -106,7 +106,7 @@ bool OutfitAction::Execute(Event& event)
                 out << " added to ";
             }
             out << name;
-            ai->TellMaster(out.str());
+            ai->TellPlayer(GetMaster(), out.str());
         }
         Save(name, outfit);
     }
@@ -160,7 +160,7 @@ void OutfitAction::List()
                 out << chat->formatItem(proto) << " ";
             }
         }
-        ai->TellMaster(out);
+        ai->TellPlayer(GetMaster(), out);
     }
 }
 

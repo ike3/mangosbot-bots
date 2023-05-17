@@ -5,13 +5,9 @@
 
 using namespace ai;
 
-void QueryQuestAction::TellObjective(string name, int available, int required)
-{
-    ai->TellMaster(chat->formatQuestObjective(name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
-}
-
 bool QueryQuestAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     Player *bot = ai->GetBot();
     WorldPosition botPos(bot);
     std::string text = event.getParam();
@@ -38,13 +34,13 @@ bool QueryQuestAction::Execute(Event& event)
         if (bot->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
         {
             out << "|c0000FF00completed|r ---";
-            ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         else
         {
             out << "|c00FF0000not completed|r ---";
-            ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
-            TellObjectives(questId);
+            ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            TellObjectives(requester, questId);
         }
 
         if (travel)
@@ -54,7 +50,8 @@ bool QueryQuestAction::Execute(Event& event)
 
             std::sort(allDestinations.begin(), allDestinations.end(), [botPos](TravelDestination* i, TravelDestination* j) {return i->distanceTo(botPos) < j->distanceTo(botPos); });
 
-            for (auto dest : allDestinations) {
+            for (auto dest : allDestinations) 
+            {
                 if (limit > 50)
                     continue;
 
@@ -76,7 +73,7 @@ bool QueryQuestAction::Execute(Event& event)
                 if (!dest->isActive(bot))
                     out << " not active";
 
-                ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
                 limit++;
             }
@@ -88,7 +85,7 @@ bool QueryQuestAction::Execute(Event& event)
     return false;
 }
 
-void QueryQuestAction::TellObjectives(uint32 questId)
+void QueryQuestAction::TellObjectives(Player* requester, uint32 questId)
 {
     Quest const* questTemplate = sObjectMgr.GetQuestTemplate(questId);
     QuestStatusData questStatus = bot->getQuestStatusMap()[questId];
@@ -96,14 +93,14 @@ void QueryQuestAction::TellObjectives(uint32 questId)
     for (int i = 0; i < QUEST_OBJECTIVES_COUNT; i++)
     {
         if (!questTemplate->ObjectiveText[i].empty())
-            ai->TellMaster(questTemplate->ObjectiveText[i], PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(requester, questTemplate->ObjectiveText[i], PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
         if (questTemplate->ReqItemId[i])
         {
             int required = questTemplate->ReqItemCount[i];
             int available = questStatus.m_itemcount[i];
             ItemPrototype const* proto = sObjectMgr.GetItemPrototype(questTemplate->ReqItemId[i]);
-            TellObjective(chat->formatItem(proto), available, required);
+            TellObjective(requester, chat->formatItem(proto), available, required);
         }
 
         if (questTemplate->ReqCreatureOrGOId[i])
@@ -115,15 +112,19 @@ void QueryQuestAction::TellObjectives(uint32 questId)
             {
                 GameObjectInfo const* info = sObjectMgr.GetGameObjectInfo(-questTemplate->ReqCreatureOrGOId[i]);
                 if (info)
-                    TellObjective(info->name, available, required);
+                    TellObjective(requester, info->name, available, required);
             }
             else
             {
-
                 CreatureInfo const* info = sObjectMgr.GetCreatureTemplate(questTemplate->ReqCreatureOrGOId[i]);
                 if (info)
-                    TellObjective(info->Name, available, required);
+                    TellObjective(requester, info->Name, available, required);
             }
         }
     }
+}
+
+void QueryQuestAction::TellObjective(Player* requester, const string& name, int available, int required)
+{
+    ai->TellPlayer(requester, chat->formatQuestObjective(name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }

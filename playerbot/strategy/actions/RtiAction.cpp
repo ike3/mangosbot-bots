@@ -19,18 +19,18 @@ bool RtiAction::Execute(Event& event)
     {
         ostringstream outRti; outRti << "rti" << ": ";
         AppendRti(outRti, "rti");
-        ai->TellMaster(outRti);
+        ai->TellPlayer(GetMaster(), outRti);
 
         ostringstream outRtiCc; outRtiCc << "rti cc" << ": ";
         AppendRti(outRtiCc, "rti cc");
-        ai->TellMaster(outRtiCc);
+        ai->TellPlayer(GetMaster(), outRtiCc);
         return true;
     }
 
     context->GetValue<string>(type)->Set(text);
     ostringstream out; out << type << " set to: ";
     AppendRti(out, type);
-    ai->TellMaster(out);
+    ai->TellPlayer(GetMaster(), out);
     return true;
 }
 

@@ -136,6 +136,7 @@ public:
 
 bool ReadyCheckAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     WorldPacket p = event.getPacket();
     ObjectGuid player;
     p.rpos(0);
@@ -146,10 +147,10 @@ bool ReadyCheckAction::Execute(Event& event)
             return false;
     }
 
-	return ReadyCheck();
+	return ReadyCheck(requester);
 }
 
-bool ReadyCheckAction::ReadyCheck()
+bool ReadyCheckAction::ReadyCheck(Player* requester)
 {
     if (ReadyChecker::checkers.empty())
     {
@@ -192,7 +193,7 @@ bool ReadyCheckAction::ReadyCheck()
         out << formatPercent("Water", water, 100.0 * water / 20);
     }
 
-    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     WorldPacket packet(MSG_RAID_READY_CHECK);
     packet << uint8(1);
@@ -205,5 +206,5 @@ bool ReadyCheckAction::ReadyCheck()
 
 bool FinishReadyCheckAction::Execute(Event& event)
 {
-    return ReadyCheck();
+    return ReadyCheck(GetMaster());
 }

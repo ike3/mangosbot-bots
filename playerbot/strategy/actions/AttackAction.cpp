@@ -28,10 +28,10 @@ bool AttackAction::Execute(Event& event)
 
 bool AttackMyTargetAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if(master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if(requester)
     {
-        const ObjectGuid guid = master->GetSelectionGuid();
+        const ObjectGuid guid = requester->GetSelectionGuid();
         if (guid)
         {
             if (Attack(ai->GetUnit(guid)))

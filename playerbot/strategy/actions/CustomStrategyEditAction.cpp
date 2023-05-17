@@ -23,7 +23,7 @@ bool CustomStrategyEditAction::Execute(Event& event)
 
 bool CustomStrategyEditAction::PrintHelp()
 {
-    ai->TellMaster("=== Custom strategies ===");
+    ai->TellPlayer(GetMaster(), "=== Custom strategies ===");
 
     uint32 owner = (uint32)ai->GetBot()->GetGUIDLow();
     QueryResult* results = PlayerbotDatabase.PQuery("SELECT distinct name FROM ai_playerbot_custom_strategy WHERE owner = '%u'",
@@ -34,19 +34,19 @@ bool CustomStrategyEditAction::PrintHelp()
         {
             Field* fields = results->Fetch();
             string name = fields[0].GetString();
-            ai->TellMaster(name);
+            ai->TellPlayer(GetMaster(), name);
         } while (results->NextRow());
 
         delete results;
     }
-    ai->TellMaster("Usage: cs <name> <idx> <command>");
+    ai->TellPlayer(GetMaster(), "Usage: cs <name> <idx> <command>");
     return false;
 }
 
 bool CustomStrategyEditAction::Print(string name)
 {
     ostringstream out; out << "=== " << name << " ===";
-    ai->TellMaster(out.str());
+    ai->TellPlayer(GetMaster(), out.str());
 
     uint32 owner = (uint32)ai->GetBot()->GetGUIDLow();
     QueryResult* results = PlayerbotDatabase.PQuery("SELECT idx, action_line FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' order by idx",
@@ -111,6 +111,6 @@ bool CustomStrategyEditAction::Edit(string name, uint32 idx, string command)
 bool CustomStrategyEditAction::PrintActionLine(uint32 idx, string command)
 {
     ostringstream out; out << "#" << idx << " " << command;
-    ai->TellMaster(out.str());
+    ai->TellPlayer(GetMaster(), out.str());
     return true;
 }

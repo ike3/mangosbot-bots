@@ -18,7 +18,7 @@ namespace ai
                 bot->GetSession()->HandleGroupSetLeaderOpcode(p);
                 
                 if (!message.empty())
-                    ai->TellMasterNoFacing(message);
+                    ai->TellPlayerNoFacing(GetMaster(), message);
 
                 if (sRandomPlayerbotMgr.IsRandomBot(bot))
                 {

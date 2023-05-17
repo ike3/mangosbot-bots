@@ -9,12 +9,13 @@ using namespace ai;
 
 bool TellTargetAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     Unit* target = context->GetValue<Unit*>("current target")->Get();
     if (target)
     {
         ostringstream out;
 		out << "Attacking " << target->GetName();
-        ai->TellMaster(out);
+        ai->TellPlayer(requester, out);
 
         context->GetValue<Unit*>("old target")->Set(target);
     }
@@ -23,7 +24,9 @@ bool TellTargetAction::Execute(Event& event)
 
 bool TellAttackersAction::Execute(Event& event)
 {
-    ai->TellMaster("--- Attackers ---");
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+
+    ai->TellPlayer(requester, "--- Attackers ---");
 
     list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid>>("attackers")->Get();
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
@@ -32,10 +35,10 @@ bool TellAttackersAction::Execute(Event& event)
         if (!unit || !sServerFacade.IsAlive(unit))
             continue;
 
-        ai->TellMaster(unit->GetName());
+        ai->TellPlayer(requester, unit->GetName());
     }
 
-    ai->TellMaster("--- Threat ---");
+    ai->TellPlayer(requester, "--- Threat ---");
     HostileReference* ref = sServerFacade.GetHostileRefManager(bot).getFirst();
     if (!ref)
         return true;
@@ -47,7 +50,7 @@ bool TellAttackersAction::Execute(Event& event)
         float threat = ref->getThreat();
 
         ostringstream out; out << unit->GetName() << " (" << threat << ")";
-        ai->TellMaster(out);
+        ai->TellPlayer(requester, out);
 
         ref = ref->next();
     }
@@ -56,7 +59,8 @@ bool TellAttackersAction::Execute(Event& event)
 
 bool TellPossibleAttackTargetsAction::Execute(Event& event)
 {
-    ai->TellMaster("--- Attack Targets ---");
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    ai->TellPlayer(requester, "--- Attack Targets ---");
 
     list<ObjectGuid> attackers = context->GetValue<list<ObjectGuid>>("possible attack targets")->Get();
     for (list<ObjectGuid>::iterator i = attackers.begin(); i != attackers.end(); i++)
@@ -65,10 +69,10 @@ bool TellPossibleAttackTargetsAction::Execute(Event& event)
         if (!unit || !sServerFacade.IsAlive(unit))
             continue;
 
-        ai->TellMaster(unit->GetName());
+        ai->TellPlayer(requester, unit->GetName());
     }
 
-    ai->TellMaster("--- Threat ---");
+    ai->TellPlayer(requester, "--- Threat ---");
     HostileReference *ref = sServerFacade.GetHostileRefManager(bot).getFirst();
     if (!ref)
         return true;
@@ -80,7 +84,7 @@ bool TellPossibleAttackTargetsAction::Execute(Event& event)
         float threat = ref->getThreat();
 
         ostringstream out; out << unit->GetName() << " (" << threat << ")";
-        ai->TellMaster(out);
+        ai->TellPlayer(requester, out);
 
         ref = ref->next();
     }

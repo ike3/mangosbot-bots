@@ -31,7 +31,7 @@ bool RangeAction::Execute(Event& event)
         out << qualifier << " range: ";
         if (abs(curVal) >= 0.1f) out << curVal;
         else out << ai->GetRange(qualifier) << " (default)";
-        ai->TellMaster(out.str());
+        ai->TellPlayer(GetMaster(), out.str());
         PrintRange(qualifier);
         return true;
     }
@@ -40,7 +40,7 @@ bool RangeAction::Execute(Event& event)
     context->GetValue<float>("range", qualifier)->Set(newVal);
     ostringstream out;
     out << qualifier << " range set to: " << newVal;
-    ai->TellMaster(out.str());
+    ai->TellPlayer(GetMaster(), out.str());
     return true;
 }
 
@@ -53,6 +53,6 @@ void RangeAction::PrintRange(string type)
     if (abs(curVal) >= 0.1f) out << curVal;
     else out << ai->GetRange(type) << " (default)";
 
-    ai->TellMaster(out.str());
+    ai->TellPlayer(GetMaster(), out.str());
 }
 

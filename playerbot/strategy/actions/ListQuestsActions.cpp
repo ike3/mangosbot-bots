@@ -40,17 +40,17 @@ void ListQuestsAction::ListQuests(QuestListFilter filter, QuestTravelDetail trav
     bool showCompleted = filter & QUEST_LIST_FILTER_COMPLETED;
 
     if (showIncompleted)
-        ai->TellMaster("--- Incompleted quests ---");
+        ai->TellPlayer(GetMaster(), "--- Incompleted quests ---");
     int incompleteCount = ListQuests(false, !showIncompleted, travelDetail);
 
     if (showCompleted)
-        ai->TellMaster("--- Completed quests ---");
+        ai->TellPlayer(GetMaster(), "--- Completed quests ---");
     int completeCount = ListQuests(true, !showCompleted, travelDetail);
 
-    ai->TellMaster("--- Summary ---");
+    ai->TellPlayer(GetMaster(), "--- Summary ---");
     std::ostringstream out;
     out << "Total: " << (completeCount + incompleteCount) << " / 25 (incompleted: " << incompleteCount << ", completed: " << completeCount << ")";
-    ai->TellMaster(out);
+    ai->TellPlayer(GetMaster(), out);
 }
 
 int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail travelDetail)
@@ -78,7 +78,7 @@ int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail 
         if (silent)
             continue;
 
-        ai->TellMaster(chat->formatQuest(pQuest));
+        ai->TellPlayer(GetMaster(), chat->formatQuest(pQuest));
 
         if (travelDetail != QUEST_TRAVEL_DETAIL_NONE && target->getDestination())
         {
@@ -94,7 +94,7 @@ int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail 
 
                     out << " to " << QuestDestination->getTitle();
 
-                    ai->TellMaster(out);
+                    ai->TellPlayer(GetMaster(), out);
                 }
             }
         }
@@ -126,7 +126,7 @@ int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail 
             if (desRange > 0)
                 out << desRange << " out of range.";
 
-            ai->TellMaster(out);
+            ai->TellPlayer(GetMaster(), out);
         }
         else if (travelDetail == QUEST_TRAVEL_DETAIL_FULL)
         {
@@ -135,30 +135,31 @@ int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail 
 
             std::sort(allDestinations.begin(), allDestinations.end(), [botPos](TravelDestination* i, TravelDestination* j) {return i->distanceTo(botPos) < j->distanceTo(botPos); });
 
-            for (auto dest : allDestinations) {
-                    if (limit > 5)
-                        continue;
+            for (auto dest : allDestinations)
+            {
+                if (limit > 5)
+                    continue;
 
-                    ostringstream out;
+                ostringstream out;
 
-                    uint32 tpoints = dest->getPoints(true).size();
-                    uint32 apoints = dest->getPoints().size();
+                uint32 tpoints = dest->getPoints(true).size();
+                uint32 apoints = dest->getPoints().size();
 
-                    out << round(dest->distanceTo(botPos));
+                out << round(dest->distanceTo(botPos));
 
-                    out << " to " << dest->getTitle();
+                out << " to " << dest->getTitle();
 
-                    out << " " << apoints;
-                    if (apoints < tpoints)
-                        out << "/" << tpoints;
-                    out << " points.";
+                out << " " << apoints;
+                if (apoints < tpoints)
+                    out << "/" << tpoints;
+                out << " points.";
 
-                    if (!dest->isActive(bot))
-                        out << " not active";
+                if (!dest->isActive(bot))
+                    out << " not active";
 
-                    ai->TellMaster(out);
+                ai->TellPlayer(GetMaster(), out);
 
-                    limit++;
+                limit++;
             }
         }
     }

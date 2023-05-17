@@ -30,14 +30,14 @@ namespace ai
 
     protected:
         virtual bool Execute(Event& event) override;
-        bool UseItemAuto(Item* item);
-        bool UseItemOnGameObject(Item* item, ObjectGuid go);
-        bool UseItemOnItem(Item* item, Item* itemTarget);
-        bool UseItemOnTarget(Item* item, Unit* target);
-        bool UseItem(Item* item, ObjectGuid go, Item* itemTarget, Unit* unitTarget = nullptr);
-        bool UseGameObject(ObjectGuid guid);
-        bool SocketItem(Item * item, Item * gem, bool replace = false);
-        void TellConsumableUse(Item* item, string action, float percent);
+        bool UseItemAuto(Player* requester, Item* item);
+        bool UseItemOnGameObject(Player* requester, Item* item, ObjectGuid go);
+        bool UseItemOnItem(Player* requester, Item* item, Item* itemTarget);
+        bool UseItemOnTarget(Player* requester, Item* item, Unit* target);
+        bool UseItem(Player* requester, Item* item, ObjectGuid go, Item* itemTarget, Unit* unitTarget = nullptr);
+        bool UseGameObject(Player* requester, ObjectGuid guid);
+        bool SocketItem(Player* requester, Item * item, Item * gem, bool replace = false);
+        void TellConsumableUse(Player* requester, Item* item, string action, float percent);
 
     private:
         bool selfOnly;

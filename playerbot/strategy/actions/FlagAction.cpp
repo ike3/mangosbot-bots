@@ -28,7 +28,7 @@ bool FlagAction::Execute(Event& event)
         else if (clearFlag) bot->SetPvP(false);
         else if (toggleFlag) bot->SetPvP(!bot->IsPvP());
         ostringstream out; out << ss[0] << " flag is " << chat->formatBoolean(bot->IsPvP());
-        ai->TellMaster(out.str());
+        ai->TellPlayer(GetMaster(), out.str());
         return true;
     }
 
@@ -41,7 +41,7 @@ bool FlagAction::Execute(Event& event)
     else if (toggleFlag && bot->HasFlag(PLAYER_FLAGS, playerFlags)) bot->RemoveFlag(PLAYER_FLAGS, playerFlags);
     else if (toggleFlag && !bot->HasFlag(PLAYER_FLAGS, playerFlags)) bot->SetFlag(PLAYER_FLAGS, playerFlags);
     ostringstream out; out << ss[0] << " flag is " << chat->formatBoolean(!bot->HasFlag(PLAYER_FLAGS, playerFlags));
-    ai->TellMaster(out.str());
+    ai->TellPlayer(GetMaster(), out.str());
     return true;
 }
 

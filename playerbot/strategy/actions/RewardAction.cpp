@@ -8,6 +8,7 @@ using namespace ai;
 
 bool RewardAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string link = event.getParam();
 
     ItemIds itemIds = chat->parseItems(link);
@@ -20,7 +21,7 @@ bool RewardAction::Execute(Event& event)
     for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
     {
         Unit* npc = ai->GetUnit(*i);
-        if (npc && Reward(itemId, npc))
+        if (npc && Reward(requester, itemId, npc))
             return true;
     }
 
@@ -28,20 +29,18 @@ bool RewardAction::Execute(Event& event)
     for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)
     {
         GameObject* go = ai->GetGameObject(*i);
-        if (go && Reward(itemId, go))
+        if (go && Reward(requester, itemId, go))
             return true;
     }
 
-    Unit* mtar = AI_VALUE(Unit*, "master target");
-    if (mtar && Reward(itemId, mtar))
+    if (requester && Reward(requester, itemId, requester))
        return true;    
-
 
     ai->TellError("Cannot talk to quest giver");
     return false;
 }
 
-bool RewardAction::Reward(uint32 itemId, Object* questGiver)
+bool RewardAction::Reward(Player* requester, uint32 itemId, Object* questGiver)
 {
     QuestMenu& questMenu = bot->GetPlayerMenu()->GetQuestMenu();
     for (uint32 iI = 0; iI < questMenu.MenuItemCount(); ++iI)
@@ -69,7 +68,7 @@ bool RewardAction::Reward(uint32 itemId, Object* questGiver)
                     string itemName = pRewardItem->Name1;
 
                     ostringstream out; out << chat->formatItem(pRewardItem) << " rewarded";
-                    ai->TellMaster(out);
+                    ai->TellPlayer(requester, out);
 
                     return true;
                 }

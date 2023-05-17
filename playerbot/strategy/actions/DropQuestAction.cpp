@@ -38,7 +38,7 @@ bool DropQuestAction::Execute(Event& event)
     bot->SetQuestStatus(entry, QUEST_STATUS_NONE);
     bot->getQuestStatusMap()[entry].m_rewarded = false;
 
-    ai->TellMaster(BOT_TEXT("quest_remove"));
+    ai->TellPlayer(GetMaster(), BOT_TEXT("quest_remove"));
     return true;
 }
 
@@ -150,7 +150,7 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
 
         numQuest--;
 
-        ai->TellMaster(BOT_TEXT("quest_remove") + " " + chat->formatQuest(quest), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(GetMaster(), BOT_TEXT("quest_remove") + " " + chat->formatQuest(quest), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }
 

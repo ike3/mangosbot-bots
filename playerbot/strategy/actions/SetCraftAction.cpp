@@ -22,7 +22,7 @@ bool SetCraftAction::Execute(Event& event)
     if (link == "reset")
     {
         data.Reset();
-        ai->TellMaster("I will not craft anything");
+        ai->TellPlayer(GetMaster(), "I will not craft anything");
         return true;
     }
 
@@ -35,7 +35,7 @@ bool SetCraftAction::Execute(Event& event)
     ItemIds itemIds = chat->parseItems(link);
     if (itemIds.empty())
     {
-        ai->TellMaster("Usage: 'craft [itemId]' or 'craft reset'");
+        ai->TellPlayer(GetMaster(), "Usage: 'craft [itemId]' or 'craft reset'");
         return false;
     }
 
@@ -97,7 +97,7 @@ bool SetCraftAction::Execute(Event& event)
 
     if (data.required.empty())
     {
-        ai->TellMaster("I cannot craft this");
+        ai->TellPlayer(GetMaster(), "I cannot craft this");
         return false;
     }
 
@@ -112,7 +112,7 @@ void SetCraftAction::TellCraft()
     CraftData& data = AI_VALUE(CraftData&, "craft");
     if (data.IsEmpty())
     {
-        ai->TellMaster("I will not craft anything");
+        ai->TellPlayer(GetMaster(), "I will not craft anything");
         return;
     }
 
@@ -141,7 +141,7 @@ void SetCraftAction::TellCraft()
     }
 
     out << " (craft fee: " << chat->formatMoney(GetCraftFee(data)) << ")";
-    ai->TellMaster(out.str());
+    ai->TellPlayer(GetMaster(), out.str());
 }
 
 uint32 SetCraftAction::GetCraftFee(CraftData& data)

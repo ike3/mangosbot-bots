@@ -9,49 +9,53 @@ using namespace ai;
 
 bool EquipAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
     if (text == "?")
     {
-        ListItems();
+        ListItems(requester);
         return true;
     }
 
     ItemIds ids = chat->parseItems(text);
-    EquipItems(ids);
+    EquipItems(requester, ids);
     return true;
 }
 
-void EquipAction::ListItems()
+void EquipAction::ListItems(Player* requester)
 {
-    ai->TellMaster("=== Equip ===");
+    ai->TellPlayer(requester, "=== Equip ===");
 
     map<uint32, int> items;
     map<uint32, bool> soulbound;
     for (int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+    {
         if (Item* pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        {
             if (pItem)
             {
                 items[pItem->GetProto()->ItemId] += pItem->GetCount();
             }
+        }
+    }
 
-
-    ai->InventoryTellItems(items, soulbound);
+    ai->InventoryTellItems(requester, items, soulbound);
 }
 
-void EquipAction::EquipItems(ItemIds ids)
+void EquipAction::EquipItems(Player* requester, ItemIds ids)
 {
     for (ItemIds::iterator i =ids.begin(); i != ids.end(); i++)
     {
         FindItemByIdVisitor visitor(*i);
-        EquipItem(&visitor);        
+        EquipItem(requester, &visitor);        
     }
 }
 
-void EquipAction::EquipItem(FindItemVisitor* visitor)
+void EquipAction::EquipItem(Player* requester, FindItemVisitor* visitor)
 {
     ai->InventoryIterateItems(visitor);
     list<Item*> items = visitor->GetResult();
-	if (!items.empty()) EquipItem(*items.begin());
+	if (!items.empty()) EquipItem(requester, *items.begin());
 }
 
 //Return the bag slot with smallest bag
@@ -77,7 +81,7 @@ uint8 EquipAction::GetSmallestBagSlot()
     return curBag;
 }
 
-void EquipAction::EquipItem(Item* item)
+void EquipAction::EquipItem(Player* requester, Item* item)
 {
     uint8 bagIndex = item->GetBagSlot();
     uint8 slot = item->GetSlot();
@@ -123,7 +127,7 @@ void EquipAction::EquipItem(Item* item)
 
     ostringstream out; out << "equipping " << chat->formatItem(item);
 
-    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
 bool EquipUpgradesAction::Execute(Event& event)
@@ -162,7 +166,7 @@ bool EquipUpgradesAction::Execute(Event& event)
         if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_BAD_EQUIP)
         {
             sLog.outDetail("Bot #%d <%s> auto equips item %d (%s)", bot->GetGUIDLow(), bot->GetName(), item->GetProto()->ItemId, usage == 1 ? "no item in slot" : usage == 2 ? "replace" : usage == 3 ? "wrong item but empty slot" : "");
-            EquipItem(item);   
+            EquipItem(GetMaster(), item);   
             didEquip = true;
         }
     }

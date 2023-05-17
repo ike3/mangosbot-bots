@@ -291,7 +291,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
         {
             ostringstream out;
             out << "found: no targets, " << checked << " checked.";
-            ai->TellMasterNoFacing(out);
+            ai->TellPlayerNoFacing(GetMaster(), out);
         }
         sLog.outDetail("%s can't choose RPG target: all %zu are not available", bot->GetName(), possibleTargets.size());
         RESET_AI_VALUE(set<ObjectGuid>&,"ignore rpg target");
@@ -305,7 +305,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
         std::sort(sortedTargets.begin(), sortedTargets.end(), [](pair<ObjectGuid, uint32>i, pair<ObjectGuid, uint32> j) {return i.second > j.second; });
 
-        ai->TellMasterNoFacing("------" + to_string(targets.size()) + "------");
+        ai->TellPlayerNoFacing(GetMaster(), "------" + to_string(targets.size()) + "------");
 
         uint32 checked = 0;
 
@@ -321,7 +321,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
             out << " " << rgpActionReason[guidP] << " " << target.second;
 
-            ai->TellMasterNoFacing(out);
+            ai->TellPlayerNoFacing(GetMaster(), out);
 
             checked++;
 
@@ -329,7 +329,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
             {
                 ostringstream out;
                 out << "and " << (sortedTargets.size()-checked) << " more...";
-                ai->TellMasterNoFacing(out);
+                ai->TellPlayerNoFacing(GetMaster(), out);
                 break;
             }
         }
@@ -368,7 +368,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
         out << " " << rgpActionReason[guidP] << " " << targets[guidP];
 
-        ai->TellMasterNoFacing(out);
+        ai->TellPlayerNoFacing(GetMaster(), out);
     }
 
     SET_AI_VALUE(GuidPosition, "rpg target", guidP);

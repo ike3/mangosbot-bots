@@ -16,7 +16,7 @@ namespace ai
         virtual uint32 getDuration() const { return 3000U; }
 
     private:
-        bool CastSummonPlayer(std::string command);
+        bool CastSummonPlayer(Player* requester, std::string command);
 
     protected:
         bool ncCast = false;
@@ -61,10 +61,10 @@ namespace ai
         virtual bool Execute(Event& event) override;
     };
 
-    class DisEnchantRandomItemAction : public CastCustomSpellAction
+    class DisenchantRandomItemAction : public CastCustomSpellAction
     {
     public:
-        DisEnchantRandomItemAction(PlayerbotAI* ai) : CastCustomSpellAction(ai, "disenchant random item")  {}
+        DisenchantRandomItemAction(PlayerbotAI* ai) : CastCustomSpellAction(ai, "disenchant random item")  {}
         virtual bool isUseful() { return ai->HasSkill(SKILL_ENCHANTING) && !bot->IsInCombat() && AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_DISENCHANT)) > 0; }
         virtual bool Execute(Event& event) override;
     };

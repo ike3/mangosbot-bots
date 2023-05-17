@@ -153,7 +153,7 @@ bool DebugAction::Execute(Event& event)
 
         for (auto& line : lines)
         {
-            ai->TellMasterNoFacing(line, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+            ai->TellPlayerNoFacing(GetMaster(), line, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
         }
 
         return true;
@@ -227,7 +227,7 @@ bool DebugAction::Execute(Event& event)
 
         string motionName = motionBot->GetName();
 
-        ai->TellMaster(motionName + " :" + sType + " (" + cTargetName + " a:" + to_string(cAngle) + " o:" + to_string(cOffset) + ")");
+        ai->TellPlayer(GetMaster(), motionName + " :" + sType + " (" + cTargetName + " a:" + to_string(cAngle) + " o:" + to_string(cOffset) + ")");
 
 
         if (!masterTarget)
@@ -266,7 +266,7 @@ bool DebugAction::Execute(Event& event)
             }
 
             string sType = "TODO"; // GetMoveTypeStr(type);
-            ai->TellMaster("new:" + sType);
+            ai->TellPlayer(GetMaster(), "new:" + sType);
         }
         return true;
     }
@@ -275,9 +275,9 @@ bool DebugAction::Execute(Event& event)
         {
             GameObjectInfo const* data = sGOStorage.LookupEntry<GameObjectInfo>(trans->GetEntry());
             if (WorldPosition(bot).isOnTransport(trans))
-                ai->TellMaster("On transport " + string(data->name));
+                ai->TellPlayer(GetMaster(), "On transport " + string(data->name));
             else
-                ai->TellMaster("Not on transport " + string(data->name));
+                ai->TellPlayer(GetMaster(), "Not on transport " + string(data->name));
         }
     }
     else if (text.find("ontrans") == 0 && isMod) {
@@ -312,7 +312,7 @@ bool DebugAction::Execute(Event& event)
 
         if (path.empty())
         {
-            ai->TellMaster("No path.");
+            ai->TellPlayer(GetMaster(), "No path.");
             bot->SetTransport(nullptr);
             return false;
         }
@@ -325,7 +325,7 @@ bool DebugAction::Execute(Event& event)
             {
                 bool onTrans = pos.isOnTransport(trans);
 
-                if (onTrans) //Summon creature needs to be Summonned on offset coordinates.
+                if (onTrans) //Summon creature needs to be Summoned on offset coordinates.
                 {
                     p.CalculatePassengerOffset(trans);
                     bot->SetTransport(trans);
@@ -340,7 +340,7 @@ bool DebugAction::Execute(Event& event)
                     ai->AddAura(wpCreature, 1130);
             }
 
-            ai->TellMaster("No path on boat.");  
+            ai->TellPlayer(GetMaster(), "No path on boat.");
             bot->SetTransport(nullptr);
             return false;
         }
@@ -349,7 +349,7 @@ bool DebugAction::Execute(Event& event)
         {
             bool onTrans = pos.isOnTransport(trans);
 
-            if (onTrans) //Summon creature needs to be Summonned on offset coordinates.
+            if (onTrans) //Summon creature needs to be Summoned on offset coordinates.
             {
                 p.CalculatePassengerOffset(trans);
                 bot->SetTransport(trans);
@@ -392,7 +392,7 @@ bool DebugAction::Execute(Event& event)
 
         if (path.empty())
         {
-            ai->TellMaster("No path.");
+            ai->TellPlayer(GetMaster(), "No path.");
             return false;
         }
 
@@ -400,7 +400,7 @@ bool DebugAction::Execute(Event& event)
 
         if (exitPos.isOnTransport(transport))
         {
-            ai->TellMaster("Path still on boat.");
+            ai->TellPlayer(GetMaster(), "Path still on boat.");
             return false;
         }
         
@@ -459,7 +459,7 @@ bool DebugAction::Execute(Event& event)
 
                 bool onTrans = pos.isOnTransport(trans);
 
-                if (onTrans) //Summon creature needs to be Summonned on offset coordinates.
+                if (onTrans) //Summon creature needs to be Summoned on offset coordinates.
                 {
                     pos.CalculatePassengerOffset(trans);
                     bot->SetTransport(trans);
@@ -527,7 +527,7 @@ bool DebugAction::Execute(Event& event)
 
         if (!corpse)
         {
-            ai->TellMasterNoFacing("no corpse");
+            ai->TellPlayerNoFacing(GetMaster(), "no corpse");
             return true;
         }
 
@@ -547,7 +547,7 @@ bool DebugAction::Execute(Event& event)
 
         out << "time: " << corpse->GetGhostTime();
 
-        ai->TellMasterNoFacing(out);
+        ai->TellPlayerNoFacing(GetMaster(), out);
 
         return true;
     }
@@ -640,42 +640,42 @@ bool DebugAction::Execute(Event& event)
         if (topPoolId)
             out << " pool:" << topPoolId << (sGameEventMgr.GetGameEventId<Pool>(topPoolId) ? " event" : " nonevent");
 
-        ai->TellMasterNoFacing(out);
+        ai->TellPlayerNoFacing(GetMaster(), out);
 
 
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_GOSSIP))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_GOSSIP");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_GOSSIP");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_QUESTGIVER))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_QUESTGIVER");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_QUESTGIVER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_VENDOR))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_VENDOR");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_VENDOR");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_FLIGHTMASTER))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_FLIGHTMASTER");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_FLIGHTMASTER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_TRAINER))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_TRAINER");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_TRAINER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_SPIRITHEALER))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_SPIRITHEALER");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_SPIRITHEALER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_SPIRITGUIDE))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_SPIRITGUIDE");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_SPIRITGUIDE");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_INNKEEPER))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_INNKEEPER");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_INNKEEPER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_BANKER))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_BANKER");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_BANKER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_PETITIONER))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_PETITIONER");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_PETITIONER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_TABARDDESIGNER))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_TABARDDESIGNER");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_TABARDDESIGNER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_BATTLEMASTER))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_BATTLEMASTER");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_BATTLEMASTER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_AUCTIONEER))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_AUCTIONEER");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_AUCTIONEER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_STABLEMASTER))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_STABLEMASTER");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_STABLEMASTER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_REPAIR))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_REPAIR");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_REPAIR");
 #ifdef MANGOSBOT_ZERO
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_OUTDOORPVP))
-            ai->TellMasterNoFacing("UNIT_NPC_FLAG_OUTDOORPVP");
+            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_OUTDOORPVP");
 #endif
 
         unordered_map<ReputationRank, string> reaction;
@@ -705,7 +705,7 @@ bool DebugAction::Execute(Event& event)
             if (GuidPosition(HIGHGUID_UNIT, guidP.GetEntry()).IsFriendlyTo(bot))
                 out << "[friendly]";
 
-            ai->TellMasterNoFacing(out);
+            ai->TellPlayerNoFacing(GetMaster(), out);
         }
 
         return true;
@@ -752,7 +752,7 @@ bool DebugAction::Execute(Event& event)
 
         guidP.printWKT(out);
 
-        ai->TellMasterNoFacing(out);
+        ai->TellPlayerNoFacing(GetMaster(), out);
 
         unordered_map<uint32, string>  types;
         types[GAMEOBJECT_TYPE_DOOR] = "GAMEOBJECT_TYPE_DOOR";
@@ -798,7 +798,7 @@ bool DebugAction::Execute(Event& event)
         types[GAMEOBJECT_TYPE_TRAPDOOR] = "GAMEOBJECT_TYPE_TRAPDOOR";
 #endif
 
-        ai->TellMasterNoFacing(types[guidP.GetGameObjectInfo()->type]);
+        ai->TellPlayerNoFacing(GetMaster(), types[guidP.GetGameObjectInfo()->type]);
 
         if (guidP.GetGameObject())
         {
@@ -832,7 +832,7 @@ bool DebugAction::Execute(Event& event)
             if (lootState == GO_JUST_DEACTIVATED)
                 out << "GO_JUST_DEACTIVATED";
 
-            ai->TellMasterNoFacing(out);
+            ai->TellPlayerNoFacing(GetMaster(), out);
         }
 
         return true;
@@ -861,13 +861,13 @@ bool DebugAction::Execute(Event& event)
                 out << node->getName() << ", ";
             }
 
-            ai->TellMasterNoFacing(out.str());
+            ai->TellPlayerNoFacing(GetMaster(), out.str());
 
             return true;
         }
         else
         {
-            ai->TellMasterNoFacing("Destination " + destination + " not found.");
+            ai->TellPlayerNoFacing(GetMaster(), "Destination " + destination + " not found.");
             return true;
         }
     }
@@ -880,7 +880,7 @@ bool DebugAction::Execute(Event& event)
 
         if (!quest || sTravelMgr.quests.find(questId) == sTravelMgr.quests.end())
         {
-            ai->TellMasterNoFacing("Quest " + text.substr(6) + " not found.");
+            ai->TellPlayerNoFacing(GetMaster(), "Quest " + text.substr(6) + " not found.");
             return false;
         }
 
@@ -888,7 +888,7 @@ bool DebugAction::Execute(Event& event)
 
         out << quest->GetTitle() << ": ";
 
-        ai->TellMasterNoFacing(out);
+        ai->TellPlayerNoFacing(GetMaster(), out);
 
         QuestContainer* cont = sTravelMgr.quests[questId];
 
@@ -910,7 +910,7 @@ bool DebugAction::Execute(Event& event)
 
             out << " (" << g->distanceTo(botPos) << "y)";
 
-            ai->TellMasterNoFacing(out);
+            ai->TellPlayerNoFacing(GetMaster(), out);
 
             if (i >= 10)
                 break;
@@ -949,7 +949,7 @@ bool DebugAction::Execute(Event& event)
 
                 out << " (" << g->distanceTo(botPos) << "y)";
 
-                ai->TellMasterNoFacing(out);
+                ai->TellPlayerNoFacing(GetMaster(), out);
 
                 if (i >= 5)
                     break;
@@ -976,7 +976,7 @@ bool DebugAction::Execute(Event& event)
 
             out << " (" << g->distanceTo(botPos) << "y)";
 
-            ai->TellMasterNoFacing(out);
+            ai->TellPlayerNoFacing(GetMaster(), out);
 
             if (i >= 10)
                 break;
@@ -1007,7 +1007,7 @@ bool DebugAction::Execute(Event& event)
 
         out << noG << "|" << noT << "|" << noO << " bad.";
 
-        ai->TellMasterNoFacing(out);
+        ai->TellPlayerNoFacing(GetMaster(), out);
 
         return true;
     }
@@ -1040,12 +1040,12 @@ bool DebugAction::Execute(Event& event)
             if (q.second->questObjectives.empty())
                 out << " no O";
         }
-        ai->TellMasterNoFacing(out);
+        ai->TellPlayerNoFacing(GetMaster(), out);
 
     }
     else if (text.find("values ") == 0)
     {
-        ai->TellMasterNoFacing(ai->GetAiObjectContext()->FormatValues(text.substr(7)));
+        ai->TellPlayerNoFacing(GetMaster(), ai->GetAiObjectContext()->FormatValues(text.substr(7)));
 
         return true;
     }
@@ -1062,7 +1062,7 @@ bool DebugAction::Execute(Event& event)
             else
                 out << chat->formatItem(sObjectMgr.GetItemPrototype(itemId), 0, 0) << " " << to_string(entries.size()) << " sources found:";
 
-            ai->TellMasterNoFacing(out);
+            ai->TellPlayerNoFacing(GetMaster(), out);
             out.str("");
             out.clear();
 
@@ -1084,7 +1084,7 @@ bool DebugAction::Execute(Event& event)
             for (auto chance : chances)
             {
                 out << chat->formatWorldEntry(chance.first) << ": " << chance.second << "%";
-                ai->TellMasterNoFacing(out);
+                ai->TellPlayerNoFacing(GetMaster(), out);
                 out.str("");
                 out.clear();
             }
@@ -1096,9 +1096,9 @@ bool DebugAction::Execute(Event& event)
     bool doAction = ai->DoSpecificAction("add all loot", Event(), true);
 
     if (doAction)
-        ai->TellMasterNoFacing("Added new loot");
+        ai->TellPlayerNoFacing(GetMaster(), "Added new loot");
     else
-        ai->TellMasterNoFacing("No new loot");
+        ai->TellPlayerNoFacing(GetMaster(), "No new loot");
 
     LootObjectStack* loots = AI_VALUE(LootObjectStack*, "available loot");
 
@@ -1112,18 +1112,18 @@ bool DebugAction::Execute(Event& event)
         WorldObject* wo = ai->GetWorldObject(loot.guid);
 
         if (wo)
-            ai->TellMasterNoFacing(chat->formatWorldobject(wo) + " " + (loot.IsLootPossible(bot) ? "can loot" : "can not loot"));
+            ai->TellPlayerNoFacing(GetMaster(), chat->formatWorldobject(wo) + " " + (loot.IsLootPossible(bot) ? "can loot" : "can not loot"));
         else
-            ai->TellMasterNoFacing(to_string(loot.guid) + " " + (loot.IsLootPossible(bot) ? "can loot" : "can not loot") + " " + to_string(loot.guid.GetEntry()));
+            ai->TellPlayerNoFacing(GetMaster(), to_string(loot.guid) + " " + (loot.IsLootPossible(bot) ? "can loot" : "can not loot") + " " + to_string(loot.guid.GetEntry()));
 
         if (loot.guid.IsGameObject())
         {
             GameObject* go = ai->GetGameObject(loot.guid);
 
             if (go->ActivateToQuest(bot))
-                ai->TellMasterNoFacing(to_string(go->GetGoType()) + " for quest");
+                ai->TellPlayerNoFacing(GetMaster(), to_string(go->GetGoType()) + " for quest");
             else
-                ai->TellMasterNoFacing(to_string(go->GetGoType()));
+                ai->TellPlayerNoFacing(GetMaster(), to_string(go->GetGoType()));
         }
 
         loots->Remove(loot.guid);
@@ -1146,7 +1146,7 @@ bool DebugAction::Execute(Event& event)
         else
             out << chat->formatWorldEntry(entry) << " " << to_string(itemIds.size()) << " drops found:";
 
-        ai->TellMasterNoFacing(out);
+        ai->TellPlayerNoFacing(GetMaster(), out);
         out.str("");
         out.clear();
 
@@ -1170,7 +1170,7 @@ bool DebugAction::Execute(Event& event)
         for (auto chance : chances)
         {
             out << chat->formatItem(sObjectMgr.GetItemPrototype(chance.first), 0, 0) << ": " << chance.second << "%";
-            ai->TellMasterNoFacing(out);
+            ai->TellPlayerNoFacing(GetMaster(), out);
             out.str("");
             out.clear();
         }
@@ -1190,7 +1190,7 @@ bool DebugAction::Execute(Event& event)
 
             out << taxiNode->name[0];
 
-            ai->TellMasterNoFacing(out);
+            ai->TellPlayerNoFacing(GetMaster(), out);
         }
     return true;
     }
@@ -1207,7 +1207,7 @@ bool DebugAction::Execute(Event& event)
             endNode->setLinked(false);
         }
 
-        ai->TellMasterNoFacing("Node " + name + " created.");
+        ai->TellPlayerNoFacing(GetMaster(), "Node " + name + " created.");
         
         sTravelNodeMap.setHasToGen();
 
@@ -1224,11 +1224,11 @@ bool DebugAction::Execute(Event& event)
 
         if (startNode->isImportant())
         {
-            ai->TellMasterNoFacing("Node can not be removed.");
+            ai->TellPlayerNoFacing(GetMaster(), "Node can not be removed.");
         }
         sTravelNodeMap.m_nMapMtx.lock();
         sTravelNodeMap.removeNode(startNode);
-        ai->TellMasterNoFacing("Node removed.");
+        ai->TellPlayerNoFacing(GetMaster(), "Node removed.");
         sTravelNodeMap.m_nMapMtx.unlock();
 
         sTravelNodeMap.setHasToGen();
@@ -1886,7 +1886,7 @@ bool DebugAction::Execute(Event& event)
     }
 
     string response = ai->HandleRemoteCommand(text);
-    ai->TellMaster(response);
+    ai->TellPlayer(GetMaster(), response);
     return true;
 }
 

@@ -16,7 +16,7 @@ public:
 
     virtual bool Visit(Item* item)
     {
-        action->Sell(item);
+        action->Sell(nullptr, item);
         return true;
     }
 
@@ -67,8 +67,9 @@ public:
 
 bool SellAction::Execute(Event& event)
 {
-    string text = event.getParam();
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
 
+    string text = event.getParam();
     if (text == "gray" || text == "*")
     {
         SellGrayItemsVisitor visitor(this);
@@ -86,21 +87,23 @@ bool SellAction::Execute(Event& event)
     list<Item*> items = ai->InventoryParseItems(text, ITERATE_ITEMS_IN_BAGS);
     for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
     {
-        Sell(*i);
+        Sell(requester, *i);
     }
 
     return true;
 }
 
-void SellAction::Sell(FindItemVisitor* visitor)
+void SellAction::Sell(Player* requester, FindItemVisitor* visitor)
 {
     ai->InventoryIterateItems(visitor);
     list<Item*> items = visitor->GetResult();
     for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
-        Sell(*i);
+    {
+        Sell(requester, *i);
+    }
 }
 
-void SellAction::Sell(Item* item)
+void SellAction::Sell(Player* requester, Item* item)
 {
     ostringstream out;
     list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
@@ -131,7 +134,8 @@ void SellAction::Sell(Item* item)
         out << "Selling " << chat->formatItem(item);
         if (sPlayerbotAIConfig.globalSoundEffects)
             bot->PlayDistanceSound(120);
-        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+
+        ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         break;
     }
 }

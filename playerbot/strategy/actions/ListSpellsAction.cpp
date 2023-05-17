@@ -270,17 +270,17 @@ bool ListSpellsAction::Execute(Event& event)
 
     list<pair<uint32, string> > spells = GetSpellList(filter);
 
-    ai->TellMaster("=== Spells ===");
+    ai->TellPlayer(GetMaster(), "=== Spells ===");
     spells.sort(CompareSpells);
 
     int count = 0;
     for (list<pair<uint32, string> >::iterator i = spells.begin(); i != spells.end(); ++i)
     {
-        ai->TellMasterNoFacing(i->second);
+        ai->TellPlayerNoFacing(GetMaster(), i->second);
         if (++count >= 50)
         {
             ostringstream msg; msg << (spells.size() - 50) << " more...";
-            ai->TellMasterNoFacing(msg.str());
+            ai->TellPlayerNoFacing(GetMaster(), msg.str());
             break;
         }
     }

@@ -134,6 +134,4 @@ namespace ai
         static Action* see_spell(PlayerbotAI* ai) { return new SeeSpellAction(ai); }
         static Action* arena_team_accept(PlayerbotAI* ai) { return new ArenaTeamAcceptAction(ai); }
     };
-
-
 };

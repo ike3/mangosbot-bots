@@ -1785,7 +1785,7 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool syncWithMaster)
         uint32 newGS = ai->GetEquipGearScore(bot, false, false);
         std::stringstream message;
         message << "Synced gear with master. Old GS: " << oldGS << " New GS: " << newGS << " Master GS: " << masterGS;
-        ai->TellMasterNoFacing(message.str());
+        ai->TellPlayerNoFacing(ai->GetMaster(), message.str());
     }
 }
 

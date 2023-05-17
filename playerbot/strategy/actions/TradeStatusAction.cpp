@@ -125,8 +125,8 @@ void TradeStatusAction::BeginTrade()
     ListItemsVisitor visitor;
     ai->InventoryIterateItems(&visitor);
 
-    ai->TellMaster("=== Inventory ===");
-    ai->InventoryTellItems(visitor.items, visitor.soulbound);
+    ai->TellPlayer(GetMaster(), "=== Inventory ===");
+    ai->InventoryTellItems(GetMaster(), visitor.items, visitor.soulbound);
 
     if (sRandomPlayerbotMgr.IsRandomBot(bot))
     {
@@ -134,7 +134,7 @@ void TradeStatusAction::BeginTrade()
         if (discount)
         {
             ostringstream out; out << "Discount up to: " << chat->formatMoney(discount);
-            ai->TellMaster(out);
+            ai->TellPlayer(GetMaster(), out);
         }
     }
 }
@@ -173,7 +173,7 @@ bool TradeStatusAction::CheckTrade()
         {
             string name = trader->GetName();
             if (bot->GetGroup() && bot->GetGroup()->IsMember(bot->GetTrader()->GetObjectGuid()) && ai->HasRealPlayerMaster())
-                ai->TellMasterNoFacing("Thank you " + name + ".", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayerNoFacing(GetMaster(), "Thank you " + name + ".", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             else
                 bot->Say("Thank you " + name + ".", (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
         }
@@ -203,7 +203,7 @@ bool TradeStatusAction::CheckTrade()
         {
             ostringstream out;
             out << chat->formatItem(item) << " - This is not for sale";
-            ai->TellMaster(out);
+            ai->TellPlayer(GetMaster(), out);
             ai->PlaySound(TEXTEMOTE_NO);
             return false;
         }
@@ -216,7 +216,7 @@ bool TradeStatusAction::CheckTrade()
             {
                 ostringstream out;
                 out << chat->formatItem(item) << " - I don't need this";
-                ai->TellMaster(out);
+                ai->TellPlayer(GetMaster(), out);
                 ai->PlaySound(TEXTEMOTE_NO);
                 return false;
             }
@@ -259,16 +259,16 @@ bool TradeStatusAction::CheckTrade()
         sRandomPlayerbotMgr.AddTradeDiscount(bot, trader, delta);
         switch (urand(0, 4)) {
         case 0:
-            ai->TellMaster("A pleasure doing business with you");
+            ai->TellPlayer(GetMaster(), "A pleasure doing business with you");
             break;
         case 1:
-            ai->TellMaster("Fair trade");
+            ai->TellPlayer(GetMaster(), "Fair trade");
             break;
         case 2:
-            ai->TellMaster("Thanks");
+            ai->TellPlayer(GetMaster(), "Thanks");
             break;
         case 3:
-            ai->TellMaster("Off with you");
+            ai->TellPlayer(GetMaster(), "Off with you");
             break;
         }
         ai->PlaySound(TEXTEMOTE_THANK);
@@ -277,7 +277,7 @@ bool TradeStatusAction::CheckTrade()
 
     ostringstream out;
     out << "I want " << chat->formatMoney(-(delta + discount)) << " for this";
-    ai->TellMaster(out);
+    ai->TellPlayer(GetMaster(), out);
     ai->PlaySound(TEXTEMOTE_NO);
     return false;
 }

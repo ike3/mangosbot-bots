@@ -10,10 +10,10 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
     private:
-        bool ExecuteCommand(string text, Unit* bank);
-        void ListItems();
-        bool Withdraw(const uint32 itemid);
-        bool Deposit(Item* pItem);
+        bool ExecuteCommand(Player* requester, const string& text, Unit* bank);
+        void ListItems(Player* requester);
+        bool Withdraw(Player* requester, const uint32 itemid);
+        bool Deposit(Player* requester, Item* pItem);
         Item* FindItemInBank(uint32 ItemId);
     };
 }

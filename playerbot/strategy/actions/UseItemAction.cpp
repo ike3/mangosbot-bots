@@ -137,6 +137,7 @@ bool BotUseItemSpell::OpenLockCheck()
 
 bool UseItemAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string name = event.getParam();
     if (name.empty())
     {
@@ -155,24 +156,23 @@ bool UseItemAction::Execute(Event& event)
             Item* item = *i;
             if(item->IsPotion() || item->GetProto()->Class == ITEM_CLASS_CONSUMABLE || itemTarget->GetProto() == item->GetProto())
             {
-                return UseItemAuto(item);
+                return UseItemAuto(requester, item);
             }
             else
             {
-                return UseItemOnItem(item, itemTarget);
+                return UseItemOnItem(requester, item, itemTarget);
             }
         }
         else if (!items.empty())
         {
-            Player* master = GetMaster();
-            if (master && ai->HasActivePlayerMaster() && !selfOnly && master->GetSelectionGuid())
+            if (requester && ai->HasActivePlayerMaster() && !selfOnly && requester->GetSelectionGuid())
             {
-                Unit* target = ai->GetUnit(master->GetSelectionGuid());
-                return UseItemOnTarget(*items.begin(), target);
+                Unit* target = ai->GetUnit(requester->GetSelectionGuid());
+                return UseItemOnTarget(requester, *items.begin(), target);
             }
             else
             {
-                return UseItemAuto(*items.begin());
+                return UseItemAuto(requester, *items.begin());
             }
         }
     }
@@ -180,15 +180,15 @@ bool UseItemAction::Execute(Event& event)
     {
         if (items.empty())
         {
-            return UseGameObject(*gos.begin());
+            return UseGameObject(requester, *gos.begin());
         }
         else
         {
-            return UseItemOnGameObject(*items.begin(), *gos.begin());
+            return UseItemOnGameObject(requester, *items.begin(), *gos.begin());
         }
     }
 
-    ai->TellError("No items (or game objects) available");
+    ai->TellPlayer(requester, "No items (or game objects) available");
     return false;
 }
 
@@ -197,7 +197,7 @@ bool UseItemAction::isPossible()
     return getName() == "use" || AI_VALUE2(uint32, "item count", getName()) > 0;
 }
 
-bool UseItemAction::UseGameObject(ObjectGuid guid)
+bool UseItemAction::UseGameObject(Player* requester, ObjectGuid guid)
 {
     GameObject* go = ai->GetGameObject(guid);
     if (!go || !sServerFacade.isSpawned(go)
@@ -209,11 +209,11 @@ bool UseItemAction::UseGameObject(ObjectGuid guid)
 
    go->Use(bot);
    ostringstream out; out << "Using " << chat->formatGameobject(go);
-   ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+   ai->TellPlayerNoFacing(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
    return true;
 }
 
-bool UseItemAction::UseItemAuto(Item* item)
+bool UseItemAction::UseItemAuto(Player* requester, Item* item)
 {
     uint8 bagIndex = item->GetBagSlot();
     uint8 slot = item->GetSlot();
@@ -257,7 +257,7 @@ bool UseItemAction::UseItemAuto(Item* item)
             packet << uint32(0);
             bot->GetSession()->HandleQuestgiverAcceptQuestOpcode(packet);
             ostringstream out; out << "Got quest " << chat->formatQuest(qInfo);
-            ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             return true;
         }
     }
@@ -303,17 +303,17 @@ bool UseItemAction::UseItemAuto(Item* item)
         if (isDrink && isFood)
         {
             p = min(hp, mp);
-            TellConsumableUse(item, "Feasting", p);
+            TellConsumableUse(requester, item, "Feasting", p);
         }
         else if (isDrink)
         {
             p = mp;
-            TellConsumableUse(item, "Drinking", p);
+            TellConsumableUse(requester, item, "Drinking", p);
         }
         else if (isFood)
         {
             p = hp;
-            TellConsumableUse(item, "Eating", p);
+            TellConsumableUse(requester, item, "Eating", p);
         }
 
         if(!bot->IsInCombat())
@@ -330,22 +330,22 @@ bool UseItemAction::UseItemAuto(Item* item)
    //return UseItem(item, ObjectGuid(), nullptr);
 }
 
-bool UseItemAction::UseItemOnGameObject(Item* item, ObjectGuid go)
+bool UseItemAction::UseItemOnGameObject(Player* requester, Item* item, ObjectGuid go)
 {
-   return UseItem(item, go, nullptr);
+   return UseItem(requester, item, go, nullptr);
 }
 
-bool UseItemAction::UseItemOnItem(Item* item, Item* itemTarget)
+bool UseItemAction::UseItemOnItem(Player* requester, Item* item, Item* itemTarget)
 {
-   return UseItem(item, ObjectGuid(), itemTarget);
+   return UseItem(requester, item, ObjectGuid(), itemTarget);
 }
 
-bool UseItemAction::UseItemOnTarget(Item* item, Unit* target)
+bool UseItemAction::UseItemOnTarget(Player* requester, Item* item, Unit* target)
 {
-    return UseItem(item, ObjectGuid(), nullptr, target);
+    return UseItem(requester, item, ObjectGuid(), nullptr, target);
 }
 
-bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Unit* unitTarget)
+bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, Item* itemTarget, Unit* unitTarget)
 {
     if (bot->CanUseItem(item) != EQUIP_ERR_OK)
         return false;
@@ -438,7 +438,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
         {
             bool fit = SocketItem(itemTarget, item) || SocketItem(itemTarget, item, true);
             if (!fit)
-                ai->TellMaster("Socket does not fit", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayer("Socket does not fit", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
             return fit;
         }
@@ -469,17 +469,16 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
         }
         else
         {
-            Player* master = GetMaster();
-            if (!targetSelected && master && ai->HasActivePlayerMaster())
+            if (!targetSelected && requester && ai->HasActivePlayerMaster())
             {
-                ObjectGuid masterSelection = master->GetSelectionGuid();
-                if (masterSelection)
+                ObjectGuid requesterSelection = requester->GetSelectionGuid();
+                if (requesterSelection)
                 {
-                    Unit* unit = ai->GetUnit(masterSelection);
+                    Unit* unit = ai->GetUnit(requesterSelection);
                     if (unit && item->IsTargetValidForItemUse(unit))
                     {
                         targetFlag = TARGET_FLAG_UNIT;
-                        packet << targetFlag << masterSelection.WriteAsPacked();
+                        packet << targetFlag << requesterSelection.WriteAsPacked();
                         out << " on " << unit->GetName();
                         targetSelected = true;
                     }
@@ -548,7 +547,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
             packet << uint32(0);
             bot->GetSession()->HandleQuestgiverAcceptQuestOpcode(packet);
             ostringstream out; out << "Got quest " << chat->formatQuest(qInfo);
-            ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             return true;
         }
     }
@@ -637,23 +636,23 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget, Uni
        return false;
 
     SetDuration(sPlayerbotAIConfig.globalCoolDown);
-    ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayerNoFacing(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     bot->GetSession()->HandleUseItemOpcode(packet);
     return true;
 }
 
-void UseItemAction::TellConsumableUse(Item* item, string action, float percent)
+void UseItemAction::TellConsumableUse(Player* requester, Item* item, string action, float percent)
 {
     ostringstream out;
     out << action << " " << chat->formatItem(item);
     if ((int)item->GetProto()->Stackable > 1) out << "/x" << item->GetCount();
     out << " (" << round(percent) << "%)";
-    ai->TellMasterNoFacing(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayerNoFacing(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
 #ifndef MANGOSBOT_ZERO
-bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
+bool UseItemAction::SocketItem(Player* requester, Item* item, Item* gem, bool replace)
 {
    WorldPacket* const packet = new WorldPacket(CMSG_SOCKET_GEMS);
    *packet << item->GetObjectGuid();
@@ -703,7 +702,7 @@ bool UseItemAction::SocketItem(Item* item, Item* gem, bool replace)
    {
       ostringstream out; out << "Socketing " << chat->formatItem(item);
       out << " with " << chat->formatItem(gem);
-      ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+      ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
       bot->GetSession()->HandleSocketOpcode(*packet);
    }
@@ -1079,7 +1078,7 @@ bool UseRandomQuestItemAction::Execute(Event& event)
     if (!item)
         return false;
 
-    bool used = UseItem(item, goTarget, nullptr, unitTarget);
+    bool used = UseItem(nullptr, item, goTarget, nullptr, unitTarget);
     if (used)
     {
         SetDuration(sPlayerbotAIConfig.globalCoolDown);

@@ -9,7 +9,7 @@ bool ResetInstancesAction::Execute(Event& event)
     WorldPacket packet(CMSG_RESET_INSTANCES, 0);
     bot->GetSession()->HandleResetInstancesOpcode(packet);
 
-    ai->TellMaster("Resetting all instances", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(GetMaster(), "Resetting all instances", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return true;
 }
 

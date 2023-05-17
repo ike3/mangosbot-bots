@@ -10,7 +10,7 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
     protected:
-        bool ReadyCheck();
+        bool ReadyCheck(Player* requester);
     };
 
     class FinishReadyCheckAction : public ReadyCheckAction

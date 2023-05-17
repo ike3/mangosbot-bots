@@ -304,7 +304,7 @@ bool RpgTradeUsefulAction::Execute(Event& event)
         if (IsTradingItem(item->GetEntry())) //Did we manage to add the item to the trade?
         {
             if (bot->GetGroup() && bot->GetGroup()->IsMember(guidP))
-                ai->TellMasterNoFacing("You can use this " + chat->formatItem(item) + " better than me, " + player->GetName() + ".", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayerNoFacing(GetMaster(), "You can use this " + chat->formatItem(item) + " better than me, " + player->GetName() + ".", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             else
                 bot->Say("You can use this " + chat->formatItem(item) + " better than me, " + player->GetName() + ".", (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
@@ -393,12 +393,12 @@ bool RpgItemAction::Execute(Event& event)
             if (unit)
             {
                 if (ai->CanCastSpell(spellId, unit, 0, false))
-                    used = UseItem(item, ObjectGuid(), nullptr, unit);
+                    used = UseItem(GetMaster(), item, ObjectGuid(), nullptr, unit);
             }
             else if (gameObject)
             {
                 if (ai->CanCastSpell(spellId, gameObject, 0, false))
-                    used = UseItem(item, guidP, nullptr, nullptr);
+                    used = UseItem(GetMaster(), item, guidP, nullptr, nullptr);
             }
         }
     }

@@ -24,6 +24,7 @@ std::string LowercaseString(const char* string)
 
 bool FocusHealSetTargetAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     if (ai->IsHeal(bot))
     {
         const std::string targetName = LowercaseString(event.getParam());
@@ -66,19 +67,19 @@ bool FocusHealSetTargetAction::Execute(Event& event)
                 }
 
                 std::stringstream message; message << "Set heal focus target to " << targetName;
-                ai->TellMasterNoFacing(message.str());  
+                ai->TellPlayerNoFacing(requester, message.str());  
                 return true;
             }
             else
             {
                 if (removeTarget)
                 {
-                    ai->TellMasterNoFacing("Removed heal focus target");
+                    ai->TellPlayerNoFacing(requester, "Removed heal focus target");
                 }
                 else
                 {
                     std::stringstream message; message << "I'm not in a group with " << targetName;
-                    ai->TellError(message.str());
+                    ai->TellPlayerNoFacing(requester, message.str());
                 }
 
                 // Remove the focus heal target strategy if not set
@@ -90,7 +91,7 @@ bool FocusHealSetTargetAction::Execute(Event& event)
         }
         else
         {
-            ai->TellError("Please provide a target name");
+            ai->TellPlayerNoFacing(requester, "Please provide a target name");
         }
     }
 

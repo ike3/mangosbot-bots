@@ -35,8 +35,8 @@ void ReturnPositionResetAction::PrintStrategies(PlayerbotAI* ai, Event& event)
 
 bool FollowChatShortcutAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     ai->Reset();
@@ -62,7 +62,7 @@ bool FollowChatShortcutAction::Execute(Event& event)
 
         WorldPosition relPos(bot);
 
-        if (!ai->IsSafe(master) || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.reactDistance) //Use default formation location.
+        if (!ai->IsSafe(requester) || sServerFacade.GetDistance2d(bot, requester) > sPlayerbotAIConfig.reactDistance) //Use default formation location.
         {
             relPos = WorldPosition(bot->GetMapId(), cos(GetFollowAngle()) * ai->GetRange("follow"), sin(GetFollowAngle()) * ai->GetRange("follow"), 0);
         }
@@ -84,19 +84,19 @@ bool FollowChatShortcutAction::Execute(Event& event)
 
         if (MoveTo(loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z, false, false))
         {
-            ai->TellError(BOT_TEXT("following"));
+            ai->TellPlayerNoFacing(requester, BOT_TEXT("following"));
             return true;
         }
     }
 
-    ai->TellError(BOT_TEXT("following"));
+    ai->TellPlayerNoFacing(requester, BOT_TEXT("following"));
     return true;
 }
 
 bool StayChatShortcutAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     ai->Reset();
@@ -109,14 +109,14 @@ bool StayChatShortcutAction::Execute(Event& event)
 
     PrintStrategies(ai, event);
 
-    ai->TellError(BOT_TEXT("staying"));
+    ai->TellPlayerNoFacing(requester, BOT_TEXT("staying"));
     return true;
 }
 
 bool GuardChatShortcutAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     ai->Reset();
@@ -129,14 +129,14 @@ bool GuardChatShortcutAction::Execute(Event& event)
 
     PrintStrategies(ai, event);
 
-    ai->TellError(BOT_TEXT("guarding"));
+    ai->TellPlayerNoFacing(requester, BOT_TEXT("guarding"));
     return true;
 }
 
 bool FreeChatShortcutAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     ai->Reset();
@@ -145,14 +145,14 @@ bool FreeChatShortcutAction::Execute(Event& event)
 
     PrintStrategies(ai, event);
 
-    ai->TellError(BOT_TEXT("free_moving"));
+    ai->TellPlayerNoFacing(requester, BOT_TEXT("free_moving"));
     return true;
 }
 
 bool FleeChatShortcutAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     ai->Reset();
@@ -162,19 +162,19 @@ bool FleeChatShortcutAction::Execute(Event& event)
 
     PrintStrategies(ai, event);
 
-    if (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.sightDistance)
+    if (bot->GetMapId() != requester->GetMapId() || sServerFacade.GetDistance2d(bot, requester) > sPlayerbotAIConfig.sightDistance)
     {
-        ai->TellError(BOT_TEXT("fleeing_far"));
+        ai->TellPlayerNoFacing(requester, BOT_TEXT("fleeing_far"));
         return true;
     }
-    ai->TellError(BOT_TEXT("fleeing"));
+    ai->TellPlayerNoFacing(requester, BOT_TEXT("fleeing"));
     return true;
 }
 
 bool GoawayChatShortcutAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     ai->Reset();
@@ -184,27 +184,27 @@ bool GoawayChatShortcutAction::Execute(Event& event)
 
     PrintStrategies(ai, event);
 
-    ai->TellError("Running away");
+    ai->TellPlayerNoFacing(requester, "Running away");
     return true;
 }
 
 bool GrindChatShortcutAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     ai->Reset();
     ai->ChangeStrategy("+grind,-passive", BotState::BOT_STATE_NON_COMBAT);
     ResetPosition();
-    ai->TellError(BOT_TEXT("grinding"));
+    ai->TellPlayerNoFacing(requester, BOT_TEXT("grinding"));
     return true;
 }
 
 bool TankAttackChatShortcutAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     if (!ai->IsTank(bot))
@@ -214,14 +214,14 @@ bool TankAttackChatShortcutAction::Execute(Event& event)
     ai->ChangeStrategy("-passive", BotState::BOT_STATE_NON_COMBAT);
     ai->ChangeStrategy("-passive", BotState::BOT_STATE_COMBAT);
     ResetPosition();
-    ai->TellError(BOT_TEXT("attacking"));
+    ai->TellPlayerNoFacing(requester, BOT_TEXT("attacking"));
     return true;
 }
 
 bool MaxDpsChatShortcutAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     if (!ai->ContainsStrategy(STRATEGY_TYPE_DPS))
@@ -229,6 +229,6 @@ bool MaxDpsChatShortcutAction::Execute(Event& event)
 
     ai->Reset();
     ai->ChangeStrategy("-threat,-conserve mana,-cast time,+dps debuff,+boost", BotState::BOT_STATE_COMBAT);
-    ai->TellError("Max DPS!");
+    ai->TellPlayerNoFacing(requester, "Max DPS!");
     return true;
 }
