@@ -18,7 +18,7 @@ bool GuildBankAction::Execute(Event& event)
 
     if (!bot->GetGuildId() || (GetMaster() && GetMaster()->GetGuildId() != bot->GetGuildId()))
     {
-        ai->TellPlayer("I'm not in your guild!");
+        ai->TellPlayer(GetMaster(),"I'm not in your guild!");
             return false;
     }
 
@@ -32,7 +32,7 @@ bool GuildBankAction::Execute(Event& event)
         return Execute(text, go);
     }
 
-    ai->TellPlayer(BOT_TEXT("error_gbank_found"));
+    ai->TellPlayer(GetMaster(), BOT_TEXT("error_gbank_found"));
     return false;
 #else
     return false;
@@ -76,7 +76,7 @@ bool GuildBankAction::MoveFromCharToBank(Item* item, GameObject* bank)
         guild->MoveFromCharToBank(bot, playerBag, playerSlot, 0, 255, 0);
     }
 
-    ai->TellPlayer(out);
+    ai->TellPlayer(GetMaster(), out);
     return true;
 #else
     return false;

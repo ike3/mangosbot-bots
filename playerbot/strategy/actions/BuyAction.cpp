@@ -132,7 +132,7 @@ bool BuyAction::Execute(Event& event)
 
                 result |= BuyItem(requester, pCreature->GetVendorItems(), vendorguid, proto);
 #ifndef MANGOSBOT_ZERO
-                result |= BuyItem(pCreature->GetVendorTemplateItems(), vendorguid, proto);
+                result |= BuyItem(requester, pCreature->GetVendorTemplateItems(), vendorguid, proto);
 #endif
 
                 if (!result)

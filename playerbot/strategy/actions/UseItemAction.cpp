@@ -436,9 +436,9 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
 #ifndef MANGOSBOT_ZERO
         if (item->GetProto()->Class == ITEM_CLASS_GEM)
         {
-            bool fit = SocketItem(itemTarget, item) || SocketItem(itemTarget, item, true);
+            bool fit = SocketItem(requester, itemTarget, item) || SocketItem(requester, itemTarget, item, true);
             if (!fit)
-                ai->TellPlayer("Socket does not fit", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayer(requester, "Socket does not fit", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
             return fit;
         }
