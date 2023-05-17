@@ -643,10 +643,10 @@ vector<pair<int,int>> WorldPosition::getmGridPairs(const WorldPosition& secondPo
     int uy = std::max(getmGridPair().second, secondPos.getmGridPair().second);
     int border = 1;
 
-    //lx = std::min(std::max(border, lx), MAX_NUMBER_OF_GRIDS - border);
-    //ly = std::min(std::max(border, ly), MAX_NUMBER_OF_GRIDS - border);
-    //ux = std::min(std::max(border, ux), MAX_NUMBER_OF_GRIDS - border);
-    //uy = std::min(std::max(border, uy), MAX_NUMBER_OF_GRIDS - border);
+    lx = std::min(std::max(border, lx), MAX_NUMBER_OF_GRIDS - border);
+    ly = std::min(std::max(border, ly), MAX_NUMBER_OF_GRIDS - border);
+    ux = std::min(std::max(border, ux), MAX_NUMBER_OF_GRIDS - border);
+    uy = std::min(std::max(border, uy), MAX_NUMBER_OF_GRIDS - border);
 
     for (int x = lx - border; x <= ux + border; x++)
     {
