@@ -3647,7 +3647,7 @@ bool PlayerbotAI::CastVehicleSpell(uint32 spellId, Unit* target)
     {
         ostringstream out;
         out << "Casting Vehicle Spell" << ChatHelper::formatSpell(pSpellInfo);
-        TellPlayerNoFacing(out);
+        TellPlayerNoFacing(GetMaster(), out);
     }
 
     return true;
