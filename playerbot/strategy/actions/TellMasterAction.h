@@ -1,16 +1,16 @@
 #pragma once
-
-#include "../Action.h"
+#include "MovementActions.h"
 
 namespace ai
 {
-    class TellMasterAction : public Action {
+    class TellMasterAction : public Action 
+    {
     public:
         TellMasterAction(PlayerbotAI* ai, string text) : Action(ai, "tell master"), text(text) {}
 
         virtual bool Execute(Event& event)
         {
-            ai->TellMaster(text);
+            ai->TellPlayer(GetMaster(), text);
             return true;
         }
 
@@ -18,13 +18,14 @@ namespace ai
         string text;
     };
 
-    class OutOfReactRangeAction : public MovementAction {
+    class OutOfReactRangeAction : public MovementAction 
+    {
     public:
         OutOfReactRangeAction(PlayerbotAI* ai) : MovementAction(ai, "tell out of react range") {}
 
         virtual bool Execute(Event& event)
         {
-            ai->TellMaster(BOT_TEXT("wait_travel_close"));
+            ai->TellPlayer(GetMaster(), BOT_TEXT("wait_travel_close"));
             return true;
         }
 

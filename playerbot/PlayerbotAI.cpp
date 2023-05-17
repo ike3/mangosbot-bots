@@ -252,7 +252,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         {
             WorldPacket p;
             bot->GetSession()->HandleLogoutCancelOpcode(p);
-            TellMaster(BOT_TEXT("logout_cancel"));
+            TellPlayer(GetMaster(), BOT_TEXT("logout_cancel"));
         }
     }
 
@@ -360,7 +360,10 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     else if (!bot->IsBeingTeleported() && bot->GetTransport() && bot->GetMapId() == bot->GetTransport()->GetMapId() && !WorldPosition(bot).isOnTransport(bot->GetTransport()) && !isMovingToTransport)
     {
         if (HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-            TellMaster("Jumping off " + string(bot->GetTransport()->GetName()));
+        {
+            TellPlayer(GetMaster(), "Jumping off " + string(bot->GetTransport()->GetName()));
+        }
+
         WorldPosition botPos(bot);
         bot->GetTransport()->RemovePassenger(bot);
         bot->NearTeleportTo(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, bot->m_movementInfo.pos.z, bot->m_movementInfo.pos.o);
@@ -706,7 +709,7 @@ void PlayerbotAI::HandleCommands()
         if (!helper.ParseChatCommand(command, owner) && holder.GetType() == CHAT_MSG_WHISPER)
         {
             //ostringstream out; out << "Unknown command " << command;
-            //TellMaster(out);
+            //TellPlayer(out);
             //helper.ParseChatCommand("help");
         }
         
@@ -888,7 +891,7 @@ void PlayerbotAI::Reset(bool full)
         {
             WorldPacket p;
             bot->GetSession()->HandleLogoutCancelOpcode(p);
-            TellMaster(BOT_TEXT("logout_cancel"));
+            TellPlayer(GetMaster(), BOT_TEXT("logout_cancel"));
         }
     }
     
@@ -1060,7 +1063,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
         if (!(bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut()))
         {
             if (type == CHAT_MSG_WHISPER)
-                TellMaster(BOT_TEXT("logout_start"));
+                TellPlayer(&fromPlayer, BOT_TEXT("logout_start"));
 
             if (master && master->GetPlayerbotMgr())
                 SetShouldLogOut(true);
@@ -1071,7 +1074,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
         if (bot->IsStunnedByLogout() || bot->GetSession()->isLogingOut())
         {
             if (type == CHAT_MSG_WHISPER)
-                TellMaster(BOT_TEXT("logout_cancel"));
+                TellPlayer(&fromPlayer, BOT_TEXT("logout_cancel"));
 
             WorldPacket p;
             bot->GetSession()->HandleLogoutCancelOpcode(p);
@@ -1084,12 +1087,13 @@ void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPla
         uint32 delay = atof(remaining.c_str()) * IN_MILLISECONDS;
         if (delay > 20000)
         {
-            TellMaster("Max wait time is 20 seconds!");
+            TellPlayer(&fromPlayer, "Max wait time is 20 seconds!");
             return;
         }
+
         IncreaseAIInternalUpdateDelay(delay);
         isWaiting = true;
-        TellError("Waiting for " + remaining + " seconds!");
+        TellPlayer(&fromPlayer, "Waiting for " + remaining + " seconds!");
         return;
     }
     else
@@ -1597,9 +1601,9 @@ void PlayerbotAI::DoNextAction(bool min)
             ai->ChangeStrategy("+follow", BotState::BOT_STATE_NON_COMBAT);
 
             if (ai->GetMaster() == ai->GetGroupMaster())
-                ai->TellMaster(BOT_TEXT("hello_follow"));
+                ai->TellPlayer(master, BOT_TEXT("hello_follow"));
             else
-                ai->TellMaster(BOT_TEXT("hello"));
+                ai->TellPlayer(master, BOT_TEXT("hello"));
         }
     }
 
@@ -2230,8 +2234,11 @@ vector<Player*> PlayerbotAI::GetPlayersInGroup()
     return members;
 }
 
-bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel, bool isPrivate, bool noRepeat)
+bool PlayerbotAI::TellPlayerNoFacing(Player* player, string text, PlayerbotSecurityLevel securityLevel, bool isPrivate, bool noRepeat)
 {
+    if(!player)
+        return false;
+
     time_t lastSaid = whispers[text];
     if (!noRepeat || !lastSaid || (time(0) - lastSaid) >= sPlayerbotAIConfig.repeatDelay / 1000)
     {
@@ -2285,7 +2292,7 @@ bool PlayerbotAI::TellMasterNoFacing(string text, PlayerbotSecurityLevel securit
                 text = "BOT\t" + text;
 
             ChatHandler::BuildChatPacket(data, type == CHAT_MSG_ADDON ? CHAT_MSG_PARTY : type, text.c_str(), type == CHAT_MSG_ADDON ? LANG_ADDON : LANG_UNIVERSAL, CHAT_TAG_NONE, bot->GetObjectGuid(), bot->GetName());
-            sServerFacade.SendPacket(master, data);
+            sServerFacade.SendPacket(player, data);
         }
     }
 
@@ -2321,15 +2328,15 @@ bool PlayerbotAI::IsTellAllowed(PlayerbotSecurityLevel securityLevel)
     return true;
 }
 
-bool PlayerbotAI::TellMaster(string text, PlayerbotSecurityLevel securityLevel, bool isPrivate)
+bool PlayerbotAI::TellPlayer(Player* player, string text, PlayerbotSecurityLevel securityLevel, bool isPrivate)
 {
-    if (!TellMasterNoFacing(text, securityLevel, isPrivate))
+    if (!TellPlayerNoFacing(player, text, securityLevel, isPrivate))
         return false;
 
-    if (master && !master->IsBeingTeleported() && !sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == master->GetMapId() && !bot->IsTaxiFlying() && !bot->IsFlying())
+    if (player && !player->IsBeingTeleported() && !sServerFacade.isMoving(bot) && !sServerFacade.IsInCombat(bot) && bot->GetMapId() == player->GetMapId() && !bot->IsTaxiFlying() && !bot->IsFlying())
     {
-        if (!sServerFacade.IsInFront(bot, master, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
-            sServerFacade.SetFacingTo(bot, master);
+        if (!sServerFacade.IsInFront(bot, player, sPlayerbotAIConfig.sightDistance, EMOTE_ANGLE_IN_FRONT))
+            sServerFacade.SetFacingTo(bot, player);
 
         bot->HandleEmoteCommand(EMOTE_ONESHOT_TALK);
     }
@@ -3013,7 +3020,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
 		ostringstream out;
 		out << (autocast ? "|cffff0000|Disabling" : "|cFF00ff00|Enabling") << " pet auto-cast for ";
 		out << chatHelper.formatSpell(pSpellInfo);
-        TellMaster(out);
+        TellPlayer(GetMaster(), out);
         return true;
     }
 
@@ -3192,7 +3199,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
     {
         ostringstream out;
         out << "Casting " <<ChatHelper::formatSpell(pSpellInfo);
-        TellMasterNoFacing(out);
+        TellPlayerNoFacing(GetMaster(), out);
     }
 
     return true;
@@ -3221,7 +3228,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
         ostringstream out;
         out << (autocast ? "|cffff0000|Disabling" : "|cFF00ff00|Enabling") << " pet auto-cast for ";
         out << chatHelper.formatSpell(pSpellInfo);
-        TellMaster(out);
+        TellPlayer(GetMaster(), out);
         return true;
     }
 
@@ -3388,7 +3395,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
     {
         ostringstream out;
         out << "Casting " << ChatHelper::formatSpell(pSpellInfo);
-        TellMasterNoFacing(out);
+        TellPlayerNoFacing(GetMaster(), out);
     }
 
     return true;
@@ -3640,7 +3647,7 @@ bool PlayerbotAI::CastVehicleSpell(uint32 spellId, Unit* target)
     {
         ostringstream out;
         out << "Casting Vehicle Spell" << ChatHelper::formatSpell(pSpellInfo);
-        TellMasterNoFacing(out);
+        TellPlayerNoFacing(out);
     }
 
     return true;
@@ -4808,7 +4815,7 @@ bool compare_items_by_level(const Item* item1, const Item* item2)
     return compare_items(item1->GetProto(), item2->GetProto());
 }
 
-void PlayerbotAI::InventoryTellItems(map<uint32, int> itemMap, map<uint32, bool> soulbound)
+void PlayerbotAI::InventoryTellItems(Player* player, map<uint32, int> itemMap, map<uint32, bool> soulbound)
 {
     list<ItemPrototype const*> items;
     for (map<uint32, int>::iterator i = itemMap.begin(); i != itemMap.end(); i++)
@@ -4829,55 +4836,55 @@ void PlayerbotAI::InventoryTellItems(map<uint32, int> itemMap, map<uint32, bool>
             switch (proto->Class)
             {
             case ITEM_CLASS_CONSUMABLE:
-                TellMaster("--- consumable ---");
+                TellPlayer(player, "--- consumable ---");
                 break;
             case ITEM_CLASS_CONTAINER:
-                TellMaster("--- container ---");
+                TellPlayer(player, "--- container ---");
                 break;
             case ITEM_CLASS_WEAPON:
-                TellMaster("--- weapon ---");
+                TellPlayer(player, "--- weapon ---");
                 break;
             case ITEM_CLASS_ARMOR:
-                TellMaster("--- armor ---");
+                TellPlayer(player, "--- armor ---");
                 break;
             case ITEM_CLASS_REAGENT:
-                TellMaster("--- reagent ---");
+                TellPlayer(player, "--- reagent ---");
                 break;
             case ITEM_CLASS_PROJECTILE:
-                TellMaster("--- projectile ---");
+                TellPlayer(player, "--- projectile ---");
                 break;
             case ITEM_CLASS_TRADE_GOODS:
-                TellMaster("--- trade goods ---");
+                TellPlayer(player, "--- trade goods ---");
                 break;
             case ITEM_CLASS_RECIPE:
-                TellMaster("--- recipe ---");
+                TellPlayer(player, "--- recipe ---");
                 break;
             case ITEM_CLASS_QUIVER:
-                TellMaster("--- quiver ---");
+                TellPlayer(player, "--- quiver ---");
                 break;
             case ITEM_CLASS_QUEST:
-                TellMaster("--- quest items ---");
+                TellPlayer(player, "--- quest items ---");
                 break;
             case ITEM_CLASS_KEY:
-                TellMaster("--- keys ---");
+                TellPlayer(player, "--- keys ---");
                 break;
             case ITEM_CLASS_MISC:
-                TellMaster("--- other ---");
+                TellPlayer(player, "--- other ---");
                 break;
             }
         }
 
-        InventoryTellItem(proto, itemMap[proto->ItemId], soulbound[proto->ItemId]);
+        InventoryTellItem(player, proto, itemMap[proto->ItemId], soulbound[proto->ItemId]);
     }
 }
 
-void PlayerbotAI::InventoryTellItem(ItemPrototype const* proto, int count, bool soulbound)
+void PlayerbotAI::InventoryTellItem(Player* player, ItemPrototype const* proto, int count, bool soulbound)
 {
     ostringstream out;
     out << GetChatHelper()->formatItem(proto, count);
     if (soulbound)
         out << " (soulbound)";
-    TellMaster(out.str());
+    TellPlayer(player, out.str());
 }
 
 list<Item*> PlayerbotAI::InventoryParseItems(string text, IterateItemsMask mask)

@@ -7,6 +7,7 @@ using namespace ai;
 
 bool WaitForAttackSetTimeAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string newTimeStr = event.getParam();
     if (!newTimeStr.empty())
     {
@@ -18,22 +19,22 @@ bool WaitForAttackSetTimeAction::Execute(Event& event)
             {
                 ai->GetAiObjectContext()->GetValue<uint8>("wait for attack time")->Set(newTime);
                 ostringstream out; out << "Wait for attack time set to " << newTime << " seconds";
-                ai->TellMasterNoFacing(out);
+                ai->TellPlayerNoFacing(requester, out);
                 return true;
             }
             else
             {
-                ai->TellError("Please provide valid time to set (in seconds) between 1 and 99");
+                ai->TellPlayerNoFacing(requester, "Please provide valid time to set (in seconds) between 1 and 99");
             }
         }
         else
         {
-            ai->TellError("Please provide valid time to set (in seconds) between 1 and 99");
+            ai->TellPlayerNoFacing(requester, "Please provide valid time to set (in seconds) between 1 and 99");
         }
     }
     else
     {
-        ai->TellError("Please provide a time to set (in seconds)");
+        ai->TellPlayerNoFacing(requester, "Please provide a time to set (in seconds)");
     }
 
     return false;   

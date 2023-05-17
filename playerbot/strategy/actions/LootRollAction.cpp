@@ -60,7 +60,7 @@ bool RollAction::Execute(Event& event)
 
     if (text.empty())
     {
-        ai->TellMasterNoFacing("Please give a roll type or item. See " + ChatHelper::formatValue("help", "action:roll", "roll help") + " for more information.");
+        ai->TellPlayerNoFacing(GetMaster(), "Please give a roll type or item. See " + ChatHelper::formatValue("help", "action:roll", "roll help") + " for more information.");
         return false;
     }
 
@@ -74,7 +74,7 @@ bool RollAction::Execute(Event& event)
 
     if (type != "need" && type != "greed" && type != "pass" && type != "auto")
     {
-        ai->TellMasterNoFacing("Please give a correct roll type. need, greed, pass or auto. See " + ChatHelper::formatValue("help", "action:roll", "roll help") + " for more information.");
+        ai->TellPlayerNoFacing(GetMaster(), "Please give a correct roll type. need, greed, pass or auto. See " + ChatHelper::formatValue("help", "action:roll", "roll help") + " for more information.");
         return false;
     }
 

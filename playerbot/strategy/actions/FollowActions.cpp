@@ -126,22 +126,22 @@ bool FleeToMasterAction::Execute(Event& event)
     if (distance > sPlayerbotAIConfig.reactDistance && bot->IsInCombat())
     {
         if (!urand(0, scale))
-            ai->TellMasterNoFacing("I'm heading to your location but I'm in combat", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
-            //ai->TellMaster(BOT_TEXT("wait_travel_combat"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(GetMaster(), "I'm heading to your location but I'm in combat", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            //ai->TellPlayer(BOT_TEXT("wait_travel_combat"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else if (distance < sPlayerbotAIConfig.reactDistance * 3)
     {
         if (!urand(0, scale))
-            ai->TellMasterNoFacing(BOT_TEXT("wait_travel_close"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(GetMaster(), BOT_TEXT("wait_travel_close"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else if (distance < 1000)
     {
         if (!urand(0, scale*4))
-            ai->TellMasterNoFacing(BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(GetMaster(), BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
         if (!urand(0, scale*6))
-            ai->TellMasterNoFacing(BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(GetMaster(), BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
            
     SetDuration(3000U);
     return true;

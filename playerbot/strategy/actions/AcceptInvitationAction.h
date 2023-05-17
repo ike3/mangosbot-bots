@@ -74,7 +74,7 @@ namespace ai
                 value->Load(masterFormation->getName());
             }
 
-            ai->TellMaster(BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(GetMaster(), BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
             return true;
         }

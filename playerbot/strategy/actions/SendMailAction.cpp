@@ -73,7 +73,7 @@ bool SendMailAction::Execute(Event& event)
         draft.SendMailTo(MailReceiver(receiver), MailSender(bot));
 
         ostringstream out; out << "Sending mail to " << receiver->GetName();
-        ai->TellMaster(out.str());
+        ai->TellPlayer(GetMaster(), out.str());
         return true;
     }
 

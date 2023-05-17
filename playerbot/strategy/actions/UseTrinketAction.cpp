@@ -22,7 +22,7 @@ bool UseTrinketAction::Execute(Event& event)
 		{
 			if (bot->CanUseItem(item) == EQUIP_ERR_OK && !item->IsInTrade())
 			{
-				return UseItemAuto(item);
+				return UseItemAuto(GetMaster(), item);
 			}
 		}
 	}

@@ -246,7 +246,7 @@ bool ReactionEngine::ListenAndExecute(Action* action, Event& event)
         if(actionExecuted)
             out << " (duration: " << ((float)incomingReaction.GetDuration() / IN_MILLISECONDS) << "s)";
 
-        ai->TellMasterNoFacing(out);
+        ai->TellPlayerNoFacing(ai->GetMaster(), out);
     }
 
     actionExecuted = actionExecutionListeners.OverrideResult(action, actionExecuted, event);

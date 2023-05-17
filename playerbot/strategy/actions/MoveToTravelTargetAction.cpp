@@ -59,7 +59,7 @@ bool MoveToTravelTargetAction::Execute(Event& event)
 
                 out << member->GetName();
 
-                ai->TellMasterNoFacing(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayerNoFacing(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             }
 
             target->setExpireIn(target->getTimeLeft() + sPlayerbotAIConfig.maxWaitForMove);

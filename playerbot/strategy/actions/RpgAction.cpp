@@ -112,7 +112,7 @@ bool RpgAction::SetNextRpgAction()
 
         std::sort(sortedActions.begin(), sortedActions.end(), [](pair<Action*, uint32>i, pair<Action*, uint32> j) {return i.second > j.second; });
 
-        ai->TellMasterNoFacing("------" + chat->formatWorldobject(AI_VALUE(GuidPosition, "rpg target").GetWorldObject()) + "------");
+        ai->TellPlayerNoFacing(GetMaster(), "------" + chat->formatWorldobject(AI_VALUE(GuidPosition, "rpg target").GetWorldObject()) + "------");
 
         for (auto action : sortedActions)
         {
@@ -120,7 +120,7 @@ bool RpgAction::SetNextRpgAction()
 
             out << " " << action.first->getName() << " " << action.second;
 
-            ai->TellMasterNoFacing(out);
+            ai->TellPlayerNoFacing(GetMaster(), out);
         }
     }
 
@@ -138,7 +138,7 @@ bool RpgAction::SetNextRpgAction()
 
         out << " " << action->getName();
 
-        ai->TellMasterNoFacing(out);
+        ai->TellPlayerNoFacing(GetMaster(), out);
     }
 
     SET_AI_VALUE(string, "next rpg action", action->getName());

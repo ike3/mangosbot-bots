@@ -10,7 +10,8 @@ using namespace ai;
 
 bool QueryItemUsageAction::Execute(Event& event)
 {
-    if (!GetMaster() && !sPlayerbotAIConfig.randomBotSayWithoutMaster)
+    Player* requester = event.getOwner();
+    if (!GetMaster() && !sPlayerbotAIConfig.randomBotSayWithoutMaster && !requester)
         return false;
 
     WorldPacket& data = event.getPacket();
@@ -45,7 +46,7 @@ bool QueryItemUsageAction::Execute(Event& event)
         if (!itemQualifier.GetProto())
             return false;
 
-        ai->TellMaster(QueryItem(itemQualifier, count, GetCount(itemQualifier)), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(requester, QueryItem(itemQualifier, count, GetCount(itemQualifier)), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
         if (sPlayerbotAIConfig.hasLog("bot_events.csv"))
         {
@@ -92,7 +93,7 @@ bool QueryItemUsageAction::Execute(Event& event)
         ItemQualifier itemQualifier(qualifier);
         if (!itemQualifier.GetProto()) continue;
 
-        ai->TellMaster(QueryItem(itemQualifier, 0, GetCount(itemQualifier)), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(requester, QueryItem(itemQualifier, 0, GetCount(itemQualifier)), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     return true;
 }

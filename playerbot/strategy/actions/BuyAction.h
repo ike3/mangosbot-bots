@@ -10,9 +10,8 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
     private:
-        bool BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, const ItemPrototype* proto);
-        bool TradeItem(FindItemVisitor *visitor, int8 slot);
-        bool TradeItem(const Item& item, int8 slot);
+        bool BuyItem(Player* requester, VendorItemData const* tItems, ObjectGuid vendorguid, const ItemPrototype* proto);
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "buy"; } //Must equal iternal name
         virtual string GetHelpDescription()

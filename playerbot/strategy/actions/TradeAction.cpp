@@ -16,24 +16,34 @@ bool TradeAction::Execute(Event& event)
         Player* player = nullptr;
 
         for(auto& guid: guids)
+        {
             if (guid.IsPlayer())
-                player = sObjectMgr.GetPlayer(guid);               
+            {
+                player = sObjectMgr.GetPlayer(guid);
+            }
+        }
 
-        if (!player && ai->GetMaster())
-            player = ai->GetMaster();
+        if (!player)
+        {
+            player = event.getOwner() ? event.getOwner() : GetMaster();
+        }
 
-        if (!player) return false;
+        if (!player) 
+        {
+            return false;
+        }
 
         if (!player->GetTrader())
         {
-
             WorldPacket packet(CMSG_INITIATE_TRADE);
             packet << player->GetObjectGuid();
             bot->GetSession()->HandleInitiateTradeOpcode(packet);
             return true;
         }
         else if (player->GetTrader() != bot)
+        {
             return false;
+        }
     }
     
     uint32 copper = chat->parseMoney(text);

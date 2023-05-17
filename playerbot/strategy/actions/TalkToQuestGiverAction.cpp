@@ -6,7 +6,7 @@
 
 using namespace ai;
 
-bool TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
+bool TalkToQuestGiverAction::ProcessQuest(Player* requester, Quest const* quest, WorldObject* questGiver)
 {
     bool isCompleted = false;
 
@@ -14,21 +14,19 @@ bool TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
 
     QuestStatus status = bot->GetQuestStatus(quest->GetQuestId());
 
-    Player* master = GetMaster();
-
     if (sPlayerbotAIConfig.syncQuestForPlayer)
     {
-        if (master && (!master->GetPlayerbotAI() || master->GetPlayerbotAI()->IsRealPlayer()))
+        if (requester && (!requester->GetPlayerbotAI() || requester->GetPlayerbotAI()->IsRealPlayer()))
         {
-            QuestStatus masterStatus = master->GetQuestStatus(quest->GetQuestId());
+            QuestStatus masterStatus = requester->GetQuestStatus(quest->GetQuestId());
             if (masterStatus == QUEST_STATUS_INCOMPLETE || masterStatus == QUEST_STATUS_FAILED)
-                isCompleted |= CompleteQuest(master, quest->GetQuestId());
+                isCompleted |= CompleteQuest(requester, quest->GetQuestId());
         }
     }
 
     if (sPlayerbotAIConfig.syncQuestWithPlayer)
     {        
-        if (master && master->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_COMPLETE && (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_FAILED))
+        if (requester && requester->GetQuestStatus(quest->GetQuestId()) == QUEST_STATUS_COMPLETE && (status == QUEST_STATUS_INCOMPLETE || status == QUEST_STATUS_FAILED))
         {
             isCompleted |= CompleteQuest(bot, quest->GetQuestId());
             status = bot->GetQuestStatus(quest->GetQuestId());
@@ -41,7 +39,7 @@ bool TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
 #ifdef MANGOS
     case QUEST_STATUS_FORCE_COMPLETE:
 #endif
-        isCompleted |= TurnInQuest(quest, questGiver, out);
+        isCompleted |= TurnInQuest(requester, quest, questGiver, out);
         break;
     case QUEST_STATUS_INCOMPLETE:
         out << "|cffff0000Incompleted|r";
@@ -56,12 +54,12 @@ bool TalkToQuestGiverAction::ProcessQuest(Quest const* quest, WorldObject* quest
     }
 
     out << ": " << chat->formatQuest(quest);
-    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     return isCompleted;
 }
 
-bool TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questGiver, ostringstream& out) 
+bool TalkToQuestGiverAction::TurnInQuest(Player* requester, Quest const* quest, WorldObject* questGiver, ostringstream& out)
 {
     uint32 questID = quest->GetQuestId();
         
@@ -78,7 +76,7 @@ bool TalkToQuestGiverAction::TurnInQuest(Quest const* quest, WorldObject* questG
     else if (quest->GetRewChoiceItemsCount() == 1)
         RewardSingleItem(quest, questGiver, out);
     else {
-        RewardMultipleItem(quest, questGiver, out);
+        RewardMultipleItem(requester, quest, questGiver, out);
     }
 
     return true;
@@ -143,7 +141,7 @@ ItemIds TalkToQuestGiverAction::BestRewards(Quest const* quest)
     }
 }
 
-void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject* questGiver, ostringstream& out)
+void TalkToQuestGiverAction::RewardMultipleItem(Player* requester, Quest const* quest, WorldObject* questGiver, ostringstream& out)
 {
     set<uint32> bestIds;
 
@@ -159,14 +157,14 @@ void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject*
     }
     else if (sPlayerbotAIConfig.autoPickReward == "no")
     {   //Old functionality, list rewards.
-        AskToSelectReward(quest, out, false);       
+        AskToSelectReward(requester, quest, out, false);       
     }
     else 
     {   //Try to pick the usable item. If multiple list usable rewards.
         bestIds = BestRewards(quest);
         if (bestIds.size() > 0)
         {
-            AskToSelectReward(quest, out, true);
+            AskToSelectReward(requester, quest, out, true);
         }
         else
         {
@@ -179,7 +177,7 @@ void TalkToQuestGiverAction::RewardMultipleItem(Quest const* quest, WorldObject*
     }
 }
 
-void TalkToQuestGiverAction::AskToSelectReward(Quest const* quest, ostringstream& out, bool forEquip) 
+void TalkToQuestGiverAction::AskToSelectReward(Player* requester, Quest const* quest, ostringstream& out, bool forEquip)
 {
     ostringstream msg;
     msg << "Choose reward: ";
@@ -193,7 +191,7 @@ void TalkToQuestGiverAction::AskToSelectReward(Quest const* quest, ostringstream
             msg << chat->formatItem(item);
         }
     }
-    ai->TellMaster(msg, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(requester, msg, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     out << "Reward pending";
 }

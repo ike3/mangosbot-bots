@@ -28,7 +28,7 @@ void DestroyItemAction::DestroyItem(FindItemVisitor* visitor)
 		Item* item = *i;
         ostringstream out; out << chat->formatItem(item) << " destroyed";
         bot->DestroyItem(item->GetBagSlot(),item->GetSlot(), true);
-        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }
 

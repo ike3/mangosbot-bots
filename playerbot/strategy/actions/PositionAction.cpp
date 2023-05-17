@@ -16,7 +16,7 @@ void TellPosition(PlayerbotAI* ai, string name, ai::PositionEntry pos)
     }
     else
         out << " is not set";
-    ai->TellMaster(out);
+    ai->TellPlayer(ai->GetMaster(), out);
 }
 
 bool PositionAction::Execute(Event& event)
@@ -43,7 +43,7 @@ bool PositionAction::Execute(Event& event)
     vector<string> params = split(param, ' ');
     if (params.size() != 2)
     {
-        ai->TellMaster("Whisper position <name> ?/set/reset");
+        ai->TellPlayer(GetMaster(), "Whisper position <name> ?/set/reset");
         return false;
     }
 
@@ -63,7 +63,7 @@ bool PositionAction::Execute(Event& event)
         posMap[name] = pos;
 
         ostringstream out; out << "Position " << name << " is set";
-        ai->TellMaster(out);
+        ai->TellPlayer(GetMaster(), out);
         return true;
     }
 
@@ -73,7 +73,7 @@ bool PositionAction::Execute(Event& event)
 	    posMap[name] = pos;
 
 	    ostringstream out; out << "Position " << name << " is set";
-	    ai->TellMaster(out);
+	    ai->TellPlayer(GetMaster(), out);
 	    return true;
 	}
 
@@ -83,7 +83,7 @@ bool PositionAction::Execute(Event& event)
 	    posMap[name] = pos;
 
 	    ostringstream out; out << "Position " << name << " is reset";
-	    ai->TellMaster(out);
+	    ai->TellPlayer(GetMaster(), out);
 	    return true;
 	}
 
@@ -96,7 +96,7 @@ bool MoveToPositionAction::Execute(Event& event)
     if (!pos.isSet())
     {
         ostringstream out; out << "Position " << qualifier << " is not set";
-        ai->TellMaster(out);
+        ai->TellPlayer(GetMaster(), out);
         return false;
     }
 

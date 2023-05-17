@@ -8,11 +8,12 @@ namespace ai
     public:
         EquipAction(PlayerbotAI* ai, string name = "equip") : ChatCommandAction(ai, name) {}
         virtual bool Execute(Event& event) override;
-        void EquipItems(ItemIds ids);
-        void EquipItem(Item* item);
+        void EquipItems(Player* requester, ItemIds ids);
+        void EquipItem(Player* requester, Item* item);
+
     private:
-        void EquipItem(FindItemVisitor* visitor);
-        void ListItems();
+        void EquipItem(Player* requester, FindItemVisitor* visitor);
+        void ListItems(Player* requester);
         uint8 GetSmallestBagSlot();
     };
 

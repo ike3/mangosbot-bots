@@ -10,8 +10,8 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
     private:
-        void TellGossipMenus();
-        bool ProcessGossip(int menuToSelect);
-        void TellGossipText(uint32 textId);
+        void TellGossipMenus(Player* requester);
+        bool ProcessGossip(Player* requester, int menuToSelect);
+        void TellGossipText(Player* requester, uint32 textId);
     };
 }

@@ -4,9 +4,9 @@
 
 using namespace ai;
 
-bool AcceptAllQuestsAction::ProcessQuest(Quest const* quest, WorldObject* questGiver)
+bool AcceptAllQuestsAction::ProcessQuest(Player* requester, Quest const* quest, WorldObject* questGiver)
 {
-    if (AcceptQuest(quest, questGiver->GetObjectGuid()))
+    if (AcceptQuest(requester, quest, questGiver->GetObjectGuid()))
     {
         if (sPlayerbotAIConfig.globalSoundEffects)
             bot->PlayDistanceSound(620);
@@ -18,9 +18,8 @@ bool AcceptAllQuestsAction::ProcessQuest(Quest const* quest, WorldObject* questG
 
 bool AcceptQuestAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     Player *bot = ai->GetBot();
@@ -28,7 +27,7 @@ bool AcceptQuestAction::Execute(Event& event)
     uint32 quest = 0;
 
     string text = event.getParam();
-    PlayerbotChatHandler ch(master);
+    PlayerbotChatHandler ch(requester);
     quest = ch.extractQuestId(text);
 
     bool hasAccept = false;
@@ -74,7 +73,7 @@ bool AcceptQuestAction::Execute(Event& event)
     if (!qInfo)
         return false;
 
-    hasAccept |= AcceptQuest(qInfo, guid);
+    hasAccept |= AcceptQuest(requester, qInfo, guid);
 
     if (hasAccept)
         sPlayerbotAIConfig.logEvent(ai, "AcceptQuestAction", qInfo->GetTitle(), to_string(qInfo->GetQuestId()));
@@ -141,7 +140,7 @@ bool AcceptQuestShareAction::Execute(Event& event)
             );
         }
 
-        ai->TellMaster(BOT_TEXT("quest_accept"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(master, BOT_TEXT("quest_accept"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         return true;
     }
 

@@ -334,10 +334,10 @@ public:
     static GameObject* GetGameObject(GameObjectDataPair const* gameObjectDataPair);
     WorldObject* GetWorldObject(ObjectGuid guid);
     vector<Player*> GetPlayersInGroup();
-    bool TellMaster(ostringstream &stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellMaster(stream.str(), securityLevel, isPrivate); }
-    bool TellMaster(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
-    bool TellMasterNoFacing(ostringstream& stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true, bool noRepeat = true) { return TellMasterNoFacing(stream.str(), securityLevel, isPrivate, noRepeat); }
-    bool TellMasterNoFacing(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true, bool noRepeat = true);
+    bool TellPlayer(Player* player, ostringstream &stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true) { return TellPlayer(player, stream.str(), securityLevel, isPrivate); }
+    bool TellPlayer(Player* player, string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
+    bool TellPlayerNoFacing(Player* player, ostringstream& stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true, bool noRepeat = true) { return TellPlayerNoFacing(player, stream.str(), securityLevel, isPrivate, noRepeat); }
+    bool TellPlayerNoFacing(Player* player, string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true, bool noRepeat = true);
     bool TellError(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
     void SpellInterrupted(uint32 spellid);
     int32 CalculateGlobalCooldown(uint32 spellid);
@@ -416,8 +416,8 @@ public:
     ReputationRank getReaction(FactionTemplateEntry const* factionTemplate) { return GetFactionReaction(bot->GetFactionTemplateEntry(), factionTemplate);}
 
     void InventoryIterateItems(IterateItemsVisitor* visitor, IterateItemsMask mask = ITERATE_ITEMS_IN_BAGS);
-    void InventoryTellItems(map<uint32, int> items, map<uint32, bool> soulbound);
-    void InventoryTellItem(ItemPrototype const* proto, int count, bool soulbound);
+    void InventoryTellItems(Player* player, map<uint32, int> items, map<uint32, bool> soulbound);
+    void InventoryTellItem(Player* player, ItemPrototype const* proto, int count, bool soulbound);
     list<Item*> InventoryParseItems(string text, IterateItemsMask mask = ITERATE_ALL_ITEMS);
     uint32 InventoryGetItemCount(FindItemVisitor* visitor, IterateItemsMask mask = ITERATE_ITEMS_IN_BAGS);
     string InventoryParseOutfitName(string outfit);

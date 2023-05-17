@@ -77,7 +77,7 @@ void CheatAction::ListCheats()
            out << "[" << GetCheatName(BotCheatMask(cheatMask)) << "]";
     }
 
-    ai->TellMasterNoFacing(out);
+    ai->TellPlayerNoFacing(GetMaster(), out);
 }
 
 void CheatAction::AddCheat(BotCheatMask cheatMask)

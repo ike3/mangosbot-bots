@@ -138,7 +138,7 @@ void TrainerAction::Iterate(Creature* creature, TrainerSpellAction action, Spell
         if (action)
             (this->*action)(cost, tSpell, out);
 
-        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 
     TellFooter(totalCost);
@@ -204,7 +204,7 @@ bool TrainerAction::Execute(Event& event)
 void TrainerAction::TellHeader(Creature* creature)
 {
     ostringstream out; out << "--- Can learn from " << creature->GetName() << " ---";
-    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
 void TrainerAction::TellFooter(uint32 totalCost)
@@ -212,6 +212,6 @@ void TrainerAction::TellFooter(uint32 totalCost)
     if (totalCost)
     {
         ostringstream out; out << "Total cost: " << chat->formatMoney(totalCost);
-        ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }

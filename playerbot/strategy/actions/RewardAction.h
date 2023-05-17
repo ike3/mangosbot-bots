@@ -10,6 +10,6 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
     private:
-        bool Reward(uint32 itemId, Object* pNpc);
+        bool Reward(Player* requester, uint32 itemId, Object* pNpc);
     };
 }

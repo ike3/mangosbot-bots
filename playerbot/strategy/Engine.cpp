@@ -171,7 +171,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
                     if (!event.getSource().empty())
                         out << " [" << event.getSource() << "]";
 
-                    ai->TellMasterNoFacing(out);
+                    ai->TellPlayerNoFacing(ai->GetMaster(), out);
                 }
                 LogAction("A:%s - UNKNOWN", actionNode->getName().c_str());
             }
@@ -258,7 +258,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
                             if (!event.getSource().empty())
                                 out << " [" << event.getSource() << "]";
 
-                            ai->TellMasterNoFacing(out);
+                            ai->TellPlayerNoFacing(ai->GetMaster(), out);
                         }
                         LogAction("A:%s - IMPOSSIBLE", action->getName().c_str());
                         MultiplyAndPush(actionNode->getAlternatives(), relevance + 0.03, false, event, "alt");
@@ -279,7 +279,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
                         if (!event.getSource().empty())
                             out << " [" << event.getSource() << "]";
 
-                        ai->TellMasterNoFacing(out);
+                        ai->TellPlayerNoFacing(ai->GetMaster(), out);
                     }
                     lastRelevance = relevance;
                     LogAction("A:%s - USELESS", action->getName().c_str());
@@ -698,7 +698,7 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
             }
         }
 
-        ai->TellMasterNoFacing(out,PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL,true, false);
+        ai->TellPlayerNoFacing(ai->GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL,true, false);
     }
 
     if (ai->HasStrategy("debug threat", BotState::BOT_STATE_NON_COMBAT))
@@ -714,7 +714,7 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
 
         out << "threat: " << int32(currentThreat)<< "+" << int32(deltaThreat) << " / " << int32(tankThreat) << " ||| " << relThreat;
 
-        ai->TellMasterNoFacing(out);
+        ai->TellPlayerNoFacing(ai->GetMaster(), out);
     }
 
     actionExecuted = actionExecutionListeners.OverrideResult(action, actionExecuted, event);
@@ -784,7 +784,7 @@ void Engine::ChangeStrategy(const string& names, string engineType)
                 string engineStrategies = engineType;
                 engineStrategies.append(" Strategies: ");
                 engineStrategies.append(ListStrategies());
-                ai->TellMaster(engineStrategies);
+                ai->TellPlayer(ai->GetMaster(), engineStrategies);
                 break;
             }
         }

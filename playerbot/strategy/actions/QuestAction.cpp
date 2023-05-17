@@ -166,13 +166,13 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
         if (!quest)
             continue;
 
-        hasAccept |= ProcessQuest(quest, questGiver);
+        hasAccept |= ProcessQuest(GetMaster(), quest, questGiver);
     }
 
     return hasAccept;
 }
 
-bool QuestAction::AcceptQuest(Quest const* quest, uint64 questGiver)
+bool QuestAction::AcceptQuest(Player* requester, Quest const* quest, uint64 questGiver)
 {
     std::ostringstream out;
 
@@ -213,13 +213,13 @@ bool QuestAction::AcceptQuest(Quest const* quest, uint64 questGiver)
             sPlayerbotAIConfig.logEvent(ai, "AcceptQuestAction", quest->GetTitle(), to_string(quest->GetQuestId()));
 
             out << "Accepted " << chat->formatQuest(quest);
-            ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             return true;
         }
     }
 
     out << " " << chat->formatQuest(quest);
-    ai->TellMaster(out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return false;
 }
 
@@ -237,13 +237,13 @@ bool QuestObjectiveCompletedAction::Execute(Event& event)
         entry &= 0x7FFFFFFF;
         GameObjectInfo const* info = sObjectMgr.GetGameObjectInfo(entry);
         if (info)
-            ai->TellMaster(chat->formatQuestObjective(info->name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(GetMaster(), chat->formatQuestObjective(info->name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
     {
         CreatureInfo const* info = sObjectMgr.GetCreatureTemplate(entry);
         if (info)
-            ai->TellMaster(chat->formatQuestObjective(info->Name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(GetMaster(), chat->formatQuestObjective(info->Name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 
     Quest const* qInfo = sObjectMgr.GetQuestTemplate(questId);

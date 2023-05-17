@@ -26,7 +26,7 @@ bool SkipSpellsListAction::Execute(Event& event)
     if (cmd == "reset")
     {
         skipSpells.clear();
-        ai->TellMaster("Ignored spell list is empty");
+        ai->TellPlayer(GetMaster(), "Ignored spell list is empty");
         return true;
     }
 
@@ -35,7 +35,7 @@ bool SkipSpellsListAction::Execute(Event& event)
         ostringstream out;
         if (skipSpells.empty())
         {
-            ai->TellMaster("Ignored spell list is empty");
+            ai->TellPlayer(GetMaster(), "Ignored spell list is empty");
             return true;
         }
 
@@ -51,7 +51,7 @@ bool SkipSpellsListAction::Execute(Event& event)
             if (first) first = false; else out << ", ";
             out << chat->formatSpell(spell);
         }
-        ai->TellMaster(out);
+        ai->TellPlayer(GetMaster(), out);
     }
     else
     {
@@ -78,7 +78,7 @@ bool SkipSpellsListAction::Execute(Event& event)
                 skipSpells.erase(j);
                 ostringstream out;
                 out << chat->formatSpell(spell) << " removed from ignored spells";
-                ai->TellMaster(out);
+                ai->TellPlayer(GetMaster(), out);
                 return true;
             }
         }
@@ -90,7 +90,7 @@ bool SkipSpellsListAction::Execute(Event& event)
                 skipSpells.insert(spellId);
                 ostringstream out;
                 out << chat->formatSpell(spell) << " added to ignored spells";
-                ai->TellMaster(out);
+                ai->TellPlayer(GetMaster(), out);
                 return true;
             }
         }

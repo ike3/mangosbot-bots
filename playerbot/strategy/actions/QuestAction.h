@@ -14,11 +14,9 @@ namespace ai
         virtual bool Execute(Event& event);
 
     protected:
-        virtual bool ProcessQuest(Quest const* quest, WorldObject* questGiver) = 0;        
-
-    protected:
+        virtual bool ProcessQuest(Player* requester, Quest const* quest, WorldObject* questGiver) = 0;
         bool CompleteQuest(Player* player, uint32 entry);
-        bool AcceptQuest(Quest const* quest, uint64 questGiver);
+        bool AcceptQuest(Player* requester, Quest const* quest, uint64 questGiver);
         bool ProcessQuests(ObjectGuid questGiver);
         bool ProcessQuests(WorldObject* questGiver);
     };

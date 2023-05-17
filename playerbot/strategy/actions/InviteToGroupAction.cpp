@@ -191,9 +191,9 @@ namespace ai
             placeholders["%spotsleft"] = to_string(allowedRoles[role] - 1);
 
             if(allowedRoles[role] > 1)
-                ai->TellMaster(BOT_TEXT2("Joining as %role, %spotsleft %role spots left.", placeholders));
+                ai->TellPlayer(GetMaster(), BOT_TEXT2("Joining as %role, %spotsleft %role spots left.", placeholders));
             else
-                ai->TellMaster(BOT_TEXT2("Joining as %role.", placeholders));
+                ai->TellPlayer(GetMaster(), BOT_TEXT2("Joining as %role.", placeholders));
 
             return true;
         }

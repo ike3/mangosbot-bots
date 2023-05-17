@@ -11,6 +11,7 @@ using namespace ai;
 
 bool BuyAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     bool buyUseful = false;
     ItemIds itemIds;
     string link = event.getParam();
@@ -101,10 +102,10 @@ bool BuyAction::Execute(Event& event)
                     if (usage == ITEM_USAGE_USE && ItemUsageValue::CurrentStacks(ai, proto) >= 1)
                         continue;
 
-                    result |= BuyItem(tItems, vendorguid, proto);
+                    result |= BuyItem(requester, tItems, vendorguid, proto);
 #ifndef MANGOSBOT_ZERO
                     if(!result)
-                        result |= BuyItem(vItems, vendorguid, proto);
+                        result |= BuyItem(requester, vItems, vendorguid, proto);
 #endif
                     if(!result)
                         break;    
@@ -129,15 +130,15 @@ bool BuyAction::Execute(Event& event)
                 if (!proto)
                     continue;
 
-                result |= BuyItem(pCreature->GetVendorItems(), vendorguid, proto);
+                result |= BuyItem(requester, pCreature->GetVendorItems(), vendorguid, proto);
 #ifndef MANGOSBOT_ZERO
-                result |= BuyItem(pCreature->GetVendorTemplateItems(), vendorguid, proto);
+                result |= BuyItem(requester, pCreature->GetVendorTemplateItems(), vendorguid, proto);
 #endif
 
                 if (!result)
                 {
                     ostringstream out; out << "Nobody sells " << ChatHelper::formatItem(proto) << " nearby";
-                    ai->TellMaster(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                    ai->TellPlayer(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 }
             }
         }
@@ -152,7 +153,7 @@ bool BuyAction::Execute(Event& event)
     return result;
 }
 
-bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, const ItemPrototype* proto)
+bool BuyAction::BuyItem(Player* requester, VendorItemData const* tItems, ObjectGuid vendorguid, const ItemPrototype* proto)
 {
     uint32 oldCount = AI_VALUE2(uint32, "item count", proto->Name1);
 
@@ -185,7 +186,7 @@ bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, con
                 sPlayerbotAIConfig.logEvent(ai, "BuyAction", proto->Name1, to_string(proto->ItemId));
 
                 ostringstream out; out << "Buying " << ChatHelper::formatItem(proto);
-                ai->TellMaster(out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayer(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 return true;
             }
  

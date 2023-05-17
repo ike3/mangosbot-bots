@@ -18,7 +18,7 @@ bool TaxiAction::Execute(Event& event)
     {
         movement.taxiNodes.clear();
         movement.Set(NULL);
-        ai->TellMaster("I am ready for the next flight");
+        ai->TellPlayer(GetMaster(), "I am ready for the next flight");
         return true;
     }
 
@@ -44,7 +44,7 @@ bool TaxiAction::Execute(Event& event)
 
         if (param == "?")
         {
-            ai->TellMasterNoFacing("=== Taxi ===");
+            ai->TellPlayerNoFacing(GetMaster(), "=== Taxi ===");
             int index = 1;
             for (vector<uint32>::iterator i = nodes.begin(); i != nodes.end(); ++i)
             {
@@ -56,7 +56,7 @@ bool TaxiAction::Execute(Event& event)
 
                 ostringstream out;
                 out << index++ << ": " << dest->name[0];
-                ai->TellMasterNoFacing(out.str());
+                ai->TellPlayerNoFacing(GetMaster(), out.str());
             }
             return true;
         }

@@ -17,15 +17,15 @@ bool RTSCAction::Execute(Event& event)
 	if (command != "reset" && !master->HasSpell(RTSC_MOVE_SPELL))
 	{
 		master->learnSpell(RTSC_MOVE_SPELL, false);
-		ai->TellMasterNoFacing("RTS control enabled.");
-		ai->TellMasterNoFacing("Aedm (Awesome energetic do move) spell trained.");
+		ai->TellPlayerNoFacing(GetMaster(), "RTS control enabled.");
+		ai->TellPlayerNoFacing(GetMaster(), "Aedm (Awesome energetic do move) spell trained.");
 	}
 	else if (command == "reset")
 	{
 		if (master->HasSpell(RTSC_MOVE_SPELL))
 		{
 			master->removeSpell(RTSC_MOVE_SPELL);
-			ai->TellMasterNoFacing("RTS control spell removed.");
+			ai->TellPlayerNoFacing(GetMaster(), "RTS control spell removed.");
 		}
 
 		RESET_AI_VALUE(bool, "RTSC selected");
@@ -120,7 +120,7 @@ bool RTSCAction::Execute(Event& event)
 		out.seekp(-1, out.cur);
 		out << ".";
 
-		ai->TellMasterNoFacing(out);
+		ai->TellPlayerNoFacing(GetMaster(), out);
 	}
 	if (command.find("go ") != std::string::npos)
 	{

@@ -113,7 +113,7 @@ bool SeeSpellAction::Execute(Event& event)
         if (flags & NAV_MAGMA_SLIME)
             out << ", magma slime";
 
-        ai->TellMaster(out);
+        ai->TellPlayer(GetMaster(), out);
     }
 
 

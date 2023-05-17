@@ -449,7 +449,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                         else
                             mover->InterruptMoving(true);
                         if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                            ai->TellMasterNoFacing("I have no path");
+                            ai->TellPlayerNoFacing(GetMaster(), "I have no path");
                         return false;
                     }
 
@@ -469,7 +469,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     }
 
                     if (!routeList.empty())
-                        ai->TellMasterNoFacing(routeList);
+                        ai->TellPlayerNoFacing(GetMaster(), routeList);
 
                     route.cleanTempNodes();                 
 
@@ -506,7 +506,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             oldDist = WorldPosition().getPathLength(movePath.getPointPath());
         if (!bot->GetTransport() && movePath.makeShortCut(startPosition, sPlayerbotAIConfig.reactDistance, bot))
             if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                ai->TellMasterNoFacing("Found a shortcut: old=" + to_string(uint32(oldDist)) + "y new=" + to_string(uint32(WorldPosition().getPathLength(movePath.getPointPath()))));
+                ai->TellPlayerNoFacing(GetMaster(), "Found a shortcut: old=" + to_string(uint32(oldDist)) + "y new=" + to_string(uint32(WorldPosition().getPathLength(movePath.getPointPath()))));
 
         if (movePath.empty())
         {
@@ -514,7 +514,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
             if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                ai->TellMasterNoFacing("Too far from path. Rebuilding.");
+                ai->TellPlayerNoFacing(GetMaster(), "Too far from path. Rebuilding.");
             return true;
         }
 
@@ -655,12 +655,12 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                     {
 
                         if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                            ai->TellMaster("transport at " + to_string(uint32(telePosition.distance(transport))) + "yards of entry");
+                            ai->TellPlayer(GetMaster(), "transport at " + to_string(uint32(telePosition.distance(transport))) + "yards of entry");
 
                         if (telePosition.distance(transport) < INTERACTION_DISTANCE) //Transport has arrived Move on.
                         {
                             if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                                ai->TellMasterNoFacing("Moving on to transport " + string(transport->GetName()));
+                                ai->TellPlayerNoFacing(GetMaster(), "Moving on to transport " + string(transport->GetName()));
 
                             movePosition = WorldPosition(transport);
                             movePosition.setZ(bot->GetPositionZ());
@@ -680,7 +680,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                                 if (!step.empty() && abs(step.back().getZ() - movePosition.getZ()) < 2.0f)
                                 {
                                     if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                                        ai->TellMasterNoFacing("Found spot on boat moving to random place around");
+                                        ai->TellPlayerNoFacing(GetMaster(), "Found spot on boat moving to random place around");
                                     movePosition = step.back();
                                     break;
                                 }
@@ -692,7 +692,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 if (entry) //We are not on a transport. Wait for it.
                 {
                     if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                        ai->TellMasterNoFacing("Waiting on transport");
+                        ai->TellPlayerNoFacing(GetMaster(), "Waiting on transport");
 
                     WaitForReach(1000.0f);
 
@@ -702,7 +702,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                             return true;
 
                         if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                            ai->TellMasterNoFacing("Wandering while waiting.");
+                            ai->TellPlayerNoFacing(GetMaster(), "Wandering while waiting.");
                     }
                     else
                         return true;
@@ -713,18 +713,18 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 if (ai->GetMoveToTransport() && startPosition.isOnTransport(bot->GetTransport()))
                 {
                     if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                        ai->TellMasterNoFacing("I'm on " + string(bot->GetTransport()->GetName()));
+                        ai->TellPlayerNoFacing(GetMaster(), "I'm on " + string(bot->GetTransport()->GetName()));
                     ai->SetMoveToTransport(false);
                     entry = 0;
                 }
 
                 if (movePosition.getMapId() == bot->GetMapId() && ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                    ai->TellMaster("transport at " + to_string(uint32(telePosition.distance(bot->GetTransport()))) + "yards of exit");
+                    ai->TellPlayer(GetMaster(), "transport at " + to_string(uint32(telePosition.distance(bot->GetTransport()))) + "yards of exit");
 
                 if (movePosition.getMapId() == bot->GetMapId() && telePosition.distance(bot->GetTransport()) < INTERACTION_DISTANCE) //We have arived move off.
                 {
                     if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                        ai->TellMasterNoFacing("Moving off transport");
+                        ai->TellPlayerNoFacing(GetMaster(), "Moving off transport");
 
                     WorldPosition botPos(bot);
                     bot->GetTransport()->RemovePassenger(bot);
@@ -735,7 +735,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                 else //We are traveling with the boat.
                 {
                     if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                        ai->TellMasterNoFacing("Traveling with transport");
+                        ai->TellPlayerNoFacing(GetMaster(), "Traveling with transport");
+
                     WaitForReach(1000.0f);
 
                     if (!urand(0, 10))
@@ -745,7 +746,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                             return true;
 
                         if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                            ai->TellMasterNoFacing("Wandering to random spot on boat");
+                            ai->TellPlayerNoFacing(GetMaster(), "Wandering to random spot on boat");
                     }
                     else
                         return true;
@@ -841,7 +842,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
         if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))        
-            ai->TellMasterNoFacing("No point. Rebuilding.");
+            ai->TellPlayerNoFacing(GetMaster(), "No point. Rebuilding.");
+
         return false;
     }
 
@@ -901,7 +903,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                         continue;
 
                     if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                        ai->TellMasterNoFacing("Found " + chat->formatWorldobject(unit) + " stopping early.");
+                        ai->TellPlayerNoFacing(GetMaster(), "Found " + chat->formatWorldobject(unit) + " stopping early.");
 
                     movePosition = point;
                     foundAggro = true;
@@ -919,7 +921,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         AI_VALUE(LastMovement&, "last movement").setPath(movePath);
 
         if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-            ai->TellMasterNoFacing("No point. Rebuilding.");
+            ai->TellPlayerNoFacing(GetMaster(), "No point. Rebuilding.");
         return false;
     }
 
