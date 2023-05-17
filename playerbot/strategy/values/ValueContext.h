@@ -299,6 +299,7 @@ namespace ai
             creators["can repeat quest npc"] = &ValueContext::can_repeat_quest_npc;
             creators["need quest reward"] = &ValueContext::need_quest_reward;
             creators["need quest objective"] = &ValueContext::need_quest_objective;
+            creators["can use item on"] = &ValueContext::can_use_item_on;
             
             creators["money needed for"] = &ValueContext::money_needed_for;
             creators["total money needed for"] = &ValueContext::total_money_needed_for;
@@ -569,7 +570,7 @@ namespace ai
         static UntypedValue* can_repeat_quest_npc(PlayerbotAI* ai) { return new CanRepeatQuestValue(ai); }
         static UntypedValue* need_quest_reward(PlayerbotAI* ai) { return new NeedQuestRewardValue(ai); }
         static UntypedValue* need_quest_objective(PlayerbotAI* ai) { return new NeedQuestObjectiveValue(ai); }
-        
+        static UntypedValue* can_use_item_on(PlayerbotAI* ai) { return new CanUseItemOn(ai); }              
 
         static UntypedValue* money_needed_for(PlayerbotAI* ai) { return new MoneyNeededForValue(ai); }
         static UntypedValue* total_money_needed_for(PlayerbotAI* ai) { return new TotalMoneyNeededForValue(ai); }

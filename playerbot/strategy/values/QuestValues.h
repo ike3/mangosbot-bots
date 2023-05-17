@@ -52,7 +52,7 @@ namespace ai
     public:
         EntryQuestRelationMapValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "entry quest relation map") {}
 
-        virtual entryQuestRelationMap Calculate();
+        virtual entryQuestRelationMap Calculate() override;
     };
         
     //Generic quest object finder
@@ -80,7 +80,7 @@ namespace ai
     public:
         QuestGuidpMapValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "quest guidp map") {}
 
-        virtual questGuidpMap Calculate();
+        virtual questGuidpMap Calculate() override;
     };       
     
     //All questgivers and their quests that are useful for a specific level
@@ -88,7 +88,7 @@ namespace ai
 	{
 	public:
         QuestGiversValue(PlayerbotAI* ai) : SingleCalculatedValue(ai, "quest givers"), Qualified() {}
-        virtual questGiverMap Calculate();
+        virtual questGiverMap Calculate() override;
     };
     
     //All questgivers that have a quest for the bot.
@@ -96,7 +96,7 @@ namespace ai
     {
     public:
         ActiveQuestGiversValue(PlayerbotAI* ai) : CalculatedValue(ai, "active quest givers", 5) {}
-        virtual list<GuidPosition> Calculate();
+        virtual list<GuidPosition> Calculate() override;
     };    
     
     //All quest takers that the bot has a quest for.
@@ -104,7 +104,7 @@ namespace ai
     {
     public:
         ActiveQuestTakersValue(PlayerbotAI* ai) : CalculatedValue(ai, "active quest takers", 5) {}
-        virtual list<GuidPosition> Calculate();
+        virtual list<GuidPosition> Calculate() override;
     };
 
     //All objectives that the bot still has to complete.
@@ -112,7 +112,7 @@ namespace ai
     {
     public:
         ActiveQuestObjectivesValue(PlayerbotAI* ai) : CalculatedValue(ai, "active quest objectives", 5) {}
-        virtual list<GuidPosition> Calculate();
+        virtual list<GuidPosition> Calculate() override;
     };
     
     //Free quest log slots
@@ -120,7 +120,7 @@ namespace ai
     {
     public:
         FreeQuestLogSlotValue(PlayerbotAI* ai) : Uint8CalculatedValue(ai, "free quest log slots", 2) {}
-        virtual uint8 Calculate();
+        virtual uint8 Calculate() override;
     };
     
     //Dialog status npc 
@@ -129,7 +129,7 @@ namespace ai
     public:
         DialogStatusValue(PlayerbotAI* ai, string name = "dialog status") : Uint32CalculatedValue(ai, name , 2), Qualified() {}
         static uint32 getDialogStatus(Player* bot, int32 questgiver, uint32 questId = 0);
-        virtual uint32 Calculate() { return getDialogStatus(bot, stoi(getQualifier())); }
+        virtual uint32 Calculate() override  { return getDialogStatus(bot, stoi(getQualifier())); }
     };
 
     //Dialog status npc quest
@@ -137,7 +137,7 @@ namespace ai
     {
     public:
         DialogStatusQuestValue(PlayerbotAI* ai) : DialogStatusValue(ai, "dialog status quest") {}
-        virtual uint32 Calculate() { return getDialogStatus(bot, getMultiQualifierInt(getQualifier(), 0, " "), getMultiQualifierInt(getQualifier(), 1, " ")); }
+        virtual uint32 Calculate() override { return getDialogStatus(bot, getMultiQualifierInt(getQualifier(), 0, " "), getMultiQualifierInt(getQualifier(), 1, " ")); }
     };
 
     //Can accept quest from npc
@@ -145,7 +145,7 @@ namespace ai
     {
     public:
         CanAcceptQuestValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can accept quest npc"), Qualified() {}
-        virtual bool Calculate() { return AI_VALUE2(uint32, "dialog status", getQualifier()) == DIALOG_STATUS_AVAILABLE;};
+        virtual bool Calculate() override  { return AI_VALUE2(uint32, "dialog status", getQualifier()) == DIALOG_STATUS_AVAILABLE;};
     };
 
     //Can accept low level quest from npc
@@ -170,7 +170,7 @@ namespace ai
     {
     public:
         NeedQuestRewardValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "need quest reward"), Qualified() {}
-        virtual bool Calculate();
+        virtual bool Calculate() override;
     };
 
     //Can hand in quest to npc
@@ -179,7 +179,7 @@ namespace ai
     public:
         CanTurnInQuestValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can turn in quest npc"), Qualified() {}
 
-        virtual bool Calculate()
+        virtual bool Calculate() override
         {
             uint32 dialogStatus = AI_VALUE2(uint32, "dialog status", getQualifier());
 #ifdef MANGOSBOT_ZERO  
@@ -196,7 +196,7 @@ namespace ai
     public:
         CanRepeatQuestValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can repeat quest npc"), Qualified() {}
 
-        virtual bool Calculate()
+        virtual bool Calculate() override
         {
             return AI_VALUE2(uint32, "dialog status", getQualifier()) == DIALOG_STATUS_REWARD_REP;
         };
@@ -207,6 +207,14 @@ namespace ai
     {
     public:
         NeedQuestObjectiveValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "need quest objective"), Qualified() {}
-        virtual bool Calculate();
+        virtual bool Calculate() override;
+    };
+
+    //Can use item on
+    class CanUseItemOn : public BoolCalculatedValue, public Qualified
+    {
+    public:
+        CanUseItemOn(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can use item on"), Qualified() {}
+        virtual bool Calculate() override;
     };
 }

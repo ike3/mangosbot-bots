@@ -677,30 +677,8 @@ bool RpgItemTrigger::IsActive()
 
     for (auto item : questItems)
     {
-        ItemPrototype const* proto = item->GetProto();
-        uint32 spellId = proto->Spells[0].SpellId;
-        if (spellId)
-        {
-            SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellId);
-
-            if (unit)
-            {
-                if (spellInfo->Effect[0] == SPELL_EFFECT_DUMMY && spellInfo->Id == 19938)  // Awaken Lazy Peon (hardcoded in core!)
-                {
-                    // 17743 = Lazy Peon Sleep | 10556 = Lazy Peon
-                    if (!unit->HasAura(17743) || unit->GetEntry() != 10556)
-                        continue;
-                }
-
-                if (ai->CanCastSpell(spellId, unit, 0, false, nullptr, true))
-                    return true;
-            }
-            else if (gameObject)
-            {
-                if (ai->CanCastSpell(spellId, gameObject, 0, false, true))
-                    return true;
-            }
-        }
+        if (AI_VALUE2(bool, "can use item on", Qualified::MultiQualify({ to_string(item->GetProto()->ItemId),guidP.to_string() }, ",")))
+            return true;
     }
 
     return false;

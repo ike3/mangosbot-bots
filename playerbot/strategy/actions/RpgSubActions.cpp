@@ -354,14 +354,14 @@ bool RpgDuelAction::Execute(Event& event)
     Player* player = guidP.GetPlayer();
 
     if (!player)
-        return false;
+        return false;   
 
     return ai->DoSpecificAction("cast custom spell", Event("rpg action", chat->formatWorldobject(player) + " 7266"), true);
 }
 
 bool RpgItemAction::Execute(Event& event)
 {
-    GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");
+    GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target"), objectGuidP;
 
     if (sServerFacade.isMoving(bot))
     {
@@ -371,12 +371,9 @@ bool RpgItemAction::Execute(Event& event)
     }
 
     Unit* unit = nullptr;
-    GameObject* gameObject = nullptr;
 
     if (guidP.IsUnit())
         unit = guidP.GetUnit();
-    else if (guidP.IsGameObject())
-        gameObject = guidP.GetGameObject();
 
     list<Item*> questItems = AI_VALUE2(list<Item*>, "inventory items", "quest");
 
@@ -384,22 +381,9 @@ bool RpgItemAction::Execute(Event& event)
 
     for (auto item : questItems)
     {
-        ItemPrototype const* proto = item->GetProto();
-        uint32 spellId = proto->Spells[0].SpellId;
-        if (spellId)
+        if (AI_VALUE2(bool, "can use item on", Qualified::MultiQualify({ to_string(item->GetProto()->ItemId),guidP.to_string() }, ",")))
         {
-            SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellId);
-
-            if (unit)
-            {
-                if (ai->CanCastSpell(spellId, unit, 0, false))
-                    used = UseItem(item, ObjectGuid(), nullptr, unit);
-            }
-            else if (gameObject)
-            {
-                if (ai->CanCastSpell(spellId, gameObject, 0, false))
-                    used = UseItem(item, guidP, nullptr, nullptr);
-            }
+            used = UseItem(item, guidP.IsGameObject() ? guidP : ObjectGuid(), nullptr, unit);
         }
     }
 

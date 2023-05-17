@@ -17,8 +17,8 @@ GuidPosition::GuidPosition(string qualifier)
     char p;
     b >> this->mapid >> p >> this->coord_x >> p >> this->coord_y >> p >> this->coord_z >> p >> this->orientation;
 
-    if (b.tellp() == std::streampos(0))
-        return;
+    //if (b.tellp() == std::streampos(0))
+    //    return;
 
     b >> p >> g;
 

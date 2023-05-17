@@ -503,3 +503,59 @@ bool NeedQuestObjectiveValue::Calculate()
 
 	return false;
 }
+
+bool CanUseItemOn::Calculate()
+{
+	uint32 itemId = getMultiQualifierInt(getQualifier(), 0, ",");
+	string guidPString = getMultiQualifierStr(getQualifier(), 1, ",");
+	GuidPosition guidP(guidPString);
+
+	Unit* unit = nullptr;
+	GameObject* gameObject = nullptr;
+
+	if (!guidP)
+		return false;
+
+	if (itemId == 17117) //Rat Catcher's Flute
+	{
+		sLog.outError("entry = %d",guidP.GetEntry());
+		return guidP.IsCreature() && guidP.GetEntry() == 13016; //Deeprun Rat		
+	}
+
+	if (guidP.IsUnit())
+		unit = guidP.GetUnit();
+	else if (guidP.IsGameObject())
+		gameObject = guidP.GetGameObject();
+
+	ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+
+	if (!proto)
+		return false;
+
+
+	uint32 spellId = proto->Spells[0].SpellId;
+	if (spellId)
+	{
+		SpellEntry const* spellInfo = sServerFacade.LookupSpellInfo(spellId);
+
+		if (unit)
+		{
+			if (spellInfo->Effect[0] == SPELL_EFFECT_DUMMY && spellInfo->Id == 19938)  // Awaken Lazy Peon (hardcoded in core!)
+			{
+				// 17743 = Lazy Peon Sleep | 10556 = Lazy Peon
+				if (!unit->HasAura(17743) || unit->GetEntry() != 10556)
+					return false;
+			}
+
+			if (ai->CanCastSpell(spellId, unit, 0, false, nullptr, true))
+				return true;
+		}
+		else if (gameObject)
+		{
+			if (ai->CanCastSpell(spellId, gameObject, 0, false, true))
+				return true;
+		}
+	}
+
+	return false;
+};
