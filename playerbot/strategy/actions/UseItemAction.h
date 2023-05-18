@@ -253,7 +253,7 @@ namespace ai
                 return false;
               
             // Prevent tanks from bandaging in dungeons and raids
-            if (ai->IsSafe(bot) && ai->IsTank(bot) && ai->IsStateActive(BotState::BOT_STATE_COMBAT))
+            if (ai->IsTank(bot) && ai->IsStateActive(BotState::BOT_STATE_COMBAT))
             {
                 const Map* map = bot->GetMap();
                 if (map->IsDungeon() || map->IsRaid())
