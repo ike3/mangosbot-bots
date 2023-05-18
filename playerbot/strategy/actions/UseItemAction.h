@@ -251,6 +251,16 @@ namespace ai
 
             if (bot->GetSkillValue(129) < 1)
                 return false;
+              
+            // Prevent tanks from bandaging in dungeons and raids
+            if (ai->IsSafe(bot) && ai->IsTank(bot) && ai->IsStateActive(BotState::BOT_STATE_COMBAT))
+            {
+                const Map* map = bot->GetMap();
+                if (map->IsDungeon() || map->IsRaid())
+                {
+                    return false;
+                }
+            }
 
             return true;
         }
