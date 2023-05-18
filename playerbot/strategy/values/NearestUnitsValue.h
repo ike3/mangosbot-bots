@@ -25,8 +25,11 @@ namespace ai
             for(list<Unit *>::iterator i = targets.begin(); i!= targets.end(); ++i)
             {
                 Unit* unit = *i;
-                if ((ignoreLos || sServerFacade.IsWithinLOSInMap(bot, unit)) && AcceptUnit(unit))
-                    results.push_back(unit->GetObjectGuid());
+                if(ai->IsSafe(unit))
+                {
+                    if ((ignoreLos || sServerFacade.IsWithinLOSInMap(bot, unit)) && AcceptUnit(unit))
+                        results.push_back(unit->GetObjectGuid());
+                }
             }
             return results;
         }
