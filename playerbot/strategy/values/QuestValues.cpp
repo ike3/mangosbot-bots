@@ -518,7 +518,6 @@ bool CanUseItemOn::Calculate()
 
 	if (itemId == 17117) //Rat Catcher's Flute
 	{
-		sLog.outError("entry = %d",guidP.GetEntry());
 		return guidP.IsCreature() && guidP.GetEntry() == 13016; //Deeprun Rat		
 	}
 
