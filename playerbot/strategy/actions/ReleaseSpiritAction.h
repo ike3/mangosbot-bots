@@ -133,7 +133,7 @@ namespace ai
 
             bot->TeleportTo(grave.getMapId(), grave.getX(), grave.getY(), grave.getZ(), grave.getO());
 
-            if (!bot->GetCorpse())
+            if (!bot->GetCorpse() || AI_VALUE(bool, "should spirit healer"))
             {
                 sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard [%s]", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), event.getSource().c_str());
             }

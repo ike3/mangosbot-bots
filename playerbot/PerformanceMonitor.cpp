@@ -55,6 +55,8 @@ PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric,
 
 PerformanceMonitorOperation* PerformanceMonitor::start(PerformanceMetric metric, string name, PlayerbotAI* ai)
 {
+    if (!sPlayerbotAIConfig.perfMonEnabled) return NULL;
+
     if(ai->GetAiObjectContext())
         return start(metric, name, &ai->GetAiObjectContext()->performanceStack);
     else
