@@ -135,7 +135,7 @@ namespace ai
 
             if (!bot->GetCorpse())
             {
-                sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard [%s]", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), event.getSource());
+                sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard [%s]", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), event.getSource().c_str());
             }
             else
             {
