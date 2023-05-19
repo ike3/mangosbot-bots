@@ -24,7 +24,7 @@ bool ResetRaidsAction::Execute(Event& event)
 #else
         Player::BoundInstancesMap& binds = bot->GetBoundInstances();
 #endif
-        for (Player::BoundInstancesMap::iterator itr = binds.begin(); itr != binds.end(); ++itr)
+        for (Player::BoundInstancesMap::iterator itr = binds.begin(); itr != binds.end();)
         {
             if (itr->first != bot->GetMapId())
             {
@@ -33,6 +33,10 @@ bool ResetRaidsAction::Execute(Event& event)
 #else
                 bot->UnbindInstance(itr);
 #endif
+            }
+            else
+            {
+                ++itr;
             }
         }
     }

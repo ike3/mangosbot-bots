@@ -151,8 +151,7 @@ namespace ai
                 bot->SaveToDB();
                 context->GetValue<Unit*>("current target")->Set(NULL);
                 bot->SetSelectionGuid(ObjectGuid());
-                ai->TellPlayer(GetMaster(), BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
-                
+                ai->TellPlayer(requester, BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             }
 
             sPlayerbotAIConfig.logEvent(ai, "RepopAction");
