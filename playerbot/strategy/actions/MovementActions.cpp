@@ -957,10 +957,16 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     }
 
     if (!react)
+    {
         if (totalDistance > maxDist)
+        {
             WaitForReach(startPosition.distance(movePosition) - 10.0f);
+        }
         else
+        {
             WaitForReach(startPosition.distance(movePosition));
+        }
+    }
 
     if (!isVehicle)
     {

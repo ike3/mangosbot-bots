@@ -670,9 +670,9 @@ void PlayerbotAI::OnDeath()
             }
         }
 
-        aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
-        aiObjectContext->GetValue<Unit*>("enemy player target")->Set(NULL);
-        aiObjectContext->GetValue<Unit*>("pull target")->Set(NULL);
+        aiObjectContext->GetValue<Unit*>("current target")->Set(nullptr);
+        aiObjectContext->GetValue<Unit*>("enemy player target")->Set(nullptr);
+        aiObjectContext->GetValue<Unit*>("pull target")->Set(nullptr);
         aiObjectContext->GetValue<ObjectGuid>("attack target")->Set(ObjectGuid());
         aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
         aiObjectContext->GetValue<time_t>("combat start time")->Set(0);
@@ -853,9 +853,9 @@ void PlayerbotAI::Reset(bool full)
     if (strategy)         
         strategy->OnPullEnded();
 
-    aiObjectContext->GetValue<Unit*>("old target")->Set(NULL);
-    aiObjectContext->GetValue<Unit*>("current target")->Set(NULL);
-    aiObjectContext->GetValue<Unit*>("pull target")->Set(NULL);
+    aiObjectContext->GetValue<Unit*>("old target")->Set(nullptr);
+    aiObjectContext->GetValue<Unit*>("current target")->Set(nullptr);
+    aiObjectContext->GetValue<Unit*>("pull target")->Set(nullptr);
     aiObjectContext->GetValue<ObjectGuid>("attack target")->Set(ObjectGuid());
     aiObjectContext->GetValue<GuidPosition>("rpg target")->Set(GuidPosition());
     aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());

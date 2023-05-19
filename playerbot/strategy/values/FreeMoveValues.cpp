@@ -90,10 +90,16 @@ float FreeMoveRangeValue::Calculate()
         maxDist += (lastMasterMove - 30);
 
     if (maxDist > sPlayerbotAIConfig.reactDistance)
+    {
         if (hasFree)
+        {
             maxDist = 0;
+        }
         else
+        {
             maxDist = sPlayerbotAIConfig.reactDistance;
+        }
+    }
 
     return maxDist;
 }

@@ -117,7 +117,7 @@ namespace ai
     class PullTargetValue : public UnitManualSetValue
     {
     public:
-        PullTargetValue(PlayerbotAI* ai, string name = "pull target") : UnitManualSetValue(ai, NULL, name) {}
+        PullTargetValue(PlayerbotAI* ai, string name = "pull target") : UnitManualSetValue(ai, nullptr, name) {}
         void Set(Unit* unit) override;
         Unit* Get() override;
 

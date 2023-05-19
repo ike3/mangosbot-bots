@@ -6,6 +6,7 @@ namespace ai
     class FindPlayerPredicate
     {
     public:
+        virtual ~FindPlayerPredicate() {}
         virtual bool Check(Unit*) = 0;
     };
 

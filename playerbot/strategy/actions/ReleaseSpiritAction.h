@@ -149,7 +149,7 @@ namespace ai
 
                 bot->SpawnCorpseBones();
                 bot->SaveToDB();
-                context->GetValue<Unit*>("current target")->Set(NULL);
+                context->GetValue<Unit*>("current target")->Set(nullptr);
                 bot->SetSelectionGuid(ObjectGuid());
                 ai->TellPlayer(requester, BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             }

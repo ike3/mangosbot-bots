@@ -998,9 +998,9 @@ bool BGLeaveAction::Execute(Event& event)
             ai->SetMaster(NULL);
 
         ai->ResetStrategies();
-        ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
-        ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
-        ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
+        ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(0);
+        ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(0);
+        ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(0);
 
         return true;
     }
@@ -1031,9 +1031,9 @@ bool BGLeaveAction::Execute(Event& event)
         ai->SetMaster(NULL);
 
     ai->ResetStrategies();
-    ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
-    ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
-    ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
+    ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(0);
+    ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(0);
+    ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(0);
     return true;
 }
 
@@ -1277,9 +1277,9 @@ bool BGStatusAction::Execute(Event& event)
 #endif
         bot->GetSession()->HandleLeaveBattlefieldOpcode(packet);
         ai->ResetStrategies();
-        ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
-        ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
-        ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
+        ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(0);
+        ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(0);
+        ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(0);
         ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
         ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
         pos.Reset();
@@ -1378,9 +1378,9 @@ bool BGStatusAction::Execute(Event& event)
             bot->GetSession()->HandleBattlefieldPortOpcode(packet);
 #endif
             ai->ResetStrategies();
-            ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(NULL);
-            ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(NULL);
-            ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(NULL);
+            ai->GetAiObjectContext()->GetValue<uint32>("bg type")->Set(0);
+            ai->GetAiObjectContext()->GetValue<uint32>("bg role")->Set(0);
+            ai->GetAiObjectContext()->GetValue<uint32>("arena type")->Set(0);
             sRandomPlayerbotMgr.BgBots[queueTypeId][bracketId][TeamId]--;
             return true;
         }

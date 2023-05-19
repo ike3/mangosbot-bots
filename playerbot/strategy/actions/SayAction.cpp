@@ -591,10 +591,16 @@ void ChatReplyAction::ChatReplyDo(Player* bot, uint32 type, uint32 guid1, uint32
 #else
                 if (Channel* chn = cMgr->GetJoinChannel(worldChan.c_str()))
 #endif
+                {
                     if (bot->GetTeam() == ALLIANCE)
+                    {
                         chn->Say(bot, c, LANG_COMMON);
+                    }
                     else
+                    {
                         chn->Say(bot, c, LANG_ORCISH);
+                    }
+                }
             }
         }
         else

@@ -29,12 +29,14 @@ using namespace MaNGOS;
 class TerrainInfoAccess : public Referencable<std::atomic_long>
 {
 public:
+    TerrainInfoAccess() : Referencable(), m_mapId(0) {}
     bool Load(const uint32 x, const uint32 y, bool mapOnly = false);
+
 private:
     GridMap* LoadMapAndVMap(const uint32 x, const uint32 y, bool mapOnly = false);
 
+private:
     const uint32 m_mapId;
-
     GridMap* m_GridMaps[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
     bool m_GridMapsLoadAttempted[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
     int16 m_GridRef[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];

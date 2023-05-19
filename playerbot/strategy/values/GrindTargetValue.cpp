@@ -198,10 +198,16 @@ Unit* GrindTargetValue::FindTargetForGrinding(int assistCount)
     }
 
     if (ai->HasStrategy("debug grind", BotState::BOT_STATE_NON_COMBAT))
+    {
         if(result)
+        {
             ai->TellPlayer(GetMaster(), chat->formatWorldobject(result) + " selected.");
+        }
         else
+        {
             ai->TellPlayer(GetMaster(), "No grind target found.");
+        }
+    }
 
     return result;
 }

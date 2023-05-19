@@ -14,10 +14,16 @@ bool SetHomeAction::Execute(Event& event)
     bool isRpgAction = AI_VALUE(GuidPosition, "rpg target") == selection;
 
     if (!isRpgAction)
+    {
         if (master)
+        {
             selection = master->GetSelectionGuid();
+        }
         else
+        {
             return false;
+        }
+    }
 
     if (selection)
     {

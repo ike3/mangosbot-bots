@@ -361,12 +361,12 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
                 {
                     k = forceRelevance;
                 }
-                else if (pushType == "default")
+                else if (strcmp(pushType, "default") == 0)
                 {
                     k -= 200.0f;
                 }
 
-                if (k > 0 || pushType == "default")
+                if (k > 0 || strcmp(pushType, "default") == 0)
                 {
                     LogAction("PUSH:%s - %f (%s)", actionNode->getName().c_str(), k, pushType);
                     queue.Push(new ActionBasket(actionNode, k, skipPrerequisites, event));

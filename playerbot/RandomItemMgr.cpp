@@ -2286,7 +2286,7 @@ uint32 RandomItemMgr::CalculateSocketWeight(uint8 playerclass, ItemQualifier& qu
     }
 
     return CalculateEnchantWeight(playerclass, spec, proto->socketBonus);
-#endif;
+#endif
 }
 
 

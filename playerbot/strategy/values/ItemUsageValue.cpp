@@ -51,7 +51,7 @@ ItemQualifier::ItemQualifier(string qualifier, bool linkQualifier)
         if (!numbers[gemPosition + 1].empty())
             gem4 = stoi(numbers[gemPosition+3]);
     }
-#endif;
+#endif
 }
 
 uint32 ItemQualifier::GemId(Item* item, uint8 gemSlot)
