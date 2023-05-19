@@ -125,14 +125,37 @@ namespace ai
     public:
         virtual bool Execute(Event& event)
         {
-            sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
-
             GuidPosition grave = AI_VALUE(GuidPosition, "best graveyard");
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
 
             if (!grave)
                 return false;
 
             bot->TeleportTo(grave.getMapId(), grave.getX(), grave.getY(), grave.getZ(), grave.getO());
+
+            if (!bot->GetCorpse())
+            {
+                sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard [%s]", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), event.getSource());
+            }
+            else
+            {
+                sLog.outBasic("Bot #%d %s:%d <%s> repops at spirit healer", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
+                PlayerbotChatHandler ch(bot);
+                bot->ResurrectPlayer(0.5f, !ai->HasCheat(BotCheatMask::repair));
+                if (!ai->HasCheat(BotCheatMask::repair))
+                {
+                    bot->DurabilityLossAll(0.25f, true);
+                }
+
+                bot->SpawnCorpseBones();
+                bot->SaveToDB();
+                context->GetValue<Unit*>("current target")->Set(NULL);
+                bot->SetSelectionGuid(ObjectGuid());
+                ai->TellPlayer(GetMaster(), BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                
+            }
+
+            sPlayerbotAIConfig.logEvent(ai, "RepopAction");
 
             RESET_AI_VALUE(bool,"combat::self target");
             RESET_AI_VALUE(WorldPosition, "current position");
