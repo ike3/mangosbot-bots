@@ -138,7 +138,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
         basket = queue.Peek();
         if (basket) 
         {
-            float relevance = basket->getRelevance(); // just for reference
+            float relevance = basket->getRelevance(), oldRelevance = relevance; // just for reference
             bool skipPrerequisites = basket->isSkipPrerequisites();
             Event event = basket->getEvent();
             if (minimal && (relevance < 100))
@@ -199,7 +199,7 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
                         }
                     }
 
-                    if (queue.Size() && relevance < basket->getRelevance() && queue.Peek()->getRelevance() > relevance) //Relevance changed. Try again.
+                    if (queue.Size() && relevance < oldRelevance && queue.Peek()->getRelevance() > relevance) //Relevance changed. Try again.
                     {
                         PushAgain(actionNode, relevance, event);
                         if (pmo1) pmo1->finish();
