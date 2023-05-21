@@ -772,7 +772,7 @@ public:
 
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(*qualifiers.begin()).GetQualifier());
 
-            if (usage != ITEM_USAGE_NONE && usage != ITEM_USAGE_AH && usage != ITEM_USAGE_VENDOR)
+            if (usage != ItemUsage::ITEM_USAGE_NONE && usage != ItemUsage::ITEM_USAGE_AH && usage != ItemUsage::ITEM_USAGE_VENDOR)
             {
                 return FilterLink(message);
             }
@@ -793,7 +793,7 @@ public:
 
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(*qualifiers.begin()).GetQualifier());
 
-            if (usage == ITEM_USAGE_AH || usage == ITEM_USAGE_VENDOR)
+            if (usage == ItemUsage::ITEM_USAGE_AH || usage == ItemUsage::ITEM_USAGE_VENDOR)
             {
                 return FilterLink(message);
             }
@@ -814,7 +814,7 @@ public:
 
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(*qualifiers.begin()).GetQualifier());
 
-            if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_GUILD_TASK || usage == ITEM_USAGE_BAD_EQUIP || (usage == ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", ItemQualifier(*qualifiers.begin()).GetId()) == ForceItemUsage::FORCE_USAGE_NEED))
+            if (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_REPLACE || usage == ItemUsage::ITEM_USAGE_GUILD_TASK || usage == ItemUsage::ITEM_USAGE_BAD_EQUIP || (usage == ItemUsage::ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", ItemQualifier(*qualifiers.begin()).GetId()) == ForceItemUsage::FORCE_USAGE_NEED))
             {
                 return FilterLink(message);
             }
@@ -835,7 +835,7 @@ public:
 
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(*qualifiers.begin()).GetQualifier());
 
-            if (usage == ITEM_USAGE_SKILL || usage == ITEM_USAGE_USE || usage == ITEM_USAGE_DISENCHANT || usage == ITEM_USAGE_AH || usage == ITEM_USAGE_VENDOR || (usage == ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", ItemQualifier(*qualifiers.begin()).GetId()) == ForceItemUsage::FORCE_USAGE_GREED))
+            if (usage == ItemUsage::ITEM_USAGE_SKILL || usage == ItemUsage::ITEM_USAGE_USE || usage == ItemUsage::ITEM_USAGE_DISENCHANT || usage == ItemUsage::ITEM_USAGE_AH || usage == ItemUsage::ITEM_USAGE_VENDOR || (usage == ItemUsage::ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", ItemQualifier(*qualifiers.begin()).GetId()) == ForceItemUsage::FORCE_USAGE_GREED))
             {
                 return FilterLink(message);
             }

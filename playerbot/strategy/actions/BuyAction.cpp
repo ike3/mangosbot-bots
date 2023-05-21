@@ -80,15 +80,15 @@ bool BuyAction::Execute(Event& event)
 
                     unordered_map <ItemUsage, uint32> freeMoney;
 
-                    freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = (uint32)NeedMoneyFor::gear;
-                    freeMoney[ITEM_USAGE_USE] = (uint32)NeedMoneyFor::consumables;
-                    freeMoney[ITEM_USAGE_SKILL] = (uint32)NeedMoneyFor::tradeskill;
-                    freeMoney[ITEM_USAGE_AMMO] =  (uint32)NeedMoneyFor::ammo;
-                    freeMoney[ITEM_USAGE_QUEST] = freeMoney[ITEM_USAGE_FORCE] = (uint32)NeedMoneyFor::anything;
+                    freeMoney[ItemUsage::ITEM_USAGE_EQUIP] = freeMoney[ItemUsage::ITEM_USAGE_REPLACE] = (uint32)NeedMoneyFor::gear;
+                    freeMoney[ItemUsage::ITEM_USAGE_USE] = (uint32)NeedMoneyFor::consumables;
+                    freeMoney[ItemUsage::ITEM_USAGE_SKILL] = (uint32)NeedMoneyFor::tradeskill;
+                    freeMoney[ItemUsage::ITEM_USAGE_AMMO] =  (uint32)NeedMoneyFor::ammo;
+                    freeMoney[ItemUsage::ITEM_USAGE_QUEST] = freeMoney[ItemUsage::ITEM_USAGE_FORCE] = (uint32)NeedMoneyFor::anything;
                     
                     AuctionHouseBotItemData itemInfo = sAuctionHouseBot.GetItemData(proto->ItemId);
                     if (itemInfo.Value > ((int32)proto->BuyPrice) * 1.1f)
-                        freeMoney[ITEM_USAGE_AH] = (uint32)NeedMoneyFor::ah;
+                        freeMoney[ItemUsage::ITEM_USAGE_AH] = (uint32)NeedMoneyFor::ah;
                 
                     if (freeMoney.find(usage) == freeMoney.end())
                         continue;
@@ -99,7 +99,7 @@ bool BuyAction::Execute(Event& event)
                     if (price > money)
                         continue;
 
-                    if (usage == ITEM_USAGE_USE && ItemUsageValue::CurrentStacks(ai, proto) >= 1)
+                    if (usage == ItemUsage::ITEM_USAGE_USE && ItemUsageValue::CurrentStacks(ai, proto) >= 1)
                         continue;
 
                     result |= BuyItem(requester, tItems, vendorguid, proto);
@@ -110,7 +110,7 @@ bool BuyAction::Execute(Event& event)
                     if(!result)
                         break;    
 
-                    if (usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_BAD_EQUIP) //Equip upgrades and stop buying this time.
+                    if (usage == ItemUsage::ITEM_USAGE_REPLACE || usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_BAD_EQUIP) //Equip upgrades and stop buying this time.
                     {
                         ai->DoSpecificAction("equip upgrades", event, true);
                         break;

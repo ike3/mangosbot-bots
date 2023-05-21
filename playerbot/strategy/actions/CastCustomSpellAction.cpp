@@ -545,7 +545,7 @@ bool CraftRandomItemAction::Execute(Event& event)
 
 bool DisenchantRandomItemAction::Execute(Event& event)
 {
-    list<uint32> items = AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string(ITEM_USAGE_DISENCHANT));
+    list<uint32> items = AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string((uint8)ItemUsage::ITEM_USAGE_DISENCHANT));
 
     items.reverse();
 

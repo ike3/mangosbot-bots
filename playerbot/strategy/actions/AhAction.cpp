@@ -50,14 +50,14 @@ bool AhAction::ExecuteCommand(string text, Unit* auctioneer)
         if (!auctionHouseEntry)
             return false;
 
-        list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_AH));
+        list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string((uint8)ItemUsage::ITEM_USAGE_AH));
         
         bool postedItem = false;
 
         for (auto item : items)
         {
             RESET_AI_VALUE2(ItemUsage, "item usage", ItemQualifier(item).GetQualifier());
-            if(AI_VALUE2(ItemUsage, "item usage", ItemQualifier(item).GetQualifier()) != ITEM_USAGE_AH)
+            if(AI_VALUE2(ItemUsage, "item usage", ItemQualifier(item).GetQualifier()) != ItemUsage::ITEM_USAGE_AH)
                 continue;
 
             uint32 deposit = AuctionHouseMgr::GetAuctionDeposit(auctionHouseEntry, time, item);
@@ -177,11 +177,11 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
 
         unordered_map <ItemUsage, int32> freeMoney;
 
-        freeMoney[ITEM_USAGE_EQUIP] = freeMoney[ITEM_USAGE_REPLACE] = freeMoney[ITEM_USAGE_BAD_EQUIP] = (uint32)NeedMoneyFor::gear;
-        freeMoney[ITEM_USAGE_USE] = (uint32)NeedMoneyFor::consumables;
-        freeMoney[ITEM_USAGE_SKILL] = freeMoney[ITEM_USAGE_DISENCHANT] =(uint32)NeedMoneyFor::tradeskill;
-        freeMoney[ITEM_USAGE_AMMO] = (uint32)NeedMoneyFor::ammo;
-        freeMoney[ITEM_USAGE_QUEST] = freeMoney[ITEM_USAGE_AH] = freeMoney[ITEM_USAGE_VENDOR] = freeMoney[ITEM_USAGE_FORCE] = (uint32)NeedMoneyFor::anything;
+        freeMoney[ItemUsage::ITEM_USAGE_EQUIP] = freeMoney[ItemUsage::ITEM_USAGE_REPLACE] = freeMoney[ItemUsage::ITEM_USAGE_BAD_EQUIP] = (uint32)NeedMoneyFor::gear;
+        freeMoney[ItemUsage::ITEM_USAGE_USE] = (uint32)NeedMoneyFor::consumables;
+        freeMoney[ItemUsage::ITEM_USAGE_SKILL] = freeMoney[ItemUsage::ITEM_USAGE_DISENCHANT] =(uint32)NeedMoneyFor::tradeskill;
+        freeMoney[ItemUsage::ITEM_USAGE_AMMO] = (uint32)NeedMoneyFor::ammo;
+        freeMoney[ItemUsage::ITEM_USAGE_QUEST] = freeMoney[ItemUsage::ITEM_USAGE_AH] = freeMoney[ItemUsage::ITEM_USAGE_VENDOR] = freeMoney[ItemUsage::ITEM_USAGE_FORCE] = (uint32)NeedMoneyFor::anything;
 
         uint32 checkNumAuctions = urand(50, 250);
 
@@ -208,22 +208,22 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
                 
             switch (usage)
             {
-            case ITEM_USAGE_EQUIP:
-            case ITEM_USAGE_REPLACE:
-            case ITEM_USAGE_BAD_EQUIP:
+            case ItemUsage::ITEM_USAGE_EQUIP:
+            case ItemUsage::ITEM_USAGE_REPLACE:
+            case ItemUsage::ITEM_USAGE_BAD_EQUIP:
                 power = sRandomItemMgr.GetLiveStatWeight(bot, auction->itemTemplate);
                 break;
-            case ITEM_USAGE_AH:
+            case ItemUsage::ITEM_USAGE_AH:
                 if (cost >= (int32)GetSellPrice(sObjectMgr.GetItemPrototype(auction->itemTemplate)))
                     continue;
                 power = 1000;
                 break;
-            case ITEM_USAGE_VENDOR:
+            case ItemUsage::ITEM_USAGE_VENDOR:
                 if (cost >= (int32)sObjectMgr.GetItemPrototype(auction->itemTemplate)->SellPrice)
                     continue;
                 power = 1000;
                 break;
-            case ITEM_USAGE_FORCE:
+            case ItemUsage::ITEM_USAGE_FORCE:
                 power = 1000;
                 break;
             }

@@ -137,20 +137,20 @@ RollVote RollAction::CalculateRollVote(ItemQualifier& itemQualifier)
     RollVote needVote = ROLL_PASS;
     switch (usage)
     {
-    case ITEM_USAGE_EQUIP:
-    case ITEM_USAGE_REPLACE:
-    case ITEM_USAGE_GUILD_TASK:
-    case ITEM_USAGE_BAD_EQUIP:
+    case ItemUsage::ITEM_USAGE_EQUIP:
+    case ItemUsage::ITEM_USAGE_REPLACE:
+    case ItemUsage::ITEM_USAGE_GUILD_TASK:
+    case ItemUsage::ITEM_USAGE_BAD_EQUIP:
         needVote = ROLL_NEED;
         break;
-    case ITEM_USAGE_SKILL:
-    case ITEM_USAGE_USE:
-    case ITEM_USAGE_DISENCHANT:
-    case ITEM_USAGE_AH:
-    case ITEM_USAGE_VENDOR:
+    case ItemUsage::ITEM_USAGE_SKILL:
+    case ItemUsage::ITEM_USAGE_USE:
+    case ItemUsage::ITEM_USAGE_DISENCHANT:
+    case ItemUsage::ITEM_USAGE_AH:
+    case ItemUsage::ITEM_USAGE_VENDOR:
         needVote = ROLL_GREED;
         break;
-    case ITEM_USAGE_FORCE:
+    case ItemUsage::ITEM_USAGE_FORCE:
         needVote = (AI_VALUE2(ForceItemUsage, "force item usage", itemQualifier.GetId()) == ForceItemUsage::FORCE_USAGE_NEED) ? ROLL_NEED : ROLL_GREED;
         break;
     }

@@ -147,29 +147,29 @@ string QueryItemUsageAction::QueryItemUsage(ItemQualifier& qualifier)
     ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", qualifier.GetQualifier());
     switch (usage)
     {
-    case ITEM_USAGE_EQUIP:
+    case ItemUsage::ITEM_USAGE_EQUIP:
         return "Equip";
-    case ITEM_USAGE_REPLACE:
+    case ItemUsage::ITEM_USAGE_REPLACE:
         return "Equip (replace)";
-    case ITEM_USAGE_BAD_EQUIP:
+    case ItemUsage::ITEM_USAGE_BAD_EQUIP:
         return "Equip (temporary)";
-    case ITEM_USAGE_BROKEN_EQUIP:
+    case ItemUsage::ITEM_USAGE_BROKEN_EQUIP:
         return "Broken Equip";
-    case ITEM_USAGE_QUEST:
+    case ItemUsage::ITEM_USAGE_QUEST:
         return "Quest (other)";
-    case ITEM_USAGE_SKILL:
+    case ItemUsage::ITEM_USAGE_SKILL:
         return "Tradeskill";
-    case ITEM_USAGE_USE:
+    case ItemUsage::ITEM_USAGE_USE:
         return "Use";
-	case ITEM_USAGE_GUILD_TASK:
+	case ItemUsage::ITEM_USAGE_GUILD_TASK:
 		return "Guild task";
-	case ITEM_USAGE_DISENCHANT:
+	case ItemUsage::ITEM_USAGE_DISENCHANT:
 		return "Disenchant";
-    case ITEM_USAGE_VENDOR:
+    case ItemUsage::ITEM_USAGE_VENDOR:
         return "Vendor";
-    case ITEM_USAGE_AH:
+    case ItemUsage::ITEM_USAGE_AH:
         return "Auctionhouse";
-    case ITEM_USAGE_AMMO:
+    case ItemUsage::ITEM_USAGE_AMMO:
         return "Ammunition";
 	}
 
@@ -200,7 +200,7 @@ string QueryItemUsageAction::QueryItemPrice(ItemQualifier& qualifier)
     }
 
     ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", qualifier.GetQualifier());
-    if (usage == ITEM_USAGE_NONE)
+    if (usage == ItemUsage::ITEM_USAGE_NONE)
         return msg.str();
 
     int32 buyPrice = auctionbot.GetBuyPrice(qualifier.GetProto()) * sRandomPlayerbotMgr.GetBuyMultiplier(bot);

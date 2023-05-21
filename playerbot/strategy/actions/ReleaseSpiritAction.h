@@ -131,8 +131,6 @@ namespace ai
             if (!grave)
                 return false;
 
-            bot->TeleportTo(grave.getMapId(), grave.getX(), grave.getY(), grave.getZ(), grave.getO());
-
             if (!bot->GetCorpse() || AI_VALUE(bool, "should spirit healer"))
             {
                 sLog.outBasic("Bot #%d %s:%d <%s> repops at graveyard [%s]", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName(), event.getSource().c_str());
@@ -153,6 +151,8 @@ namespace ai
                 bot->SetSelectionGuid(ObjectGuid());
                 ai->TellPlayer(requester, BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             }
+
+            bot->TeleportTo(grave.getMapId(), grave.getX(), grave.getY(), grave.getZ(), grave.getO());
 
             sPlayerbotAIConfig.logEvent(ai, "RepopAction");
 

@@ -53,9 +53,9 @@ public:
 
         bool shouldSell = false;
 
-        if (usage == ITEM_USAGE_VENDOR)
+        if (usage == ItemUsage::ITEM_USAGE_VENDOR)
             shouldSell = true;
-        else if (usage == ITEM_USAGE_AH && AI_VALUE(uint8, "bag space") > 80 && !urand(0, 10))
+        else if (usage == ItemUsage::ITEM_USAGE_AH && AI_VALUE(uint8, "bag space") > 80 && !urand(0, 10))
             shouldSell = true;
 
         if (!shouldSell)

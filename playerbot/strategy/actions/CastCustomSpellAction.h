@@ -65,7 +65,7 @@ namespace ai
     {
     public:
         DisenchantRandomItemAction(PlayerbotAI* ai) : CastCustomSpellAction(ai, "disenchant random item")  {}
-        virtual bool isUseful() { return ai->HasSkill(SKILL_ENCHANTING) && !bot->IsInCombat() && AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_DISENCHANT)) > 0; }
+        virtual bool isUseful() { return ai->HasSkill(SKILL_ENCHANTING) && !bot->IsInCombat() && AI_VALUE2(uint32, "item count", "usage " + to_string((uint8)ItemUsage::ITEM_USAGE_DISENCHANT)) > 0; }
         virtual bool Execute(Event& event) override;
     };
 
@@ -117,7 +117,7 @@ namespace ai
 
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", proto->ItemId);
 
-            if (usage != ITEM_USAGE_AH && usage != ITEM_USAGE_VENDOR && usage != ITEM_USAGE_DISENCHANT && usage != ITEM_USAGE_NONE)
+            if (usage != ItemUsage::ITEM_USAGE_AH && usage != ItemUsage::ITEM_USAGE_VENDOR && usage != ItemUsage::ITEM_USAGE_DISENCHANT && usage != ItemUsage::ITEM_USAGE_NONE)
                 return 0;
 
             //Enchant for skillup

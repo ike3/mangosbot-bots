@@ -35,11 +35,11 @@ list<Item*> ItemsUsefulToGiveValue::Calculate()
     if (ai->HasActivePlayerMaster() || !player->GetPlayerbotAI())
         return giveItems;
 
-    list<ItemUsage> myUsages = { ITEM_USAGE_NONE , ITEM_USAGE_VENDOR, ITEM_USAGE_AH, ITEM_USAGE_DISENCHANT };
+    list<ItemUsage> myUsages = { ItemUsage::ITEM_USAGE_NONE , ItemUsage::ITEM_USAGE_VENDOR, ItemUsage::ITEM_USAGE_AH, ItemUsage::ITEM_USAGE_DISENCHANT };
 
     for (auto& myUsage : myUsages)
     {
-        list<Item*> myItems = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(myUsage));
+        list<Item*> myItems = AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string((uint8)myUsage));
         myItems.reverse();
 
         for (auto& item : myItems)

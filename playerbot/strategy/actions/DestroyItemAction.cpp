@@ -63,24 +63,23 @@ bool SmartDestroyItemAction::Execute(Event& event)
         return true;
     }
 
-    vector<uint32> bestToDestroy = { ITEM_USAGE_NONE }; //First destroy anything useless.
+    vector<ItemUsage> bestToDestroy = { ItemUsage::ITEM_USAGE_NONE }; //First destroy anything useless.
 
     if (!AI_VALUE(bool, "can sell") && AI_VALUE(bool, "should get money")) //We need money so quest items are less important since they can't directly be sold.
-        bestToDestroy.push_back(ITEM_USAGE_QUEST);
+        bestToDestroy.push_back(ItemUsage::ITEM_USAGE_QUEST);
     else //We don't need money so destroy the cheapest stuff.
     {
-        bestToDestroy.push_back(ITEM_USAGE_VENDOR);
-        bestToDestroy.push_back(ITEM_USAGE_AH);
+        bestToDestroy.push_back(ItemUsage::ITEM_USAGE_VENDOR);
+        bestToDestroy.push_back(ItemUsage::ITEM_USAGE_AH);
     }
 
     //If we still need room 
-    bestToDestroy.push_back(ITEM_USAGE_SKILL); //Items that might help tradeskill are more important than above but still expenable.
-    bestToDestroy.push_back(ITEM_USAGE_USE); //These are more likely to be usefull 'soon' but still expenable.
+    bestToDestroy.push_back(ItemUsage::ITEM_USAGE_SKILL); //Items that might help tradeskill are more important than above but still expendable.
+    bestToDestroy.push_back(ItemUsage::ITEM_USAGE_USE); //These are more likely to be useful 'soon' but still expendable.
 
     for (auto& usage : bestToDestroy)
     {
-
-        list<uint32> items = AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string(usage));
+        list<uint32> items = AI_VALUE2(list<uint32>, "inventory item ids", "usage " + to_string((uint8)usage));
 
         items.reverse();
 

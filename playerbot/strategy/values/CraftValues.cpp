@@ -102,17 +102,17 @@ bool ShouldCraftSpellValue::Calculate()
 
             switch (usage)
             {
-                case ITEM_USAGE_EQUIP:
-                case ITEM_USAGE_REPLACE:
-                case ITEM_USAGE_BAD_EQUIP:
-                case ITEM_USAGE_QUEST:
-                case ITEM_USAGE_USE:
+                case ItemUsage::ITEM_USAGE_EQUIP:
+                case ItemUsage::ITEM_USAGE_REPLACE:
+                case ItemUsage::ITEM_USAGE_BAD_EQUIP:
+                case ItemUsage::ITEM_USAGE_QUEST:
+                case ItemUsage::ITEM_USAGE_USE:
                 {
                     needItem = true;
                     break;
                 }
 
-                case ITEM_USAGE_FORCE:
+                case ItemUsage::ITEM_USAGE_FORCE:
                 {
                     ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", to_string(pSpellInfo->EffectItemType[i]));
 
@@ -120,20 +120,20 @@ bool ShouldCraftSpellValue::Calculate()
                     break;
                 }
 
-                case ITEM_USAGE_SKILL:
-                case ITEM_USAGE_AMMO:
-                case ITEM_USAGE_DISENCHANT:
-                case ITEM_USAGE_AH:
-                case ITEM_USAGE_VENDOR:
+                case ItemUsage::ITEM_USAGE_SKILL:
+                case ItemUsage::ITEM_USAGE_AMMO:
+                case ItemUsage::ITEM_USAGE_DISENCHANT:
+                case ItemUsage::ITEM_USAGE_AH:
+                case ItemUsage::ITEM_USAGE_VENDOR:
                 {
                     needItem = !ai->HasCheat(BotCheatMask::item);
                     break;
                 }
 
-                case ITEM_USAGE_NONE:
-                case ITEM_USAGE_KEEP:
-                case ITEM_USAGE_BROKEN_EQUIP:
-                case ITEM_USAGE_GUILD_TASK:
+                case ItemUsage::ITEM_USAGE_NONE:
+                case ItemUsage::ITEM_USAGE_KEEP:
+                case ItemUsage::ITEM_USAGE_BROKEN_EQUIP:
+                case ItemUsage::ITEM_USAGE_GUILD_TASK:
                 {
                     needItem = false;
                     break;

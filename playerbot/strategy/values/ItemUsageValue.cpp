@@ -16,7 +16,7 @@ ItemQualifier::ItemQualifier(string qualifier, bool linkQualifier)
 {
     vector<string> numbers = Qualified::getMultiQualifiers(qualifier, ":");
 
-    itemId = stoi(numbers[0]);
+    itemId = !numbers.empty() ? stoi(numbers[0]) : 0;
     enchantId = 0;
     randomPropertyId = 0;
     gem1 = 0;
@@ -73,24 +73,24 @@ ItemUsage ItemUsageValue::Calculate()
     ItemQualifier itemQualifier(qualifier,false);
     uint32 itemId = itemQualifier.GetId();
     if (!itemId)
-        return ITEM_USAGE_NONE;
+        return ItemUsage::ITEM_USAGE_NONE;
 
     const ItemPrototype* proto = sObjectMgr.GetItemPrototype(itemId);
     if (!proto)
-        return ITEM_USAGE_NONE;
+        return ItemUsage::ITEM_USAGE_NONE;
 
     if (ai->HasActivePlayerMaster())
     {
         if (IsItemUsefulForSkill(proto))
-            return ITEM_USAGE_SKILL;
+            return ItemUsage::ITEM_USAGE_SKILL;
 
         if (IsItemNeededForSkill(proto))
         {
             float stacks = CurrentStacks(ai, proto);
             if (stacks < 1)
-                return ITEM_USAGE_SKILL; //Buy more.
+                return ItemUsage::ITEM_USAGE_SKILL; //Buy more.
             else if (stacks == 1)
-                return ITEM_USAGE_KEEP; //Keep in inventory.
+                return ItemUsage::ITEM_USAGE_KEEP; //Keep in inventory.
         }
     }
     else
@@ -101,9 +101,9 @@ ItemUsage ItemUsageValue::Calculate()
         {
             float stacks = CurrentStacks(ai, proto);
             if (stacks < 1)
-                return ITEM_USAGE_SKILL; //Buy more.
+                return ItemUsage::ITEM_USAGE_SKILL; //Buy more.
             else if (stacks == 1)
-                return ITEM_USAGE_KEEP; //Keep in inventory.
+                return ItemUsage::ITEM_USAGE_KEEP; //Keep in inventory.
         }
         else
         {
@@ -124,14 +124,14 @@ ItemUsage ItemUsageValue::Calculate()
         {
             float stacks = CurrentStacks(ai, proto);
             if (stacks < 2)
-                return ITEM_USAGE_SKILL; //Buy more.
+                return ItemUsage::ITEM_USAGE_SKILL; //Buy more.
             else if (stacks == 2)
-                return ITEM_USAGE_KEEP; //Buy more.
+                return ItemUsage::ITEM_USAGE_KEEP; //Buy more.
         }
     }
 
     if (proto->Class == ITEM_CLASS_KEY)
-        return ITEM_USAGE_USE;
+        return ItemUsage::ITEM_USAGE_USE;
 
     if (proto->Class == ITEM_CLASS_CONSUMABLE && !ai->HasCheat(BotCheatMask::item))
     {       
@@ -146,9 +146,9 @@ ItemUsage ItemUsageValue::Calculate()
                 stacks += CurrentStacks(ai, proto);
 
                 if (stacks < 2) 
-                    return ITEM_USAGE_USE; //Buy some to get to 2 stacks
+                    return ItemUsage::ITEM_USAGE_USE; //Buy some to get to 2 stacks
                 else if (stacks < 3)       //Keep the item if less than 3 stacks
-                    return ITEM_USAGE_KEEP;
+                    return ItemUsage::ITEM_USAGE_KEEP;
             }
         }
     }
@@ -158,29 +158,29 @@ ItemUsage ItemUsageValue::Calculate()
         float stacks = CurrentStacks(ai, proto);
 
         if (stacks < 1)
-            return ITEM_USAGE_USE;
+            return ItemUsage::ITEM_USAGE_USE;
         else if (stacks < 2)
-            return ITEM_USAGE_KEEP;
+            return ItemUsage::ITEM_USAGE_KEEP;
     }
 
     if (bot->GetGuildId() && sGuildTaskMgr.IsGuildTaskItem(itemId, bot->GetGuildId()))
-        return ITEM_USAGE_GUILD_TASK;
+        return ItemUsage::ITEM_USAGE_GUILD_TASK;
 
     ItemUsage equip = QueryItemUsageForEquip(itemQualifier);
-    if (equip != ITEM_USAGE_NONE)
+    if (equip != ItemUsage::ITEM_USAGE_NONE)
         return equip;
 
     if ((proto->Class == ITEM_CLASS_ARMOR || proto->Class == ITEM_CLASS_WEAPON) && proto->Bonding != BIND_WHEN_PICKED_UP &&
         ai->HasSkill(SKILL_ENCHANTING) && proto->Quality >= ITEM_QUALITY_UNCOMMON)
-        return ITEM_USAGE_DISENCHANT;
+        return ItemUsage::ITEM_USAGE_DISENCHANT;
 
     //While sync is on, do not loot quest items that are also usefull for master. Master 
     if (!ai->GetMaster() || !sPlayerbotAIConfig.syncQuestWithPlayer || !IsItemUsefulForQuest(ai->GetMaster(), proto))
     {
         if (IsItemUsefulForQuest(bot, proto))
-            return ITEM_USAGE_QUEST;
+            return ItemUsage::ITEM_USAGE_QUEST;
         else if (IsItemUsefulForQuest(bot, proto, true) && CurrentStacks(ai, proto) < 2) //Do not sell quest items unless selling a full stack will stil keep enough in inventory.
-            return ITEM_USAGE_KEEP;
+            return ItemUsage::ITEM_USAGE_KEEP;
     }
 
 
@@ -218,10 +218,10 @@ ItemUsage ItemUsageValue::Calculate()
                     if (ammo < 0) //No current better ammo.
                     {
                         if (!currentAmmoId)
-                            return ITEM_USAGE_EQUIP;
+                            return ItemUsage::ITEM_USAGE_EQUIP;
 
                         if(currentAmmoproto->ItemLevel > proto->ItemLevel)
-                            return ITEM_USAGE_REPLACE;
+                            return ItemUsage::ITEM_USAGE_REPLACE;
                     }
 
                     if (ammo < needAmmo) //We already have enough of the current ammo.
@@ -229,9 +229,9 @@ ItemUsage ItemUsageValue::Calculate()
                         ammo += CurrentStacks(ai,proto);
 
                         if (ammo < needAmmo)         //Buy ammo to get to the proper supply
-                            return ITEM_USAGE_AMMO;
+                            return ItemUsage::ITEM_USAGE_AMMO;
                         else if (ammo < needAmmo + 1)
-                            return ITEM_USAGE_KEEP;  //Keep the ammo until we have too much.
+                            return ItemUsage::ITEM_USAGE_KEEP;  //Keep the ammo until we have too much.
                     }
                 }
             }
@@ -239,37 +239,37 @@ ItemUsage ItemUsageValue::Calculate()
 
     //Do not sell/ah epic or above.
     if (proto->Quality >= ITEM_QUALITY_EPIC && !sRandomPlayerbotMgr.IsRandomBot(bot))
-        return ITEM_USAGE_KEEP;
+        return ItemUsage::ITEM_USAGE_KEEP;
 
     ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", proto->ItemId);
 
     if (forceUsage == ForceItemUsage::FORCE_USAGE_GREED || forceUsage == ForceItemUsage::FORCE_USAGE_NEED)
-        return ITEM_USAGE_FORCE;
+        return ItemUsage::ITEM_USAGE_FORCE;
 
     if(forceUsage == ForceItemUsage::FORCE_USAGE_KEEP || forceUsage == ForceItemUsage::FORCE_USAGE_EQUIP)
-        return ITEM_USAGE_KEEP;
+        return ItemUsage::ITEM_USAGE_KEEP;
 
-    //Need to add something like free bagspace or item value.
+    //Need to add something like free bag space or item value.
     if (proto->SellPrice > 0)
     {
         AuctionHouseBotItemData itemInfo = sAuctionHouseBot.GetItemData(proto->ItemId);
         if (itemInfo.Value > ((int32)proto->SellPrice) * 1.5f)
         {
             if(proto->Bonding == NO_BIND)
-                return ITEM_USAGE_AH;
+                return ItemUsage::ITEM_USAGE_AH;
 
             if (proto->Bonding == BIND_WHEN_EQUIPPED)
             {
                 Item* item = CurrentItem(proto);
                 if (!item || !item->IsSoulBound())
-                    return ITEM_USAGE_AH;
+                    return ItemUsage::ITEM_USAGE_AH;
             }
         }
         
-        return ITEM_USAGE_VENDOR;
+        return ItemUsage::ITEM_USAGE_VENDOR;
     }
 
-    return ITEM_USAGE_NONE;
+    return ItemUsage::ITEM_USAGE_NONE;
 }
 
 ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
@@ -277,10 +277,10 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
     ItemPrototype const* itemProto = itemQualifier.GetProto();
 
     if (bot->CanUseItem(itemProto) != EQUIP_ERR_OK)
-        return ITEM_USAGE_NONE;
+        return ItemUsage::ITEM_USAGE_NONE;
 
     if (itemProto->InventoryType == INVTYPE_NON_EQUIP)
-        return ITEM_USAGE_NONE;
+        return ItemUsage::ITEM_USAGE_NONE;
 
     uint16 dest;
 
@@ -294,7 +294,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
     {
         Item* pItem = RandomPlayerbotMgr::CreateTempItem(itemProto->ItemId, 1, bot);
         if (!pItem)
-            return ITEM_USAGE_NONE;
+            return ItemUsage::ITEM_USAGE_NONE;
 
         result = bot->CanEquipItem(NULL_SLOT, dest, pItem, true, false);
         pItem->RemoveFromUpdateQueueOf(bot);
@@ -302,21 +302,21 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
     }
 
     if (result != EQUIP_ERR_OK)
-        return ITEM_USAGE_NONE;
+        return ItemUsage::ITEM_USAGE_NONE;
 
     if (itemProto->Class == ITEM_CLASS_QUIVER)
         if (bot->getClass() != CLASS_HUNTER)
-            return ITEM_USAGE_NONE;
+            return ItemUsage::ITEM_USAGE_NONE;
 
     if (itemProto->Class == ITEM_CLASS_CONTAINER)
     {
         if (itemProto->SubClass != ITEM_SUBCLASS_CONTAINER)
-            return ITEM_USAGE_NONE; //Todo add logic for non-bag containers. We want to look at professions/class and only replace if non-bag is larger than bag.
+            return ItemUsage::ITEM_USAGE_NONE; //Todo add logic for non-bag containers. We want to look at professions/class and only replace if non-bag is larger than bag.
 
         if (GetSmallestBagSize() >= itemProto->ContainerSlots)
-            return ITEM_USAGE_NONE;
+            return ItemUsage::ITEM_USAGE_NONE;
 
-        return ITEM_USAGE_EQUIP;
+        return ItemUsage::ITEM_USAGE_EQUIP;
     }
 
     bool shouldEquip = false;
@@ -338,9 +338,9 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
     if (!oldItem)
     {
         if (shouldEquip)
-            return ITEM_USAGE_EQUIP;
+            return ItemUsage::ITEM_USAGE_EQUIP;
         else
-            return ITEM_USAGE_BAD_EQUIP;
+            return ItemUsage::ITEM_USAGE_BAD_EQUIP;
     }
 
     const ItemPrototype* oldItemProto = oldItem->GetProto();
@@ -348,9 +348,9 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
     if (AI_VALUE2(ForceItemUsage, "force item usage", oldItemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP) //Current equip is forced. Do not unequip.
     {
         if (AI_VALUE2(ForceItemUsage, "force item usage", itemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP)
-            return ITEM_USAGE_KEEP;
+            return ItemUsage::ITEM_USAGE_KEEP;
         else
-            return ITEM_USAGE_NONE;
+            return ItemUsage::ITEM_USAGE_NONE;
     }
 
     uint32 oldStatWeight = sRandomItemMgr.ItemStatWeight(bot, oldItem);
@@ -360,15 +360,15 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
     }
 
     if (AI_VALUE2(ForceItemUsage, "force item usage", itemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP) //New item is forced. Always equip it.
-        return ITEM_USAGE_EQUIP;
+        return ItemUsage::ITEM_USAGE_EQUIP;
 
     //Bigger quiver
     if (itemProto->Class == ITEM_CLASS_QUIVER)
     {
         if (!oldItem || oldItemProto->ContainerSlots < itemProto->ContainerSlots)
-            return ITEM_USAGE_EQUIP;
+            return ItemUsage::ITEM_USAGE_EQUIP;
         else
-            ITEM_USAGE_NONE;
+            ItemUsage::ITEM_USAGE_NONE;
     }
 
     bool existingShouldEquip = true;
@@ -397,30 +397,30 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
         case ITEM_CLASS_ARMOR:
             if (oldItemProto->SubClass <= itemProto->SubClass) {
                 if (itemIsBroken && !oldItemIsBroken)
-                    return ITEM_USAGE_BROKEN_EQUIP;
+                    return ItemUsage::ITEM_USAGE_BROKEN_EQUIP;
                 else
                     if (shouldEquip)
-                        return ITEM_USAGE_REPLACE;
+                        return ItemUsage::ITEM_USAGE_REPLACE;
                     else
-                        return ITEM_USAGE_BAD_EQUIP;
+                        return ItemUsage::ITEM_USAGE_BAD_EQUIP;
             }
             break;
         default:
             if (itemIsBroken && !oldItemIsBroken)
-                return ITEM_USAGE_BROKEN_EQUIP;
+                return ItemUsage::ITEM_USAGE_BROKEN_EQUIP;
             else
                 if (shouldEquip)
-                    return ITEM_USAGE_EQUIP;
+                    return ItemUsage::ITEM_USAGE_EQUIP;
                 else
-                    return ITEM_USAGE_BAD_EQUIP;
+                    return ItemUsage::ITEM_USAGE_BAD_EQUIP;
         }
     }
 
     //Item is not better but current item is broken and new one is not.
     if (oldItemIsBroken && !itemIsBroken)
-        return ITEM_USAGE_EQUIP;
+        return ItemUsage::ITEM_USAGE_EQUIP;
 
-    return ITEM_USAGE_NONE;
+    return ItemUsage::ITEM_USAGE_NONE;
 }
 
 //Return smaltest bag size equipped

@@ -114,7 +114,7 @@ void TalkToQuestGiverAction::RewardSingleItem(Quest const* quest, WorldObject* q
 ItemIds TalkToQuestGiverAction::BestRewards(Quest const* quest)
 {
     ItemIds returnIds;
-    ItemUsage bestUsage = ITEM_USAGE_NONE;
+    ItemUsage bestUsage = ItemUsage::ITEM_USAGE_NONE;
     if (quest->GetRewChoiceItemsCount() == 0)
         return returnIds;
     else if (quest->GetRewChoiceItemsCount() == 1)    
@@ -124,17 +124,17 @@ ItemIds TalkToQuestGiverAction::BestRewards(Quest const* quest)
         for (uint8 i = 0; i < quest->GetRewChoiceItemsCount(); ++i)
         {
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", quest->RewChoiceItemId[i]);
-            if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE)
-                bestUsage = ITEM_USAGE_EQUIP;
-            else if (usage == ITEM_USAGE_BAD_EQUIP && bestUsage != ITEM_USAGE_EQUIP)
+            if (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_REPLACE)
+                bestUsage = ItemUsage::ITEM_USAGE_EQUIP;
+            else if (usage == ItemUsage::ITEM_USAGE_BAD_EQUIP && bestUsage != ItemUsage::ITEM_USAGE_EQUIP)
                 bestUsage = usage;
-            else if (usage != ITEM_USAGE_NONE && bestUsage == ITEM_USAGE_NONE)
+            else if (usage != ItemUsage::ITEM_USAGE_NONE && bestUsage == ItemUsage::ITEM_USAGE_NONE)
                 bestUsage = usage;
         }
         for (uint8 i = 0; i < quest->GetRewChoiceItemsCount(); ++i)
         {
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", quest->RewChoiceItemId[i]);
-            if (usage == bestUsage || usage == ITEM_USAGE_REPLACE)
+            if (usage == bestUsage || usage == ItemUsage::ITEM_USAGE_REPLACE)
                 returnIds.insert(i);
         }
         return returnIds;

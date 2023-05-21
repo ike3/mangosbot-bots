@@ -42,7 +42,7 @@ namespace ai
         ItemPrototype const* proto;
     };
 
-    enum ItemUsage
+    enum class ItemUsage : uint8
     {
         ITEM_USAGE_NONE = 0,
         ITEM_USAGE_EQUIP = 1,

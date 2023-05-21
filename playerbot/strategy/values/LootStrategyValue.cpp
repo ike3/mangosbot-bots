@@ -14,7 +14,7 @@ namespace ai
         virtual bool CanLoot(ItemQualifier& itemQualifier, AiObjectContext *context)
         {
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", itemQualifier.GetQualifier());
-            return usage != ITEM_USAGE_NONE;
+            return usage != ItemUsage::ITEM_USAGE_NONE;
         }
         virtual string GetName() { return "normal"; }
     };

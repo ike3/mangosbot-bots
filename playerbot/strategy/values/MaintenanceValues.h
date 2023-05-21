@@ -60,7 +60,7 @@ namespace ai
     {
     public:
         CanSellValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can sell",2) {}
-        virtual bool Calculate() { return ai->HasStrategy("rpg vendor", BotState::BOT_STATE_NON_COMBAT) && AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_VENDOR)) > 1; };
+        virtual bool Calculate() { return ai->HasStrategy("rpg vendor", BotState::BOT_STATE_NON_COMBAT) && AI_VALUE2(uint32, "item count", "usage " + to_string((uint8)ItemUsage::ITEM_USAGE_VENDOR)) > 1; };
     };
 
     class CanBuyValue : public BoolCalculatedValue
@@ -74,7 +74,7 @@ namespace ai
     {
     public:
         CanAHSellValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "can ah sell", 2) {}
-        virtual bool Calculate() { return ai->HasStrategy("rpg vendor", BotState::BOT_STATE_NON_COMBAT) && AI_VALUE2(uint32, "item count", "usage " + to_string(ITEM_USAGE_AH)) > 1 && AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::ah) > GetAuctionDeposit(); };
+        virtual bool Calculate() { return ai->HasStrategy("rpg vendor", BotState::BOT_STATE_NON_COMBAT) && AI_VALUE2(uint32, "item count", "usage " + to_string((uint8)ItemUsage::ITEM_USAGE_AH)) > 1 && AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::ah) > GetAuctionDeposit(); };
 
         uint32 GetAuctionDeposit()
         {
@@ -86,7 +86,7 @@ namespace ai
 #endif
 
             float minDeposit = 0;
-            for (auto item : AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string(ITEM_USAGE_AH)))
+            for (auto item : AI_VALUE2(list<Item*>, "inventory items", "usage " + to_string((uint8)ItemUsage::ITEM_USAGE_AH)))
             {
                 float deposit = float(item->GetProto()->SellPrice * item->GetCount() * (time / MIN_AUCTION_TIME));
 

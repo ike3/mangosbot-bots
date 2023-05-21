@@ -39,7 +39,7 @@ bool WtsAction::Execute(Event& event)
 
         ostringstream out; out << itemId;
         ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", out.str());
-        if (usage == ITEM_USAGE_NONE)
+        if (usage == ItemUsage::ITEM_USAGE_NONE)
             continue;
 
         int32 buyPrice = PricingStrategy::RoundPrice(auctionbot.GetBuyPrice(proto) * sRandomPlayerbotMgr.GetBuyMultiplier(bot));

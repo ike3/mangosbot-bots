@@ -486,9 +486,9 @@ namespace ai
     class FindItemUsageVisitor : public FindItemVisitor
     {
     public:
-        FindItemUsageVisitor(Player* bot, ItemUsage usage = ITEM_USAGE_NONE) : FindItemVisitor(), bot(bot), usage(usage) { context = bot->GetPlayerbotAI()->GetAiObjectContext();};
+        FindItemUsageVisitor(Player* bot, ItemUsage usage = ItemUsage::ITEM_USAGE_NONE) : FindItemVisitor(), bot(bot), usage(usage) { context = bot->GetPlayerbotAI()->GetAiObjectContext();};
 
-        void SetUsage(ItemUsage newUsage = ITEM_USAGE_NONE) { usage = newUsage; }
+        void SetUsage(ItemUsage newUsage = ItemUsage::ITEM_USAGE_NONE) { usage = newUsage; }
 
         virtual bool Accept(const ItemPrototype* proto) { return false; }
 

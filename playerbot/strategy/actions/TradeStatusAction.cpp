@@ -212,7 +212,7 @@ bool TradeStatusAction::CheckTrade()
         if (item)
         {
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(item).GetQualifier());
-            if ((botMoney && !auctionbot.GetBuyPrice(item->GetProto())) || usage == ITEM_USAGE_NONE)
+            if ((botMoney && !auctionbot.GetBuyPrice(item->GetProto())) || usage == ItemUsage::ITEM_USAGE_NONE)
             {
                 ostringstream out;
                 out << chat->formatItem(item) << " - I don't need this";
