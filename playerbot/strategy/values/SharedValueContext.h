@@ -41,34 +41,44 @@ namespace ai
         static UntypedValue* quest_guidp_map(PlayerbotAI* ai) { return new QuestGuidpMapValue(ai); }
         static UntypedValue* quest_givers(PlayerbotAI* ai) { return new QuestGiversValue(ai); }
 
-        static UntypedValue* trainable_spell_map(PlayerbotAI* ai) { return new TrainableSpellMapValue(ai); }
+        static UntypedValue* trainable_spell_map(PlayerbotAI* ai) { return new TrainableSpellMapValue(ai); } 
+    };
 
-    //Global acess functions
+
+    class SharedObjectContext
+    {
     public:
-        template<class T>
-        Value<T>* getGlobalValue(string name = "")
+        SharedObjectContext() { valueContexts.Add(new SharedValueContext()); };
+
+    public:
+        virtual UntypedValue* GetUntypedValue(const string& name)
         {
-            NamedObjectContextList<UntypedValue> valueContexts;
-            valueContexts.Add(this);
             PlayerbotAI* ai = new PlayerbotAI();
             UntypedValue* value = valueContexts.GetObject(name, ai);
             delete ai;
-            return dynamic_cast<Value<T>*>(value);
+            return value;
         }
 
         template<class T>
-        Value<T>* getGlobalValue(string name, string param)
+        Value<T>* GetValue(const string& name)
         {
-            return getGlobalValue<T>((string(name) + "::" + param));
+            return dynamic_cast<Value<T>*>(GetUntypedValue(name));
         }
 
         template<class T>
-        Value<T>* getGlobalValue(string name, uint32 param)
+        Value<T>* GetValue(const string& name, const string& param)
+        {
+            return GetValue<T>((string(name) + "::" + param));
+        }
+
+        template<class T>
+        Value<T>* GetValue(const string& name, int32 param)
         {
             ostringstream out; out << param;
-            return getGlobalValue<T>(name, out.str());
+            return GetValue<T>(name, out.str());
         }
+    protected:
+        NamedObjectContextList<UntypedValue> valueContexts;
     };
-
-#define sSharedValueContext MaNGOS::Singleton<SharedValueContext>::Instance()
+#define sSharedObjectContext MaNGOS::Singleton<SharedObjectContext>::Instance()
 }
