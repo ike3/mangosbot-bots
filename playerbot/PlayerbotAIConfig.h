@@ -27,7 +27,16 @@ enum class BotCheatMask : uint32
     maxMask = 1 << 11
 };
 
+class ConfigAccess
+{
+private:
+    std::string m_filename;
+    std::unordered_map<std::string, std::string> m_entries; // keys are converted to lower case.  values cannot be.
+public:
+    std::vector<string> GetValues(const std::string& name) const;
 
+    std::mutex m_configLock;
+};
 
 class PlayerbotAIConfig
 {
@@ -204,7 +213,6 @@ public:
     std::string GetValue(std::string name);
     void SetValue(std::string name, std::string value);
 
-    void loadWorldBuf(Config* config, uint32 factionId, uint32 classId, uint32 specId1, uint32 minLevel, uint32 maxLevel);
     void loadFreeAltBotAccounts();
 
     std::string GetTimestampStr();
