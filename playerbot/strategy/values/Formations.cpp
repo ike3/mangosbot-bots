@@ -379,7 +379,10 @@ namespace ai
             Player* master = ai->GetGroupMaster();
 
             float currentAngle = WorldPosition(master).getAngleTo(bot) - master->GetOrientation();
-            float followAngle = sServerFacade.GetChaseAngle(bot);
+            float followAngle = currentAngle;
+            
+            if(bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
+                followAngle = sServerFacade.GetChaseAngle(bot);
 
             float delta = (currentAngle - followAngle);
 
