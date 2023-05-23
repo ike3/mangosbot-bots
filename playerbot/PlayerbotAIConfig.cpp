@@ -15,8 +15,22 @@
 #include <iostream>
 #include <numeric>
 #include <iomanip>
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
+
+std::vector<string> ConfigAccess::GetValues(const std::string& name) const
+{
+    std::vector<string> values;
+    auto const nameLower = boost::algorithm::to_lower_copy(name);
+    for (auto entry : m_entries)
+        if (entry.first.find(nameLower) != string::npos)
+            values.push_back(entry.first);
+
+    return values;
+};
+
+
 
 INSTANTIATE_SINGLETON_1(PlayerbotAIConfig);
 
@@ -74,6 +88,9 @@ bool PlayerbotAIConfig::Initialize()
         return false;
     }
 
+    ConfigAccess* configA = reinterpret_cast<ConfigAccess*>(&config);
+
+    BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
     globalCoolDown = (uint32) config.GetIntDefault("AiPlayerbot.GlobalCooldown", 500);
     maxWaitForMove = config.GetIntDefault("AiPlayerbot.MaxWaitForMove", 3000);
     expireActionTime = config.GetIntDefault("AiPlayerbot.ExpireActionTime", 5000);
@@ -189,7 +206,7 @@ bool PlayerbotAIConfig::Initialize()
     commandServerPort = config.GetIntDefault("AiPlayerbot.CommandServerPort", 0);
     perfMonEnabled = config.GetBoolDefault("AiPlayerbot.PerfMonEnabled", false);
 
-    sLog.outString("   Loading Race/Class probabilities    ");
+    sLog.outString("Loading Race/Class probabilities");
 
     classRaceProbabilityTotal = 0;
 
@@ -239,11 +256,8 @@ bool PlayerbotAIConfig::Initialize()
         }
     }
 
-    sLog.outString("---------------------------------------");
-    sLog.outString("          Loading TalentSpecs          ");
-    sLog.outString("---------------------------------------");
-    sLog.outString();
-    
+    sLog.outString("Loading TalentSpecs");
+
     for (uint32 cls = 1; cls < MAX_CLASSES; ++cls)
     {
         classSpecs[cls] = ClassSpecs(1 << (cls - 1));
@@ -330,21 +344,37 @@ bool PlayerbotAIConfig::Initialize()
     LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.DebugFilter", "add gathering loot,check values,emote,check mount state"), debugFilter);
 
     worldBuffs.clear();
-    
-    for (uint32 factionId = 0; factionId < 3; factionId++)
+
+    //Get all config values starting with AiPlayerbot.WorldBuff
+    vector<string> values = configA->GetValues("AiPlayerbot.WorldBuff");
+   
+    if (values.size())
     {
-        for (uint32 classId = 0; classId < MAX_CLASSES; classId++)
+        sLog.outString("Loading WorldBuffs");
+        BarGoLink wbuffBar(values.size());
+
+        for (auto value : values)
         {
-            for (uint32 specId = 0; specId < 4; specId++)
+            vector<string> ids = split(value, '.');
+            vector<uint32> params = { 0,0,0,0,0 };
+
+            //Extract faction, class, spec, minlevel, maxlevel
+            for (uint8 i = 0; i < 5; i++)
+                if (ids.size() > i + 2)
+                    params[i] = stoi(ids[i + 2]);
+
+            //Get list of buffs for this combination.
+            list<uint32> buffs;
+            LoadList<list<uint32>>(config.GetStringDefault(value, ""), buffs);
+
+            //Store buffs for later application.
+            for (auto buff : buffs)
             {
-                for (uint32 minLevel = 0; minLevel < MAX_LEVEL; minLevel++)
-                {
-                    for (uint32 maxLevel = 0; maxLevel < MAX_LEVEL; maxLevel++)
-                    {
-                        loadWorldBuf(&config, factionId, classId, specId, minLevel, maxLevel);
-                    }
-                }
+                worldBuff wb = { buff, params[0], params[1], params[2], params[3], params[4] };
+                worldBuffs.push_back(wb);
             }
+
+            wbuffBar.step();
         }
     }
 
@@ -426,6 +456,7 @@ bool PlayerbotAIConfig::Initialize()
     respawnModForPlayerBots = config.GetBoolDefault("AiPlayerbot.RespawnModForPlayerBots", false);
     respawnModForInstances = config.GetBoolDefault("AiPlayerbot.RespawnModForInstances", false);
 
+    sLog.outString("Loading free bots.");
     selfBotLevel = config.GetIntDefault("AiPlayerbot.SelfBotLevel", 1);
     LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.ToggleAlwaysOnlineAccounts", ""), toggleAlwaysOnlineAccounts);
     LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.ToggleAlwaysOnlineChars", ""), toggleAlwaysOnlineChars);
@@ -442,7 +473,6 @@ bool PlayerbotAIConfig::Initialize()
     loadFreeAltBotAccounts();
 
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f),
-    BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
 
     sLog.outString("Loading area levels.");
     sTravelMgr.loadAreaLevels();
@@ -573,87 +603,6 @@ void PlayerbotAIConfig::SetValue(string name, string value)
 
     else if (name == "IterationsPerTick")
         out >> iterationsPerTick;
-}
-
-
-void PlayerbotAIConfig::loadWorldBuf(Config* config, uint32 factionId1, uint32 classId1, uint32 specId1, uint32 minLevel1, uint32 maxLevel1)
-{
-    list<uint32> buffs;
-
-    ostringstream os; os << "AiPlayerbot.WorldBuff." << factionId1 << "." << classId1 << "." << specId1 << "." << minLevel1 << "." << maxLevel1;
-
-    LoadList<list<uint32> >(config->GetStringDefault(os.str().c_str(), ""), buffs);
-
-    for (auto buff : buffs)
-    {
-        worldBuff wb = { buff, factionId1, classId1, specId1, minLevel1, maxLevel1 };
-        worldBuffs.push_back(wb);
-    }
-
-    if (maxLevel1 == 0)
-    {
-        ostringstream os; os << "AiPlayerbot.WorldBuff." << factionId1 << "." << classId1 << "." << specId1 << "." << minLevel1;
-
-        LoadList<list<uint32> >(config->GetStringDefault(os.str().c_str(), ""), buffs);
-
-        for (auto buff : buffs)
-        {
-            worldBuff wb = { buff, factionId1, classId1, specId1, minLevel1, maxLevel1 };
-            worldBuffs.push_back(wb);
-        }
-    }
-
-    if (maxLevel1 == 0 && minLevel1 == 0)
-    {
-        ostringstream os; os << "AiPlayerbot.WorldBuff." << factionId1 << "." << classId1 << "." << specId1;
-
-        LoadList<list<uint32> >(config->GetStringDefault(os.str().c_str(), ""), buffs);
-
-        for (auto buff : buffs)
-        {
-            worldBuff wb = { buff, factionId1, classId1, specId1, minLevel1, maxLevel1 };
-            worldBuffs.push_back(wb);
-        }
-    }
-
-    if (specId1 == 0 && maxLevel1 == 0 && minLevel1 == 0)
-    {
-        ostringstream os; os << "AiPlayerbot.WorldBuff." << factionId1 << "." << classId1;
-
-        LoadList<list<uint32> >(config->GetStringDefault(os.str().c_str(), ""), buffs);
-
-        for (auto buff : buffs)
-        {
-            worldBuff wb = { buff, factionId1, classId1, specId1, minLevel1, maxLevel1 };
-            worldBuffs.push_back(wb);
-        }
-    }
-
-    if (specId1 == 0 && classId1 == 0 && maxLevel1 == 0 && minLevel1 == 0)
-    {
-        ostringstream os; os << "AiPlayerbot.WorldBuff." << factionId1;
-
-        LoadList<list<uint32> >(config->GetStringDefault(os.str().c_str(), ""), buffs);
-
-        for (auto buff : buffs)
-        {
-            worldBuff wb = { buff, factionId1, classId1, specId1, minLevel1, maxLevel1 };
-            worldBuffs.push_back(wb);
-        }
-    }
-
-    if (factionId1 == 0 && specId1 == 0 && classId1 == 0 && maxLevel1 == 0 && minLevel1 == 0)
-    {
-        ostringstream os; os << "AiPlayerbot.WorldBuff";
-
-        LoadList<list<uint32> >(config->GetStringDefault(os.str().c_str(), ""), buffs);
-
-        for (auto buff : buffs)
-        {
-            worldBuff wb = { buff, factionId1, classId1, specId1, minLevel1, maxLevel1 };
-            worldBuffs.push_back(wb);
-        }
-    }
 }
 
 void PlayerbotAIConfig::loadFreeAltBotAccounts()
