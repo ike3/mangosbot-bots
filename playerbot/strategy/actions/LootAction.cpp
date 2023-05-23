@@ -368,8 +368,7 @@ bool StoreLootAction::Execute(Event& event)
 bool StoreLootAction::IsLootAllowed(ItemQualifier& itemQualifier, PlayerbotAI *ai)
 {
     AiObjectContext *context = ai->GetAiObjectContext();
-    LootStrategy* lootStrategy = AI_VALUE(LootStrategy*, "loot strategy");
-
+    
     ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemQualifier.GetId());
     if (!proto)
         return false;
@@ -415,7 +414,8 @@ bool StoreLootAction::IsLootAllowed(ItemQualifier& itemQualifier, PlayerbotAI *a
     //    proto->Class == ITEM_CLASS_QUEST)
     //{
 
-    bool canLoot = lootStrategy->CanLoot(itemQualifier, context);
+    LootStrategy* lootStrategy = AI_VALUE(LootStrategy*, "loot strategy");
+    bool canLoot = lootStrategy && lootStrategy->CanLoot(itemQualifier, context);
 
     //if (canLoot && proto->Bonding == BIND_WHEN_PICKED_UP && ai->HasActivePlayerMaster())
     //    canLoot = sPlayerbotAIConfig.IsInRandomAccountList(sObjectMgr.GetPlayerAccountIdByGUID(ai->GetBot()->GetObjectGuid()));
