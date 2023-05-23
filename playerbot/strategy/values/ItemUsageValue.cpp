@@ -16,7 +16,15 @@ ItemQualifier::ItemQualifier(string qualifier, bool linkQualifier)
 {
     vector<string> numbers = Qualified::getMultiQualifiers(qualifier, ":");
 
-    itemId = !numbers.empty() ? stoi(numbers[0]) : 0;
+    try
+    {
+        itemId = !numbers.empty() ? stoi(numbers[0]) : 0;
+    } 
+    catch (const std::exception& e) 
+    {
+        itemId = 0;
+    }
+
     enchantId = 0;
     randomPropertyId = 0;
     gem1 = 0;
