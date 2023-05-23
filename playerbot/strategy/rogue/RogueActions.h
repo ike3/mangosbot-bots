@@ -162,8 +162,12 @@ namespace ai
         {
             if (ai->CastSpell("vanish", bot))
             {
-                ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
-                ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_NON_COMBAT);
+                if (ai->HasStrategy("stealth", BotState::BOT_STATE_COMBAT))
+                {
+                    ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_COMBAT);
+                    ai->ChangeStrategy("+stealthed", BotState::BOT_STATE_NON_COMBAT);
+                }
+
                 bot->InterruptSpell(CURRENT_MELEE_SPELL);
                 return true;
             }
