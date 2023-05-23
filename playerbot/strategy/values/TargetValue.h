@@ -74,6 +74,7 @@ namespace ai
     {
     public:
         TravelTargetValue(PlayerbotAI* ai, string name = "travel target") : ManualSetValue<TravelTarget*>(ai, new TravelTarget(ai), name) {}
+        virtual ~TravelTargetValue() { delete value; }
     };	
 
     class LastLongMoveValue : public CalculatedValue<WorldPosition>

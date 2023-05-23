@@ -163,12 +163,6 @@ void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
             logout = true;
         }
 
-        TravelTarget* target = nullptr;
-        if (ai->GetAiObjectContext()) //Maybe some day re-write to delate all pointer values.
-        {
-            target = ai->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
-        }
-
         // if no instant logout, request normal logout
         if (!logout)
         {
@@ -183,8 +177,6 @@ void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
                 {
                     playerBots.erase(guid);
                     delete botWorldSessionPtr;    
-                    if (target)
-                        delete target;
                 }
                 return;
             }
@@ -192,8 +184,6 @@ void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
             {
                 playerBots.erase(guid);     // deletes bot player ptr inside this WorldSession PlayerBotMap
                 delete botWorldSessionPtr;  // finally delete the bot's WorldSession
-                if (target)
-                    delete target;
             }
             return;
         } // if instant logout possible, do it
@@ -230,13 +220,6 @@ void PlayerbotHolder::DisablePlayerBot(uint32 guid)
         }
         sLog.outDebug("Bot %s logged out", bot->GetName());
         bot->SaveToDB();
-
-        if (bot->GetPlayerbotAI()->GetAiObjectContext()) //Maybe some day re-write to delate all pointer values.
-        {
-            TravelTarget* target = bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
-            if (target)
-                delete target;
-        }
 
         WorldSession* botWorldSessionPtr = bot->GetSession();
         playerBots.erase(guid);    // deletes bot player ptr inside this WorldSession PlayerBotMap
