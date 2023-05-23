@@ -33,7 +33,7 @@ void PlayerbotHolder::UpdateSessions(uint32 elapsed)
     for (PlayerBotMap::const_iterator itr = GetPlayerBotsBegin(); itr != GetPlayerBotsEnd(); ++itr)
     {
         Player* const bot = itr->second;
-        if (bot->IsBeingTeleported())
+        if (bot->GetPlayerbotAI() && bot->IsBeingTeleported())
         {
             bot->GetPlayerbotAI()->HandleTeleportAck();
         }
@@ -42,7 +42,7 @@ void PlayerbotHolder::UpdateSessions(uint32 elapsed)
             bot->GetSession()->HandleBotPackets();
         }
 
-        if (bot->GetPlayerbotAI()->GetShouldLogOut() && !bot->IsStunnedByLogout() && !bot->GetSession()->isLogingOut())
+        if (bot->GetPlayerbotAI() && bot->GetPlayerbotAI()->GetShouldLogOut() && !bot->IsStunnedByLogout() && !bot->GetSession()->isLogingOut())
         {
             LogoutPlayerBot(bot->GetObjectGuid().GetRawValue());
         }
