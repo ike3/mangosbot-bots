@@ -70,7 +70,7 @@ namespace ai
         }
     };
 
-    class TravelTargetValue : public ManualSetValue<TravelTarget *>
+    class TravelTargetValue : public ManualSetValue<TravelTarget*>
     {
     public:
         TravelTargetValue(PlayerbotAI* ai, string name = "travel target") : ManualSetValue<TravelTarget*>(ai, new TravelTarget(ai), name) {}

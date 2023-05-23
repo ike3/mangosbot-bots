@@ -440,12 +440,6 @@ string BossTravelDestination::getTitle() {
     return out.str();
 }
 
-TravelTarget::~TravelTarget() {
-    if (!tDestination)
-        return;
-
-}
-
 void TravelTarget::setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1, bool groupCopy1) {
     wPosition = wPosition1;
     tDestination = tDestination1;

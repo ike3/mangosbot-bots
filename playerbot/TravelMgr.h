@@ -285,7 +285,7 @@ namespace ai
     public:
         TravelTarget(PlayerbotAI* ai) : AiObject(ai) {};
         TravelTarget(PlayerbotAI* ai, TravelDestination* tDestination1, WorldPosition* wPosition1) : AiObject(ai) { setTarget(tDestination1, wPosition1);}
-        ~TravelTarget();
+        ~TravelTarget() = default;
         
         void setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1, bool groupCopy1 = false);
         void setStatus(TravelStatus status);
