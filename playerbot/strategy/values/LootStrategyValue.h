@@ -8,7 +8,6 @@ namespace ai
 	{
 	public:
         LootStrategyValue(PlayerbotAI* ai, string name = "loot strategy") : ManualSetValue<LootStrategy*>(ai, normal, name) {}
-        virtual ~LootStrategyValue() { delete defaultValue; }
 
         virtual string Save();
         virtual bool Load(string value);
