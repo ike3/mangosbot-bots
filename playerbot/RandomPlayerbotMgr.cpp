@@ -1536,7 +1536,7 @@ void RandomPlayerbotMgr::CheckPlayers()
     sLog.outBasic("Checking Players...");
 
     if (!playersLevel)
-        playersLevel = sPlayerbotAIConfig.randombotStartingLevel;
+        playersLevel = sPlayerbotAIConfig.syncLevelNoPlayer;
 
 
     for (auto i : players)
