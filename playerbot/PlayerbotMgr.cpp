@@ -207,7 +207,8 @@ void PlayerbotHolder::LogoutPlayerBot(uint32 guid)
 #ifdef MANGOS
             //botWorldSessionPtr->LogoutPlayer(true); // this will delete the bot Player object and PlayerbotAI object
 #endif
-            delete botWorldSessionPtr;  // finally delete the bot's WorldSession
+            if(!sWorld.FindSession(botWorldSessionPtr->GetAccountId())) //Real player sessions will get removed later.
+                delete botWorldSessionPtr;  // finally delete the bot's WorldSession
         }
     }
 }
