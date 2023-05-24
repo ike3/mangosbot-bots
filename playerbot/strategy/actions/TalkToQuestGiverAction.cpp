@@ -124,7 +124,7 @@ ItemIds TalkToQuestGiverAction::BestRewards(Quest const* quest)
         for (uint8 i = 0; i < quest->GetRewChoiceItemsCount(); ++i)
         {
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", quest->RewChoiceItemId[i]);
-            if (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_REPLACE)
+            if (usage == ItemUsage::ITEM_USAGE_EQUIP)
                 bestUsage = ItemUsage::ITEM_USAGE_EQUIP;
             else if (usage == ItemUsage::ITEM_USAGE_BAD_EQUIP && bestUsage != ItemUsage::ITEM_USAGE_EQUIP)
                 bestUsage = usage;
@@ -134,7 +134,7 @@ ItemIds TalkToQuestGiverAction::BestRewards(Quest const* quest)
         for (uint8 i = 0; i < quest->GetRewChoiceItemsCount(); ++i)
         {
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", quest->RewChoiceItemId[i]);
-            if (usage == bestUsage || usage == ItemUsage::ITEM_USAGE_REPLACE)
+            if (usage == bestUsage)
                 returnIds.insert(i);
         }
         return returnIds;

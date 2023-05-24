@@ -177,7 +177,7 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
 
         unordered_map <ItemUsage, int32> freeMoney;
 
-        freeMoney[ItemUsage::ITEM_USAGE_EQUIP] = freeMoney[ItemUsage::ITEM_USAGE_REPLACE] = freeMoney[ItemUsage::ITEM_USAGE_BAD_EQUIP] = (uint32)NeedMoneyFor::gear;
+        freeMoney[ItemUsage::ITEM_USAGE_EQUIP] = freeMoney[ItemUsage::ITEM_USAGE_BAD_EQUIP] = (uint32)NeedMoneyFor::gear;
         freeMoney[ItemUsage::ITEM_USAGE_USE] = (uint32)NeedMoneyFor::consumables;
         freeMoney[ItemUsage::ITEM_USAGE_SKILL] = freeMoney[ItemUsage::ITEM_USAGE_DISENCHANT] =(uint32)NeedMoneyFor::tradeskill;
         freeMoney[ItemUsage::ITEM_USAGE_AMMO] = (uint32)NeedMoneyFor::ammo;
@@ -209,7 +209,6 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
             switch (usage)
             {
             case ItemUsage::ITEM_USAGE_EQUIP:
-            case ItemUsage::ITEM_USAGE_REPLACE:
             case ItemUsage::ITEM_USAGE_BAD_EQUIP:
                 power = sRandomItemMgr.GetLiveStatWeight(bot, auction->itemTemplate);
                 break;

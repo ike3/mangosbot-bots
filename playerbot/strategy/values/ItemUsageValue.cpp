@@ -229,7 +229,7 @@ ItemUsage ItemUsageValue::Calculate()
                             return ItemUsage::ITEM_USAGE_EQUIP;
 
                         if(currentAmmoproto->ItemLevel > proto->ItemLevel)
-                            return ItemUsage::ITEM_USAGE_REPLACE;
+                            return ItemUsage::ITEM_USAGE_EQUIP;
                     }
 
                     if (ammo < needAmmo) //We already have enough of the current ammo.
@@ -408,7 +408,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
                     return ItemUsage::ITEM_USAGE_BROKEN_EQUIP;
                 else
                     if (shouldEquip)
-                        return ItemUsage::ITEM_USAGE_REPLACE;
+                        return ItemUsage::ITEM_USAGE_EQUIP;
                     else
                         return ItemUsage::ITEM_USAGE_BAD_EQUIP;
             }

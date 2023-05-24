@@ -155,7 +155,7 @@ namespace ai
     {
     public:
         HasUpgradeValue(PlayerbotAI* ai) : BoolCalculatedValue(ai, "has upgrade", 2), Qualified() {}
-        virtual bool Calculate() { itemUsageMap uMap = AI_VALUE2(itemUsageMap, "entry loot usage", getQualifier()); return uMap.find(ItemUsage::ITEM_USAGE_EQUIP) != uMap.end() || uMap.find(ItemUsage::ITEM_USAGE_REPLACE) != uMap.end(); };
+        virtual bool Calculate() { itemUsageMap uMap = AI_VALUE2(itemUsageMap, "entry loot usage", getQualifier()); return uMap.find(ItemUsage::ITEM_USAGE_EQUIP) != uMap.end(); };
 
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "has upgrade"; } //Must equal iternal name

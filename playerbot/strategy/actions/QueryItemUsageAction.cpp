@@ -149,8 +149,6 @@ string QueryItemUsageAction::QueryItemUsage(ItemQualifier& qualifier)
     {
     case ItemUsage::ITEM_USAGE_EQUIP:
         return "Equip";
-    case ItemUsage::ITEM_USAGE_REPLACE:
-        return "Equip (replace)";
     case ItemUsage::ITEM_USAGE_BAD_EQUIP:
         return "Equip (temporary)";
     case ItemUsage::ITEM_USAGE_BROKEN_EQUIP:
@@ -161,17 +159,30 @@ string QueryItemUsageAction::QueryItemUsage(ItemQualifier& qualifier)
         return "Tradeskill";
     case ItemUsage::ITEM_USAGE_USE:
         return "Use";
-	case ItemUsage::ITEM_USAGE_GUILD_TASK:
-		return "Guild task";
-	case ItemUsage::ITEM_USAGE_DISENCHANT:
-		return "Disenchant";
+    case ItemUsage::ITEM_USAGE_GUILD_TASK:
+        return "Guild task";
+    case ItemUsage::ITEM_USAGE_DISENCHANT:
+        return "Disenchant";
     case ItemUsage::ITEM_USAGE_VENDOR:
         return "Vendor";
+    case ItemUsage::ITEM_USAGE_KEEP:
+        return "Useful but have enough";
     case ItemUsage::ITEM_USAGE_AH:
         return "Auctionhouse";
     case ItemUsage::ITEM_USAGE_AMMO:
         return "Ammunition";
-	}
+    case ItemUsage::ITEM_USAGE_FORCE:
+    {
+        ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", qualifier.GetQualifier());
+
+        if (forceUsage == ForceItemUsage::FORCE_USAGE_NEED)
+            return "(forced) need";
+        else if (forceUsage == ForceItemUsage::FORCE_USAGE_GREED)
+            return "(forced) greed";
+        else
+            return "(forced) unknown";
+    }
+    }
 
     return "";
 }

@@ -152,8 +152,6 @@ bool EquipUpgradesAction::Execute(Event& event)
 
     FindItemUsageVisitor visitor(bot, ItemUsage::ITEM_USAGE_EQUIP);
     ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
-    visitor.SetUsage(ItemUsage::ITEM_USAGE_REPLACE);
-    ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
     visitor.SetUsage(ItemUsage::ITEM_USAGE_BAD_EQUIP);
     ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
     items = visitor.GetResult();
@@ -163,9 +161,9 @@ bool EquipUpgradesAction::Execute(Event& event)
     for (auto& item : items)
     {
         ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(item).GetQualifier());
-        if (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_REPLACE || usage == ItemUsage::ITEM_USAGE_BAD_EQUIP)
+        if (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_BAD_EQUIP)
         {
-            sLog.outDetail("Bot #%d <%s> auto equips item %d (%s)", bot->GetGUIDLow(), bot->GetName(), item->GetProto()->ItemId, usage == ItemUsage::ITEM_USAGE_EQUIP ? "no item in slot" : usage == ItemUsage::ITEM_USAGE_REPLACE ? "replace" : usage == ItemUsage::ITEM_USAGE_BAD_EQUIP ? "wrong item but empty slot" : "");
+            sLog.outDetail("Bot #%d <%s> auto equips item %d (%s)", bot->GetGUIDLow(), bot->GetName(), item->GetProto()->ItemId, usage == ItemUsage::ITEM_USAGE_EQUIP ? "better than current" : usage == ItemUsage::ITEM_USAGE_BAD_EQUIP ? "wrong item but empty slot" : "");
             EquipItem(GetMaster(), item);   
             didEquip = true;
         }

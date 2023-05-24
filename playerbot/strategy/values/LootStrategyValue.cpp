@@ -45,7 +45,7 @@ bool LootStrategyValue::CanLoot(ItemQualifier& itemQualifier, PlayerbotAI* ai)
     
     for (string& strategy : strategies) //equip,quest,skill,disenchant,use,vendor,trash
     {
-        if (strategy == "equip" && (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_REPLACE))
+        if (strategy == "equip" && usage == ItemUsage::ITEM_USAGE_EQUIP)
             return true;
         if (strategy == "quest" && usage == ItemUsage::ITEM_USAGE_QUEST)
             return true;

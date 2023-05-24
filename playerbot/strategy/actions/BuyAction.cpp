@@ -80,7 +80,7 @@ bool BuyAction::Execute(Event& event)
 
                     unordered_map <ItemUsage, uint32> freeMoney;
 
-                    freeMoney[ItemUsage::ITEM_USAGE_EQUIP] = freeMoney[ItemUsage::ITEM_USAGE_REPLACE] = (uint32)NeedMoneyFor::gear;
+                    freeMoney[ItemUsage::ITEM_USAGE_EQUIP] = (uint32)NeedMoneyFor::gear;
                     freeMoney[ItemUsage::ITEM_USAGE_USE] = (uint32)NeedMoneyFor::consumables;
                     freeMoney[ItemUsage::ITEM_USAGE_SKILL] = (uint32)NeedMoneyFor::tradeskill;
                     freeMoney[ItemUsage::ITEM_USAGE_AMMO] =  (uint32)NeedMoneyFor::ammo;
@@ -110,7 +110,7 @@ bool BuyAction::Execute(Event& event)
                     if(!result)
                         break;    
 
-                    if (usage == ItemUsage::ITEM_USAGE_REPLACE || usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_BAD_EQUIP) //Equip upgrades and stop buying this time.
+                    if (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_BAD_EQUIP) //Equip upgrades and stop buying this time.
                     {
                         ai->DoSpecificAction("equip upgrades", event, true);
                         break;

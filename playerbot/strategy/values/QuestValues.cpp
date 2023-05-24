@@ -468,7 +468,7 @@ bool NeedQuestRewardValue::Calculate()
 	for (uint8 i = 0; i < pQuest->GetRewChoiceItemsCount(); ++i)
 	{
 		ItemUsage usage = AI_VALUE2_LAZY(ItemUsage, "item usage", pQuest->RewChoiceItemId[i]);
-		if (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_REPLACE || usage == ItemUsage::ITEM_USAGE_BAD_EQUIP)
+		if (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_BAD_EQUIP)
 			return true;
 	}
 

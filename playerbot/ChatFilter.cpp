@@ -814,7 +814,7 @@ public:
 
             ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(*qualifiers.begin()).GetQualifier());
 
-            if (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_REPLACE || usage == ItemUsage::ITEM_USAGE_GUILD_TASK || usage == ItemUsage::ITEM_USAGE_BAD_EQUIP || (usage == ItemUsage::ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", ItemQualifier(*qualifiers.begin()).GetId()) == ForceItemUsage::FORCE_USAGE_NEED))
+            if (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_GUILD_TASK || usage == ItemUsage::ITEM_USAGE_BAD_EQUIP || (usage == ItemUsage::ITEM_USAGE_FORCE && AI_VALUE2(ForceItemUsage, "force item usage", ItemQualifier(*qualifiers.begin()).GetId()) == ForceItemUsage::FORCE_USAGE_NEED))
             {
                 return FilterLink(message);
             }

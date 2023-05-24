@@ -138,7 +138,6 @@ RollVote RollAction::CalculateRollVote(ItemQualifier& itemQualifier)
     switch (usage)
     {
     case ItemUsage::ITEM_USAGE_EQUIP:
-    case ItemUsage::ITEM_USAGE_REPLACE:
     case ItemUsage::ITEM_USAGE_GUILD_TASK:
     case ItemUsage::ITEM_USAGE_BAD_EQUIP:
         needVote = ROLL_NEED;

@@ -103,7 +103,6 @@ bool ShouldCraftSpellValue::Calculate()
             switch (usage)
             {
                 case ItemUsage::ITEM_USAGE_EQUIP:
-                case ItemUsage::ITEM_USAGE_REPLACE:
                 case ItemUsage::ITEM_USAGE_BAD_EQUIP:
                 case ItemUsage::ITEM_USAGE_QUEST:
                 case ItemUsage::ITEM_USAGE_USE:
