@@ -1024,9 +1024,9 @@ void RandomItemMgr::BuildItemInfoCache()
             uint32 vendorId = fields[1].GetUInt32();
             if (vendorId)
             {
-                if (vendorId == 12782 || vendorId == 12777)
+                if (vendorId == 12782 || vendorId == 12777 || vendorId == 12785)
                     allianceItems.push_back(entry);
-                if (vendorId == 14581 || vendorId == 12792)
+                if (vendorId == 14581 || vendorId == 12792 || vendorId == 12794)
                     hordeItems.push_back(entry);
             }
 #endif
@@ -1272,12 +1272,16 @@ void RandomItemMgr::BuildItemInfoCache()
                         }
                     }
                 }
-                if (isAlly && isHorde)
-                    cacheInfo->team = TEAM_BOTH_ALLOWED;
-                else if (isAlly)
-                    cacheInfo->team = ALLIANCE;
-                else if (isHorde)
-                    cacheInfo->team = HORDE;
+
+                if (!cacheInfo->team)
+                {
+                    if (isAlly && isHorde)
+                        cacheInfo->team = TEAM_BOTH_ALLOWED;
+                    else if (isAlly)
+                        cacheInfo->team = ALLIANCE;
+                    else if (isHorde)
+                        cacheInfo->team = HORDE;
+                }
 
                 sLog.outDetail("Item: %d, team (quest): %s", proto->ItemId, cacheInfo->team == ALLIANCE ? "Alliance" : cacheInfo->team == HORDE ? "Horde" : "Both");
                 sLog.outDetail("Item: %d, source: quest %d, minlevel: %d", proto->ItemId, cacheInfo->sourceId, cacheInfo->minLevel);
