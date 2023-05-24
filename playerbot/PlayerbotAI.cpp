@@ -342,6 +342,25 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         {
             bot->SetWaterBreathingIntervalMultiplier(0);
         }
+        if (HasCheat(BotCheatMask::item) && (bot->getClass() == CLASS_HUNTER || bot->getClass() == CLASS_ROGUE || bot->getClass() == CLASS_WARRIOR))
+        {
+            if (uint32 itemId = bot->GetUInt32Value(PLAYER_AMMO_ID))
+            {
+                AiObjectContext* context = aiObjectContext;
+
+                list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", this->chatHelper.formatQItem(itemId));
+
+                for (auto item : items)
+                {
+                    item->SetCount(item->GetProto()->GetMaxStackSize());
+                    break;
+                }
+            }
+            else
+            {
+                PlayerbotFactory(bot, bot->GetLevel(), 0).InitAmmo();
+            }
+        }
     }
 
     if (master && IsSafe(master) && bot->GetDistance(master) < INTERACTION_DISTANCE * 2.5 && master->GetTransport() != bot->GetTransport())

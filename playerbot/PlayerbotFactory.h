@@ -63,7 +63,7 @@ public:
     void AddPotions() { return InitPotions(); }
     void AddConsumes() { return AddConsumables(); }
     void AddFood() { return InitFood(); }
-
+    void InitAmmo();
 private:
     void Prepare();
     void InitSecondEquipmentSet();
@@ -89,7 +89,6 @@ private:
     void ClearInventory();
     void ClearAllItems();
     void ResetQuests();
-    void InitAmmo();
     void InitMounts();
     void InitPotions();
     void InitFood();
