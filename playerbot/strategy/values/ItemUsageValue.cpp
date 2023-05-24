@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "ItemUsageValue.h"
 #include "CraftValues.h"
+#include "MountValues.h"
 
 #include "../../../ahbot/AhBot.h"
 #include "../../GuildTaskMgr.h"
@@ -9,6 +10,7 @@
 #include "../../ServerFacade.h"
 
 #include "AuctionHouseBot/AuctionHouseBot.h"
+
 
 using namespace ai;
 
@@ -140,6 +142,40 @@ ItemUsage ItemUsageValue::Calculate()
 
     if (proto->Class == ITEM_CLASS_KEY)
         return ItemUsage::ITEM_USAGE_USE;
+
+    if (MountValue::GetMountSpell(itemId) && bot->CanUseItem(proto) == EQUIP_ERR_OK && MountValue::GetSpeed(MountValue::GetMountSpell(itemId)))
+    {
+        vector<MountValue> mounts = AI_VALUE(vector<MountValue>, "mount list");
+
+        if (mounts.empty())
+            return ItemUsage::ITEM_USAGE_EQUIP;
+
+        uint32 newSpeed[2] = { MountValue::GetSpeed(MountValue::GetMountSpell(itemId), false), MountValue::GetSpeed(MountValue::GetMountSpell(itemId), true) };
+
+        bool hasBetterMount = false, hasSameMount = false;
+
+        for (auto& mount : mounts)
+        {            
+            for (bool canFly : {true, false})
+            {
+                if (!newSpeed[canFly])
+                    continue;
+
+                uint32 currentSpeed = mount.GetSpeed(canFly);
+                
+                if (currentSpeed > newSpeed[canFly])
+                    hasBetterMount = true;
+                else if (currentSpeed == newSpeed[canFly])
+                    hasSameMount = true;
+            }
+
+            if (hasBetterMount)
+                break;
+        }
+
+        if (!hasBetterMount)
+            return hasSameMount ? ItemUsage::ITEM_USAGE_KEEP : ItemUsage::ITEM_USAGE_EQUIP;
+    }
 
     if (proto->Class == ITEM_CLASS_CONSUMABLE && !ai->HasCheat(BotCheatMask::item))
     {       

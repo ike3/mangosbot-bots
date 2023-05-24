@@ -5,6 +5,7 @@
 #include "../values/ItemCountValue.h"
 #include "../values/ItemUsageValue.h"
 #include "../values/BudgetValues.h"
+#include "../values/MountValues.h"
 #include "AuctionHouseBot/AuctionHouseBot.h"
 
 using namespace ai;
@@ -67,7 +68,6 @@ bool BuyAction::Execute(Event& event)
             {
                 for (uint32 i=0; i<10; i++) //Buy 10 times or until no longer usefull/possible
                 {
-                    RESET_AI_VALUE2(ItemUsage, "item usage", tItem->item);
                     ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", tItem->item);
                     ItemPrototype const* proto = sObjectMgr.GetItemPrototype(tItem->item);
 
@@ -108,10 +108,14 @@ bool BuyAction::Execute(Event& event)
                         result |= BuyItem(requester, vItems, vendorguid, proto);
 #endif
                     if(!result)
-                        break;    
+                        break;   
+
+                    RESET_AI_VALUE2(ItemUsage, "item usage", tItem->item);
+                    RESET_AI_VALUE(vector<MountValue>, "mount list");
 
                     if (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_BAD_EQUIP) //Equip upgrades and stop buying this time.
                     {
+                        RESET_AI_VALUE2(ItemUsage, "item usage", tItem->item);
                         ai->DoSpecificAction("equip upgrades", event, true);
                         break;
                     }
