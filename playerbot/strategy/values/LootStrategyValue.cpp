@@ -6,78 +6,60 @@
 using namespace ai;
 using namespace std;
 
-namespace ai
+void LootStrategyValue::Set(string newValue)
 {
-    class NormalLootStrategy : public LootStrategy
-    {
-    public:
-        virtual bool CanLoot(ItemQualifier& itemQualifier, AiObjectContext *context)
-        {
-            ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", itemQualifier.GetQualifier());
-            return usage != ItemUsage::ITEM_USAGE_NONE;
-        }
-        virtual string GetName() { return "normal"; }
-    };
+    //Backwards compatibility
+    if (newValue == "normal")
+        newValue = "equip,vendor,quest,skill,use";
+    if(newValue == "disenchant")
+        newValue = "equip,vendor,disenchant,quest,skill,use";
+    if (newValue == "gray")
+        newValue = "equip,vendor,disenchant,quest,skill,use,vendor";
+    if (newValue == "all")
+        newValue = "equip,vendor,disenchant,quest,skill,use,vendor,trash";
 
-    class GrayLootStrategy : public NormalLootStrategy
-    {
-    public:
-        virtual bool CanLoot(ItemQualifier& itemQualifier, AiObjectContext *context)
-        {
-            return NormalLootStrategy::CanLoot(itemQualifier, context) || itemQualifier.GetProto()->Quality == ITEM_QUALITY_POOR;
-        }
-        virtual string GetName() { return "gray"; }
-    };
+    SubStrategyValue::Set(newValue);
+}
 
-    class DisenchantLootStrategy : public NormalLootStrategy
-    {
-    public:
-        virtual bool CanLoot(ItemQualifier& itemQualifier, AiObjectContext *context)
-        {
-            return NormalLootStrategy::CanLoot(itemQualifier, context) ||
-                    (itemQualifier.GetProto()->Quality >= ITEM_QUALITY_UNCOMMON && itemQualifier.GetProto()->Bonding != BIND_WHEN_PICKED_UP &&
-                    (itemQualifier.GetProto()->Class == ITEM_CLASS_ARMOR || itemQualifier.GetProto()->Class == ITEM_CLASS_WEAPON));
-        }
-        virtual string GetName() { return "disenchant"; }
-    };
+bool LootStrategyValue::CanLoot(ItemQualifier& itemQualifier, PlayerbotAI* ai)
+{
+    AiObjectContext* context = ai->GetAiObjectContext();
 
-    class AllLootStrategy : public LootStrategy
+    ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", itemQualifier.GetQualifier());
+
+    if (usage == ItemUsage::ITEM_USAGE_AMMO)
+        return true;
+
+    if(usage == ItemUsage::ITEM_USAGE_GUILD_TASK)
+        return true;
+
+    if (usage == ItemUsage::ITEM_USAGE_FORCE)
     {
-    public:
-        virtual bool CanLoot(ItemQualifier& itemQualifier, AiObjectContext *context)
-        {
+        ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", itemQualifier.GetQualifier());
+
+        if (forceUsage == ForceItemUsage::FORCE_USAGE_NEED || forceUsage == ForceItemUsage::FORCE_USAGE_GREED)
             return true;
-        }
-        virtual string GetName() { return "all"; }
-    };
-}
+    }
 
-LootStrategy *LootStrategyValue::normal = new NormalLootStrategy();
-LootStrategy *LootStrategyValue::gray = new GrayLootStrategy();
-LootStrategy *LootStrategyValue::disenchant = new DisenchantLootStrategy();
-LootStrategy *LootStrategyValue::all = new AllLootStrategy();
+    vector<string> strategies = StrSplit(AI_VALUE(string, "loot strategy"), ",");
+    
+    for (string& strategy : strategies) //equip,quest,skill,disenchant,use,vendor,trash
+    {
+        if (strategy == "equip" && (usage == ItemUsage::ITEM_USAGE_EQUIP || usage == ItemUsage::ITEM_USAGE_REPLACE))
+            return true;
+        if (strategy == "quest" && usage == ItemUsage::ITEM_USAGE_QUEST)
+            return true;
+        if (strategy == "skill" && usage == ItemUsage::ITEM_USAGE_SKILL)
+            return true;
+        if (strategy == "disenchant" && usage == ItemUsage::ITEM_USAGE_DISENCHANT)
+            return true;
+        if (strategy == "use" && usage == ItemUsage::ITEM_USAGE_USE)
+            return true;
+        if (strategy == "vendor" && (usage == ItemUsage::ITEM_USAGE_BAD_EQUIP || usage == ItemUsage::ITEM_USAGE_VENDOR || usage == ItemUsage::ITEM_USAGE_AH))
+            return true;
+        if (strategy == "trash" && usage == ItemUsage::ITEM_USAGE_NONE)
+            return true;
+    }
 
-LootStrategy* LootStrategyValue::instance(string strategy)
-{
-    if (strategy == "*" || strategy == "all")
-        return all;
-
-    if (strategy == "g" || strategy == "gray")
-        return gray;
-
-    if (strategy == "d" || strategy == "e" || strategy == "disenchant" || strategy == "enchant")
-        return disenchant;
-
-    return normal;
-}
-
-string LootStrategyValue::Save()
-{
-    return value ? value->GetName() : "?";
-}
-
-bool LootStrategyValue::Load(string text)
-{
-    value = LootStrategyValue::instance(text);
-    return true;
+    return false;
 }

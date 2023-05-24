@@ -6,15 +6,6 @@ namespace ai
 {
     class ItemQualifier;
 
-    class LootStrategy
-    {
-    public:
-        LootStrategy() {}
-        virtual ~LootStrategy() {};
-        virtual bool CanLoot(ItemQualifier& itemQualifier, AiObjectContext *context) = 0;
-        virtual string GetName() = 0;
-    };
-
     class LootObject
     {
     public:

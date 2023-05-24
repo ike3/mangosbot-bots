@@ -1,18 +1,17 @@
 #pragma once
 #include "../../LootObjectStack.h"
 #include "../Value.h"
+#include "SubStrategyValue.h"
 
 namespace ai
 {
-    class LootStrategyValue : public ManualSetValue<LootStrategy*>
+    class LootStrategyValue : public SubStrategyValue
 	{
 	public:
-        LootStrategyValue(PlayerbotAI* ai, string name = "loot strategy") : ManualSetValue<LootStrategy*>(ai, normal, name) {}
+        LootStrategyValue(PlayerbotAI* ai, string defaultValue = "equip,quest,skill,disenchant,use,vendor", string name = "loot strategy", string allowedValues = "equip,quest,skill,disenchant,use,vendor,trash") : SubStrategyValue(ai, defaultValue, name, allowedValues) {}
 
-        virtual string Save();
-        virtual bool Load(string value);
+        virtual void Set(string newValue) override;
 
-        static LootStrategy *normal, *gray, *all, *disenchant;
-        static LootStrategy* instance(string name);
+        static bool CanLoot(ItemQualifier& itemQualifier, PlayerbotAI* ai);
     };
 }

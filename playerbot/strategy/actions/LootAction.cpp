@@ -414,8 +414,7 @@ bool StoreLootAction::IsLootAllowed(ItemQualifier& itemQualifier, PlayerbotAI *a
     //    proto->Class == ITEM_CLASS_QUEST)
     //{
 
-    LootStrategy* lootStrategy = AI_VALUE(LootStrategy*, "loot strategy");
-    bool canLoot = lootStrategy && lootStrategy->CanLoot(itemQualifier, context);
+    bool canLoot = LootStrategyValue::CanLoot(itemQualifier, ai);
 
     //if (canLoot && proto->Bonding == BIND_WHEN_PICKED_UP && ai->HasActivePlayerMaster())
     //    canLoot = sPlayerbotAIConfig.IsInRandomAccountList(sObjectMgr.GetPlayerAccountIdByGUID(ai->GetBot()->GetObjectGuid()));

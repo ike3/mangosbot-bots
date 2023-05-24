@@ -1,7 +1,7 @@
 #include "botpch.h"
 #include "../../playerbot.h"
 #include "LootStrategyAction.h"
-#include "../values/LootStrategyValue.h"
+#include "../values/SubStrategyValue.h"
 #include "../values/ItemUsageValue.h"
 #include "LootAction.h"
 #include "PlayerbotAIAware.h"
@@ -14,14 +14,13 @@ bool LootStrategyAction::Execute(Event& event)
 
     LootObjectStack* lootItems = AI_VALUE(LootObjectStack*, "available loot");
     set<uint32>& alwaysLootItems = AI_VALUE(set<uint32>&, "always loot list");
-    Value<LootStrategy*>* lootStrategy = context->GetValue<LootStrategy*>("loot strategy");
 
     if (strategy == "?")
     {
         {
             ostringstream out;
             out << "Loot strategy: ";
-            out << lootStrategy->Get()->GetName();
+            out << AI_VALUE(string, "loot strategy");
             ai->TellPlayer(GetMaster(), out);
         }
 
@@ -46,9 +45,12 @@ bool LootStrategyAction::Execute(Event& event)
 
         if (itemQualifiers.size() == 0)
         {
-            lootStrategy->Set(LootStrategyValue::instance(strategy));
+            SET_AI_VALUE(string, "loot strategy", strategy);
+
+            string lootStrategy = AI_VALUE(string, "loot strategy");
+
             ostringstream out;
-            out << "Loot strategy set to " << lootStrategy->Get()->GetName();
+            out << "Loot strategy set to " << lootStrategy;
             ai->TellPlayer(GetMaster(), out);
             return true;
         }
