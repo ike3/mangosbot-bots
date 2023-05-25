@@ -1281,6 +1281,7 @@ void TravelMgr::LoadQuestTravelTable()
         out << "sWorld.GetCurrentDiff(),";
         out << "sWorld.GetAverageDiff(),";
         out << "sWorld.GetMaxDiff(),";
+        out << "virtualMemUsedByMe" << ",";
         out << "activityPercentage,";
         out << "activityPercentageMod,";
         out << "activeBots,";

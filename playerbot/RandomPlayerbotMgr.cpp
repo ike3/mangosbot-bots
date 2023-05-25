@@ -37,6 +37,11 @@
 #include <iomanip>
 #include <float.h>
 
+#if PLATFORM == PLATFORM_WINDOWS
+#include "windows.h"
+#include "psapi.h"
+#endif
+
 using namespace ai;
 using namespace MaNGOS;
 
@@ -517,14 +522,31 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     setActivityPercentage(activityPercentage);    
 
+    for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
+    {
+        if (!sMapStore.LookupEntry(i))
+            continue;
+
+        uint32 mapId = sMapStore.LookupEntry(i)->MapID;
+        WorldPosition::unloadMapAndVMaps(mapId);
+    }    
+
     if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
     {
+        SIZE_T virtualMemUsedByMe = 0;
+#if PLATFORM == PLATFORM_WINDOWS
+        PROCESS_MEMORY_COUNTERS_EX pmc;
+        GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+        virtualMemUsedByMe = pmc.PrivateUsage;
+#endif
+
         ostringstream out;
         out << sWorld.GetCurrentMSTime() << ", ";
 
         out << sWorld.GetCurrentDiff() << ",";
         out << sWorld.GetAverageDiff() << ",";
         out << sWorld.GetMaxDiff() << ",";
+        out << virtualMemUsedByMe << ",";
         out << activityPercentage << ",";
         out << activityPercentageMod << ",";
         out << activeBots << ",";
