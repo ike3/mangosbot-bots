@@ -24,6 +24,9 @@ namespace ai
 
         if (!shouldStay)
         {
+            if (group)
+                sPlayerbotAIConfig.logEvent(ai, "LeaveGroupAction", group->GetLeaderName(), to_string(group->GetMembersCount()-1));
+
             WorldPacket p;
             string member = bot->GetName();
             p << uint32(PARTY_OP_LEAVE) << member << uint32(0);
@@ -40,9 +43,6 @@ namespace ai
         if(!aiMaster)
             ai->ResetStrategies();
         ai->Reset();
-
-        if(group)
-            sPlayerbotAIConfig.logEvent(ai, "LeaveGroupAction", group->GetLeaderName(), to_string(group->GetMembersCount()));
 
         return true;
 	}
