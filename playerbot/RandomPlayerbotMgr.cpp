@@ -522,15 +522,6 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     setActivityPercentage(activityPercentage);    
 
-    for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
-    {
-        if (!sMapStore.LookupEntry(i))
-            continue;
-
-        uint32 mapId = sMapStore.LookupEntry(i)->MapID;
-        WorldPosition::unloadMapAndVMaps(mapId);
-    }    
-
     if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
     {
         double virtualMemUsedByMe = 0;
