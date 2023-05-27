@@ -97,11 +97,8 @@ namespace ai
             //Upgrade current equiped item enchantment.
             if (item->GetBagSlot() == INVENTORY_SLOT_BAG_0) 
             {
-                ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", proto->ItemId);
-
-                if (forceUsage != ForceItemUsage::FORCE_USAGE_NONE)
+                if (HAS_AI_VALUE2("force item usage", proto->ItemId))
                     return 0;
-
 
                 uint32 currentEnchnatWeight = 0;
                 if (item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT))

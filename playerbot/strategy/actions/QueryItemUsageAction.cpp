@@ -171,17 +171,10 @@ string QueryItemUsageAction::QueryItemUsage(ItemQualifier& qualifier)
         return "Auctionhouse";
     case ItemUsage::ITEM_USAGE_AMMO:
         return "Ammunition";
-    case ItemUsage::ITEM_USAGE_FORCE:
-    {
-        ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", qualifier.GetQualifier());
-
-        if (forceUsage == ForceItemUsage::FORCE_USAGE_NEED)
-            return "(forced) need";
-        else if (forceUsage == ForceItemUsage::FORCE_USAGE_GREED)
-            return "(forced) greed";
-        else
-            return "(forced) unknown";
-    }
+    case ItemUsage::ITEM_USAGE_FORCE_NEED:
+        return "(forced) need";
+    case ItemUsage::ITEM_USAGE_FORCE_GREED:
+        return "(forced) greed";
     }
 
     return "";

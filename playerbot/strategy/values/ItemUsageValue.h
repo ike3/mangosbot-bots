@@ -57,7 +57,8 @@ namespace ai
         ITEM_USAGE_KEEP = 10,
         ITEM_USAGE_VENDOR = 11,
         ITEM_USAGE_AMMO = 12,
-        ITEM_USAGE_FORCE = 13
+        ITEM_USAGE_FORCE_NEED = 13,
+        ITEM_USAGE_FORCE_GREED = 14
     };
 
     enum class ForceItemUsage : uint8
@@ -119,7 +120,7 @@ namespace ai
         virtual vector<string> GetUsedValues() { return {}; }
 #endif
 
-        virtual string Save() { return (uint8)value ? to_string((uint8)value) : "?"; }
-        virtual bool Load(string force) { if (!force.empty()) value = ForceItemUsage(stoi(force)); return !force.empty(); }
+        virtual string Save() override { return (uint8)value ? to_string((uint8)value) : "?"; }
+        virtual bool Load(string force) override { if (!force.empty()) value = ForceItemUsage(stoi(force)); return !force.empty(); }        
     };
 }

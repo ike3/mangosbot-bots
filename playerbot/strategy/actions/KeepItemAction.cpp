@@ -83,7 +83,7 @@ bool KeepItemAction::Execute(Event& event)
 
             ostringstream out;
             out << chat->formatItem(proto);
-            out << ": " << keepName[AI_VALUE2(ForceItemUsage, "force item usage", id)] << " the item.";
+            out << ": " << keepName[AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", id, ForceItemUsage::FORCE_USAGE_NEED)] << " the item.";
             ai->TellPlayer(GetMaster(), out.str());
 
         }
@@ -106,10 +106,11 @@ bool KeepItemAction::Execute(Event& event)
 
     for (auto& id : ids)
     {
-        if (AI_VALUE2(ForceItemUsage, "force item usage", id) != usage)
+        if (AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", id, ForceItemUsage::FORCE_USAGE_NONE) != usage)
+        {
             changed++;
-
-        SET_AI_VALUE2(ForceItemUsage, "force item usage", id, usage);
+            SET_AI_VALUE2(ForceItemUsage, "force item usage", id, usage);
+        }
     }
 
     ostringstream out;

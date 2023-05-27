@@ -106,29 +106,21 @@ bool ShouldCraftSpellValue::Calculate()
                 case ItemUsage::ITEM_USAGE_BAD_EQUIP:
                 case ItemUsage::ITEM_USAGE_QUEST:
                 case ItemUsage::ITEM_USAGE_USE:
+                case ItemUsage::ITEM_USAGE_FORCE_NEED:
                 {
                     needItem = true;
                     break;
                 }
-
-                case ItemUsage::ITEM_USAGE_FORCE:
-                {
-                    ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", to_string(pSpellInfo->EffectItemType[i]));
-
-                    needItem = forceUsage == ForceItemUsage::FORCE_USAGE_NEED;
-                    break;
-                }
-
                 case ItemUsage::ITEM_USAGE_SKILL:
                 case ItemUsage::ITEM_USAGE_AMMO:
                 case ItemUsage::ITEM_USAGE_DISENCHANT:
                 case ItemUsage::ITEM_USAGE_AH:
                 case ItemUsage::ITEM_USAGE_VENDOR:
+                case ItemUsage::ITEM_USAGE_FORCE_GREED:
                 {
                     needItem = !ai->HasCheat(BotCheatMask::item);
                     break;
                 }
-
                 case ItemUsage::ITEM_USAGE_NONE:
                 case ItemUsage::ITEM_USAGE_KEEP:
                 case ItemUsage::ITEM_USAGE_BROKEN_EQUIP:
@@ -137,7 +129,6 @@ bool ShouldCraftSpellValue::Calculate()
                     needItem = false;
                     break;
                 }
-
                 default:
                 {
                     needItem = false;

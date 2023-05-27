@@ -46,6 +46,23 @@ namespace ai
             return GetValue<T>(name, out.str());
         }
 
+        bool HasValue(const string& name)
+        {
+            return valueContexts.IsCreated(name);
+        }
+
+        bool HasValue(const string& name, const string& param)
+        {
+            return HasValue((string(name) + "::" + param));
+        }
+
+        bool HasValue(const string& name, int32 param)
+        {
+            ostringstream out; out << param;
+            return HasValue(name, out.str());
+        }
+
+
         set<string> GetValues()
         {
             return valueContexts.GetCreated();
@@ -102,6 +119,11 @@ namespace ai
 
 #define AI_VALUE_LAZY(type, name) context->GetValue<type>(name)->LazyGet()
 #define AI_VALUE2_LAZY(type, name, param) context->GetValue<type>(name, param)->LazyGet()
+
+#define HAS_AI_VALUE(name) context->HasValue(name)
+#define HAS_AI_VALUE2(name, param) context->HasValue(name, param)
+#define AI_VALUE_EXISTS(type, name, emptyval) (HAS_AI_VALUE(name) ? AI_VALUE(type, name) : emptyval)
+#define AI_VALUE2_EXISTS(type, name, param, emptyval) (HAS_AI_VALUE2(name, param) ? AI_VALUE2(type, name, param) : emptyval)
 
 #define SET_AI_VALUE(type, name, value) context->GetValue<type>(name)->Set(value)
 #define SET_AI_VALUE2(type, name, param, value) context->GetValue<type>(name, param)->Set(value)

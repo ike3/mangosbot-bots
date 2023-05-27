@@ -33,13 +33,11 @@ bool LootStrategyValue::CanLoot(ItemQualifier& itemQualifier, PlayerbotAI* ai)
     if(usage == ItemUsage::ITEM_USAGE_GUILD_TASK)
         return true;
 
-    if (usage == ItemUsage::ITEM_USAGE_FORCE)
-    {
-        ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", itemQualifier.GetQualifier());
+    if (usage == ItemUsage::ITEM_USAGE_FORCE_NEED)
+       return true;
 
-        if (forceUsage == ForceItemUsage::FORCE_USAGE_NEED || forceUsage == ForceItemUsage::FORCE_USAGE_GREED)
-            return true;
-    }
+    if (usage == ItemUsage::ITEM_USAGE_FORCE_GREED)
+        return true;
 
     vector<string> strategies = StrSplit(AI_VALUE(string, "loot strategy"), ",");
     

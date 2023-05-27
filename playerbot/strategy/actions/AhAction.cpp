@@ -181,7 +181,7 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
         freeMoney[ItemUsage::ITEM_USAGE_USE] = (uint32)NeedMoneyFor::consumables;
         freeMoney[ItemUsage::ITEM_USAGE_SKILL] = freeMoney[ItemUsage::ITEM_USAGE_DISENCHANT] =(uint32)NeedMoneyFor::tradeskill;
         freeMoney[ItemUsage::ITEM_USAGE_AMMO] = (uint32)NeedMoneyFor::ammo;
-        freeMoney[ItemUsage::ITEM_USAGE_QUEST] = freeMoney[ItemUsage::ITEM_USAGE_AH] = freeMoney[ItemUsage::ITEM_USAGE_VENDOR] = freeMoney[ItemUsage::ITEM_USAGE_FORCE] = (uint32)NeedMoneyFor::anything;
+        freeMoney[ItemUsage::ITEM_USAGE_QUEST] = freeMoney[ItemUsage::ITEM_USAGE_AH] = freeMoney[ItemUsage::ITEM_USAGE_VENDOR] = freeMoney[ItemUsage::ITEM_USAGE_FORCE_NEED] = freeMoney[ItemUsage::ITEM_USAGE_FORCE_GREED] = (uint32)NeedMoneyFor::anything;
 
         uint32 checkNumAuctions = urand(50, 250);
 
@@ -222,7 +222,8 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
                     continue;
                 power = 1000;
                 break;
-            case ItemUsage::ITEM_USAGE_FORCE:
+            case ItemUsage::ITEM_USAGE_FORCE_NEED:
+            case ItemUsage::ITEM_USAGE_FORCE_GREED:
                 power = 1000;
                 break;
             }

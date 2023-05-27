@@ -208,6 +208,8 @@ namespace ai
         bool IsShared() { return shared; }
         bool IsSupportsSiblings() { return supportsSiblings; }
 
+        bool IsCreated(const string& name) { return created.find(name) != created.end(); }
+
         set<string> GetCreated()
         {
             set<string> keys;
@@ -299,6 +301,16 @@ namespace ai
                     result.insert(*j);
             }
             return result;
+        }
+
+        bool IsCreated(const string& name)
+        {
+            for (typename list<NamedObjectContext<T>*>::iterator i = contexts.begin(); i != contexts.end(); i++)
+            {
+                if ((*i)->IsCreated(name))
+                    return true;
+            }
+            return false;
         }
 
         set<string> GetCreated()

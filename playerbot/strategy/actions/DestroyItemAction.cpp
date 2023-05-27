@@ -49,7 +49,7 @@ bool SmartDestroyItemAction::Execute(Event& event)
 
         for (auto& item : items)
         {
-            if (AI_VALUE2(ForceItemUsage, "force item usage", item->GetProto()->ItemId) != ForceItemUsage::FORCE_USAGE_NONE)
+            if (HAS_AI_VALUE2("force item usage", item->GetProto()->ItemId))
                 continue;
 
             FindItemByIdVisitor visitor(item->GetProto()->ItemId);
@@ -85,7 +85,7 @@ bool SmartDestroyItemAction::Execute(Event& event)
 
         for (auto& item : items)
         {
-            if (AI_VALUE2(ForceItemUsage, "force item usage", item) != ForceItemUsage::FORCE_USAGE_NONE)
+            if (HAS_AI_VALUE2("force item usage", item))
                 continue;
 
             FindItemByIdVisitor visitor(item);

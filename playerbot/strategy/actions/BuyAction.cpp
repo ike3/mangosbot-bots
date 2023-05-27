@@ -84,7 +84,7 @@ bool BuyAction::Execute(Event& event)
                     freeMoney[ItemUsage::ITEM_USAGE_USE] = (uint32)NeedMoneyFor::consumables;
                     freeMoney[ItemUsage::ITEM_USAGE_SKILL] = (uint32)NeedMoneyFor::tradeskill;
                     freeMoney[ItemUsage::ITEM_USAGE_AMMO] =  (uint32)NeedMoneyFor::ammo;
-                    freeMoney[ItemUsage::ITEM_USAGE_QUEST] = freeMoney[ItemUsage::ITEM_USAGE_FORCE] = (uint32)NeedMoneyFor::anything;
+                    freeMoney[ItemUsage::ITEM_USAGE_QUEST] = freeMoney[ItemUsage::ITEM_USAGE_FORCE_NEED] = freeMoney[ItemUsage::ITEM_USAGE_FORCE_GREED] = (uint32)NeedMoneyFor::anything;
                     
                     AuctionHouseBotItemData itemInfo = sAuctionHouseBot.GetItemData(proto->ItemId);
                     if (itemInfo.Value > ((int32)proto->BuyPrice) * 1.1f)

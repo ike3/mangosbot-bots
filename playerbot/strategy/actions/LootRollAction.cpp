@@ -139,6 +139,7 @@ RollVote RollAction::CalculateRollVote(ItemQualifier& itemQualifier)
     {
     case ItemUsage::ITEM_USAGE_EQUIP:
     case ItemUsage::ITEM_USAGE_GUILD_TASK:
+    case ItemUsage::ITEM_USAGE_FORCE_NEED:
     case ItemUsage::ITEM_USAGE_BAD_EQUIP:
         needVote = ROLL_NEED;
         break;
@@ -147,10 +148,8 @@ RollVote RollAction::CalculateRollVote(ItemQualifier& itemQualifier)
     case ItemUsage::ITEM_USAGE_DISENCHANT:
     case ItemUsage::ITEM_USAGE_AH:
     case ItemUsage::ITEM_USAGE_VENDOR:
+    case ItemUsage::ITEM_USAGE_FORCE_GREED:
         needVote = ROLL_GREED;
-        break;
-    case ItemUsage::ITEM_USAGE_FORCE:
-        needVote = (AI_VALUE2(ForceItemUsage, "force item usage", itemQualifier.GetId()) == ForceItemUsage::FORCE_USAGE_NEED) ? ROLL_NEED : ROLL_GREED;
         break;
     }
     return StoreLootAction::IsLootAllowed(itemQualifier, bot->GetPlayerbotAI()) ? needVote : ROLL_PASS;

@@ -89,6 +89,19 @@ ItemUsage ItemUsageValue::Calculate()
     if (!proto)
         return ItemUsage::ITEM_USAGE_NONE;
 
+    //FORCE
+    ForceItemUsage forceUsage = AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", proto->ItemId, ForceItemUsage::FORCE_USAGE_NONE);
+
+    if (forceUsage == ForceItemUsage::FORCE_USAGE_GREED)
+        return ItemUsage::ITEM_USAGE_FORCE_GREED;
+
+    if (forceUsage == ForceItemUsage::FORCE_USAGE_NEED)
+        return ItemUsage::ITEM_USAGE_FORCE_NEED;
+
+    if (forceUsage == ForceItemUsage::FORCE_USAGE_KEEP)
+        return ItemUsage::ITEM_USAGE_KEEP;
+
+    //SKILL
     if (ai->HasActivePlayerMaster())
     {
         if (IsItemUsefulForSkill(proto))
@@ -140,43 +153,10 @@ ItemUsage ItemUsageValue::Calculate()
         }
     }
 
+    //USE
     if (proto->Class == ITEM_CLASS_KEY)
         return ItemUsage::ITEM_USAGE_USE;
-
-    if (MountValue::GetMountSpell(itemId) && bot->CanUseItem(proto) == EQUIP_ERR_OK && MountValue::GetSpeed(MountValue::GetMountSpell(itemId)))
-    {
-        vector<MountValue> mounts = AI_VALUE(vector<MountValue>, "mount list");
-
-        if (mounts.empty())
-            return ItemUsage::ITEM_USAGE_EQUIP;
-
-        uint32 newSpeed[2] = { MountValue::GetSpeed(MountValue::GetMountSpell(itemId), false), MountValue::GetSpeed(MountValue::GetMountSpell(itemId), true) };
-
-        bool hasBetterMount = false, hasSameMount = false;
-
-        for (auto& mount : mounts)
-        {            
-            for (bool canFly : {true, false})
-            {
-                if (!newSpeed[canFly])
-                    continue;
-
-                uint32 currentSpeed = mount.GetSpeed(canFly);
-                
-                if (currentSpeed > newSpeed[canFly])
-                    hasBetterMount = true;
-                else if (currentSpeed == newSpeed[canFly])
-                    hasSameMount = true;
-            }
-
-            if (hasBetterMount)
-                break;
-        }
-
-        if (!hasBetterMount)
-            return hasSameMount ? ItemUsage::ITEM_USAGE_KEEP : ItemUsage::ITEM_USAGE_EQUIP;
-    }
-
+    
     if (proto->Class == ITEM_CLASS_CONSUMABLE && !ai->HasCheat(BotCheatMask::item))
     {       
         string foodType = GetConsumableType(proto, bot->HasMana());
@@ -207,18 +187,55 @@ ItemUsage ItemUsageValue::Calculate()
             return ItemUsage::ITEM_USAGE_KEEP;
     }
 
+    //GUIDTASK
     if (bot->GetGuildId() && sGuildTaskMgr.IsGuildTaskItem(itemId, bot->GetGuildId()))
         return ItemUsage::ITEM_USAGE_GUILD_TASK;
+
+    //EQUIP
+    if (MountValue::GetMountSpell(itemId) && bot->CanUseItem(proto) == EQUIP_ERR_OK && MountValue::GetSpeed(MountValue::GetMountSpell(itemId)))
+    {
+        vector<MountValue> mounts = AI_VALUE(vector<MountValue>, "mount list");
+
+        if (mounts.empty())
+            return ItemUsage::ITEM_USAGE_EQUIP;
+
+        uint32 newSpeed[2] = { MountValue::GetSpeed(MountValue::GetMountSpell(itemId), false), MountValue::GetSpeed(MountValue::GetMountSpell(itemId), true) };
+
+        bool hasBetterMount = false, hasSameMount = false;
+
+        for (auto& mount : mounts)
+        {
+            for (bool canFly : {true, false})
+            {
+                if (!newSpeed[canFly])
+                    continue;
+
+                uint32 currentSpeed = mount.GetSpeed(canFly);
+
+                if (currentSpeed > newSpeed[canFly])
+                    hasBetterMount = true;
+                else if (currentSpeed == newSpeed[canFly])
+                    hasSameMount = true;
+            }
+
+            if (hasBetterMount)
+                break;
+        }
+
+        if (!hasBetterMount)
+            return hasSameMount ? ItemUsage::ITEM_USAGE_KEEP : ItemUsage::ITEM_USAGE_EQUIP;
+    }
 
     ItemUsage equip = QueryItemUsageForEquip(itemQualifier);
     if (equip != ItemUsage::ITEM_USAGE_NONE)
         return equip;
 
+    //DISENCHANT
     if ((proto->Class == ITEM_CLASS_ARMOR || proto->Class == ITEM_CLASS_WEAPON) && proto->Bonding != BIND_WHEN_PICKED_UP &&
         ai->HasSkill(SKILL_ENCHANTING) && proto->Quality >= ITEM_QUALITY_UNCOMMON)
         return ItemUsage::ITEM_USAGE_DISENCHANT;
 
-    //While sync is on, do not loot quest items that are also usefull for master. Master 
+    //QUEST
     if (!ai->GetMaster() || !sPlayerbotAIConfig.syncQuestWithPlayer || !IsItemUsefulForQuest(ai->GetMaster(), proto))
     {
         if (IsItemUsefulForQuest(bot, proto))
@@ -227,7 +244,7 @@ ItemUsage ItemUsageValue::Calculate()
             return ItemUsage::ITEM_USAGE_KEEP;
     }
 
-
+    //AMMO
     if (proto->Class == ITEM_CLASS_PROJECTILE && bot->CanUseItem(proto) == EQUIP_ERR_OK)
         if (bot->getClass() == CLASS_HUNTER || bot->getClass() == CLASS_ROGUE || bot->getClass() == CLASS_WARRIOR)
         {
@@ -281,19 +298,11 @@ ItemUsage ItemUsageValue::Calculate()
             }
         }
 
-    //Do not sell/ah epic or above.
+    //KEEP
     if (proto->Quality >= ITEM_QUALITY_EPIC && !sRandomPlayerbotMgr.IsRandomBot(bot))
         return ItemUsage::ITEM_USAGE_KEEP;
 
-    ForceItemUsage forceUsage = AI_VALUE2(ForceItemUsage, "force item usage", proto->ItemId);
-
-    if (forceUsage == ForceItemUsage::FORCE_USAGE_GREED || forceUsage == ForceItemUsage::FORCE_USAGE_NEED)
-        return ItemUsage::ITEM_USAGE_FORCE;
-
-    if(forceUsage == ForceItemUsage::FORCE_USAGE_KEEP || forceUsage == ForceItemUsage::FORCE_USAGE_EQUIP)
-        return ItemUsage::ITEM_USAGE_KEEP;
-
-    //Need to add something like free bag space or item value.
+    //VENDOR/AH
     if (proto->SellPrice > 0)
     {
         AuctionHouseBotItemData itemInfo = sAuctionHouseBot.GetItemData(proto->ItemId);
@@ -313,6 +322,7 @@ ItemUsage ItemUsageValue::Calculate()
         return ItemUsage::ITEM_USAGE_VENDOR;
     }
 
+    //NONE
     return ItemUsage::ITEM_USAGE_NONE;
 }
 
@@ -389,9 +399,9 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
 
     const ItemPrototype* oldItemProto = oldItem->GetProto();
 
-    if (AI_VALUE2(ForceItemUsage, "force item usage", oldItemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP) //Current equip is forced. Do not unequip.
+    if (AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", oldItemProto->ItemId, ForceItemUsage::FORCE_USAGE_NONE) == ForceItemUsage::FORCE_USAGE_EQUIP) //Current equip is forced. Do not unequip.
     {
-        if (AI_VALUE2(ForceItemUsage, "force item usage", itemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP)
+        if (AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", itemProto->ItemId, ForceItemUsage::FORCE_USAGE_NONE) == ForceItemUsage::FORCE_USAGE_EQUIP)
             return ItemUsage::ITEM_USAGE_KEEP;
         else
             return ItemUsage::ITEM_USAGE_NONE;
@@ -403,7 +413,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemQualifier& itemQualifier)
         shouldEquip = statWeight >= oldStatWeight;
     }
 
-    if (AI_VALUE2(ForceItemUsage, "force item usage", itemProto->ItemId) == ForceItemUsage::FORCE_USAGE_EQUIP) //New item is forced. Always equip it.
+    if (AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", itemProto->ItemId, ForceItemUsage::FORCE_USAGE_NONE) == ForceItemUsage::FORCE_USAGE_EQUIP) //New item is forced. Always equip it.
         return ItemUsage::ITEM_USAGE_EQUIP;
 
     //Bigger quiver
