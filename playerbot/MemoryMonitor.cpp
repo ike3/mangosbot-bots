@@ -89,7 +89,7 @@ void MemoryMonitor::LogCount(std::string filename)
     {
         for (auto& num : nums)
         {
-            line += ";" + num.first;
+            line += "," + num.first;
         }
 
         fprintf(file, line.c_str());
@@ -100,11 +100,12 @@ void MemoryMonitor::LogCount(std::string filename)
         headers = true;
     }
         
-    line = timestamp.c_str();
+    //line = timestamp.c_str();
+    line = to_string(static_cast<uint32>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch() - GetApplicationStartTime().time_since_epoch()).count()));
 
     for (auto& num : nums)
     {
-        line += ";" + std::to_string(num.second);
+        line += "," + std::to_string(num.second);
     }
 
     fprintf(file, line.c_str());
