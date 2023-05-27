@@ -101,7 +101,7 @@ void MemoryMonitor::LogCount(std::string filename)
     }
         
     //line = timestamp.c_str();
-    line = to_string(static_cast<uint32>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch() - GetApplicationStartTime().time_since_epoch()).count()));
+    line = std::to_string(static_cast<uint32>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch() - GetApplicationStartTime().time_since_epoch()).count()));
 
     for (auto& num : nums)
     {
