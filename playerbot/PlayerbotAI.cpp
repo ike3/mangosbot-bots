@@ -352,6 +352,9 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
 
                 for (auto item : items)
                 {
+                    if (bot->getClass() == CLASS_HUNTER && item->GetProto()->SubClass == ITEM_SUBCLASS_WEAPON_THROWN) //Do not replenish thrown weapons for hunters.
+                        break;
+
                     item->SetCount(item->GetProto()->GetMaxStackSize());
                     break;
                 }

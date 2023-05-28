@@ -2733,8 +2733,11 @@ void PlayerbotFactory::InitAmmo()
         subClass = ITEM_SUBCLASS_ARROW;
         break;
     case ITEM_SUBCLASS_WEAPON_THROWN:
-        subClass = ITEM_SUBCLASS_THROWN;
-        break;
+        if (bot->getClass() != CLASS_HUNTER)
+        {
+            subClass = ITEM_SUBCLASS_THROWN;
+            break;
+        }
     }
 
     if (!subClass)
