@@ -245,12 +245,13 @@ ItemUsage ItemUsageValue::Calculate()
     }
 
     //AMMO
-    if (proto->Class == ITEM_CLASS_PROJECTILE && bot->CanUseItem(proto) == EQUIP_ERR_OK)
-        if (bot->getClass() == CLASS_HUNTER || bot->getClass() == CLASS_ROGUE || bot->getClass() == CLASS_WARRIOR)
+    if ((proto->Class == ITEM_CLASS_PROJECTILE || (proto->Class == ITEM_CLASS_WEAPON && proto->SubClass == ITEM_SUBCLASS_WEAPON_THROWN)) && bot->CanUseItem(proto) == EQUIP_ERR_OK)
+        if ((bot->getClass() == CLASS_HUNTER && proto->Class != ITEM_CLASS_WEAPON) || bot->getClass() == CLASS_ROGUE || bot->getClass() == CLASS_WARRIOR)
         {
             Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
             if (pItem)
             {
+                uint32 ammoClass = ITEM_CLASS_PROJECTILE;
                 uint32 subClass = 0;
                 switch (pItem->GetProto()->SubClass)
                 {
@@ -262,11 +263,12 @@ ItemUsage ItemUsageValue::Calculate()
                     subClass = ITEM_SUBCLASS_ARROW;
                     break;
                 case ITEM_SUBCLASS_WEAPON_THROWN:
-                    subClass = ITEM_SUBCLASS_THROWN;
+                    ammoClass = ITEM_CLASS_WEAPON;
+                    subClass = ITEM_SUBCLASS_WEAPON_THROWN;
                     break;
                 }
 
-                if (proto->SubClass == subClass)
+                if (proto->Class == ammoClass && proto->SubClass == subClass)
                 {
                     uint32 currentAmmoId = bot->GetUInt32Value(PLAYER_AMMO_ID);
                     const ItemPrototype* currentAmmoproto = nullptr;
