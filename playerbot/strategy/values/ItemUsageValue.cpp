@@ -279,7 +279,7 @@ ItemUsage ItemUsageValue::Calculate()
                     float needAmmo = (bot->getClass() == CLASS_HUNTER) ? 8 : 2;
 
                     if (ai->HasCheat(BotCheatMask::item))
-                        needAmmo == 1;
+                        needAmmo = 1;
 
                     if (ammo < 0) //No current better ammo.
                     {
