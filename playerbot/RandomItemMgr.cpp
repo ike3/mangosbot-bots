@@ -1524,6 +1524,9 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
 
     if (!proto->IsWeapon() && (proto->SubClass == ITEM_SUBCLASS_ARMOR_LIBRAM || proto->SubClass == ITEM_SUBCLASS_ARMOR_IDOL || proto->SubClass == ITEM_SUBCLASS_ARMOR_TOTEM))
         return (uint32)(proto->Quality + proto->ItemLevel);
+
+    if ((Classes)playerclass == CLASS_HUNTER && proto->SubClass == ITEM_SUBCLASS_WEAPON_THROWN)
+        return (uint32)proto->ItemLevel;
 #endif
 
     bool isWhitelist = false;
