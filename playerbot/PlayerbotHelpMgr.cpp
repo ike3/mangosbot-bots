@@ -434,7 +434,10 @@ void PlayerbotHelpMgr::GenerateTriggerHelp()
 
         std::sort(trigLinks.begin(), trigLinks.end());
 
-        botHelpText["list:" + className + " trigger"].m_templateText = className + " triggers : \n" + makeList(trigLinks);
+
+        if (botHelpText["list:" + className + " trigger"].m_templateText != " triggers : \n" + makeList(trigLinks))
+            botHelpText["list:" + className + " trigger"].m_templateChanged = true;
+        botHelpText["list:" + className + " trigger"].m_templateText = className + " triggers : \n" + makeList(trigLinks);       
     }
 }
 
@@ -553,7 +556,9 @@ void PlayerbotHelpMgr::GenerateActionHelp()
 
         std::sort(actionLinks.begin(), actionLinks.end());
 
-        botHelpText["list:" + className + " action"].m_templateText = className + " actions : \n" + makeList(actionLinks);
+        if (botHelpText["list:" + className + " action"].m_templateText != " action : \n" + makeList(actionLinks))
+            botHelpText["list:" + className + " action"].m_templateChanged = true;
+        botHelpText["list:" + className + " action"].m_templateText = className + " action : \n" + makeList(actionLinks);
     }
 }
 
