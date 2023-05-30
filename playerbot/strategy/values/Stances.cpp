@@ -80,6 +80,9 @@ namespace ai
                     for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
                     {
                         Player* member = ref->getSource();
+                        if (!ai->IsSafe(member))
+                            continue;
+
                         if (member == bot) index = count;
                         if (member && !ai->IsRanged(member) && !ai->IsTank(member)) count++;
                     }
@@ -130,7 +133,7 @@ namespace ai
                 for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
                 {
                     Player* member = ref->getSource();
-                    if (member && member != bot && ai->IsRanged(member))
+                    if (member && ai->IsSafe(member) && member != bot && ai->IsRanged(member))
                     {
                         angle += target->GetAngle(member);
                         count++;
@@ -158,6 +161,8 @@ namespace ai
                 for (GroupReference *ref = group->GetFirstMember(); ref; ref = ref->next())
                 {
                     Player* member = ref->getSource();
+                    if (!ai->IsSafe(member))
+                        continue;
                     if (member == bot) index = count;
                     if (member && !ai->IsRanged(member) && !ai->IsTank(member)) count++;
                 }
