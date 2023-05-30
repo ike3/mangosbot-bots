@@ -1025,8 +1025,7 @@ bool ChooseTravelTargetAction::isUseful()
             return false;
 
     return !context->GetValue<TravelTarget *>("travel target")->Get()->isActive() 
-        && !context->GetValue<LootObject>("loot target")->Get().IsLootPossible(bot)
-        && !bot->IsInCombat();
+        && !context->GetValue<LootObject>("loot target")->Get().IsLootPossible(bot);
 }
 
 
