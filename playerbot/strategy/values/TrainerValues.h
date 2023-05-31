@@ -10,12 +10,13 @@ namespace ai
     //              trainerType, spellsTypes
     typedef unordered_map<uint8, trainableSpellList>         trainableSpellMap;
 
-    class TrainableSpellMapValue : public SingleCalculatedValue<trainableSpellMap>
+    class TrainableSpellMapValue : public SingleCalculatedValue<trainableSpellMap*>
     {
     public:
-        TrainableSpellMapValue(PlayerbotAI* ai) : SingleCalculatedValue<trainableSpellMap>(ai, "trainable spell map") {}
+        TrainableSpellMapValue(PlayerbotAI* ai) : SingleCalculatedValue<trainableSpellMap*>(ai, "trainable spell map") {}
 
-        virtual trainableSpellMap Calculate();
+        virtual trainableSpellMap* Calculate() override;
+        virtual ~TrainableSpellMapValue() { delete value; }
     };
 
     class TrainableClassSpells : public CalculatedValue<vector< TrainerSpell const*>>

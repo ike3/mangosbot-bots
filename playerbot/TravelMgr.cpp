@@ -967,7 +967,7 @@ void TravelMgr::LoadQuestTravelTable()
     vector<unit> units;
 
     sLog.outString("Loading trainable spells.");
-    if (GAI_VALUE(trainableSpellMap, "trainable spell map").empty())
+    if (GAI_VALUE(trainableSpellMap*, "trainable spell map")->empty())
     {
 
     }

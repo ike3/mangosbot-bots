@@ -7,9 +7,9 @@
 using namespace ai;
 
 
-trainableSpellMap TrainableSpellMapValue::Calculate()
+trainableSpellMap* TrainableSpellMapValue::Calculate()
 {
-    trainableSpellMap spellMap;
+    trainableSpellMap* spellMap = new trainableSpellMap;
 
     //           template, trainer
     unordered_map <uint32, vector<CreatureInfo const*>> trainerTemplateIds;
@@ -68,7 +68,7 @@ trainableSpellMap TrainableSpellMapValue::Calculate()
             }
 
             for (auto& trainer : templateId.second)
-                spellMap[templateId.second.front()->TrainerType][spellType][tSpell].push_back(trainer);
+                (*spellMap)[templateId.second.front()->TrainerType][spellType][tSpell].push_back(trainer);
         }
     }
 
@@ -80,9 +80,9 @@ vector<TrainerSpell const*> TrainableClassSpells::Calculate()
     vector<TrainerSpell const*> trainableSpells;
     unordered_map<uint32, bool> hasSpell;
 
-    trainableSpellMap spellMap = GAI_VALUE(trainableSpellMap, "trainable spell map");
+    trainableSpellMap* spellMap = GAI_VALUE(trainableSpellMap*, "trainable spell map");
 
-    for (auto& spells : spellMap[TRAINER_TYPE_CLASS][bot->getClass()])
+    for (auto& spells : (*spellMap)[TRAINER_TYPE_CLASS][bot->getClass()])
     {
         TrainerSpell const* tSpell = spells.first;
 
