@@ -609,6 +609,7 @@ bool ItemUsageValue::IsItemUsefulForSkill(ItemPrototype const* proto)
         if (ai->HasSkill(SKILL_HERBALISM) &&
             (auctionbot.IsUsedBySkill(proto, SKILL_HERBALISM)))// || auctionbot.IsUsedBySkill(proto, SKILL_ALCHEMY)))
             return true;
+        break;
     }
     case ITEM_CLASS_RECIPE:
     {
