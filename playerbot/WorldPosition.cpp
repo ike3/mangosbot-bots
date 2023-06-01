@@ -31,10 +31,9 @@ class TerrainInfoAccess : public Referencable<std::atomic_long>
 public:
     TerrainInfoAccess() : Referencable(), m_mapId(0) {}
     bool Load(const uint32 x, const uint32 y, bool mapOnly = false);
-
+    void UnLoadUnused();
 private:
     GridMap* LoadMapAndVMap(const uint32 x, const uint32 y, bool mapOnly = false);
-
 private:
     const uint32 m_mapId;
     GridMap* m_GridMaps[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
@@ -54,6 +53,17 @@ private:
 
 bool TerrainInfoAccess::Load(const uint32 x, const uint32 y, bool mapOnly /*= false*/)
 {
+    LOCK_GUARD lock(m_mutex);
+    if (!MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(m_mapId, x, y))
+    {
+        // load navmesh
+        if (!MMAP::MMapFactory::createOrGetMMapManager()->loadMap(m_mapId, x, y))
+            return false;
+    }
+
+    return true;
+
+    /*
     if (x >= MAX_NUMBER_OF_GRIDS || y >= MAX_NUMBER_OF_GRIDS) //just load navmesh                     
         return MMAP::MMapFactory::createOrGetMMapManager()->loadMap(m_mapId, x, y);
 
@@ -69,6 +79,7 @@ bool TerrainInfoAccess::Load(const uint32 x, const uint32 y, bool mapOnly /*= fa
     }
 
     return pMap;
+    */
 };
 
 GridMap* TerrainInfoAccess::LoadMapAndVMap(const uint32 x, const uint32 y, bool mapOnly /*= false*/)
@@ -81,6 +92,7 @@ GridMap* TerrainInfoAccess::LoadMapAndVMap(const uint32 x, const uint32 y, bool 
     }
 
         LOCK_GUARD lock(m_mutex);
+
         // double checked lock pattern
         if (!m_GridMaps[x][y])
         {
@@ -138,6 +150,19 @@ GridMap* TerrainInfoAccess::LoadMapAndVMap(const uint32 x, const uint32 y, bool 
         m_GridMaps[x][y]->SetFullyLoaded();
 
     return m_GridMaps[x][y];
+}
+
+void TerrainInfoAccess::UnLoadUnused()
+{
+    for (uint8 x = 0; x < MAX_NUMBER_OF_GRIDS; x++)
+        for (uint8 y = 0; y < MAX_NUMBER_OF_GRIDS; y++)
+        {
+            if (!m_GridMaps[x][y] && MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(m_mapId, x, y))
+            {
+                LOCK_GUARD lock(m_mutex);
+                MMAP::MMapFactory::createOrGetMMapManager()->unloadMap(m_mapId, x, y);
+            }
+        }
 }
 #endif
 
@@ -730,7 +755,8 @@ void WorldPosition::loadMapAndVMaps(const WorldPosition& secondPos, uint32 insta
 
 void WorldPosition::unloadMapAndVMaps(uint32 mapId)
 {
-    MMAP::MMapFactory::createOrGetMMapManager()->unloadMap(mapId);
+    TerrainInfoAccess* terrain = reinterpret_cast<TerrainInfoAccess*>(const_cast<TerrainInfo*>(sTerrainMgr.LoadTerrain(mapId)));
+    terrain->UnLoadUnused();
 }
 
 vector<WorldPosition> WorldPosition::fromPointsArray(const std::vector<G3D::Vector3>& path) const
