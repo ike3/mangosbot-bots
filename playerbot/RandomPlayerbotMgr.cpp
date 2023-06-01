@@ -621,14 +621,13 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     }
 
     uint32 updateBots = sPlayerbotAIConfig.randomBotsPerInterval;
-    uint32 loginBots = sPlayerbotAIConfig.randomBotsMaxLoginsPerInterval;
+    uint32 maxNewBots = sPlayerbotAIConfig.randomBotsMaxLoginsPerInterval;
     if (onlineBotCount < sPlayerbotAIConfig.minRandomBots * sPlayerbotAIConfig.loginBoostPercentage / 100)
-        loginBots *= 2;
+        maxNewBots *= 2;
 
-    uint32 maxNewBots = onlineBotCount < maxAllowedBotCount ? maxAllowedBotCount - onlineBotCount : 0;
-    loginBots = std::min(loginBots, maxNewBots);
+    uint32 loginBots = 0;
 
-    if(!availableBots.empty())
+    if (!availableBots.empty())
     {
         //Update bots
         for (auto bot : availableBots)
@@ -644,22 +643,25 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
                 break;
         }
 
-        if (loginBots)
-        {
-            //Log in bots
+        //Log in bots
             for (auto bot : availableBots)
             {
                 if (GetPlayerBot(bot))
                     continue;
 
+                if (GetEventValue(bot, "login"))
+                    onlineBotCount++;
+
+                if (onlineBotCount + loginBots > maxAllowedBotCount)
+                    break;
+
                 if (ProcessBot(bot)) {
-                    loginBots--;
+                    loginBots++;
                 }
 
-                if (!loginBots)
+                if (loginBots > maxNewBots)
                     break;
             };
-        }
     }
     if (pmo) pmo->finish();
 
@@ -1659,7 +1661,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     uint32 isLogginIn = GetEventValue(bot, "login");
     if (isLogginIn)
-        return true; //Count bots that are still logging in so we don't keep adding more and more bots that are still logging in.
+        return false;
 
     if (!player)
     {
