@@ -762,7 +762,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
         currentAllowedBotCount -= currentBots.size();
 
-        currentAllowedBotCount = std::min(sPlayerbotAIConfig.randomBotsPerInterval * 2, currentAllowedBotCount);
+        currentAllowedBotCount = currentAllowedBotCount*2;
 
         PlayerbotDatabase.AllowAsyncTransactions();
         PlayerbotDatabase.BeginTransaction();
