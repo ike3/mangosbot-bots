@@ -2751,6 +2751,20 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
 
         return true;
     }
+    if (cmd.find("clean map") == 0)
+    {
+        for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
+        {
+            if (!sMapStore.LookupEntry(i))
+                continue;
+
+            uint32 mapId = sMapStore.LookupEntry(i)->MapID;
+            boost::thread t([mapId]() {WorldPosition::unloadMapAndVMaps(mapId); });
+            t.detach();
+        }
+
+        return true;
+    }
 
     map<string, ConsoleCommandHandler> handlers;
     handlers["init"] = &RandomPlayerbotMgr::RandomizeFirst;
