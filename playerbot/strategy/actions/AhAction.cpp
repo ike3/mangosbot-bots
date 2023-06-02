@@ -194,6 +194,11 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
             if (!auction)
                 continue;
 
+            auction = auctionHouse->GetAuction(auction->Id);
+
+            if (!auction)
+                continue;
+
             if (auction->owner == bot->GetGUIDLow())
                 continue;
 
@@ -241,6 +246,11 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
         for (auto auctionPower : auctionPowers)
         {
             auction = auctionPower.first;
+
+            if (!auction)
+                continue;
+
+            auction = auctionHouse->GetAuction(auction->Id);
 
             if (!auction)
                 continue;
@@ -321,6 +331,21 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
 
 bool AhBidAction::BidItem(AuctionEntry* auction, uint32 price, Unit* auctioneer)
 {
+    AuctionHouseEntry const* auctionHouseEntry = bot->GetSession()->GetCheckedAuctionHouseForAuctioneer(auctioneer->GetObjectGuid());
+    if (!auctionHouseEntry)
+        return false;
+
+    // always return pointer
+    AuctionHouseObject* auctionHouse = sAuctionMgr.GetAuctionsMap(auctionHouseEntry);
+
+    if (!auctionHouse)
+        return false;
+
+    auction = auctionHouse->GetAuction(auction->Id);
+
+    if (!auction)
+        return false;
+
     WorldPacket packet;
     packet << auctioneer->GetObjectGuid();
     packet << auction->Id;

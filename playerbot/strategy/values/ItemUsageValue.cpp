@@ -16,17 +16,7 @@ using namespace ai;
 
 ItemQualifier::ItemQualifier(string qualifier, bool linkQualifier)
 {
-    vector<string> numbers = Qualified::getMultiQualifiers(qualifier, ":");
-
-    try
-    {
-        itemId = !numbers.empty() ? stoi(numbers[0]) : 0;
-    } 
-    catch (const std::exception& e) 
-    {
-        itemId = 0;
-    }
-
+    itemId = 0;
     enchantId = 0;
     randomPropertyId = 0;
     gem1 = 0;
@@ -34,6 +24,17 @@ ItemQualifier::ItemQualifier(string qualifier, bool linkQualifier)
     gem3 = 0;
     gem4 = 0;
     proto = nullptr;
+
+    vector<string> numbers = Qualified::getMultiQualifiers(qualifier, ":");
+
+    if (numbers.empty())
+        return;
+
+    for (char& d : numbers[0]) //Check if itemId contains only numbers
+        if (!isdigit(d))
+            return;
+
+    itemId = stoi(numbers[0]);
 
 #ifdef MANGOSBOT_ZERO
     uint32 propertyPosition = linkQualifier ? 2 : 5;
