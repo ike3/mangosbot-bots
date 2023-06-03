@@ -599,7 +599,16 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     if (availableBotCount < maxAllowedBotCount && !sWorld.IsShutdowning())
     {
-        AddRandomBots();   
+        bool logInAllowed = true;
+        if (sPlayerbotAIConfig.randomBotLoginWithPlayerLogin)
+        {
+            logInAllowed = !players.empty();
+        }
+
+        if (logInAllowed)
+        {
+            AddRandomBots();
+        }
     }
 
     if (sPlayerbotAIConfig.syncLevelWithPlayers && players.size())
@@ -635,35 +644,35 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             if (!GetPlayerBot(bot))
                 continue;
 
-            if (ProcessBot(bot)) {
+            if (ProcessBot(bot))
                 updateBots--;
-            }
 
             if (!updateBots)
                 break;
         }
 
         //Log in bots
-            for (auto bot : availableBots)
-            {
-                if (GetPlayerBot(bot))
-                    continue;
+        for (auto bot : availableBots)
+        {
+            if (GetPlayerBot(bot))
+                continue;
 
-                if (GetEventValue(bot, "login"))
-                    onlineBotCount++;
+            if (GetEventValue(bot, "login"))
+                onlineBotCount++;
 
-                if (onlineBotCount + loginBots > maxAllowedBotCount)
-                    break;
+            if (onlineBotCount + loginBots > maxAllowedBotCount)
+                break;
 
-                if (ProcessBot(bot)) {
-                    loginBots++;
-                }
+            if (ProcessBot(bot)) 
+                loginBots++;
 
-                if (loginBots > maxNewBots)
-                    break;
-            };
+            if (loginBots > maxNewBots)
+                break;
+        }
     }
-    if (pmo) pmo->finish();
+    
+    if (pmo) 
+        pmo->finish();
 
     if (!sPlayerbotAIConfig.freeAltBots.empty())
     {
@@ -1659,22 +1668,36 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         return false;
     }
 
-    uint32 isLogginIn = GetEventValue(bot, "login");
-    if (isLogginIn)
+    if (GetEventValue(bot, "login"))
         return false;
 
     if (!player)
     {
-        AddPlayerBot(bot, 0);
-        SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval * 100);
-        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
-        SetEventValue(bot, "update", 1, randomTime);
+        bool logInAllowed = true;
+        if (sPlayerbotAIConfig.randomBotLoginWithPlayerLogin)
+        {
+            logInAllowed = !players.empty();
+        }
 
-        return true;
+        if (logInAllowed)
+        {
+            AddPlayerBot(bot, 0);
+            SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval * 100);
+            uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
+            SetEventValue(bot, "update", 1, randomTime);
+            return true;
+        }
     }
 
     if (!player || !player->IsInWorld() || player->IsBeingTeleported() || player->GetSession()->isLogingOut())
         return false;
+
+    // Log out bots if no real player is connected
+    if (sPlayerbotAIConfig.randomBotLoginWithPlayerLogin && players.empty())
+    {
+        SetEventValue(bot, "add", 0, 0);
+        return true;
+    }
 
     // Hotfix System
     /*if (player && !sServerFacade.UnitIsDead(player))

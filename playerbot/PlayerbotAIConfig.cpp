@@ -206,6 +206,8 @@ bool PlayerbotAIConfig::Initialize()
     commandServerPort = config.GetIntDefault("AiPlayerbot.CommandServerPort", 0);
     perfMonEnabled = config.GetBoolDefault("AiPlayerbot.PerfMonEnabled", false);
 
+    randomBotLoginWithPlayerLogin = config.GetBoolDefault("AiPlayerbot.RandomBotLoginWithPlayerLogin", false);
+
     sLog.outString("Loading Race/Class probabilities");
 
     classRaceProbabilityTotal = 0;
