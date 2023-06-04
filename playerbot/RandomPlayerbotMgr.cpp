@@ -1643,28 +1643,50 @@ bool RandomPlayerbotMgr::AddRandomBot(uint32 bot)
 bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 {
     Player* player = GetPlayerBot(bot);
-
     if (player && sPlayerbotAIConfig.IsFreeAltBot(player))
+    {
         return false;
+    }
 
     PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
 
     uint32 isValid = GetEventValue(bot, "add");
     if (!isValid)
     {
-        if (!player || !player->GetGroup())
+        bool shouldLogOut = false;
+        if (sPlayerbotAIConfig.randomBotLoginWithPlayerLogin)
+        {
+            shouldLogOut = players.empty();
+        }
+        else if (!player || !player->GetGroup())
+        {
+            shouldLogOut = true;
+        }
+        else if (player->GetGroup())
+        {
+            SetEventValue(bot, "add", 1, 120);
+        }
+
+        if (shouldLogOut)
         {
             if (player)
+            {
                 sLog.outDetail("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->GetLevel(), player->GetName());
+            }
             else
+            {
                 sLog.outDetail("Bot #%d: log out", bot);
+            }
 
             SetEventValue(bot, "add", 0, 0);
             currentBots.remove(bot);
-            if (player) LogoutPlayerBot(bot);
+
+            if (player)
+            {
+                LogoutPlayerBot(bot);
+            }
         }
-        else if (player->GetGroup())
-            SetEventValue(bot, "add", 1, 120);
+
         return false;
     }
 
@@ -1696,7 +1718,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     if (sPlayerbotAIConfig.randomBotLoginWithPlayerLogin && players.empty())
     {
         SetEventValue(bot, "add", 0, 0);
-        return true;
+        return false;
     }
 
     // Hotfix System
