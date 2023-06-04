@@ -15,7 +15,7 @@ AiPlayerbot.RandomBotAutologin = 1
 AiPlayerbot.RandomBotLoginAtStartup = 1
 
 # Login Bots when real players login
-AiPlayerbot.RandomBotLoginWithPlayerLogin = 1
+AiPlayerbot.RandomBotLoginWithPlayer = 1
 
 # Delete all random bot accounts (reset randombots)
 AiPlayerbot.DeleteRandomBotAccounts = 0

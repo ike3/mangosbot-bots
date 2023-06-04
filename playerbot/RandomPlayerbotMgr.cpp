@@ -600,7 +600,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     if (availableBotCount < maxAllowedBotCount && !sWorld.IsShutdowning())
     {
         bool logInAllowed = true;
-        if (sPlayerbotAIConfig.randomBotLoginWithPlayerLogin)
+        if (sPlayerbotAIConfig.randomBotLoginWithPlayer)
         {
             logInAllowed = !players.empty();
         }
@@ -1654,9 +1654,9 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     if (!isValid)
     {
         bool shouldLogOut = false;
-        if (sPlayerbotAIConfig.randomBotLoginWithPlayerLogin)
+        if (sPlayerbotAIConfig.randomBotLoginWithPlayer)
         {
-            shouldLogOut = players.empty();
+            shouldLogOut = players.empty() || (sWorld.GetActiveSessionCount() == 0);
         }
         else if (!player || !player->GetGroup())
         {
@@ -1696,7 +1696,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     if (!player)
     {
         bool logInAllowed = true;
-        if (sPlayerbotAIConfig.randomBotLoginWithPlayerLogin)
+        if (sPlayerbotAIConfig.randomBotLoginWithPlayer)
         {
             logInAllowed = !players.empty();
         }
@@ -1714,8 +1714,8 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     if (!player || !player->IsInWorld() || player->IsBeingTeleported() || player->GetSession()->isLogingOut())
         return false;
 
-    // Log out bots if no real player is connected
-    if (sPlayerbotAIConfig.randomBotLoginWithPlayerLogin && players.empty())
+    // Log out bots if no real players are connected
+    if (sPlayerbotAIConfig.randomBotLoginWithPlayer && (players.empty() || sWorld.GetActiveSessionCount() == 0))
     {
         SetEventValue(bot, "add", 0, 0);
         return false;

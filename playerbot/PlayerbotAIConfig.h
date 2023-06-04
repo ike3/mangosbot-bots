@@ -186,7 +186,7 @@ public:
     uint32 respawnModThreshold, respawnModMax;
     bool respawnModForPlayerBots, respawnModForInstances;
 
-    bool randomBotLoginWithPlayerLogin;
+    bool randomBotLoginWithPlayer;
 
     std::mutex m_logMtx;
 
