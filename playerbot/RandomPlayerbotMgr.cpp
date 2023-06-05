@@ -771,7 +771,9 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
         currentAllowedBotCount -= currentBots.size();
 
-        currentAllowedBotCount = currentAllowedBotCount*2;
+        int32 neededAddBots = currentAllowedBotCount;
+
+        currentAllowedBotCount = currentAllowedBotCount*2;      
 
         PlayerbotDatabase.AllowAsyncTransactions();
         PlayerbotDatabase.BeginTransaction();
@@ -884,6 +886,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                     }
 
                     currentAllowedBotCount--;
+                    neededAddBots--;
 
                     if (!currentAllowedBotCount)
                         break;
@@ -898,7 +901,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             if (!currentAllowedBotCount)
                 break;
 
-            if (showLoginWarning)
+            if (showLoginWarning && neededAddBots > 0)
             {
                 sLog.outError("Not enough accounts to meet selection criteria. A random selection of bots was activated to fill the server.");
 
