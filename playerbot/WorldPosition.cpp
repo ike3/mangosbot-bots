@@ -755,8 +755,10 @@ void WorldPosition::loadMapAndVMaps(const WorldPosition& secondPos, uint32 insta
 
 void WorldPosition::unloadMapAndVMaps(uint32 mapId)
 {
+#ifndef MANGOSBOT_TWO
     TerrainInfoAccess* terrain = reinterpret_cast<TerrainInfoAccess*>(const_cast<TerrainInfo*>(sTerrainMgr.LoadTerrain(mapId)));
     terrain->UnLoadUnused();
+#endif
 }
 
 vector<WorldPosition> WorldPosition::fromPointsArray(const std::vector<G3D::Vector3>& path) const

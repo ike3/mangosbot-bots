@@ -556,7 +556,16 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
     if (availableBotCount < maxAllowedBotCount && !sWorld.IsShutdowning())
     {
-        AddRandomBots();   
+        bool logInAllowed = true;
+        if (sPlayerbotAIConfig.randomBotLoginWithPlayer)
+        {
+            logInAllowed = !players.empty();
+        }
+
+        if (logInAllowed)
+        {
+            AddRandomBots();
+        }
     }
 
     if (sPlayerbotAIConfig.syncLevelWithPlayers && players.size())
@@ -592,15 +601,15 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             if (!GetPlayerBot(bot))
                 continue;
 
-            if (ProcessBot(bot)) {
+            if (ProcessBot(bot))
                 updateBots--;
-            }
 
             if (!updateBots)
                 break;
         }
 
         //Log in bots
+
         if (sRandomPlayerbotMgr.GetDatabaseDelay("CharacterDatabase") < 10 * IN_MILLISECONDS)
         {
             for (auto bot : availableBots)
@@ -608,22 +617,18 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
                 if (GetPlayerBot(bot))
                     continue;
 
-                if (GetEventValue(bot, "login"))
-                    onlineBotCount++;
 
-                if (onlineBotCount + loginBots > maxAllowedBotCount)
-                    break;
 
-                if (ProcessBot(bot)) {
-                    loginBots++;
-                }
+           
+           
+
 
                 if (loginBots > maxNewBots)
                     break;
             }
         }
     }
-
+    if (pmo) pmo->finish()
     if (pmo) pmo->finish();
 
     LoginFreeBots();
@@ -796,7 +801,9 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
         currentAllowedBotCount -= currentBots.size();
 
-        currentAllowedBotCount = currentAllowedBotCount*2;
+        int32 neededAddBots = currentAllowedBotCount;
+
+        currentAllowedBotCount = currentAllowedBotCount*2;      
 
         PlayerbotDatabase.AllowAsyncTransactions();
         PlayerbotDatabase.BeginTransaction();
@@ -909,6 +916,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
                     }
 
                     currentAllowedBotCount--;
+                    neededAddBots--;
 
                     if (!currentAllowedBotCount)
                         break;
@@ -923,7 +931,7 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
             if (!currentAllowedBotCount)
                 break;
 
-            if (showLoginWarning)
+            if (showLoginWarning && neededAddBots > 0)
             {
                 sLog.outError("Not enough accounts to meet selection criteria. A random selection of bots was activated to fill the server.");
 
@@ -1668,47 +1676,79 @@ bool RandomPlayerbotMgr::AddRandomBot(uint32 bot)
 bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 {
     Player* player = GetPlayerBot(bot);
-
     if (player && sPlayerbotAIConfig.IsFreeAltBot(player))
+    {
         return false;
+    }
 
     PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
 
     uint32 isValid = GetEventValue(bot, "add");
     if (!isValid)
     {
-        if (!player || !player->GetGroup())
+        bool shouldLogOut = false;
+        if (sPlayerbotAIConfig.randomBotLoginWithPlayer)
+        {
+            shouldLogOut = players.empty() || (sWorld.GetActiveSessionCount() == 0);
+        }
+        else if (!player || !player->GetGroup())
+        {
+            shouldLogOut = true;
+        }
+        else if (player->GetGroup())
+        {
+            SetEventValue(bot, "add", 1, 120);
+        }
+
+        if (shouldLogOut)
         {
             if (player)
+            {
                 sLog.outDetail("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->GetLevel(), player->GetName());
+            }
             else
+            {
                 sLog.outDetail("Bot #%d: log out", bot);
+            }
 
             SetEventValue(bot, "add", 0, 0);
             currentBots.remove(bot);
-            if (player) LogoutPlayerBot(bot);
+
         }
-        else if (player->GetGroup())
-            SetEventValue(bot, "add", 1, 120);
+
         return false;
     }
 
-    uint32 isLogginIn = GetEventValue(bot, "login");
-    if (isLogginIn)
         return false;
 
     if (!player)
     {
-        AddPlayerBot(bot, 0);
-        SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval * 100);
-        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
-        SetEventValue(bot, "update", 1, randomTime);
+        bool logInAllowed = true;
+        if (sPlayerbotAIConfig.randomBotLoginWithPlayer)
+        {
+            logInAllowed = !players.empty();
+        }
 
-        return true;
+
+        if (logInAllowed)
+        {
+            AddPlayerBot(bot, 0);
+            SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval * 100);
+            uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
+            SetEventValue(bot, "update", 1, randomTime);
+            return true;
+        }
     }
 
     if (!player || !player->IsInWorld() || player->IsBeingTeleported() || player->GetSession()->isLogingOut())
         return false;
+
+    // Log out bots if no real players are connected
+    if (sPlayerbotAIConfig.randomBotLoginWithPlayer && (players.empty() || sWorld.GetActiveSessionCount() == 0))
+    {
+        SetEventValue(bot, "add", 0, 0);
+        return false;
+    }
 
     // Hotfix System
     /*if (player && !sServerFacade.UnitIsDead(player))
@@ -2799,89 +2839,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
 
         return true;
     }
-    if (cmd.find("sort objects") == 0)
-    {
-        unordered_map<string, uint32> objCounts;
-        vector<pair<string, uint32>> sortCount;
-
-        for (auto& thre : sTravelMgr.robjs)
-        {
-            for (auto& robj : sTravelMgr.robjs[thre.first])
-                for (auto& athre : sTravelMgr.objs)
-                    sTravelMgr.objs[athre.first].erase(robj.first);
-        }
-
-        sTravelMgr.robjs.clear();
-
-        for (auto& thre : sTravelMgr.objs)
-        {
-            for (auto& obj : sTravelMgr.objs[thre.first])
-            {
-                objCounts[typeid(*obj.first).name()]++;
-            }
-        }
-
-        for (auto& obj : objCounts)
-        {
-            sortCount.push_back(make_pair(obj.first, obj.second));
-        }
-
-        std::sort(sortCount.begin(), sortCount.end(), [](pair<string, uint32> i, pair<string, uint32> j) {return i.second < j.second; });
-
-        for (auto& obj : sortCount)
-            sLog.outString("%s : %d", obj.first.c_str(), obj.second);
-
-        return true;
-    }
-    if (cmd.find("sql") == 0)
-    {
-        vector < pair<string, pair<double, double>>> ss;
-
-        std::unordered_map<std::string, std::pair<double, double>> tstats;
-
-        for (auto& s : CharacterDatabase.m_threadBody->m_dbConnection->stats)
-        {
-            string key = s.first, newkey;
-
-            std::size_t startPos = 0;
-            std::size_t endPos = 0;
-
-            while (startPos != std::string::npos && endPos != std::string::npos) {
-                startPos = key.find('\'', startPos);
-                endPos = key.find('\'', startPos + 1);
-
-                if (startPos != std::string::npos && endPos != std::string::npos) {
-                    key.replace(startPos, endPos - startPos + 1, "\"var\"");
-                }
-            }
-
-            tstats[key].first += s.second.first;
-            tstats[key].second += s.second.second;
-        }
-
-        for (auto& s : tstats)
-            ss.push_back(make_pair(s.first, make_pair(s.second.first, s.second.second)));
-
-        sort(ss.begin(), ss.end(), [](pair<string, pair<double, double>> i, pair<string, pair<double, double>> j) {return i.second.second > j.second.second; });
-
-        uint32 n = 25;
-
-        if(cmd.size() > 4)
-            n = stoi(cmd.substr(4));
-
-        sLog.outString("Current queue statement: %s", CharacterDatabase.m_threadBody->m_dbConnection->lastStatement.c_str());
-
-        sLog.outString("avg time - total amount - statement");
-
-        for (auto& s : ss)
-        {
-            sLog.outString("%.3fms - %d - %s", s.second.second / s.second.first, (uint64)s.second.first, s.first.c_str());
-            n--;
-            if (!n)
-                break;
-        }
-        return true;
-    }
+ 
 
 
     map<string, ConsoleCommandHandler> handlers;
