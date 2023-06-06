@@ -2622,7 +2622,7 @@ void TravelNodeMap::generateAll()
 
     sLog.outString("-Calculating coverage"); //This prevents crashes when bots from multiple maps try to calculate this on the fly.
     for (auto& node : getNodes())
-        node->getNodeMap(node);
+        node->hasRouteTo(node);
 }
 
 void TravelNodeMap::printMap()
