@@ -713,7 +713,7 @@ void RandomPlayerbotMgr::ScaleBotActivity()
 
         out << GetMetricDelta(botPerformanceMetrics["gold"]) * 12 * 60 << ",";
         out << GetMetricDelta(botPerformanceMetrics["gearscore"]) * 12 * 60 << ",";
-        out << CharacterDatabase.m_threadBody->m_sqlQueue.size();
+        //out << CharacterDatabase.m_threadBody->m_sqlQueue.size();
 
         sPlayerbotAIConfig.log("activity_pid.csv", out.str().c_str());
     }
