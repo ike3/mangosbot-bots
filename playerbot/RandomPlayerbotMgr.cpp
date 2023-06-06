@@ -644,6 +644,8 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
         }
 
         //Log in bots
+        if (sRandomPlayerbotMgr.GetDatabaseDelay("CharacterDatabase") < 10 * IN_MILLISECONDS)
+        {
             for (auto bot : availableBots)
             {
                 if (GetPlayerBot(bot))
@@ -661,7 +663,8 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
 
                 if (loginBots > maxNewBots)
                     break;
-            };
+            }
+        }
     }
     if (pmo) pmo->finish();
 
