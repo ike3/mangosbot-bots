@@ -362,7 +362,8 @@ void PlayerbotFactory::Refresh()
     InitPotions();
     InitReagents();
     AddConsumables();
-    bot->SaveToDB();
+    if(sRandomPlayerbotMgr.GetDatabaseDelay("CharacterDatabase") < 10 * IN_MILLISECONDS)
+        bot->SaveToDB();
 }
 
 void PlayerbotFactory::AddConsumables()

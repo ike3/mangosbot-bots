@@ -665,6 +665,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     }
     if (pmo) pmo->finish();
 
+    CharacterDatabase.AsyncPQuery(&RandomPlayerbotMgr::DatabasePing, sWorld.GetCurrentMSTime(), string("CharacterDatabase"), "select 1 from dual");
     if (!sPlayerbotAIConfig.freeAltBots.empty())
     {
         for (auto bot : sPlayerbotAIConfig.freeAltBots)
@@ -734,6 +735,11 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             }
             facingFix[fMap.first].clear();
         }
+}
+
+void RandomPlayerbotMgr::DatabasePing(QueryResult * result, uint32 pingStart, string db)
+{
+    sRandomPlayerbotMgr.SetDatabaseDelay(db, sWorld.GetCurrentMSTime() - pingStart);
 }
 
 uint32 RandomPlayerbotMgr::AddRandomBots()

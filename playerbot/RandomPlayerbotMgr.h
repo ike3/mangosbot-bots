@@ -70,6 +70,9 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
 	public:
         uint32 activeBots = 0;
+        static void DatabasePing(QueryResult* result, uint32 pingStart, string db);
+        void SetDatabaseDelay(string db, uint32 delay) {databaseDelay[db] = delay;}
+        uint32 GetDatabaseDelay(string db) {if(databaseDelay.find(db) == databaseDelay.end()) return 0; return databaseDelay[db];}
 
         static bool HandlePlayerbotConsoleCommand(ChatHandler* handler, char const* args);
         bool IsRandomBot(Player* bot);
@@ -156,6 +159,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         //pid values are set in constructor
         botPID pid = botPID(1, 50, -50, 0, 0, 0);
         float activityMod = 0.25;
+        map<string, uint32> databaseDelay;
         uint32 GetEventValue(uint32 bot, string event);
         string GetEventData(uint32 bot, string event);
         uint32 SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn, string data = "");
