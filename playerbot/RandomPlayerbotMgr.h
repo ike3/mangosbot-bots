@@ -65,11 +65,13 @@ class RandomPlayerbotMgr : public PlayerbotHolder
             return instance;
         }
 
-        void LogPlayerLocation();
-
         virtual void UpdateAIInternal(uint32 elapsed, bool minimal = false);
-	public:
-        uint32 activeBots = 0;
+private:
+        void ScaleBotActivity();
+        void LogPlayerLocation();
+        void DelayedFacingFix();
+        void LoginFreeBots();
+public:
         static void DatabasePing(QueryResult* result, uint32 pingStart, string db);
         void SetDatabaseDelay(string db, uint32 delay) {databaseDelay[db] = delay;}
         uint32 GetDatabaseDelay(string db) {if(databaseDelay.find(db) == databaseDelay.end()) return 0; return databaseDelay[db];}
@@ -190,6 +192,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         list<uint32> arenaTeamMembers;
         uint32 bgBotsCount;
         uint32 playersLevel = sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL);
+        uint32 activeBots = 0;
 
         std::unordered_map<uint32, std::vector<std::pair<int32,int32>>> playerBotMoveLog;
         typedef std::unordered_map <uint32, list<float>> botPerformanceMetric;

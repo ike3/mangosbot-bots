@@ -338,7 +338,7 @@ int RandomPlayerbotMgr::GetMaxAllowedBotCount()
     return GetEventValue(0, "bot_count");
 }
 
-inline ostringstream generate_ostringstream(Unit* bot, vector<pair<int, int>>& log, bool is_sqDist_greater_200 = false) {
+inline ostringstream print_path(Unit* bot, vector<pair<int, int>>& log, bool is_sqDist_greater_200 = false) {
     ostringstream out;
     out << bot->GetName() << ",";
     out << std::fixed << std::setprecision(1);
@@ -362,20 +362,83 @@ inline ostringstream generate_ostringstream(Unit* bot, vector<pair<int, int>>& l
 
 void RandomPlayerbotMgr::LogPlayerLocation()
 {
-    activeBots = 0;
-
-    try
+    if (sPlayerbotAIConfig.hasLog("player_location.csv"))
     {
-        sPlayerbotAIConfig.openLog("player_location.csv", "w");
-        if (sPlayerbotAIConfig.randomBotAutologin)
-            for (auto i : GetAllBots())
+        activeBots = 0;
+
+        try
+        {
+            sPlayerbotAIConfig.openLog("player_location.csv", "w");
+            if (sPlayerbotAIConfig.randomBotAutologin)
+                for (auto i : GetAllBots())
+                {
+                    Player* bot = i.second;
+                    if (!bot)
+                        continue;
+                    ostringstream out;
+                    out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
+                    out << "RND" << ",";
+                    out << bot->GetName() << ",";
+                    out << std::fixed << std::setprecision(2);
+                    WorldPosition(bot).printWKT(out);
+                    out << bot->GetOrientation() << ",";
+                    out << to_string(bot->getRace()) << ",";
+                    out << to_string(bot->getClass()) << ",";
+                    out << bot->GetMapId() << ",";
+                    out << bot->GetLevel() << ",";
+                    out << bot->GetHealth() << ",";
+                    out << bot->GetPowerPercent() << ",";
+                    out << bot->GetMoney() << ",";
+
+                    if (bot->GetPlayerbotAI())
+                    {
+                        out << to_string(uint8(bot->GetPlayerbotAI()->GetGrouperType())) << ",";
+                        out << to_string(uint8(bot->GetPlayerbotAI()->GetGuilderType())) << ",";
+                        out << (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY) ? "active" : "inactive") << ",";
+                        out << (bot->GetPlayerbotAI()->IsActive() ? "active" : "delay") << ",";
+                        out << bot->GetPlayerbotAI()->HandleRemoteCommand("state") << ",";
+
+                        if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
+                            activeBots++;
+                    }
+                    else
+                    {
+                        out << 0 << "," << 0 << ",err,err,err,";
+                    }
+
+                    out << (bot->IsInCombat() ? "combat" : "safe") << ",";
+                    out << (bot->IsDead() ? (bot->GetCorpse() ? "ghost" : "dead") : "alive");
+
+
+                    sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
+
+                    if (sPlayerbotAIConfig.hasLog("player_paths.csv"))
+                    {
+                        float sqDist = (playerBotMoveLog[i.first].empty() ? 1 : (pow(playerBotMoveLog[i.first].back().first - int32(WorldPosition(bot).getDisplayX()), 2) + pow(playerBotMoveLog[i.first].back().second - int32(WorldPosition(bot).getDisplayY()), 2)));
+                        if (sqDist <= 200 * 200) {
+                            playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
+                            if (playerBotMoveLog[i.first].size() > 100) {
+                                sPlayerbotAIConfig.log("player_paths.csv", print_path(bot, playerBotMoveLog[i.first]).str().c_str());
+                                playerBotMoveLog[i.first].clear();
+                            }
+                        }
+                        else if (sqDist >= 200 * 200) {
+                            if (playerBotMoveLog[i.first].size() > 1)
+                                sPlayerbotAIConfig.log("player_paths.csv", print_path(bot, playerBotMoveLog[i.first]).str().c_str());
+                            sPlayerbotAIConfig.log("player_paths.csv", print_path(bot, playerBotMoveLog[i.first], true).str().c_str());
+                            playerBotMoveLog[i.first].clear();
+                            playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
+                        }
+                    }
+                }
+            for (auto i : GetPlayers())
             {
                 Player* bot = i.second;
                 if (!bot)
                     continue;
                 ostringstream out;
                 out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
-                out << "RND" << ",";
+                out << "PLR" << ",";
                 out << bot->GetName() << ",";
                 out << std::fixed << std::setprecision(2);
                 WorldPosition(bot).printWKT(out);
@@ -387,7 +450,6 @@ void RandomPlayerbotMgr::LogPlayerLocation()
                 out << bot->GetHealth() << ",";
                 out << bot->GetPowerPercent() << ",";
                 out << bot->GetMoney() << ",";
-
                 if (bot->GetPlayerbotAI())
                 {
                     out << to_string(uint8(bot->GetPlayerbotAI()->GetGrouperType())) << ",";
@@ -401,101 +463,63 @@ void RandomPlayerbotMgr::LogPlayerLocation()
                 }
                 else
                 {
-                    out << 0 << "," << 0 << ",err,err,err,";
+                    out << 0 << "," << 0 << ",player,player,player,";
                 }
 
                 out << (bot->IsInCombat() ? "combat" : "safe") << ",";
                 out << (bot->IsDead() ? (bot->GetCorpse() ? "ghost" : "dead") : "alive");
 
-
                 sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
 
                 if (sPlayerbotAIConfig.hasLog("player_paths.csv"))
                 {
-                    float sqDist = (playerBotMoveLog[i.first].empty() ? 1 : ( pow(playerBotMoveLog[i.first].back().first - int32(WorldPosition(bot).getDisplayX()),2) + pow(playerBotMoveLog[i.first].back().second - int32(WorldPosition(bot).getDisplayY()),2)));
+                    float sqDist = (playerBotMoveLog[i.first].empty() ? 1 : (pow(playerBotMoveLog[i.first].back().first - int32(WorldPosition(bot).getDisplayX()), 2) + pow(playerBotMoveLog[i.first].back().second - int32(WorldPosition(bot).getDisplayY()), 2)));
                     if (sqDist <= 200 * 200) {
                         playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
                         if (playerBotMoveLog[i.first].size() > 100) {
-                            sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first]).str().c_str());
+                            sPlayerbotAIConfig.log("player_paths.csv", print_path(bot, playerBotMoveLog[i.first]).str().c_str());
                             playerBotMoveLog[i.first].clear();
                         }
                     }
                     else if (sqDist >= 200 * 200) {
-                        if(playerBotMoveLog[i.first].size() > 1)
-                            sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first]).str().c_str());
-                        sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first], true).str().c_str());
+                        if (playerBotMoveLog[i.first].size() > 1)
+                            sPlayerbotAIConfig.log("player_paths.csv", print_path(bot, playerBotMoveLog[i.first]).str().c_str());
+                        sPlayerbotAIConfig.log("player_paths.csv", print_path(bot, playerBotMoveLog[i.first], true).str().c_str());
                         playerBotMoveLog[i.first].clear();
                         playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
                     }
                 }
+            }
+        }
+        catch (...)
+        {
+            return;
+            //This is to prevent some thread-unsafeness. Crashes would happen if bots get added or removed.
+            //We really don't care here. Just skip a log. Making this thread-safe is not worth the effort.
+        }
+    }
+    else if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
+    {
+        activeBots = 0;
+
+        if (sPlayerbotAIConfig.randomBotAutologin)
+            for (auto i : GetAllBots())
+            {
+                Player* bot = i.second;
+                if (bot->GetPlayerbotAI())
+                    if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
+                        activeBots++;
             }
         for (auto i : GetPlayers())
         {
             Player* bot = i.second;
             if (!bot)
                 continue;
-            ostringstream out;
-            out << sPlayerbotAIConfig.GetTimestampStr() << "+00,";
-            out << "PLR" << ",";
-            out << bot->GetName() << ",";
-            out << std::fixed << std::setprecision(2);
-            WorldPosition(bot).printWKT(out);
-            out << bot->GetOrientation() << ",";
-            out << to_string(bot->getRace()) << ",";
-            out << to_string(bot->getClass()) << ",";
-            out << bot->GetMapId() << ",";
-            out << bot->GetLevel() << ",";
-            out << bot->GetHealth() << ",";
-            out << bot->GetPowerPercent() << ",";
-            out << bot->GetMoney() << ",";
             if (bot->GetPlayerbotAI())
-            {
-                out << to_string(uint8(bot->GetPlayerbotAI()->GetGrouperType())) << ",";
-                out << to_string(uint8(bot->GetPlayerbotAI()->GetGuilderType())) << ",";
-                out << (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY) ? "active" : "inactive") << ",";
-                out << (bot->GetPlayerbotAI()->IsActive() ? "active" : "delay") << ",";
-                out << bot->GetPlayerbotAI()->HandleRemoteCommand("state") << ",";
-
                 if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
                     activeBots++;
-            }
-            else
-            {
-                out << 0 << "," << 0 << ",player,player,player,";
-            }
-
-            out << (bot->IsInCombat() ? "combat" : "safe") << ",";
-            out << (bot->IsDead() ? (bot->GetCorpse() ? "ghost" : "dead") : "alive");
-
-            sPlayerbotAIConfig.log("player_location.csv", out.str().c_str());
-
-            if (sPlayerbotAIConfig.hasLog("player_paths.csv"))
-            {
-                float sqDist = (playerBotMoveLog[i.first].empty() ? 1 : (pow(playerBotMoveLog[i.first].back().first - int32(WorldPosition(bot).getDisplayX()), 2) + pow(playerBotMoveLog[i.first].back().second - int32(WorldPosition(bot).getDisplayY()), 2)));
-                if (sqDist <= 200 * 200) {
-                    playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
-                    if (playerBotMoveLog[i.first].size() > 100) {
-                        sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first]).str().c_str());
-                        playerBotMoveLog[i.first].clear();
-                    }
-                }
-                else if (sqDist >= 200 * 200) {
-                    if (playerBotMoveLog[i.first].size() > 1)
-                        sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first]).str().c_str());
-                    sPlayerbotAIConfig.log("player_paths.csv", generate_ostringstream(bot, playerBotMoveLog[i.first], true).str().c_str());
-                    playerBotMoveLog[i.first].clear();
-                    playerBotMoveLog[i.first].push_back(make_pair(WorldPosition(bot).getDisplayX(), WorldPosition(bot).getDisplayY()));
-                }
-            }
         }
     }
-    catch (...)
-    {
-        return;
-        //This is to prevent some thread-unsafeness. Crashes would happen if bots get added or removed.
-        //We really don't care here. Just skip a log. Making this thread-safe is not worth the effort.
-    }
-
 }
 
 void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
@@ -508,74 +532,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
     if (!sPlayerbotAIConfig.randomBotAutologin || !sPlayerbotAIConfig.enabled)
         return;
 
-    float activityPercentage = getActivityPercentage();
-
-    //if (activityPercentage >= 100.0f || activityPercentage <= 0.0f) pid.reset(); //Stop integer buildup during max/min activity
-
-    //    % increase/decrease                   wanted diff                                         , avg diff
-    float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? sPlayerbotAIConfig.diffEmpty : sPlayerbotAIConfig.diffWithPlayer, sWorld.GetAverageDiff());
-
-    activityPercentage = activityPercentageMod + 50;
-
-    //Cap the percentage between 0 and 100.
-    activityPercentage = std::max(0.0f, std::min(100.0f, activityPercentage));
-
-    setActivityPercentage(activityPercentage);    
-
-    if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
-    {
-        double virtualMemUsedByMe = 0;
-#if PLATFORM == PLATFORM_WINDOWS
-        PROCESS_MEMORY_COUNTERS_EX pmc;
-        GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
-        virtualMemUsedByMe = pmc.PrivateUsage;
-#endif
-
-        ostringstream out;
-        out << sWorld.GetCurrentMSTime() << ", ";
-
-        out << sWorld.GetCurrentDiff() << ",";
-        out << sWorld.GetAverageDiff() << ",";
-        out << sWorld.GetMaxDiff() << ",";
-        out << virtualMemUsedByMe << ",";
-        out << activityPercentage << ",";
-        out << activityPercentageMod << ",";
-        out << activeBots << ",";
-        out << playerBots.size() << ",";
-
-        float level = 0, gold = 0, gearscore = 0;
-
-        if (sPlayerbotAIConfig.randomBotAutologin)
-            for (auto i : GetAllBots())
-            {
-                Player* bot = i.second;
-                if (!bot)
-                    continue;
-
-                if (!bot->GetPlayerbotAI()->AllowActivity())
-                    continue;
-
-                string bracket = "level:" + to_string(bot->GetLevel() / 10);
-
-                float level = ((float)bot->GetLevel() + (bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP) ? ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)) : 0));
-                float gold = bot->GetMoney() / 10000;
-                float gearscore = bot->GetPlayerbotAI()->GetEquipGearScore(bot, false, false);
-
-                PushMetric(botPerformanceMetrics[bracket], i.first, level);
-                PushMetric(botPerformanceMetrics["gold"], i.first, gold);
-                PushMetric(botPerformanceMetrics["gearscore"], i.first, gearscore);
-            }    
-
-        out << std::fixed << std::setprecision(4);
-                
-        for (uint8 i = 0; i < (DEFAULT_MAX_LEVEL / 10) + 1; i++)
-            out << GetMetricDelta(botPerformanceMetrics["level:" + to_string(i)]) * 12 * 60 << ",";
-
-        out << GetMetricDelta(botPerformanceMetrics["gold"]) * 12 * 60 << ",";
-        out << GetMetricDelta(botPerformanceMetrics["gearscore"]) * 12 * 60;
-
-        sPlayerbotAIConfig.log("activity_pid.csv", out.str().c_str());
-    }
+    ScaleBotActivity();
 
     uint32 maxAllowedBotCount = GetEventValue(0, "bot_count");
     if (!maxAllowedBotCount || ((uint32)maxAllowedBotCount < sPlayerbotAIConfig.minRandomBots || (uint32)maxAllowedBotCount > sPlayerbotAIConfig.maxRandomBots))
@@ -666,9 +623,97 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             }
         }
     }
+
     if (pmo) pmo->finish();
 
+    LoginFreeBots();
+
+    //sLog.outString("[char %d, bot %d]", CharacterDatabase.m_threadBody->m_sqlQueue.size(), PlayerbotDatabase.m_threadBody->m_sqlQueue.size());
+   
+    LogPlayerLocation();
+
+    DelayedFacingFix();
+
+    //Ping character database.
     CharacterDatabase.AsyncPQuery(&RandomPlayerbotMgr::DatabasePing, sWorld.GetCurrentMSTime(), string("CharacterDatabase"), "select 1 from dual");
+}
+
+void RandomPlayerbotMgr::ScaleBotActivity()
+{
+    float activityPercentage = getActivityPercentage();
+
+    //if (activityPercentage >= 100.0f || activityPercentage <= 0.0f) pid.reset(); //Stop integer buildup during max/min activity
+
+    //    % increase/decrease                   wanted diff                                         , avg diff
+    float activityPercentageMod = pid.calculate(sRandomPlayerbotMgr.GetPlayers().empty() ? sPlayerbotAIConfig.diffEmpty : sPlayerbotAIConfig.diffWithPlayer, sWorld.GetAverageDiff());
+
+    activityPercentage = activityPercentageMod + 50;
+
+    //Cap the percentage between 0 and 100.
+    activityPercentage = std::max(0.0f, std::min(100.0f, activityPercentage));
+
+    setActivityPercentage(activityPercentage);
+
+    if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
+    {
+        SIZE_T virtualMemUsedByMe = 0;
+#if PLATFORM == PLATFORM_WINDOWS
+        PROCESS_MEMORY_COUNTERS_EX pmc;
+        GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+        virtualMemUsedByMe = pmc.PrivateUsage;
+#endif
+
+        ostringstream out;
+        out << sWorld.GetCurrentMSTime() << ", ";
+
+        out << sWorld.GetCurrentDiff() << ",";
+        out << sWorld.GetAverageDiff() << ",";
+        out << sWorld.GetMaxDiff() << ",";
+        out << virtualMemUsedByMe << ",";
+        out << activityPercentage << ",";
+        out << activityPercentageMod << ",";
+        out << activeBots << ",";
+        out << playerBots.size() << ",";
+
+        float level = 0, gold = 0, gearscore = 0;
+
+        if (sPlayerbotAIConfig.randomBotAutologin)
+            for (auto i : GetAllBots())
+            {
+                Player* bot = i.second;
+                if (!bot)
+                    continue;
+
+                if (!bot->GetPlayerbotAI()->AllowActivity())
+                    continue;
+
+                string bracket = "level:" + to_string(bot->GetLevel() / 10);
+
+                float level = ((float)bot->GetLevel() + (bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP) ? ((float)bot->GetUInt32Value(PLAYER_XP) / (float)bot->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)) : 0));
+                float gold = bot->GetMoney() / 10000;
+                float gearscore = bot->GetPlayerbotAI()->GetEquipGearScore(bot, false, false);
+
+                PushMetric(botPerformanceMetrics[bracket], i.first, level);
+                PushMetric(botPerformanceMetrics["gold"], i.first, gold);
+                PushMetric(botPerformanceMetrics["gearscore"], i.first, gearscore);
+            }
+
+        out << std::fixed << std::setprecision(4);
+
+        for (uint8 i = 0; i < (DEFAULT_MAX_LEVEL / 10) + 1; i++)
+            out << GetMetricDelta(botPerformanceMetrics["level:" + to_string(i)]) * 12 * 60 << ",";
+
+        out << GetMetricDelta(botPerformanceMetrics["gold"]) * 12 * 60 << ",";
+        out << GetMetricDelta(botPerformanceMetrics["gearscore"]) * 12 * 60 << ",";
+        //out << CharacterDatabase.m_threadBody->m_sqlQueue.size();
+
+        sPlayerbotAIConfig.log("activity_pid.csv", out.str().c_str());
+    }
+}
+
+void RandomPlayerbotMgr::LoginFreeBots()
+{
+
     if (!sPlayerbotAIConfig.freeAltBots.empty())
     {
         for (auto bot : sPlayerbotAIConfig.freeAltBots)
@@ -684,60 +729,40 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             }
         }
     }
+}
 
-    if (sPlayerbotAIConfig.hasLog("player_location.csv"))
-    {
-        LogPlayerLocation();
-    }
-    else if(sPlayerbotAIConfig.hasLog("activity_pid.csv"))
-    {
-        activeBots = 0;
+void RandomPlayerbotMgr::DelayedFacingFix()
+{
+    if (!sPlayerbotAIConfig.turnInRpg)
+        return;
 
-        if (sPlayerbotAIConfig.randomBotAutologin)
-            for (auto i : GetAllBots())
+    for (auto& fMap : facingFix) {
+        for (auto obj : fMap.second) {
+            if (time(0) - obj.second > 5)
             {
-                Player* bot = i.second;
-                if (bot->GetPlayerbotAI())
-                    if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
-                        activeBots++;
+                if (!obj.first.IsCreature())
+                    continue;
+
+                GuidPosition guidP(obj.first, WorldPosition(fMap.first, 0, 0, 0));
+
+                Creature* unit = guidP.GetCreature();
+
+                if (!unit)
+                    continue;
+
+                CreatureData* data = guidP.GetCreatureData();
+
+                if (!data)
+                    continue;
+
+                if (unit->GetOrientation() == data->orientation)
+                    continue;
+
+                unit->SetFacingTo(data->orientation);
             }
-        for (auto i : GetPlayers())
-        {
-            Player* bot = i.second;
-            if (!bot)
-                continue;           
-            if (bot->GetPlayerbotAI())
-                if (bot->GetPlayerbotAI()->AllowActivity(ALL_ACTIVITY))
-                    activeBots++;
         }
+        facingFix[fMap.first].clear();
     }
-    if(sPlayerbotAIConfig.turnInRpg)
-        for (auto& fMap : facingFix) {
-            for (auto obj : fMap.second) {
-                if (time(0) - obj.second > 5)
-                {
-                    if (!obj.first.IsCreature())
-                        return;
-                    GuidPosition guidP(obj.first, WorldPosition(fMap.first, 0, 0, 0));
-
-                    Creature* unit = guidP.GetCreature();
-
-                    if (!unit)
-                        continue;
-
-                    CreatureData* data = guidP.GetCreatureData();
-
-                    if (!data)
-                        continue;
-
-                    if (unit->GetOrientation() == data->orientation)
-                        continue;
-
-                    unit->SetFacingTo(data->orientation);
-                }
-            }
-            facingFix[fMap.first].clear();
-        }
 }
 
 void RandomPlayerbotMgr::DatabasePing(QueryResult * result, uint32 pingStart, string db)
@@ -2774,6 +2799,90 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
 
         return true;
     }
+    if (cmd.find("sort objects") == 0)
+    {
+        unordered_map<string, uint32> objCounts;
+        vector<pair<string, uint32>> sortCount;
+
+        for (auto& thre : sTravelMgr.robjs)
+        {
+            for (auto& robj : sTravelMgr.robjs[thre.first])
+                for (auto& athre : sTravelMgr.objs)
+                    sTravelMgr.objs[athre.first].erase(robj.first);
+        }
+
+        sTravelMgr.robjs.clear();
+
+        for (auto& thre : sTravelMgr.objs)
+        {
+            for (auto& obj : sTravelMgr.objs[thre.first])
+            {
+                objCounts[typeid(*obj.first).name()]++;
+            }
+        }
+
+        for (auto& obj : objCounts)
+        {
+            sortCount.push_back(make_pair(obj.first, obj.second));
+        }
+
+        std::sort(sortCount.begin(), sortCount.end(), [](pair<string, uint32> i, pair<string, uint32> j) {return i.second < j.second; });
+
+        for (auto& obj : sortCount)
+            sLog.outString("%s : %d", obj.first.c_str(), obj.second);
+
+        return true;
+    }
+    if (cmd.find("sql") == 0)
+    {
+        vector < pair<string, pair<double, double>>> ss;
+
+        std::unordered_map<std::string, std::pair<double, double>> tstats;
+
+        for (auto& s : CharacterDatabase.m_threadBody->m_dbConnection->stats)
+        {
+            string key = s.first, newkey;
+
+            std::size_t startPos = 0;
+            std::size_t endPos = 0;
+
+            while (startPos != std::string::npos && endPos != std::string::npos) {
+                startPos = key.find('\'', startPos);
+                endPos = key.find('\'', startPos + 1);
+
+                if (startPos != std::string::npos && endPos != std::string::npos) {
+                    key.replace(startPos, endPos - startPos + 1, "\"var\"");
+                }
+            }
+
+            tstats[key].first += s.second.first;
+            tstats[key].second += s.second.second;
+        }
+
+        for (auto& s : tstats)
+            ss.push_back(make_pair(s.first, make_pair(s.second.first, s.second.second)));
+
+        sort(ss.begin(), ss.end(), [](pair<string, pair<double, double>> i, pair<string, pair<double, double>> j) {return i.second.second > j.second.second; });
+
+        uint32 n = 25;
+
+        if(cmd.size() > 4)
+            n = stoi(cmd.substr(4));
+
+        sLog.outString("Current queue statement: %s", CharacterDatabase.m_threadBody->m_dbConnection->lastStatement.c_str());
+
+        sLog.outString("avg time - total amount - statement");
+
+        for (auto& s : ss)
+        {
+            sLog.outString("%.3fms - %d - %s", s.second.second / s.second.first, (uint64)s.second.first, s.first.c_str());
+            n--;
+            if (!n)
+                break;
+        }
+        return true;
+    }
+
 
     map<string, ConsoleCommandHandler> handlers;
     handlers["init"] = &RandomPlayerbotMgr::RandomizeFirst;
