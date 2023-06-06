@@ -664,7 +664,7 @@ void RandomPlayerbotMgr::ScaleBotActivity()
 
     if (sPlayerbotAIConfig.hasLog("activity_pid.csv"))
     {
-        SIZE_T virtualMemUsedByMe = 0;
+        double virtualMemUsedByMe = 0;
 #if PLATFORM == PLATFORM_WINDOWS
         PROCESS_MEMORY_COUNTERS_EX pmc;
         GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
