@@ -34,17 +34,16 @@ bool FindNonCcTargetStrategy::IsCcTarget(Unit* attacker)
         Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
         for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
         {
-            Player *member = sObjectMgr.GetPlayer(itr->guid);
-            if (!member || !sServerFacade.IsAlive(member))
+            Player *player = sObjectMgr.GetPlayer(itr->guid);
+            if (!player || !sServerFacade.IsAlive(player) || ai->IsSafe(player))
                 continue;
 
-            PlayerbotAI *ai = member->GetPlayerbotAI();
-            if (ai)
+            if (player->GetPlayerbotAI())
             {
-                if (ai->GetAiObjectContext()->GetValue<Unit*>("rti cc target")->Get() == attacker)
+                if (PAI_VALUE(Unit*,"rti cc target") == attacker)
                     return true;
 
-                string rti = ai->GetAiObjectContext()->GetValue<string>("rti cc")->Get();
+                string rti = PAI_VALUE(string,"rti cc");
                 int index = RtiTargetValue::GetRtiIndex(rti);
                 if (index != -1)
                 {
