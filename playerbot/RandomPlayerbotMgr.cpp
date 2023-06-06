@@ -609,19 +609,22 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
         }
 
         //Log in bots
-
         if (sRandomPlayerbotMgr.GetDatabaseDelay("CharacterDatabase") < 10 * IN_MILLISECONDS)
         {
             for (auto bot : availableBots)
             {
                 if (GetPlayerBot(bot))
-                    continue;
+                    continue;   
 
+                if (GetEventValue(bot, "login"))
+                    onlineBotCount++;
 
+                if (onlineBotCount + loginBots > maxAllowedBotCount)
+                    break;
 
-           
-           
-
+                if (ProcessBot(bot)) {
+                    loginBots++;
+                }
 
                 if (loginBots > maxNewBots)
                     break;
@@ -710,7 +713,7 @@ void RandomPlayerbotMgr::ScaleBotActivity()
 
         out << GetMetricDelta(botPerformanceMetrics["gold"]) * 12 * 60 << ",";
         out << GetMetricDelta(botPerformanceMetrics["gearscore"]) * 12 * 60 << ",";
-        //out << CharacterDatabase.m_threadBody->m_sqlQueue.size();
+        out << CharacterDatabase.m_threadBody->m_sqlQueue.size();
 
         sPlayerbotAIConfig.log("activity_pid.csv", out.str().c_str());
     }
@@ -1713,13 +1716,11 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
             SetEventValue(bot, "add", 0, 0);
             currentBots.remove(bot);
-
+            if (player) LogoutPlayerBot(bot);
         }
 
         return false;
     }
-
-        return false;
 
     if (!player)
     {
@@ -1728,7 +1729,6 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         {
             logInAllowed = !players.empty();
         }
-
 
         if (logInAllowed)
         {
@@ -1749,20 +1749,6 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         SetEventValue(bot, "add", 0, 0);
         return false;
     }
-
-    // Hotfix System
-    /*if (player && !sServerFacade.UnitIsDead(player))
-    {
-        uint32 version = GetEventValue(bot, "version");
-        if (!version)
-        {
-            version = 0;
-        }
-        if (version < VERSION)
-        {
-            Hotfix(player, version);
-        }
-    }*/
 
     SetEventValue(bot, "login", 0, 0);
     if (player->GetGroup() || player->IsTaxiFlying())
