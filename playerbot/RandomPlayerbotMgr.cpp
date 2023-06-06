@@ -628,7 +628,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             }
         }
     }
-    if (pmo) pmo->finish()
+
     if (pmo) pmo->finish();
 
     LoginFreeBots();
