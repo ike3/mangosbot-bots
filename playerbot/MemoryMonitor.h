@@ -22,7 +22,7 @@ class MemoryMonitor
         //Objecttype is the name of the class/struct.
         //Object is a pointer to the object or unique identifier.
         //level = 0 only count total number of objects, otherwise log the creation stack of any (object%level) = 0 object.
-        void Add(std::string objectType, uint64_t object, int level = 0); //Method to call when object gets created.
+        void Add(std::string objectType, uint64_t object, int level = 0, std::string stack = ""); //Method to call when object gets created.
         void Rem(std::string objectType, uint64_t object, int level = 0); //Method to call when object gets destroyed.
         void Print(); //Print number of objects that still exist and their creation call-stack.
         void Browse();

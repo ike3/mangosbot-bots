@@ -7,13 +7,18 @@
 #define BOOST_STACKTRACE_LINK
 #include <boost/stacktrace.hpp>
 
-void MemoryMonitor::Add(std::string objectType, uint64_t object, int level)
+void MemoryMonitor::Add(std::string objectType, uint64_t object, int level, std::string stack)
 {
-    objectnumbers[std::this_thread::get_id()][objectType]++; 
+    if(stack.empty())
+        objectnumbers[std::this_thread::get_id()][objectType]++; 
 
     if (level && (int)object % level == 0)
     {
-        std::ostringstream out; out << boost::stacktrace::stacktrace();
+        std::ostringstream out;
+        if (stack.empty())
+            out << boost::stacktrace::stacktrace();
+        else
+            out << stack;
         adds[std::this_thread::get_id()][objectType][object] = make_pair(out.str(), time(0));
     }
 }
