@@ -773,9 +773,11 @@ void RandomPlayerbotMgr::DelayedFacingFix()
     }
 }
 
-void RandomPlayerbotMgr::DatabasePing(QueryResult * result, uint32 pingStart, string db)
+void RandomPlayerbotMgr::DatabasePing(QueryResult* result, uint32 pingStart, string db)
 {
     sRandomPlayerbotMgr.SetDatabaseDelay(db, sWorld.GetCurrentMSTime() - pingStart);
+
+    delete result;
 }
 
 uint32 RandomPlayerbotMgr::AddRandomBots()
