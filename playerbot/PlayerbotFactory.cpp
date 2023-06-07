@@ -346,7 +346,8 @@ void PlayerbotFactory::Randomize(bool incremental, bool syncWithMaster)
 
     pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "PlayerbotFactory_Save");
     sLog.outDetail("Saving to DB...");
-    bot->SaveToDB();
+    if (sRandomPlayerbotMgr.GetDatabaseDelay("CharacterDatabase") < 10 * IN_MILLISECONDS)
+        bot->SaveToDB();
     sLog.outDetail("Done.");
     if (pmo) pmo->finish();
 }
@@ -3384,7 +3385,8 @@ void PlayerbotFactory::EnchantEquipment(Player* bot)
 #ifndef MANGOSBOT_ZERO
     factory.InitGems();
 #endif
-    bot->SaveToDB();
+    if (sRandomPlayerbotMgr.GetDatabaseDelay("CharacterDatabase") < 10 * IN_MILLISECONDS)
+        bot->SaveToDB();
 }
 
 void PlayerbotFactory::ApplyEnchantTemplate()
