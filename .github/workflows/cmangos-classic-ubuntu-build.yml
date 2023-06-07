@@ -109,6 +109,29 @@ jobs:
         env:
           MAKEFLAGS: "-j8"
         run: cmake --build ${{env.BUILD_DIR}} --config ${{env.BUILD_TYPE}}
+        
+  notify-success:
+    name: Discord release successfully notification
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: none
+    needs:
+      - build
+    if: success()
+
+    steps:          
+      - name: Notify
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        with:
+          severity: info
+          username: ${{env.CORE_TYPE}}-${{env.CORE_EXPANSION}}
+          description: |
+            **Classic Linux build success!**
+          details: |
+            [**Last commits**](${{github.server_url}}/${{ github.repository }}/commits/${{env.BOTS_BRANCH}}) - [**Build Log**](${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}})
+          footer: Build success
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK_BUILD }}
+          avatarUrl: https://github.githubassets.com/favicons/favicon-success.png
 
   notify:
     name: Discord Notification
