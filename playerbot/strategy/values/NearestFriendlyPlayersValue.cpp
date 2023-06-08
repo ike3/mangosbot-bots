@@ -13,7 +13,9 @@ void NearestFriendlyPlayersValue::FindUnits(list<Unit*> &targets)
 {
     AnyFriendlyUnitInObjectRangeCheck u_check(bot, 
 #ifdef CMANGOS
+#ifndef MANGOSBOT_ZERO
         nullptr,
+#endif
 #endif
         range);
     UnitListSearcher<AnyFriendlyUnitInObjectRangeCheck> searcher(targets, u_check);

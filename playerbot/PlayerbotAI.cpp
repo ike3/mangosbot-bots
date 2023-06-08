@@ -1224,14 +1224,14 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
                 break;
             }
 
-            if (guid1.IsEmpty() || p.size() > p.DEFAULT_SIZE)
+            if (guid1.IsEmpty() || p.size() > 0x1000)
                 return;
 
             p >> textLen >> message >> chatTag;
 #endif
 #ifdef MANGOSBOT_ONE
             p >> guid1 >> unused;
-            if (guid1.IsEmpty() || p.size() > p.DEFAULT_SIZE)
+            if (guid1.IsEmpty() || p.size() > 0x1000)
                 return;
 
             switch (msgtype)
@@ -1253,7 +1253,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 #endif
 #ifdef MANGOSBOT_TWO
             p >> guid1 >> unused;
-            if (guid1.IsEmpty() || p.size() > p.DEFAULT_SIZE)
+            if (guid1.IsEmpty() || p.size() > 0x1000)
                 return;
 
             if (p.GetOpcode() == SMSG_GM_MESSAGECHAT)
