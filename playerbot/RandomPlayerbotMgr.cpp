@@ -787,6 +787,9 @@ uint32 RandomPlayerbotMgr::AddRandomBots()
 
     uint32 maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
     float currentAvgLevel = 0, wantedAvgLevel = 0, randomAvgLevel = 0;
+
+    if (!playersLevel)
+        playersLevel = sPlayerbotAIConfig.syncLevelNoPlayer;
   
     if (currentBots.size() < currentAllowedBotCount)
     {
@@ -1596,10 +1599,6 @@ void RandomPlayerbotMgr::CheckPlayers()
         PlayersCheckTimer = time(NULL);
 
     sLog.outBasic("Checking Players...");
-
-    if (!playersLevel)
-        playersLevel = sPlayerbotAIConfig.syncLevelNoPlayer;
-
 
     for (auto i : players)
     {
