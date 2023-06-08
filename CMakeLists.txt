@@ -129,6 +129,10 @@ endif()
 if (BUILD_ACHIEVEMENTS)
   add_definitions(-DUSE_ACHIEVEMENTS)
 endif()
+# Define BUILD_ELUNA if need
+if (BUILD_ELUNA)
+  add_definitions(-DBUILD_ELUNA)
+endif()
 
 # Define Core
 if ( ${CMAKE_PROJECT_NAME} MATCHES "CMaNGOS")
