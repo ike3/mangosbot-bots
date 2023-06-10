@@ -94,7 +94,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: snapshot-${{env.CORE_EXPANSION}}
-          path: "bin/${{env.ARCHIVE_FILENAME}}"
+          path: "${{env.BUILD_DIR}}/bin/${{env.ARCHIVE_FILENAME}}"
 
   upload:
     runs-on: ubuntu-20.04
