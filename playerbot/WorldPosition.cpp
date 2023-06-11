@@ -18,6 +18,7 @@
 #include "Grids/CellImpl.h"
 #include "ObjectAccessor.h"
 #include "Entities/Transports.h"
+#include "MemoryMonitor.h"
 
 #include <numeric>
 #include <iomanip>
@@ -905,6 +906,37 @@ vector<WorldPosition> WorldPosition::getPathFromPath(const vector<WorldPosition>
     }
 
     return fullPath;
+}
+
+bool WorldPosition::ClosestCorrectPoint(float maxRange, float maxHeight)
+{
+    MMAP::MMapManager* mmap = MMAP::MMapFactory::createOrGetMMapManager();
+    dtNavMeshQuery const* query = mmap->GetNavMeshQuery(getMapId(), getInstanceId());
+
+    float curPoint[VERTEX_SIZE] = {coord_y, coord_z, coord_x };
+    float extend[VERTEX_SIZE] = { maxRange, maxHeight, maxRange };
+    float newPoint[VERTEX_SIZE];
+
+    dtQueryFilter filter;
+    dtPolyRef polyRef = INVALID_POLYREF;
+
+    uint16 includeFlags = 0;
+    uint16 excludeFlags = 0;
+
+    includeFlags |= (NAV_GROUND );
+    excludeFlags |= (NAV_MAGMA_SLIME | NAV_GROUND_STEEP | NAV_WATER);
+
+
+    filter.setIncludeFlags(includeFlags);
+    filter.setExcludeFlags(excludeFlags);
+
+    dtStatus dtResult = query->findNearestPoly(curPoint, extend, &filter, &polyRef, newPoint);
+
+    coord_y = newPoint[0];
+    coord_z = newPoint[1];
+    coord_x = newPoint[2];
+
+    return dtStatusSucceed(dtResult) && polyRef != INVALID_POLYREF;
 }
 
 bool WorldPosition::GetReachableRandomPointOnGround(const Player* bot, const float radius, const bool randomRange) 

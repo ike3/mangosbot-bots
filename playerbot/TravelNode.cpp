@@ -2131,6 +2131,25 @@ void TravelNodeMap::generateTransportNodes()
                     if (p->delay > 0)
                     {
                         TravelNode* node = sTravelNodeMap.addNode(pos, data->name, true, true, true, entry);
+                        
+                        pos.loadMapAndVMap(0);
+                        WorldPosition exitPos = pos;
+
+                        if (data->displayId == 3015) 
+                            exitPos.setZ(exitPos.getZ() + 6.0f);
+                        else if(data->displayId == 3031)
+                            exitPos.setZ(exitPos.getZ() - 17.0f);
+
+                        if (exitPos.ClosestCorrectPoint(20.0f, 10.0f))
+                        {
+                            TravelNode* exitNode = sTravelNodeMap.addNode(exitPos, data->name + string(" dock"), true, true);
+
+                            TravelNodePath travelPath(exitPos.distance(pos), 0.0f, (uint8)TravelNodePathType::walk,0, true);
+                            travelPath.setPath({ exitPos, pos });
+                            exitNode->setPathTo(node,travelPath,true);
+                            travelPath.setPath({ pos, exitPos });
+                            node->setPathTo(exitNode, travelPath, true);
+                        }
 
                         if (!prevNode)
                         {

@@ -1,9 +1,9 @@
 #pragma once
+#define DT_POLYREF64 1
 
 #include "ObjectMgr.h"
 #include "SpellMgr.h"
 #include "PlayerbotAIConfig.h"
-#include "MemoryMonitor.h"
 #include "World.h"
 
 class ByteBuffer;
@@ -245,6 +245,7 @@ namespace ai
 
         float getPathLength(const vector<WorldPosition>& points) const { float dist = 0.0f; for (auto& p : points) if (&p == &points.front()) dist = 0; else dist += std::prev(&p, 1)->distance(p); return dist; }
 
+        bool ClosestCorrectPoint(float maxRange, float maxHeight = 5.0f);
         bool GetReachableRandomPointOnGround(const Player* bot, const float radius, const bool randomRange = true); //Generic terrain.
         vector<WorldPosition> ComputePathToRandomPoint(const Player* bot, const float radius, const bool randomRange = true); //For use with transports.
 
