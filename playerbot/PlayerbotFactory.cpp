@@ -2749,6 +2749,9 @@ void PlayerbotFactory::InitAmmo()
     uint32 count = bot->GetItemCount(entry) / 200;
     uint32 maxCount = 5 + level / 10;
 
+    if (ai->HasCheat(BotCheatMask::item))
+        maxCount = 1;
+
     if (!entry || count <= 2)
     {
         entry = sRandomItemMgr.GetAmmo(level, subClass);
