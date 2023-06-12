@@ -141,7 +141,7 @@ namespace ai
             creators["grind chat shortcut"] = &ChatActionContext::grind_chat_shortcut;
             creators["tank attack chat shortcut"] = &ChatActionContext::tank_attack_chat_shortcut;
             creators["gossip hello"] = &ChatActionContext::gossip_hello;
-            creators["cast custom spell"] = &ChatActionContext::cast_custom_spell;
+            creators["cast"] = &ChatActionContext::cast_custom_spell;
             creators["cast custom nc spell"] = &ChatActionContext::cast_custom_nc_spell;
             creators["invite"] = &ChatActionContext::invite;
             creators["join"] = &ChatActionContext::join;

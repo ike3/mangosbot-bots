@@ -98,6 +98,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("ah bid");
     supported.push_back("keep");
     supported.push_back("bg free");
+    supported.push_back("cast");
 }
 
 void ChatCommandHandlerStrategy::InitReactionTriggers(std::list<TriggerNode*> &triggers)
@@ -219,10 +220,6 @@ void ChatCommandHandlerStrategy::InitReactionTriggers(std::list<TriggerNode*> &t
     triggers.push_back(new TriggerNode(
         "talk",
         NextAction::array(0, new NextAction("gossip hello", relevance), new NextAction("talk to quest giver", relevance), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "cast",
-        NextAction::array(0, new NextAction("cast custom spell", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "revive",

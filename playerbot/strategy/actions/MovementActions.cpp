@@ -813,7 +813,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
             else
             {
                 if (sServerFacade.IsSpellReady(bot, entry) && (!bot->IsFlying() || WorldPosition(bot).currentHeight() < 10.0f))
-                    if (ai->DoSpecificAction("cast custom spell", Event("rpg action", to_string(entry)), true))
+                    if (ai->DoSpecificAction("cast", Event("rpg action", to_string(entry)), true))
                         return true;
 
                 movePath.clear();

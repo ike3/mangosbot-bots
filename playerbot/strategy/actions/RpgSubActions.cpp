@@ -356,7 +356,7 @@ bool RpgDuelAction::Execute(Event& event)
     if (!player)
         return false;   
 
-    return ai->DoSpecificAction("cast custom spell", Event("rpg action", chat->formatWorldobject(player) + " 7266"), true);
+    return ai->DoSpecificAction("cast", Event("rpg action", chat->formatWorldobject(player) + " 7266"), true);
 }
 
 bool RpgItemAction::Execute(Event& event)

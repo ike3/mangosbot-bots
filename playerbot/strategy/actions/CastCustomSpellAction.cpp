@@ -36,7 +36,11 @@ bool CastCustomSpellAction::Execute(Event& event)
         return false;
 
     Unit* target = NULL;
-    string text = event.getParam();
+    string text = getQualifier();
+
+    if(text.empty())
+        text = event.getParam();
+
     Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
 
     // Process summon request
@@ -68,6 +72,9 @@ bool CastCustomSpellAction::Execute(Event& event)
             target = ai->GetUnit(requester->GetSelectionGuid());
         }
     }
+
+    if (!target)
+        target = GetTarget();
 
     if (!target)
         target = bot;
@@ -170,7 +177,7 @@ bool CastCustomSpellAction::Execute(Event& event)
     if (result)
     {
         SetDuration(spellDuration);
-        if (!pSpellInfo->EffectItemType)
+        if (!pSpellInfo->EffectItemType[0])
             msg << "Casting " << spellName.str();
         else
             msg << "Crafting " << spellName.str();

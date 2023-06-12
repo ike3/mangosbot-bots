@@ -7,15 +7,16 @@
 
 namespace ai
 {
-    class CastCustomSpellAction : public ChatCommandAction
+    class CastCustomSpellAction : public ChatCommandAction, public Qualified
     {
     public:
-        CastCustomSpellAction(PlayerbotAI* ai, string name = "cast custom spell") : ChatCommandAction(ai, name) {}
+        CastCustomSpellAction(PlayerbotAI* ai, string name = "cast") : ChatCommandAction(ai, name), Qualified() {}
         virtual bool Execute(Event& event) override;
         virtual string castString(WorldObject* target) { return "cast"; }
         virtual uint32 getDuration() const { return 3000U; }
-
+        virtual string GetTargetName() override { return "current target"; }
     private:
+
         bool CastSummonPlayer(Player* requester, std::string command);
 
     protected:
