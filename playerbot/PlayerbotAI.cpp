@@ -344,7 +344,8 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         }
         if (HasCheat(BotCheatMask::item) && (bot->getClass() == CLASS_HUNTER || bot->getClass() == CLASS_ROGUE || bot->getClass() == CLASS_WARRIOR))
         {
-            if (uint32 itemId = bot->GetUInt32Value(PLAYER_AMMO_ID) && bot->GetItemCount(itemId))
+            uint32 itemId = bot->GetUInt32Value(PLAYER_AMMO_ID);
+            if (itemId && bot->GetItemCount(itemId))
             {
                 AiObjectContext* context = aiObjectContext;
 

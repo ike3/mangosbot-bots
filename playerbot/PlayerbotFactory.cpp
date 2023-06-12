@@ -2755,6 +2755,7 @@ void PlayerbotFactory::InitAmmo()
     if (!entry || count <= 2)
     {
         entry = sRandomItemMgr.GetAmmo(level, subClass);
+        count = bot->GetItemCount(entry) / 200;
     }
 
     if (count < maxCount)
