@@ -1620,7 +1620,6 @@ void RandomPlayerbotMgr::CheckPlayers()
 void RandomPlayerbotMgr::ScheduleRandomize(uint32 bot, uint32 time)
 {
     SetEventValue(bot, "randomize", 1, time);
-    //SetEventValue(bot, "logout", 1, time + 30 + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3));
 }
 
 void RandomPlayerbotMgr::ScheduleTeleport(uint32 bot, uint32 time)
@@ -1687,118 +1686,101 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
     PlayerbotAI* ai = player ? player->GetPlayerbotAI() : NULL;
 
-    uint32 isValid = GetEventValue(bot, "add");
+    bool botsAllowedInWorld = !sPlayerbotAIConfig.randomBotLoginWithPlayer || (!players.empty() && sWorld.GetActiveSessionCount() > 0);
+
+    bool isValid = true;
+   
+    if (sPlayerbotAIConfig.randomBotTimedLogout && !GetEventValue(bot, "add")) // RandomBotInWorldTime is expired.
+        isValid = false;
+    else if(!botsAllowedInWorld)                                               // Logout if all players logged out
+        isValid = false;
+
+    //Log out bot
     if (!isValid)
     {
-        bool shouldLogOut = false;
-        if (sPlayerbotAIConfig.randomBotLoginWithPlayer)
+        if (botsAllowedInWorld && player && player->GetGroup())
         {
-            shouldLogOut = players.empty() || (sWorld.GetActiveSessionCount() == 0);
-        }
-        else if (!player || !player->GetGroup())
-        {
-            shouldLogOut = true;
-        }
-        else if (player->GetGroup())
-        {
-            SetEventValue(bot, "add", 1, 120);
+            SetEventValue(bot, "add", 1, 120);                                 // Delay logout for 2 minutes while in group.
+            return false;
         }
 
-        if (shouldLogOut)
-        {
-            if (player)
-            {
-                sLog.outDetail("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->GetLevel(), player->GetName());
-            }
-            else
-            {
-                sLog.outDetail("Bot #%d: log out", bot);
-            }
+        if (!player || !player->IsInWorld())
+            sLog.outDetail("Bot #%d: log out", bot);
+        else
+            sLog.outDetail("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->GetLevel(), player->GetName());
 
-            SetEventValue(bot, "add", 0, 0);
-            currentBots.remove(bot);
-            if (player) LogoutPlayerBot(bot);
+        currentBots.remove(bot);
+
+        if (!player)
+        {
+            return false;
+        }
+
+        SetEventValue(bot, "add", 0, 0);        
+        LogoutPlayerBot(bot);
+
+        if (sPlayerbotAIConfig.randomBotTimedOffline)
+        {
+            uint32 logout = GetEventValue(bot, "logout");
+
+            if (!logout)
+                SetEventValue(bot, "logout", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
         }
 
         return false;
     }
 
+    //Log in bot (Added in AddRandomBots)
     if (!player)
     {
-        bool logInAllowed = true;
-        if (sPlayerbotAIConfig.randomBotLoginWithPlayer)
-        {
-            logInAllowed = !players.empty();
-        }
+        if (!botsAllowedInWorld)
+            return false;
 
-        if (logInAllowed)
-        {
-            AddPlayerBot(bot, 0);
-            SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval * 100);
-            uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
-            SetEventValue(bot, "update", 1, randomTime);
-            return true;
-        }
-    }
-
-    if (!player || !player->IsInWorld() || player->IsBeingTeleported() || player->GetSession()->isLogingOut())
-        return false;
-
-    // Log out bots if no real players are connected
-    if (sPlayerbotAIConfig.randomBotLoginWithPlayer && (players.empty() || sWorld.GetActiveSessionCount() == 0))
-    {
-        SetEventValue(bot, "add", 0, 0);
-        return false;
-    }
-
-    SetEventValue(bot, "login", 0, 0);
-    if (player->GetGroup() || player->IsTaxiFlying())
-        return false;
-
-    uint32 update = GetEventValue(bot, "update");
-    if (player && player->IsInWorld() && !update && !sPlayerbotAIConfig.disableRandomLevels)
-    {
-        bool update = true;
-        if (ai)
-        {
-            //ai->GetAiObjectContext()->GetValue<bool>("random bot update")->Set(true);
-            if (!sRandomPlayerbotMgr.IsRandomBot(player))
-                update = false;
-
-            if (player->GetGroup() && ai->GetGroupMaster() && (!ai->GetGroupMaster()->GetPlayerbotAI() || ai->GetGroupMaster()->GetPlayerbotAI()->IsRealPlayer()))
-                update = false;
-
-            if (ai->HasPlayerNearby())
-                update = false;
-        }
-        if (update)
-            ProcessBot(player);
-
-        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime * 5);
+        AddPlayerBot(bot, 0);
+        SetEventValue(bot, "login", 1, sPlayerbotAIConfig.randomBotUpdateInterval * 100);
+        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime);
         SetEventValue(bot, "update", 1, randomTime);
         return true;
     }
 
-    uint32 logout = GetEventValue(bot, "logout");
-    if (player && !logout && !isValid)
-    {
-        // don't logout arena team members
-        bool hasTeam = false;
-        if (std::find(arenaTeamMembers.begin(), arenaTeamMembers.end(), bot) != arenaTeamMembers.end())
-            hasTeam = true;
+    if (!player->IsInWorld() || player->IsBeingTeleported() || player->GetSession()->isLogingOut()) //Skip bots that are in limbo.
+        return false;
 
-        if (hasTeam && sPlayerbotAIConfig.randomBotJoinBG)
+    if(GetEventValue(bot, "login"))
+        SetEventValue(bot, "login", 0, 0); //Bot is no longer loggin in.
+
+    uint32 update = GetEventValue(bot, "update");
+    //Update the bot
+    if (!update)
+    {
+        //Clean up expired values
+        if (ai && !ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
+            ai->GetAiObjectContext()->ClearExpiredValues();
+
+        //Randomize/teleport bot
+        if (sPlayerbotAIConfig.disableRandomLevels)
         {
-            SetEventValue(bot, "add", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
-            SetEventValue(bot, "logout", 0, 0);
-            return true;
+            if (player->GetGroup() || player->IsTaxiFlying())
+                return false;
+
+            bool update = true;
+            if (ai)
+            {
+                if (!sRandomPlayerbotMgr.IsRandomBot(player))
+                    update = false;
+
+                if (player->GetGroup() && ai->GetGroupMaster() && (!ai->GetGroupMaster()->GetPlayerbotAI() || ai->GetGroupMaster()->GetPlayerbotAI()->IsRealPlayer()))
+                    update = false;
+
+                if (ai->HasPlayerNearby())
+                    update = false;
+            }
+            if (update)
+                ProcessBot(player);
         }
 
-        sLog.outBasic("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->GetLevel(), player->GetName());
-        SetEventValue(bot, "add", 0, 0);
-        LogoutPlayerBot(player->GetGUIDLow());
-        currentBots.remove(bot);
-        SetEventValue(bot, "logout", 1, urand(sPlayerbotAIConfig.minRandomBotInWorldTime, sPlayerbotAIConfig.maxRandomBotInWorldTime));
+        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotReviveTime, sPlayerbotAIConfig.maxRandomBotReviveTime * 5);
+        SetEventValue(bot, "update", 1, randomTime);
         return true;
     }
 

@@ -14,8 +14,14 @@ AiPlayerbot.RandomBotAutologin = 1
 # Log on all random bots on start
 AiPlayerbot.RandomBotLoginAtStartup = 1
 
+# Log out random bots after BotInWorldTime interval
+# AiPlayerbot.RandomBotTimedLogout = 1
+
+# Keep random bots logged out for an BotInWorldTime interval
+# AiPlayerbot.RandomBotTimedOffline = 0
+
 # Login Bots when real players login
-AiPlayerbot.RandomBotLoginWithPlayer = 1
+# AiPlayerbot.RandomBotLoginWithPlayer = 0
 
 # Delete all random bot accounts (reset randombots)
 AiPlayerbot.DeleteRandomBotAccounts = 0
