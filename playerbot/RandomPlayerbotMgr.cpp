@@ -1710,13 +1710,13 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
             sLog.outDetail("Bot #%d %s:%d <%s>: log out", bot, IsAlliance(player->getRace()) ? "A" : "H", player->GetLevel(), player->GetName());
 
         currentBots.remove(bot);
+        SetEventValue(bot, "add", 0, 0);
 
         if (!player)
         {
             return false;
-        }
+        }    
 
-        SetEventValue(bot, "add", 0, 0);        
         LogoutPlayerBot(bot);
 
         if (sPlayerbotAIConfig.randomBotTimedOffline)
