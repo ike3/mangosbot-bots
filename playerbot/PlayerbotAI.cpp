@@ -42,6 +42,10 @@
 #include "Entities/Vehicle.h"
 #endif
 
+#ifdef BUILD_ELUNA
+#include "LuaEngine/LuaEngine.h"
+#endif
+
 using namespace ai;
 using namespace std;
 
@@ -398,6 +402,11 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     UpdateFaceTarget(elapsed, minimal);
 
     bool doMinimalReaction = minimal || !AllowActivity(REACT_ACTIVITY);
+
+#ifdef PLAYERBOT_ELUNA
+    // used by eluna    
+    sEluna->OnUpdateAI(this);
+#endif
 
     // Only update the internal ai when no reaction is running and the internal ai can be updated
     if(!UpdateAIReaction(elapsed, doMinimalReaction, bot->IsTaxiFlying()) && CanUpdateAIInternal())
