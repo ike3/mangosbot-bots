@@ -28,7 +28,7 @@ list<ObjectGuid> PossibleTargetsValue::Calculate()
     for (list<Unit*>::iterator i = targets.begin(); i != targets.end(); ++i)
     {
         Unit* unit = *i;
-        if (shouldIgnoreValidate || AcceptUnit(unit))
+        if (unit && (shouldIgnoreValidate || AcceptUnit(unit)))
         {
             results.push_back(unit->GetObjectGuid());
         }
