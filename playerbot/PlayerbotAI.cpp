@@ -405,7 +405,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
 
 #ifdef PLAYERBOT_ELUNA
     // used by eluna    
-    sEluna->OnUpdateAI(this);
+    sEluna->OnUpdateAI(this, bot->GetName());
 #endif
 
     // Only update the internal ai when no reaction is running and the internal ai can be updated
