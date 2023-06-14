@@ -265,6 +265,79 @@ public:
     }
 };
 
+class GearChatFilter : public ChatFilter
+{
+public:
+    GearChatFilter(PlayerbotAI* ai) : ChatFilter(ai) {}
+
+#ifdef GenerateBotHelp
+    virtual string GetHelpName() {
+        return "gear";
+    }
+    virtual unordered_map<string, string> GetFilterExamples()
+    {
+        unordered_map<string, string> retMap;
+        retMap["@tier1"] = "All bots that have an avarage item level comparable to tier1";
+        retMap["@tier2-3"] = "All bots an avarage item level comparable to tier2 or tier3.";
+        return retMap;
+    }
+    virtual string GetHelpDescription() {
+        return "This filter selects bots based on gear level.";
+    }
+#endif
+
+    virtual string Filter(string message) override
+    {
+        Player* bot = ai->GetBot();
+
+        if (message.find("@tier") != 0)
+            return message;
+
+        uint32 fromLevel;
+        uint32 toLevel;
+        uint32 botTier = 0;
+        uint32 gs = ai->GetEquipGearScore(bot, false, false);
+
+        if (message.find("-") != string::npos)
+        {
+            fromLevel = atoi(message.substr(message.find("@tier") + 5, message.find("-")).c_str());
+            toLevel = atoi(message.substr(message.find("-") + 1, message.find(" ")).c_str());
+        }
+        else
+        {
+            fromLevel = atoi(message.substr(message.find("@tier") + 5, message.find(" ")).c_str());
+            toLevel = atoi(message.substr(message.find("@tier") + 5, message.find(" ")).c_str());
+        }
+
+        if (gs > 60 && gs < 70)
+            botTier = 1;
+        else if (gs >= 71 && gs <= 76)
+            botTier = 2;
+        else if (gs >= 77 && gs <= 99)
+            botTier = 3;
+        else if (gs >= 120 && gs <= 132)
+            botTier = 4;
+        else if (gs >= 133 && gs <= 145)
+            botTier = 5;
+        else if (gs >= 146 && gs <= 154)
+            botTier = 6;
+        else if (gs >= 200 && gs <= 213)
+            botTier = 7;
+        else if (gs >= 225 && gs <= 232)
+            botTier = 8;
+        else if (gs >= 232 && gs <= 245)
+            botTier = 9;
+        else if (gs >= 251 && gs <= 277)
+            botTier = 10;
+
+        if (botTier >= fromLevel && botTier <= toLevel)
+            return ChatFilter::Filter(message);
+
+        return message;
+
+    }
+};
+
 class CombatTypeChatFilter : public ChatFilter
 {
 public:
@@ -1023,6 +1096,7 @@ CompositeChatFilter::CompositeChatFilter(PlayerbotAI* ai) : ChatFilter(ai)
     filters.push_back(new TalentSpecChatFilter(ai));
     filters.push_back(new LocationChatFilter(ai));
     filters.push_back(new RandomChatFilter(ai));
+    filters.push_back(new GearChatFilter(ai));
     
 }
 
