@@ -5034,7 +5034,7 @@ list<Item*> PlayerbotAI::InventoryParseItems(string text, IterateItemsMask mask)
     }
 
     FindNamedItemVisitor visitor(bot, text);
-    InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+    InventoryIterateItems(&visitor, ITERATE_ALL_ITEMS);
     found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
 
     uint32 quality = GetChatHelper()->parseItemQuality(text);
