@@ -1758,7 +1758,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
             ai->GetAiObjectContext()->ClearExpiredValues();
 
         //Randomize/teleport bot
-        if (sPlayerbotAIConfig.disableRandomLevels)
+        if (!sPlayerbotAIConfig.disableRandomLevels)
         {
             if (player->GetGroup() || player->IsTaxiFlying())
                 return false;
