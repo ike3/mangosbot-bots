@@ -25,9 +25,9 @@ namespace ai
             if (!GetTarget())
                 return false;
 
-            bool isRandomBot = GetTarget()->IsPlayer() && sRandomPlayerbotMgr.IsRandomBot((Player*)GetTarget());
+            bool isBot = GetTarget()->IsPlayer() && ((Player*)GetTarget())->GetPlayerbotAI();
 
-            return !isRandomBot || (isRandomBot && !sPlayerbotAIConfig.freeFood);
+            return !isBot || (isBot && !((Player*)GetTarget())->GetPlayerbotAI()->HasCheat(BotCheatMask::item));
         }
     };
 
@@ -41,9 +41,9 @@ namespace ai
             if (!GetTarget())
                 return false;
 
-            bool isRandomBot = GetTarget()->IsPlayer() && sRandomPlayerbotMgr.IsRandomBot((Player*)GetTarget());
+            bool isBot = GetTarget()->IsPlayer() && ((Player*)GetTarget())->GetPlayerbotAI();
 
-            return !isRandomBot || (isRandomBot && !sPlayerbotAIConfig.freeFood);
+            return !isBot || (isBot && !((Player*)GetTarget())->GetPlayerbotAI()->HasCheat(BotCheatMask::item));
         }
     };
 }

@@ -695,8 +695,18 @@ AiPlayerbot.PerfMonEnabled = 0
 # AiPlayerbot.LoginBoostPercentage = 90
 
 # Bot cheats. Same as "/w <bot> cheat (+/-/?) <cheatcode>" but only globally for all bots.
-# Values: taxi (all nodes learned), supply (auto supply items in bg), gold (free repair, vendor, ect.), health (fast regen), mana (fast regen), power (fast regen)
-# AiPlayerbot.BotCheats = taxi,supply
+# Values: taxi            (all nodes learned)
+#         item            (unlimited items for spells)
+#         gold            (free repair, vendor, ect.)
+#         health          (fast regen)
+#         mana            (fast regen)
+#         power           (fast regen)
+#         cooldown        (no cooldowns)
+#         repair          (no durability of ress sickness)
+#         movespeed       (very fast movespeed)
+#         attackspeed     (very fast attackspeed)
+#         breath          (underwater breathing)
+# AiPlayerbot.BotCheats = taxi,item,breath
 
 # The summon command can be used without restriction by non-gms.
 # AiPlayerbot.NonGmFreeSummon = 0

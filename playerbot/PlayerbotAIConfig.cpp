@@ -451,9 +451,7 @@ bool PlayerbotAIConfig::Initialize()
     syncLevelMaxAbove = config.GetIntDefault("AiPlayerbot.SyncLevelMaxAbove", 5);
     syncLevelNoPlayer = config.GetIntDefault("AiPlayerbot.SyncLevelNoPlayer", randombotStartingLevel);
     tweakValue = config.GetIntDefault("AiPlayerbot.TweakValue", 0);
-    freeFood = config.GetBoolDefault("AiPlayerbot.FreeFood", true);
     talentsInPublicNote = config.GetBoolDefault("AiPlayerbot.TalentsInPublicNote", false);
-    freeFood = config.GetBoolDefault("AiPlayerbot.FreeFood", true);
     respawnModNeutral = config.GetFloatDefault("AiPlayerbot.RespawnModNeutral", 10.0f);
     respawnModHostile = config.GetFloatDefault("AiPlayerbot.RespawnModHostile", 5.0f);
     respawnModThreshold = config.GetIntDefault("AiPlayerbot.RespawnModThreshold", 10);

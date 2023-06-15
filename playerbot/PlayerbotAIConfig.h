@@ -181,7 +181,6 @@ public:
     bool autoDoQuests;
     bool syncLevelWithPlayers;
     uint32 syncLevelMaxAbove, syncLevelNoPlayer;
-    bool freeFood;
     uint32 tweakValue; //Debugging config
     float respawnModNeutral, respawnModHostile;
     uint32 respawnModThreshold, respawnModMax;
