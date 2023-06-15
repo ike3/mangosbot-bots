@@ -13,6 +13,7 @@ map<string, uint32> ChatHelper::consumableSubClasses;
 map<string, uint32> ChatHelper::tradeSubClasses;
 map<string, uint32> ChatHelper::itemQualities;
 map<string, uint32> ChatHelper::projectileSubClasses;
+map<string, pair<uint32, uint32>> ChatHelper::itemClasses;
 map<string, uint32> ChatHelper::slots;
 map<string, uint32> ChatHelper::skills;
 map<string, ChatMsg> ChatHelper::chats;
@@ -73,6 +74,34 @@ ChatHelper::ChatHelper(PlayerbotAI* ai) : PlayerbotAIAware(ai)
     //tradeSubClasses["gems"] = ITEM_SUBCLASS_JEWELCRAFTING;
     //tradeSubClasses["jewels"] = ITEM_SUBCLASS_JEWELCRAFTING;
     //tradeSubClasses["jewelcrafting"] = ITEM_SUBCLASS_JEWELCRAFTING;
+
+    itemClasses["1h axe"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_AXE };
+    itemClasses["2h axe"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_AXE2 };
+    itemClasses["bow"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_BOW };
+    itemClasses["gun"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_GUN };
+    itemClasses["1h mace"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_MACE };
+    itemClasses["2h mace"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_MACE2 };
+    itemClasses["polearm"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_POLEARM };
+    itemClasses["1h sword"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_SWORD };
+    itemClasses["2h sword"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_SWORD2 };
+    itemClasses["staff"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_STAFF };
+    itemClasses["first"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_FIST };
+    itemClasses["dagger"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_DAGGER };
+    itemClasses["thrown"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_THROWN };
+    itemClasses["crossbow"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_CROSSBOW };
+    itemClasses["wand"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_WAND };
+    itemClasses["fishing pole"] = { ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_FISHING_POLE };
+
+    itemClasses["bag"] = { ITEM_CLASS_CONTAINER, ITEM_SUBCLASS_CONTAINER };
+
+    itemClasses["cloth"] = { ITEM_CLASS_ARMOR, ITEM_SUBCLASS_ARMOR_CLOTH };
+    itemClasses["leather"] = { ITEM_CLASS_ARMOR, ITEM_SUBCLASS_ARMOR_LEATHER };
+    itemClasses["mail"] = { ITEM_CLASS_ARMOR, ITEM_SUBCLASS_ARMOR_MAIL };
+    itemClasses["plate"] = { ITEM_CLASS_ARMOR, ITEM_SUBCLASS_ARMOR_PLATE };
+    itemClasses["shield"] = { ITEM_CLASS_ARMOR, ITEM_SUBCLASS_ARMOR_SHIELD };
+    itemClasses["libram"] = { ITEM_CLASS_ARMOR, ITEM_SUBCLASS_ARMOR_LIBRAM };
+    itemClasses["idol"] = { ITEM_CLASS_ARMOR, ITEM_SUBCLASS_ARMOR_IDOL };
+    itemClasses["totem"] = { ITEM_CLASS_ARMOR, ITEM_SUBCLASS_ARMOR_TOTEM };
 
     slots["head"] = EQUIPMENT_SLOT_HEAD;
     slots["neck"] = EQUIPMENT_SLOT_NECK;
@@ -641,6 +670,13 @@ bool ChatHelper::parseItemClass(string text, uint32 *itemClass, uint32 *itemSubC
     {
         *itemClass = ITEM_CLASS_PROJECTILE;
         *itemSubClass = projectileSubClasses[text];
+        return true;
+    }
+
+    if (itemClasses.find(text) != itemClasses.end())
+    {
+        *itemClass = itemClasses[text].first;
+        *itemSubClass = itemClasses[text].second;
         return true;
     }
 
