@@ -5059,6 +5059,16 @@ list<Item*> PlayerbotAI::InventoryParseItems(string text, IterateItemsMask mask)
         Item* item = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, fromSlot);
         if (item)
             found.insert(item);
+        if (mask & ITERATE_ITEMS_IN_EQUIP || mask == ITERATE_ALL_ITEMS)
+        {
+            Item* item = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, fromSlot);
+            if (item)
+                found.insert(item);
+        }
+
+        FindItemBySlotVisitor visitor(bot, fromSlot);
+        InventoryIterateItems(&visitor, mask);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
     }
 
     ItemIds outfit = InventoryFindOutfitItems(text);

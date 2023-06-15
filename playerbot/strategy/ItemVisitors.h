@@ -231,6 +231,25 @@ namespace ai
         ItemIds ids;
     };
 
+    class FindItemBySlotVisitor : public FindItemVisitor {
+    public:
+        FindItemBySlotVisitor(Player* bot, uint32 slot) : FindItemVisitor()
+        {
+            this->bot = bot;
+            this->slot = slot;
+        }
+
+        virtual bool Accept(const ItemPrototype* proto)
+        {
+            uint8 eslot = bot->FindEquipSlot(proto, NULL_SLOT, true);
+            return slot == eslot;
+        }
+
+    private:
+        uint32 slot;
+        Player* bot;
+    };
+
     class ListItemsVisitor : public IterateItemsVisitor
     {
     public:
