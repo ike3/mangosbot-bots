@@ -5034,7 +5034,7 @@ list<Item*> PlayerbotAI::InventoryParseItems(string text, IterateItemsMask mask)
     }
 
     FindNamedItemVisitor visitor(bot, text);
-    InventoryIterateItems(&visitor, ITERATE_ALL_ITEMS);
+    InventoryIterateItems(&visitor, mask);
     found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
 
     uint32 quality = GetChatHelper()->parseItemQuality(text);
@@ -5056,9 +5056,6 @@ list<Item*> PlayerbotAI::InventoryParseItems(string text, IterateItemsMask mask)
     uint32 fromSlot = GetChatHelper()->parseSlot(text);
     if (fromSlot != EQUIPMENT_SLOT_END)
     {
-        Item* item = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, fromSlot);
-        if (item)
-            found.insert(item);
         if (mask & ITERATE_ITEMS_IN_EQUIP || mask == ITERATE_ALL_ITEMS)
         {
             Item* item = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, fromSlot);
