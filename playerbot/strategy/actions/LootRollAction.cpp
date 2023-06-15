@@ -113,7 +113,7 @@ bool RollAction::Execute(Event& event)
 
 bool RollAction::isPossible()
 {
-    return bot->GetGroup() && !AI_VALUE(LootRollMap, "active rolls").empty(); 
+    return bot->GetGroup() && !AI_VALUE(LootRollMap, "active rolls").empty() && AI_VALUE(uint8, "bag space") < 100;
 }
 
 ItemQualifier RollAction::GetRollItem(ObjectGuid lootGuid, uint32 slot)

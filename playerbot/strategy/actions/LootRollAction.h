@@ -59,7 +59,7 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
 #ifdef GenerateBotHelp
-        virtual string GetHelpName() { return "delayed loot roll"; } //Must equal internal name
+        virtual string GetHelpName() { return "loot roll"; } //Must equal internal name
         virtual string GetHelpDescription()
         {
             return "This action will make the bot roll on an item the master just rolled on.\n"
