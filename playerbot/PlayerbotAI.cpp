@@ -5020,6 +5020,18 @@ list<Item*> PlayerbotAI::InventoryParseItems(string text, IterateItemsMask mask)
         InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
         found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
     }
+    if (text == "tradeskill")
+    {
+        FindItemUsageVisitor visitor(bot, ItemUsage::ITEM_USAGE_SKILL);
+        InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
+    if (text == "use")
+    {
+        FindItemUsageVisitor visitor(bot, ItemUsage::ITEM_USAGE_USE);
+        InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
 
     FindNamedItemVisitor visitor(bot, text);
     InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);

@@ -21,7 +21,7 @@ namespace ai
                 "Example: sell vendor (sell based on item use)\n"
                 "Example: sell gray\n"
                 "Example: sell [itemlink] [itemlink]\n"
-                "Example: sell epic \n";
+                "Example: sell equip \n";
         }
         virtual vector<string> GetUsedActions() { return {}; }
         virtual vector<string> GetUsedValues() { return { "nearest npcs", "item usage" }; }
