@@ -18,6 +18,34 @@ bool EquipAction::Execute(Event& event)
     }
 
     ItemIds ids = chat->parseItems(text);
+    if (ids.empty())
+    {
+        //Get items based on text.
+        list<Item*> found = ai->InventoryParseItems(text, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
+        //Sort items on itemLevel descending.
+        found.sort([](Item* i, Item* j) {return i->GetProto()->ItemLevel > j->GetProto()->ItemLevel; });
+
+        vector< uint16> dests;
+
+        for (auto& item : found)
+        {
+            uint32 itemId = item->GetProto()->ItemId;
+            if (std::find(ids.begin(), ids.end(), itemId) != ids.end())
+                continue;
+
+            uint16 dest;
+            InventoryResult msg = bot->CanEquipItem(NULL_SLOT, dest, item, true);
+
+            if (msg != EQUIP_ERR_OK)
+                continue;
+
+            if (std::find(dests.begin(), dests.end(), dest) != dests.end())
+                continue;
+
+            dests.push_back(dest);
+            ids.insert(itemId);
+        }
+    }
     EquipItems(requester, ids);
     return true;
 }
