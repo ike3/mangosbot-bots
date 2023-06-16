@@ -40,6 +40,7 @@ namespace ai
             creators["ue"] = &ChatTriggerContext::uneqip;
             creators["s"] = &ChatTriggerContext::sell;
             creators["b"] = &ChatTriggerContext::buy;
+            creators["bb"] = &ChatTriggerContext::buy_back;
             creators["r"] = &ChatTriggerContext::reward;
             creators["t"] = &ChatTriggerContext::trade;
             creators["nt"] = &ChatTriggerContext::nontrade;
@@ -192,6 +193,7 @@ namespace ai
         static Trigger* uneqip(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "ue"); }
         static Trigger* sell(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "s"); }
         static Trigger* buy(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "b"); }
+        static Trigger* buy_back(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "bb"); }
         static Trigger* reward(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "r"); }
         static Trigger* trade(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "t"); }
         static Trigger* nontrade(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "nt"); }
