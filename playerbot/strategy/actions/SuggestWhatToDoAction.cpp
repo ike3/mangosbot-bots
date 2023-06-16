@@ -420,7 +420,7 @@ bool SuggestTradeAction::Execute(Event& event)
     while (quality-- > ITEM_QUALITY_POOR)
     {
         FindTradeItemsVisitor visitor(quality);
-        ai->InventoryIterateItems(&visitor);
+        ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
         if (!visitor.stacks.empty())
         {
             int index = urand(0, visitor.stacks.size() - 1);

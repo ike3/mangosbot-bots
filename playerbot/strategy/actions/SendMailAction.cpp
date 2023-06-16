@@ -89,7 +89,8 @@ bool SendMailAction::Execute(Event& event)
     for (ItemIds::iterator i =ids.begin(); i != ids.end(); i++)
     {
         FindItemByIdVisitor visitor(*i);
-        ai->InventoryIterateItems(&visitor, ITERATE_ALL_ITEMS);
+        IterateItemsMask mask = IterateItemsMask((uint8)IterateItemsMask::ITERATE_ITEMS_IN_BAGS | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_EQUIP | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_BANK);
+        ai->InventoryIterateItems(&visitor, mask);
         list<Item*> items = visitor.GetResult();
         for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
         {

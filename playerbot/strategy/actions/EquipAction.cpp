@@ -81,7 +81,7 @@ void EquipAction::EquipItems(Player* requester, ItemIds ids)
 
 void EquipAction::EquipItem(Player* requester, FindItemVisitor* visitor)
 {
-    ai->InventoryIterateItems(visitor);
+    ai->InventoryIterateItems(visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
     list<Item*> items = visitor->GetResult();
 	if (!items.empty()) EquipItem(requester, *items.begin());
 }
@@ -179,9 +179,9 @@ bool EquipUpgradesAction::Execute(Event& event)
     list<Item*> items;
 
     FindItemUsageVisitor visitor(bot, ItemUsage::ITEM_USAGE_EQUIP);
-    ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+    ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
     visitor.SetUsage(ItemUsage::ITEM_USAGE_BAD_EQUIP);
-    ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+    ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
     items = visitor.GetResult();
 
     bool didEquip = false;

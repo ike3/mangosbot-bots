@@ -89,7 +89,7 @@ bool CastCustomSpellAction::Execute(Event& event)
     if (pos != string::npos)
     {
         string param = text.substr(pos + 1);
-        list<Item*> items = ai->InventoryParseItems(param, ITERATE_ITEMS_IN_BAGS);
+        list<Item*> items = ai->InventoryParseItems(param, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
         if (!items.empty()) itemTarget = *items.begin();
         else
         {

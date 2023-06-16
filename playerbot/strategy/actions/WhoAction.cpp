@@ -73,7 +73,9 @@ string WhoAction::QueryTrade(string text)
 {
     ostringstream out;
 
-    list<Item*> items = ai->InventoryParseItems(text);
+    IterateItemsMask mask = IterateItemsMask((uint8)IterateItemsMask::ITERATE_ITEMS_IN_EQUIP | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
+
+    list<Item*> items = ai->InventoryParseItems(text, mask);
     for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
     {
         Item* sell = *i;
@@ -126,7 +128,7 @@ string WhoAction::QuerySpec(string text)
     out << "|h|cff00ff00" << ai->GetEquipGearScore(bot, false, false) << "|h|cffffffff GS (";
 
     ItemCountByQuality visitor;
-    ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
+    ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_EQUIP);
 
     bool needSlash = false;
     if (visitor.count[ITEM_QUALITY_LEGENDARY])

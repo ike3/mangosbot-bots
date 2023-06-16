@@ -415,11 +415,11 @@ public:
     static bool AddAura(Unit* unit, uint32 spellId);
     ReputationRank getReaction(FactionTemplateEntry const* factionTemplate) { return GetFactionReaction(bot->GetFactionTemplateEntry(), factionTemplate);}
 
-    void InventoryIterateItems(IterateItemsVisitor* visitor, IterateItemsMask mask = ITERATE_ITEMS_IN_BAGS);
+    void InventoryIterateItems(IterateItemsVisitor* visitor, IterateItemsMask mask);
     void InventoryTellItems(Player* player, map<uint32, int> items, map<uint32, bool> soulbound);
     void InventoryTellItem(Player* player, ItemPrototype const* proto, int count, bool soulbound);
-    list<Item*> InventoryParseItems(string text, IterateItemsMask mask = ITERATE_ALL_ITEMS);
-    uint32 InventoryGetItemCount(FindItemVisitor* visitor, IterateItemsMask mask = ITERATE_ITEMS_IN_BAGS);
+    list<Item*> InventoryParseItems(string text, IterateItemsMask mask);
+    uint32 InventoryGetItemCount(FindItemVisitor* visitor, IterateItemsMask mask);
     string InventoryParseOutfitName(string outfit);
     ItemIds InventoryParseOutfitItems(string outfit);
     ItemIds InventoryFindOutfitItems(string name);
@@ -429,8 +429,9 @@ public:
 
 private:
     void InventoryIterateItemsInBags(IterateItemsVisitor* visitor);
-    void InventoryIterateItemsInEquip(IterateItemsVisitor* visitor);
+    void InventoryIterateItemsInEquip(IterateItemsVisitor* visitor);   
     void InventoryIterateItemsInBank(IterateItemsVisitor* visitor);
+    void InventoryIterateItemsInBuyBack(IterateItemsVisitor* visitor);
 
 private:
     void _fillGearScoreData(Player *player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore);

@@ -25,41 +25,11 @@ bool KeepItemAction::Execute(Event& event)
     else if(text.find(" ") != string::npos) //Remove type from param.
         text = text.substr(text.find(" ") + 1);
 
-    ItemIds ids;
+    IterateItemsMask mask = IterateItemsMask((uint8)IterateItemsMask::ITERATE_ITEMS_IN_EQUIP | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_BAGS | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_BANK);
 
-    if (text == "all")
-    {
-        FindNamedItemVisitor visitor(bot, "");
-        ai->InventoryIterateItems(&visitor, ITERATE_ALL_ITEMS);
-
-        list<Item*> items = visitor.GetResult();
-
-        for (auto& item : items)
-            ids.insert(item->GetProto()->ItemId);
-    }
-    else if (text == "equip")
-    {
-        FindNamedItemVisitor visitor(bot, "");
-        ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
-
-        list<Item*> items = visitor.GetResult();
-
-        for (auto& item : items)
-            ids.insert(item->GetProto()->ItemId);
-    }
-
-    if (ids.empty())
-    {
-        list<Item*> items = ai->InventoryParseItems(text);
-
-        for (auto& item : items)
-                ids.insert(item->GetProto()->ItemId);
-    }
-
-    if (ids.empty())
-        ids = chat->parseItems(text);
-
-    if (ids.empty())
+    list<Item*> found = ai->InventoryParseItems(text, mask);
+   
+    if (found.empty())
     {
         ostringstream out;
 
@@ -74,16 +44,16 @@ bool KeepItemAction::Execute(Event& event)
 
     if (type == "?")
     {
-        for (auto& id : ids)
+        for (auto& item : found)
         {
-            const ItemPrototype* proto = sObjectMgr.GetItemPrototype(id);
+            const ItemPrototype* proto = item->GetProto();
 
             if (!proto)
                 continue;
 
             ostringstream out;
             out << chat->formatItem(proto);
-            out << ": " << keepName[AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", id, ForceItemUsage::FORCE_USAGE_NEED)] << " the item.";
+            out << ": " << keepName[AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", proto->ItemId, ForceItemUsage::FORCE_USAGE_NEED)] << " the item.";
             ai->TellPlayer(GetMaster(), out.str());
 
         }
@@ -92,10 +62,8 @@ bool KeepItemAction::Execute(Event& event)
 
     uint32 changed = 0;
 
-    ForceItemUsage usage;
-    if (type == "none")
-        usage = ForceItemUsage::FORCE_USAGE_NONE;
-    else if (type == "keep")
+    ForceItemUsage usage = ForceItemUsage::FORCE_USAGE_NONE;
+    if (type == "keep")
         usage = ForceItemUsage::FORCE_USAGE_KEEP;
     else if (type == "equip")
         usage = ForceItemUsage::FORCE_USAGE_EQUIP;
@@ -104,12 +72,12 @@ bool KeepItemAction::Execute(Event& event)
     else if (type == "need")
         usage = ForceItemUsage::FORCE_USAGE_NEED;
 
-    for (auto& id : ids)
+    for (auto& item : found)
     {
-        if (AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", id, ForceItemUsage::FORCE_USAGE_NONE) != usage)
+        if (AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", item->GetEntry(), ForceItemUsage::FORCE_USAGE_NONE) != usage)
         {
             changed++;
-            SET_AI_VALUE2(ForceItemUsage, "force item usage", id, usage);
+            SET_AI_VALUE2(ForceItemUsage, "force item usage", item->GetEntry(), usage);
         }
     }
 

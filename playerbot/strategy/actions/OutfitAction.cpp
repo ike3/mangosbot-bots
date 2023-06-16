@@ -167,7 +167,7 @@ void OutfitAction::List()
 void OutfitAction::Update(string name)
 {
     ListItemsVisitor visitor;
-    ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
+    ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_EQUIP);
 
     ItemIds items;
     for (map<uint32, int>::iterator i = visitor.items.begin(); i != visitor.items.end(); ++i)

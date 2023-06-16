@@ -13,7 +13,9 @@ static list<Item*> Find(PlayerbotAI* ai, string qualifier)
 
     Player* bot = ai->GetBot();
 
-    list<Item*> items = ai->InventoryParseItems(qualifier);
+	IterateItemsMask mask = IterateItemsMask((uint8)IterateItemsMask::ITERATE_ITEMS_IN_EQUIP | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
+
+    list<Item*> items = ai->InventoryParseItems(qualifier, mask);
     for (list<Item*>::iterator i = items.begin(); i != items.end(); i++)
         result.push_back(*i);
 

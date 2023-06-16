@@ -56,7 +56,8 @@ bool TradeAction::Execute(Event& event)
 
     size_t pos = text.rfind(" ");
     int count = pos!=string::npos ? atoi(text.substr(pos + 1).c_str()) : 1;
-    list<Item*> found = ai->InventoryParseItems(text);
+
+    list<Item*> found = ai->InventoryParseItems(text, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
     if (found.empty())
         return false;
 

@@ -100,8 +100,10 @@ bool QueryItemUsageAction::Execute(Event& event)
 
 uint32 QueryItemUsageAction::GetCount(ItemQualifier& qualifier)
 {
+    IterateItemsMask mask = IterateItemsMask((uint8)IterateItemsMask::ITERATE_ITEMS_IN_EQUIP | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
+
     uint32 total = 0;
-    list<Item*> items = ai->InventoryParseItems(qualifier.GetProto()->Name1);
+    list<Item*> items = ai->InventoryParseItems(qualifier.GetProto()->Name1, mask);
     if (!items.empty())
     {
         for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
@@ -189,7 +191,10 @@ string QueryItemUsageAction::QueryItemPrice(ItemQualifier& qualifier)
         return "";
 
     ostringstream msg;
-    list<Item*> items = ai->InventoryParseItems(qualifier.GetProto()->Name1);
+
+    IterateItemsMask mask = IterateItemsMask((uint8)IterateItemsMask::ITERATE_ITEMS_IN_EQUIP | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
+
+    list<Item*> items = ai->InventoryParseItems(qualifier.GetProto()->Name1, mask);
     int32 sellPrice = 0;
     if (!items.empty())
     {

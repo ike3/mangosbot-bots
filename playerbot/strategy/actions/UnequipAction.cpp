@@ -40,7 +40,8 @@ bool UnequipAction::Execute(Event& event)
 
 void UnequipAction::UnequipItem(Player* requester, FindItemVisitor* visitor)
 {
-    ai->InventoryIterateItems(visitor, ITERATE_ALL_ITEMS);
+    IterateItemsMask mask = IterateItemsMask((uint8)IterateItemsMask::ITERATE_ITEMS_IN_BAGS | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_EQUIP);
+    ai->InventoryIterateItems(visitor, mask);
     list<Item*> items = visitor->GetResult();
 	if (!items.empty()) UnequipItem(requester, *items.begin());
 }

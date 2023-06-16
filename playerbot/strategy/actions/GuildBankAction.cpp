@@ -43,7 +43,9 @@ bool GuildBankAction::Execute(string text, GameObject* bank)
 {
     bool result = true;
 
-    list<Item*> found = ai->InventoryParseItems(text);
+    IterateItemsMask mask = IterateItemsMask((uint8)IterateItemsMask::ITERATE_ITEMS_IN_EQUIP | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
+
+    list<Item*> found = ai->InventoryParseItems(text, mask);
     if (found.empty())
         return false;
 

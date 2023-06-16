@@ -21,7 +21,7 @@ bool DestroyItemAction::Execute(Event& event)
 
 void DestroyItemAction::DestroyItem(FindItemVisitor* visitor)
 {
-    ai->InventoryIterateItems(visitor);
+    ai->InventoryIterateItems(visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
     list<Item*> items = visitor->GetResult();
 	for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
     {
@@ -44,7 +44,7 @@ bool SmartDestroyItemAction::Execute(Event& event)
     {
         set<Item*> items;
         FindItemsToTradeByQualityVisitor visitor(ITEM_QUALITY_POOR, 5);
-        ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
         items.insert(visitor.GetResult().begin(), visitor.GetResult().end());
 
         for (auto& item : items)

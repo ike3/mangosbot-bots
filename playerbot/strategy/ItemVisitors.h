@@ -38,6 +38,13 @@ namespace ai
         list<Item*> result;
     };
 
+    class FindAllItemVisitor : public FindItemVisitor {
+    public:
+        FindAllItemVisitor() : FindItemVisitor() {}
+
+        virtual bool Accept(const ItemPrototype* proto) { return true; };
+    };
+
     class FindUsableItemVisitor : public FindItemVisitor {
     public:
         FindUsableItemVisitor(Player* bot) : FindItemVisitor()

@@ -15,7 +15,9 @@ bool TellItemCountAction::Execute(Event& event)
         if (text.find("@") == 0)
             return false;
 
-        list<Item*> found = ai->InventoryParseItems(text);
+        IterateItemsMask mask = IterateItemsMask((uint8)IterateItemsMask::ITERATE_ITEMS_IN_EQUIP | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
+
+        list<Item*> found = ai->InventoryParseItems(text, mask);
         map<uint32, uint32> itemMap;
         map<uint32, bool> soulbound;
         map<uint32, bool> equiped;

@@ -24,67 +24,16 @@ private:
     SellAction* action;
 };
 
-class SellGrayItemsVisitor : public SellItemsVisitor
-{
-public:
-    SellGrayItemsVisitor(SellAction* action) : SellItemsVisitor(action) {}
-
-    virtual bool Visit(Item* item)
-    {
-        if (item->GetProto()->Quality != ITEM_QUALITY_POOR)
-            return true;
-
-        return SellItemsVisitor::Visit(item);
-    }
-};
-
-class SellVendorItemsVisitor : public SellItemsVisitor
-{
-public:
-    SellVendorItemsVisitor(SellAction* action, AiObjectContext* con) : SellItemsVisitor(action) { context = con; }
-
-    AiObjectContext* context;
-
-    virtual bool Visit(Item* item)
-    {
-        RESET_AI_VALUE2(ItemUsage, "item usage", ItemQualifier(item).GetQualifier()); //Recheck if we still want to sell this.
-
-        ItemUsage usage = AI_VALUE2(ItemUsage, "item usage", ItemQualifier(item).GetQualifier());
-
-        bool shouldSell = false;
-
-        if (usage == ItemUsage::ITEM_USAGE_VENDOR)
-            shouldSell = true;
-        else if (usage == ItemUsage::ITEM_USAGE_AH && AI_VALUE(uint8, "bag space") > 80 && !urand(0, 10))
-            shouldSell = true;
-
-        if (!shouldSell)
-            return true;
-
-        return SellItemsVisitor::Visit(item);
-    }
-};
-
 bool SellAction::Execute(Event& event)
 {
     Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
 
     string text = event.getParam();
-    if (text == "gray" || text == "*")
-    {
-        SellGrayItemsVisitor visitor(this);
-        ai->InventoryIterateItems(&visitor);
-        return true;
-    }
 
-    if (text == "vendor")
-    {
-        SellVendorItemsVisitor visitor(this, context);
-        ai->InventoryIterateItems(&visitor);
-        return true;
-    }
+    if (text == "*")
+        text = "gray";
 
-    list<Item*> items = ai->InventoryParseItems(text, ITERATE_ITEMS_IN_BAGS);
+    list<Item*> items = ai->InventoryParseItems(text, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
     for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
     {
         Sell(requester, *i);
@@ -95,7 +44,7 @@ bool SellAction::Execute(Event& event)
 
 void SellAction::Sell(Player* requester, FindItemVisitor* visitor)
 {
-    ai->InventoryIterateItems(visitor);
+    ai->InventoryIterateItems(visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
     list<Item*> items = visitor->GetResult();
     for (list<Item*>::iterator i = items.begin(); i != items.end(); ++i)
     {
