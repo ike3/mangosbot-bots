@@ -12,27 +12,10 @@ bool UnequipAction::Execute(Event& event)
 {
     Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
-    ItemIds ids = chat->parseItems(text);
-    if (ids.empty())
+    list<Item*> found = ai->InventoryParseItems(text, IterateItemsMask::ITERATE_ITEMS_IN_EQUIP);
+    for (auto& item : found)
     {
-        vector<string> names = split(text, ',');
-        for (vector<string>::iterator i = names.begin(); i != names.end(); ++i)
-        {
-            uint32 slot = chat->parseSlot(*i);
-            if (slot != EQUIPMENT_SLOT_END)
-            {
-                Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
-                if (pItem) UnequipItem(requester, pItem);
-            }
-        }
-    }
-    else
-    {
-        for (ItemIds::iterator i = ids.begin(); i != ids.end(); i++)
-        {
-            FindItemByIdVisitor visitor(*i);
-            UnequipItem(requester, &visitor);
-        }
+        UnequipItem(requester, item);
     }
 
     return true;
