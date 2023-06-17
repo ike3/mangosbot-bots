@@ -4963,9 +4963,8 @@ list<Item*> PlayerbotAI::InventoryParseItems(string text, IterateItemsMask mask)
 
     set<Item*> found;
     size_t pos = text.find(" ");
-    int count = pos != string::npos ? atoi(text.substr(pos + 1).c_str()) : TRADE_SLOT_TRADED_COUNT;
+    int count = pos != string::npos ? atoi(text.substr(pos + 1).c_str()) : 1;
     if (count < 1) count = 1;
-    else if (count > TRADE_SLOT_TRADED_COUNT) count = TRADE_SLOT_TRADED_COUNT;
 
     ItemIds ids = GetChatHelper()->parseItems(text);
     if (!ids.empty())
@@ -5111,7 +5110,7 @@ list<Item*> PlayerbotAI::InventoryParseItems(string text, IterateItemsMask mask)
     uint32 itemClass = MAX_ITEM_CLASS, itemSubClass = 0;
     if (GetChatHelper()->parseItemClass(text, &itemClass, &itemSubClass))
     {
-        FindItemsToTradeByClassVisitor visitor(itemClass, itemSubClass, count);
+        FindItemsByClassVisitor visitor(itemClass, itemSubClass);
         VISIT;
     }
 
