@@ -36,7 +36,7 @@ bool TellItemCountAction::Execute(Event& event)
             ItemPrototype const* proto = (*i)->GetProto();
             itemMap[proto->ItemId] += (*i)->GetCount();
             soulbound[proto->ItemId] = (*i)->IsSoulBound();
-            equiped[proto->ItemId] = bot->HasItemWithIdEquipped(proto->ItemId,1);
+            equiped[proto->ItemId] = (*i)->GetBagSlot() == INVENTORY_SLOT_BAG_0 && (*i)->GetSlot() < EQUIPMENT_SLOT_END;
             hasEquip = hasEquip || equiped[proto->ItemId];
         }
 
