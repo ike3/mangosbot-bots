@@ -2204,7 +2204,7 @@ void TravelNodeMap::generateTransportNodes()
 void TravelNodeMap::generateZoneMeanNodes()
 {
     //Zone means   
-    for (auto& loc : sTravelMgr.exploreLocs)
+    for (auto& loc : sTravelMgr.getExploreLocs())
     {
         vector<WorldPosition*> points;
 

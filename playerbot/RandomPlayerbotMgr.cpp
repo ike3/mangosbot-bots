@@ -11,6 +11,7 @@
 #include "AiFactory.h"
 #include "GuildTaskMgr.h"
 #include "PlayerbotCommandServer.h"
+#include "MemoryMonitor.h"
 
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"

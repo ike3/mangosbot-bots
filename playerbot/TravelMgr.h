@@ -406,7 +406,9 @@ namespace ai
 
         int32 getAreaLevel(uint32 area_id);
         void loadAreaLevels();
-    //protected:
+        std::unordered_map<uint32, QuestContainer*> getQuests() { return quests; }
+        std::unordered_map<uint32, ExploreTravelDestination*> getExploreLocs() { return exploreLocs; }
+    protected:
         void logQuestError(uint32 errorNr, Quest* quest, uint32 objective = 0, uint32 unitId = 0, uint32 itemId = 0);
 
         vector<uint32> avoidLoaded;
@@ -418,8 +420,7 @@ namespace ai
 
         std::unordered_map<uint32, ExploreTravelDestination*> exploreLocs;
         std::unordered_map<uint32, QuestContainer*> quests;
-        std::unordered_map<uint64, GuidPosition> pointsMap;
-
+        std::unordered_map<uint64, GuidPLevel> pointsMap;
         std::unordered_map<uint32, int32> areaLevels;
 
         vector<tuple<uint32, int, int>> badVmap, badMmap;
