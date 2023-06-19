@@ -2759,6 +2759,9 @@ void PlayerbotFactory::InitAmmo()
         count = bot->GetItemCount(entry) / 200;
     }
 
+    if (!entry)
+        return;
+
     if (count < maxCount)
     {
         for (uint32 i = 0; i < maxCount - count; i++)
@@ -2766,7 +2769,9 @@ void PlayerbotFactory::InitAmmo()
             Item* newItem = bot->StoreNewItemInInventorySlot(entry, 200);
         }
     }
-    bot->SetAmmo(entry);
+
+    if(bot->GetUInt32Value(PLAYER_AMMO_ID) != entry)
+        bot->SetAmmo(entry);
 }
 
 void PlayerbotFactory::InitMounts()
