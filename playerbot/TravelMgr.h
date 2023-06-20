@@ -420,7 +420,7 @@ namespace ai
 
         std::unordered_map<uint32, ExploreTravelDestination*> exploreLocs;
         std::unordered_map<uint32, QuestContainer*> quests;
-        std::unordered_map<uint64, GuidPLevel> pointsMap;
+        std::unordered_map<uint64, GuidPosition> pointsMap;
         std::unordered_map<uint32, int32> areaLevels;
 
         vector<tuple<uint32, int, int>> badVmap, badMmap;
