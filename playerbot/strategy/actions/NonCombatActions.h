@@ -61,6 +61,17 @@ namespace ai
                 SetDuration(drinkDuration);
                 bot->RemoveSpellCooldown(*pSpellInfo);
 
+                // Eat and drink at the same time
+                if (AI_VALUE2(uint8, "health", "self target") < sPlayerbotAIConfig.lowHealth)
+                {
+                    const SpellEntry* pSpellInfo2 = sServerFacade.LookupSpellInfo(24005);
+                    if (pSpellInfo2)
+                    {
+                        ai->CastSpell(24005, bot);
+                        bot->RemoveSpellCooldown(*pSpellInfo2);
+                    }
+                }
+
                 return true;
             }
 
@@ -128,6 +139,17 @@ namespace ai
                 ai->CastSpell(24005, bot);
                 SetDuration(eatDuration);
                 bot->RemoveSpellCooldown(*pSpellInfo);
+
+                // Eat and drink at the same time
+                if (bot->HasMana() && (AI_VALUE2(uint8, "mana", "self target") < 85))
+                {
+                    const SpellEntry* pSpellInfo2 = sServerFacade.LookupSpellInfo(24355);
+                    if (pSpellInfo2)
+                    {
+                        ai->CastSpell(24355, bot);
+                        bot->RemoveSpellCooldown(*pSpellInfo2);
+                    }
+                }
 
                 return true;
             }
