@@ -200,3 +200,69 @@ bool BuyAction::BuyItem(Player* requester, VendorItemData const* tItems, ObjectG
 
     return false;
 }
+
+bool BuyBackAction::Execute(Event& event)
+{
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    string text = event.getParam();
+
+    list<Item*> found = ai->InventoryParseItems(text, IterateItemsMask::ITERATE_ITEMS_IN_BUYBACK);
+
+    //Sort items on itemLevel descending.
+    found.sort([](Item* i, Item* j) {return i->GetProto()->ItemLevel > j->GetProto()->ItemLevel; });
+
+    if (found.empty())
+    {
+        ai->TellError("No buyback items found");
+        return false;
+    }
+
+    bool hasVendor = false;
+    //Find vendor to interact with.
+    ObjectGuid vendorguid;
+
+    list<ObjectGuid> vendors = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest npcs")->Get();
+    for (list<ObjectGuid>::iterator i = vendors.begin(); i != vendors.end(); ++i)
+    {
+        vendorguid = *i;
+        Creature* pCreature = bot->GetNPCIfCanInteractWith(vendorguid, UNIT_NPC_FLAG_VENDOR);
+        if (!pCreature)
+            continue;
+
+        hasVendor = true;
+        sServerFacade.SetFacingTo(bot, pCreature);
+        break;
+    }
+
+    if (!hasVendor)
+    {
+        ai->TellError("There are no vendors nearby");
+        return false;
+    }
+
+    bool result = false;
+
+    for (auto& item : found)
+    {
+        uint32 slot = BUYBACK_SLOT_START;
+
+        while (slot < BUYBACK_SLOT_END && bot->GetItemFromBuyBackSlot(slot) != item)
+            slot++;
+
+        if (slot == BUYBACK_SLOT_END)
+            continue;
+
+        uint32 price = bot->GetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + slot - BUYBACK_SLOT_START);
+        if (bot->GetMoney() < price)
+            continue;
+
+        WorldPacket p1(CMSG_BUYBACK_ITEM);
+        p1 << vendorguid;
+        p1 << slot;
+        bot->GetSession()->HandleBuybackItem(p1);
+        if (bot->GetItemFromBuyBackSlot(slot) == nullptr)
+            result = true;
+    }
+
+    return result;
+}

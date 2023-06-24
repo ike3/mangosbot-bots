@@ -7,6 +7,10 @@
 #include "../PlayerbotAIConfig.h"
 #include "../PerformanceMonitor.h"
 
+#ifdef BUILD_ELUNA
+#include "LuaEngine/LuaEngine.h"
+#endif
+
 using namespace ai;
 using namespace std;
 
@@ -227,6 +231,11 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
                         PerformanceMonitorOperation* pmo4 = sPerformanceMonitor.start(PERF_MON_ACTION, "Execute", &aiObjectContext->performanceStack);
                         actionExecuted = ListenAndExecute(action, event);
                         if (pmo4) pmo4->finish();
+
+#ifdef PLAYERBOT_ELUNA
+                        // used by eluna    
+                        sEluna->OnActionExecute(ai, action->getName(), actionExecuted);
+#endif
 
                         if (actionExecuted)
                         {
@@ -562,9 +571,16 @@ void Engine::ProcessTriggers(bool minimal)
                 continue;
             PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_TRIGGER, trigger->getName(), &aiObjectContext->performanceStack);
             event = trigger->Check();
+
+#ifdef PLAYERBOT_ELUNA
+            // used by eluna    
+            sEluna->OnTriggerCheck(ai, trigger->getName(), !event ? false : true);
+#endif
+
             if (pmo) pmo->finish();
             if (!event)
                 continue;
+
             fires[trigger] = event;
             LogAction("T:%s", trigger->getName().c_str());
         }

@@ -85,7 +85,7 @@ namespace ai
 
         virtual bool isPossible()
         {
-            return !sServerFacade.IsInCombat(bot) && (sPlayerbotAIConfig.freeFood || UseItemAction::isPossible());
+            return !sServerFacade.IsInCombat(bot) && UseItemAction::isPossible();
         }
     };
 
@@ -164,7 +164,7 @@ namespace ai
 
         virtual bool isPossible()
         {
-            return !sServerFacade.IsInCombat(bot) && (sPlayerbotAIConfig.freeFood || UseItemAction::isPossible());
+            return !sServerFacade.IsInCombat(bot) && UseItemAction::isPossible();
         }
     };
 }

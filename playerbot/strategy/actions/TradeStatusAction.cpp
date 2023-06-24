@@ -123,7 +123,7 @@ void TradeStatusAction::BeginTrade()
         return;
 
     ListItemsVisitor visitor;
-    ai->InventoryIterateItems(&visitor);
+    ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
 
     ai->TellPlayer(GetMaster(), "=== Inventory ===");
     ai->InventoryTellItems(GetMaster(), visitor.items, visitor.soulbound);

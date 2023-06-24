@@ -194,7 +194,7 @@ bool UseItemAction::Execute(Event& event)
 
 bool UseItemAction::isPossible()
 {
-    return getName() == "use" || AI_VALUE2(uint32, "item count", getName()) > 0;
+    return getName() == "use" || (AI_VALUE2(uint32, "item count", getName()) > 0 || ai->HasCheat(BotCheatMask::item));
 }
 
 bool UseItemAction::UseGameObject(Player* requester, ObjectGuid guid)

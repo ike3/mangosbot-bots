@@ -878,7 +878,7 @@ bool DebugAction::Execute(Event& event)
 
         Quest const* quest = sObjectMgr.GetQuestTemplate(questId);
 
-        if (!quest || sTravelMgr.quests.find(questId) == sTravelMgr.quests.end())
+        if (!quest || sTravelMgr.getQuests().find(questId) == sTravelMgr.getQuests().end())
         {
             ai->TellPlayerNoFacing(GetMaster(), "Quest " + text.substr(6) + " not found.");
             return false;
@@ -890,7 +890,7 @@ bool DebugAction::Execute(Event& event)
 
         ai->TellPlayerNoFacing(GetMaster(), out);
 
-        QuestContainer* cont = sTravelMgr.quests[questId];
+        QuestContainer* cont = sTravelMgr.getQuests()[questId];
 
         uint32 i = 0;
 
@@ -989,11 +989,11 @@ bool DebugAction::Execute(Event& event)
     else if (text.find("quest") == 0)
     {
         ostringstream out;
-        out << sTravelMgr.quests.size() << " quests ";
+        out << sTravelMgr.getQuests().size() << " quests ";
 
         uint32 noT = 0, noG = 0, noO = 0;
 
-        for (auto q : sTravelMgr.quests)
+        for (auto q : sTravelMgr.getQuests())
         {
             if (q.second->questGivers.empty())
                 noG++;
@@ -1018,7 +1018,7 @@ bool DebugAction::Execute(Event& event)
 
         uint32 noT = 0, noG = 0, noO = 0;
 
-        for (auto q : sTravelMgr.quests)
+        for (auto q : sTravelMgr.getQuests())
         {
             Quest const* quest = sObjectMgr.GetQuestTemplate(q.first);
 

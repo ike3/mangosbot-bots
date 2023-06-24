@@ -24,7 +24,7 @@ bool GiveItemAction::Execute(Event& event)
         return true;
 
     bool moved = false;
-    list<Item*> items = ai->InventoryParseItems(item, ITERATE_ITEMS_IN_BAGS);
+    list<Item*> items = ai->InventoryParseItems(item, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
     for (list<Item*>::iterator j = items.begin(); j != items.end(); j++)
     {
         Item* item = *j;

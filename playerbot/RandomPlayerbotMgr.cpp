@@ -11,6 +11,7 @@
 #include "AiFactory.h"
 #include "GuildTaskMgr.h"
 #include "PlayerbotCommandServer.h"
+#include "MemoryMonitor.h"
 
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
@@ -1758,7 +1759,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
             ai->GetAiObjectContext()->ClearExpiredValues();
 
         //Randomize/teleport bot
-        if (sPlayerbotAIConfig.disableRandomLevels)
+        if (!sPlayerbotAIConfig.disableRandomLevels)
         {
             if (player->GetGroup() || player->IsTaxiFlying())
                 return false;

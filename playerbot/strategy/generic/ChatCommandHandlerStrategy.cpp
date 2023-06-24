@@ -162,6 +162,10 @@ void ChatCommandHandlerStrategy::InitReactionTriggers(std::list<TriggerNode*> &t
         NextAction::array(0, new NextAction("buy", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "bb",
+        NextAction::array(0, new NextAction("buy back", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "r",
         NextAction::array(0, new NextAction("reward", relevance), NULL)));
 

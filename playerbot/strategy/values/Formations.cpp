@@ -246,7 +246,7 @@ namespace ai
             if (!target && target != bot)
                 target = master;
 
-            if (!target)
+            if (!target || !ai->IsSafe(target))
 				return Formation::NullLocation;
 
             float angle = GetFollowAngle();

@@ -110,6 +110,7 @@ namespace ai
             creators["keep"] = &ChatActionContext::keep;
             creators["sell"] = &ChatActionContext::sell;
             creators["buy"] = &ChatActionContext::buy;
+            creators["buy back"] = &ChatActionContext::buy_back;
             creators["reward"] = &ChatActionContext::reward;
             creators["trade"] = &ChatActionContext::trade;
             creators["talents"] = &ChatActionContext::talents;
@@ -249,6 +250,7 @@ namespace ai
         static Action* keep(PlayerbotAI* ai) { return new KeepItemAction(ai); }
         static Action* sell(PlayerbotAI* ai) { return new SellAction(ai); }
         static Action* buy(PlayerbotAI* ai) { return new BuyAction(ai); }
+        static Action* buy_back(PlayerbotAI* ai) { return new BuyBackAction(ai); }
         static Action* reward(PlayerbotAI* ai) { return new RewardAction(ai); }
         static Action* trade(PlayerbotAI* ai) { return new TradeAction(ai); }
 

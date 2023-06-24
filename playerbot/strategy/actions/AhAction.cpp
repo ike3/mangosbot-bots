@@ -87,7 +87,7 @@ bool AhAction::ExecuteCommand(string text, Unit* auctioneer)
     string priceStr = text.substr(0, pos);
     uint32 price = ChatHelper::parseMoney(priceStr);
 
-    list<Item*> found = ai->InventoryParseItems(text, ITERATE_ITEMS_IN_BAGS);
+    list<Item*> found = ai->InventoryParseItems(text, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
     if (found.empty())
         return false;
 

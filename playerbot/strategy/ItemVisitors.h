@@ -38,6 +38,13 @@ namespace ai
         list<Item*> result;
     };
 
+    class FindAllItemVisitor : public FindItemVisitor {
+    public:
+        FindAllItemVisitor() : FindItemVisitor() {}
+
+        virtual bool Accept(const ItemPrototype* proto) { return true; };
+    };
+
     class FindUsableItemVisitor : public FindItemVisitor {
     public:
         FindUsableItemVisitor(Player* bot) : FindItemVisitor()
@@ -102,6 +109,32 @@ namespace ai
 
             return FindItemsByQualityVisitor::Visit(item);
         }
+    };
+
+    class FindItemsByClassVisitor : public IterateItemsVisitor
+    {
+    public:
+        FindItemsByClassVisitor(uint32 itemClass, uint32 itemSubClass)
+            : IterateItemsVisitor(), itemClass(itemClass), itemSubClass(itemSubClass) {}
+
+        virtual bool Visit(Item* item)
+        {
+            if (item->GetProto()->Class != itemClass || item->GetProto()->SubClass != itemSubClass)
+                return true;
+
+            result.push_back(item);
+            return true;
+        }
+
+        list<Item*>& GetResult()
+        {
+            return result;
+        }
+
+    private:
+        uint32 itemClass;
+        uint32 itemSubClass;
+        list<Item*> result;
     };
 
     class FindItemsToTradeByClassVisitor : public IterateItemsVisitor
@@ -229,6 +262,25 @@ namespace ai
 
     private:
         ItemIds ids;
+    };
+
+    class FindItemBySlotVisitor : public FindItemVisitor {
+    public:
+        FindItemBySlotVisitor(Player* bot, uint32 slot) : FindItemVisitor()
+        {
+            this->bot = bot;
+            this->slot = slot;
+        }
+
+        virtual bool Accept(const ItemPrototype* proto)
+        {
+            uint8 eslot = bot->FindEquipSlot(proto, NULL_SLOT, true);
+            return slot == eslot;
+        }
+
+    private:
+        uint32 slot;
+        Player* bot;
     };
 
     class ListItemsVisitor : public IterateItemsVisitor

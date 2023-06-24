@@ -15,21 +15,52 @@ bool TellItemCountAction::Execute(Event& event)
         if (text.find("@") == 0)
             return false;
 
-        list<Item*> found = ai->InventoryParseItems(text);
+        IterateItemsMask mask = IterateItemsMask((uint8)IterateItemsMask::ITERATE_ITEMS_IN_EQUIP | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
+
+        if (text == "all")
+            mask = IterateItemsMask::ITERATE_ALL_ITEMS;
+        else if (text == "bank")
+            mask = IterateItemsMask::ITERATE_ITEMS_IN_BANK;
+        else if (text == "buyback")
+            mask = IterateItemsMask::ITERATE_ITEMS_IN_BUYBACK;
+
+
+        list<Item*> found = ai->InventoryParseItems(text, mask);
         map<uint32, uint32> itemMap;
         map<uint32, bool> soulbound;
+        map<uint32, bool> equiped;
+        bool hasEquip = false;
+
         for (list<Item*>::iterator i = found.begin(); i != found.end(); i++)
         {
             ItemPrototype const* proto = (*i)->GetProto();
             itemMap[proto->ItemId] += (*i)->GetCount();
             soulbound[proto->ItemId] = (*i)->IsSoulBound();
+            equiped[proto->ItemId] = (*i)->GetBagSlot() == INVENTORY_SLOT_BAG_0 && (*i)->GetSlot() < EQUIPMENT_SLOT_END;
+            hasEquip = hasEquip || equiped[proto->ItemId];
+        }
+
+        if (hasEquip)
+        {
+            ai->TellPlayer(requester, "=== Equipment ===");
+            for (map<uint32, uint32>::iterator i = itemMap.begin(); i != itemMap.end(); ++i)
+            {
+                if (!equiped[i->first])
+                    continue;
+
+                ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(i->first);
+                ai->InventoryTellItem(requester, proto, i->second, soulbound[i->first]);
+            }
         }
 
         ai->TellPlayer(requester, "=== Inventory ===");
         for (map<uint32, uint32>::iterator i = itemMap.begin(); i != itemMap.end(); ++i)
         {
+            if (equiped[i->first] && i->second == 1)
+                continue;
+
             ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(i->first);
-            ai->InventoryTellItem(requester, proto, i->second, soulbound[i->first]);
+            ai->InventoryTellItem(requester, proto, i->second - equiped[i->first], soulbound[i->first]);
         }
 
         return true;

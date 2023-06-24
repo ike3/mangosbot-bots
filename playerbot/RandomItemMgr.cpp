@@ -3195,6 +3195,22 @@ void RandomItemMgr::BuildAmmoCache()
 
             delete results;
         }
+
+        QueryResult* results = WorldDatabase.PQuery(
+            "select entry, RequiredLevel from item_template where class = '%u' and subclass = '%u' and RequiredLevel <= '%u' and quality = '%u' order by RequiredLevel desc",
+            ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_THROWN, level, ITEM_QUALITY_NORMAL);
+        if (!results)
+            return;
+
+        Field* fields = results->Fetch();
+        if (fields)
+        {
+            uint32 entry = fields[0].GetUInt32();
+            ammoCache[level / 10][ITEM_SUBCLASS_WEAPON_THROWN] = entry;
+            counter1++;
+        }
+
+        delete results;
     }
 	sLog.outString("Cached %d types of ammo", counter1); // TEST
 }

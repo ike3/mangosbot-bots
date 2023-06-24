@@ -131,7 +131,7 @@ if (BUILD_ACHIEVEMENTS)
 endif()
 # Define BUILD_ELUNA if need
 if (BUILD_ELUNA)
-  add_definitions(-DBUILD_ELUNA)
+  add_definitions(-DBUILD_ELUNA -DCLASSIC -DCMANGOS)
 endif()
 
 # Define Core
@@ -233,6 +233,7 @@ include_directories(
     ${MYSQL_INCLUDE_DIR}
     ${ACE_INCLUDE_DIR}
     ${Boost_INCLUDE_DIRS}
+	${CMAKE_SOURCE_DIR}/dep/lualib
 )
 
 if(PCH)

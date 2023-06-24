@@ -1286,7 +1286,7 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool syncWithMaster)
     if (!incremental)
     {
         DestroyItemsVisitor visitor(bot);
-        ai->InventoryIterateItems(&visitor, ITERATE_ITEMS_IN_EQUIP);
+        ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_EQUIP);
     }
 
     uint32 specId = sRandomItemMgr.GetPlayerSpecId(bot);
@@ -2706,13 +2706,14 @@ void PlayerbotFactory::InitQuests(list<uint32>& questMap)
 void PlayerbotFactory::ClearInventory()
 {
     DestroyItemsVisitor visitor(bot);
-    ai->InventoryIterateItems(&visitor);
+    IterateItemsMask mask = IterateItemsMask((uint8)IterateItemsMask::ITERATE_ITEMS_IN_BAGS | (uint8)IterateItemsMask::ITERATE_ITEMS_IN_EQUIP);
+    ai->InventoryIterateItems(&visitor, mask);
 }
 
 void PlayerbotFactory::ClearAllItems()
 {
     DestroyItemsVisitor visitor(bot);
-    ai->InventoryIterateItems(&visitor, ITERATE_ALL_ITEMS);
+    ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ALL_ITEMS);
 }
 
 void PlayerbotFactory::InitAmmo()
@@ -2758,6 +2759,9 @@ void PlayerbotFactory::InitAmmo()
         count = bot->GetItemCount(entry) / 200;
     }
 
+    if (!entry)
+        return;
+
     if (count < maxCount)
     {
         for (uint32 i = 0; i < maxCount - count; i++)
@@ -2765,7 +2769,9 @@ void PlayerbotFactory::InitAmmo()
             Item* newItem = bot->StoreNewItemInInventorySlot(entry, 200);
         }
     }
-    bot->SetAmmo(entry);
+
+    if(bot->GetUInt32Value(PLAYER_AMMO_ID) != entry)
+        bot->SetAmmo(entry);
 }
 
 void PlayerbotFactory::InitMounts()
@@ -2913,7 +2919,7 @@ void PlayerbotFactory::InitPotions()
     {
         uint32 effect = effects[i];
         FindPotionVisitor visitor(bot, effect);
-        ai->InventoryIterateItems(&visitor);
+        ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
         if (!visitor.GetResult().empty()) continue;
 
         uint32 itemId = sRandomItemMgr.GetRandomPotion(level, effect);
@@ -2939,7 +2945,7 @@ void PlayerbotFactory::InitFood()
         uint32 category = categories[i];
 
         FindFoodVisitor visitor(bot, category);
-        ai->InventoryIterateItems(&visitor);
+        ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
         if (!visitor.GetResult().empty()) continue;
 
         uint32 itemId = sRandomItemMgr.GetFood(level, category);
@@ -3037,7 +3043,7 @@ void PlayerbotFactory::InitReagents()
         uint32 maxCount = proto->GetMaxStackSize();
 
         QueryItemCountVisitor visitor(*i);
-        ai->InventoryIterateItems(&visitor);
+        ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
         if ((uint32)visitor.GetCount() > maxCount) continue;
 
         uint32 randCount = urand(maxCount / 2, maxCount * regCount);
