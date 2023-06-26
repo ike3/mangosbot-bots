@@ -75,25 +75,27 @@ std::string CastBlessingAction::GetBlessingForTarget(Unit* target)
         std::vector<std::string> possibleBlessings = GetPossibleBlessingsForTarget(target);
         for (const std::string& blessing : possibleBlessings)
         {
-            // Don't cast greater buffs on possible tank classes (ask ile why :D)
-            bool tryCastGreater = greater;
-            if (tryCastGreater && target->IsPlayer())
+            // Don't cast greater salvation on possible tank classes (ask ile why :D)
+            if (greater && blessing == "blessing of salvation" && target->IsPlayer())
             {
                 const uint8 playerClass = ((Player*)target)->getClass();
 #ifdef MANGOSBOT_TWO
-                tryCastGreater = playerClass == CLASS_PALADIN || playerClass == CLASS_WARRIOR || playerClass == CLASS_DRUID || playerClass == CLASS_DEATH_KNIGHT;
+                if(playerClass == CLASS_PALADIN || playerClass == CLASS_WARRIOR || playerClass == CLASS_DRUID || playerClass == CLASS_DEATH_KNIGHT)
 #else
-                tryCastGreater = playerClass == CLASS_PALADIN || playerClass == CLASS_WARRIOR || playerClass == CLASS_DRUID;
+                if (playerClass == CLASS_PALADIN || playerClass == CLASS_WARRIOR || playerClass == CLASS_DRUID)
 #endif
+                {
+                    break;
+                }
             }
 
             const std::string greaterBlessing = "greater " + blessing;
-            if ((tryCastGreater || !ai->HasAura(blessing, target)) && !ai->HasAura(greaterBlessing, target))
+            if ((greater || !ai->HasAura(blessing, target)) && !ai->HasAura(greaterBlessing, target))
             {
-                if ((tryCastGreater && ai->CanCastSpell(greaterBlessing, target, 0, nullptr, true)) ||
-                    (!tryCastGreater && ai->CanCastSpell(blessing, target, 0, nullptr, true)))
+                if ((greater && ai->CanCastSpell(greaterBlessing, target, 0, nullptr, true)) ||
+                    (!greater && ai->CanCastSpell(blessing, target, 0, nullptr, true)))
                 {
-                    chosenBlessing = tryCastGreater ? greaterBlessing : blessing;
+                    chosenBlessing = greater ? greaterBlessing : blessing;
                     break;
                 }
             }
