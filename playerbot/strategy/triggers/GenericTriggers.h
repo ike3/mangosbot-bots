@@ -257,22 +257,25 @@ namespace ai
     class BuffOnPartyTrigger : public BuffTrigger
     {
     public:
-        BuffOnPartyTrigger(PlayerbotAI* ai, string spell, int checkInterval = 2) : BuffTrigger(ai, spell, checkInterval) {}
+        BuffOnPartyTrigger(PlayerbotAI* ai, string spell, int checkInterval = 2, bool ignoreTanks = false) : BuffTrigger(ai, spell, checkInterval), ignoreTanks(ignoreTanks) {}
 
     public:
 		virtual Value<Unit*>* GetTargetValue();
 		virtual string getName() { return spell + " on party"; }
+
+    protected:
+        bool ignoreTanks;
     };
 
     class GreaterBuffOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
-        GreaterBuffOnPartyTrigger(PlayerbotAI* ai, string spell, string lowerSpell, int checkInterval = 2) : BuffOnPartyTrigger(ai, spell, checkInterval) {}
+        GreaterBuffOnPartyTrigger(PlayerbotAI* ai, string spell, string lowerSpell, int checkInterval = 2, bool ignoreTanks = false) : BuffOnPartyTrigger(ai, spell, checkInterval, ignoreTanks) {}
         virtual Value<Unit*>* GetTargetValue() override;
         virtual bool IsActive() override;
 
     private:
-        string lowerSpell;
+        std::string lowerSpell;
     };
 
     class BuffOnTankTrigger : public BuffTrigger
@@ -288,7 +291,7 @@ namespace ai
     class MyBuffOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
-        MyBuffOnPartyTrigger(PlayerbotAI* ai, string spell, int checkInterval = 2) : BuffOnPartyTrigger(ai, spell, checkInterval) {}
+        MyBuffOnPartyTrigger(PlayerbotAI* ai, string spell, int checkInterval = 2, bool ignoreTanks = false) : BuffOnPartyTrigger(ai, spell, checkInterval, ignoreTanks) {}
 
     public:
         virtual Value<Unit*>* GetTargetValue();
@@ -1054,6 +1057,18 @@ namespace ai
     public:
         InRaidFightTrigger(PlayerbotAI* ai, std::string name = "in raid fight") : Trigger(ai, name, 5) {}
         bool IsActive() override;
+    };
+
+    class HasBlessingOfSalvationTrigger : public HasAuraTrigger
+    {
+    public:
+        HasBlessingOfSalvationTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "blessing of salvation") {}
+    };
+
+    class HasGreaterBlessingOfSalvationTrigger : public HasAuraTrigger
+    {
+    public:
+        HasGreaterBlessingOfSalvationTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "greater blessing of salvation") {}
     };
 }
 

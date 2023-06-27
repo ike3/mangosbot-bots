@@ -342,7 +342,7 @@ public:
     void SpellInterrupted(uint32 spellid);
     int32 CalculateGlobalCooldown(uint32 spellid);
     void InterruptSpell();
-    void RemoveAura(string name);
+    bool RemoveAura(const std::string& name);
     void RemoveShapeshift();
     void WaitForSpellCast(Spell *spell);
     bool PlaySound(uint32 emote);

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../Action.h"
 
 namespace ai
@@ -7,7 +6,10 @@ namespace ai
     class RemoveAuraAction : public Action
     {
     public:
-        RemoveAuraAction(PlayerbotAI* ai);
+        RemoveAuraAction(PlayerbotAI* ai, std::string aura = "") : Action(ai, aura.empty() ? "ra" : "remove" + aura), aura(aura) {}
         virtual bool Execute(Event& event);
+
+    private:
+        std::string aura;
     };
 }

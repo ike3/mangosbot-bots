@@ -272,7 +272,7 @@ namespace ai
     {
     public:
 		CastBlessingOfMightOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of might") {}
-        bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
+        string GetTargetQualifier() override { return GetSpellName() + ",greater " + GetSpellName() + "-" + (ignoreTanks ? "1" : "0"); }
     };
 
     class CastGreaterBlessingOfMightOnPartyAction : public GreaterBuffOnPartyAction
@@ -298,7 +298,7 @@ namespace ai
     {
     public:
         CastBlessingOfWisdomOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of wisdom") {}
-        bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
+        string GetTargetQualifier() override { return GetSpellName() + ",greater " + GetSpellName() + "-" + (ignoreTanks ? "1" : "0"); }
     };
 
     class CastGreaterBlessingOfWisdomOnPartyAction : public GreaterBuffOnPartyAction
@@ -324,7 +324,7 @@ namespace ai
     {
     public:
         CastBlessingOfKingsOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of kings") {}
-        bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
+        string GetTargetQualifier() override { return GetSpellName() + ",greater " + GetSpellName() + "-" + (ignoreTanks ? "1" : "0"); }
     };
 
     class CastGreaterBlessingOfKingsOnPartyAction : public GreaterBuffOnPartyAction
@@ -350,7 +350,7 @@ namespace ai
     {
     public:
         CastBlessingOfSanctuaryOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of sanctuary") {}
-        bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
+        string GetTargetQualifier() override { return GetSpellName() + ",greater " + GetSpellName() + "-" + (ignoreTanks ? "1" : "0"); }
     };
 
     class CastGreaterBlessingOfSanctuaryOnPartyAction : public GreaterBuffOnPartyAction
@@ -376,7 +376,7 @@ namespace ai
     {
     public:
         CastBlessingOfLightOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of light") {}
-        bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
+        string GetTargetQualifier() override { return GetSpellName() + ",greater " + GetSpellName() + "-" + (ignoreTanks ? "1" : "0"); }
     };
 
     class CastGreaterBlessingOfLightOnPartyAction : public GreaterBuffOnPartyAction
@@ -401,14 +401,39 @@ namespace ai
     class CastBlessingOfSalvationOnPartyAction : public BuffOnPartyAction
     {
     public:
-        CastBlessingOfSalvationOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of salvation") {}
-        bool isUseful() override { return BuffOnPartyAction::isUseful() && !ai->HasAura("greater " + GetSpellName(), GetTarget()); }
+        CastBlessingOfSalvationOnPartyAction(PlayerbotAI* ai) : BuffOnPartyAction(ai, "blessing of salvation", true) {}
+        string GetTargetQualifier() override { return GetSpellName() + ",greater " + GetSpellName() + "-" + (ignoreTanks ? "1" : "0"); }
     };
 
     class CastGreaterBlessingOfSalvationOnPartyAction : public GreaterBuffOnPartyAction
     {
     public:
-        CastGreaterBlessingOfSalvationOnPartyAction(PlayerbotAI* ai) : GreaterBuffOnPartyAction(ai, "greater blessing of salvation") {}
+        CastGreaterBlessingOfSalvationOnPartyAction(PlayerbotAI* ai) : GreaterBuffOnPartyAction(ai, "greater blessing of salvation", true) {}
+
+        bool isUseful() override
+        {
+            if (GreaterBuffOnPartyAction::isUseful())
+            {
+                // Don't cast greater salvation on possible tank classes
+                Unit* target = GetTarget();
+                if (target->IsPlayer())
+                {
+                    const uint8 playerClass = ((Player*)target)->getClass();
+#ifdef MANGOSBOT_TWO
+                    if (playerClass == CLASS_PALADIN || playerClass == CLASS_WARRIOR || playerClass == CLASS_DRUID || playerClass == CLASS_DEATH_KNIGHT)
+#else
+                    if (playerClass == CLASS_PALADIN || playerClass == CLASS_WARRIOR || playerClass == CLASS_DRUID)
+#endif
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
     };
 
     class CastHolyLightAction : public CastHealingSpellAction

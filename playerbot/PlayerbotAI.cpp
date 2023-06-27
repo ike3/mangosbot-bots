@@ -3750,11 +3750,20 @@ void PlayerbotAI::InterruptSpell()
     }
 }
 
-void PlayerbotAI::RemoveAura(string name)
+bool PlayerbotAI::RemoveAura(const std::string& name)
 {
-    uint32 spellid = aiObjectContext->GetValue<uint32>("spell id", name)->Get();
-    if (spellid && HasAura(spellid, bot))
-        bot->RemoveAurasDueToSpell(spellid);
+    const Aura* aura = GetAura(name, bot);
+    if (aura)
+    {
+        const uint32 spellId = aura->GetSpellProto()->Id;
+        if (spellId > 0)
+        {
+            bot->RemoveAurasDueToSpell(spellId);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool PlayerbotAI::IsInterruptableSpellCasting(Unit* target, string spell, uint8 effectMask)

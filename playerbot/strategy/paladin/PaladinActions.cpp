@@ -75,20 +75,6 @@ std::string CastBlessingAction::GetBlessingForTarget(Unit* target)
         std::vector<std::string> possibleBlessings = GetPossibleBlessingsForTarget(target);
         for (const std::string& blessing : possibleBlessings)
         {
-            // Don't cast greater salvation on possible tank classes (ask ile why :D)
-            if (greater && blessing == "blessing of salvation" && target->IsPlayer())
-            {
-                const uint8 playerClass = ((Player*)target)->getClass();
-#ifdef MANGOSBOT_TWO
-                if(playerClass == CLASS_PALADIN || playerClass == CLASS_WARRIOR || playerClass == CLASS_DRUID || playerClass == CLASS_DEATH_KNIGHT)
-#else
-                if (playerClass == CLASS_PALADIN || playerClass == CLASS_WARRIOR || playerClass == CLASS_DRUID)
-#endif
-                {
-                    break;
-                }
-            }
-
             const std::string greaterBlessing = "greater " + blessing;
             if ((greater || !ai->HasAura(blessing, target)) && !ai->HasAura(greaterBlessing, target))
             {
@@ -117,11 +103,11 @@ std::vector<std::string> CastPveBlessingAction::GetPossibleBlessingsForTarget(Un
         }
         else if (ai->IsHeal(player))
         {
-            blessings = { "blessing of wisdom", "blessing of kings", "blessing of light" };
+            blessings = { "blessing of wisdom", "blessing of kings", "blessing of light", "blessing of sanctuary" };
         }
         else
         {
-            blessings = { "blessing of might", "blessing of kings", "blessing of light" };
+            blessings = { "blessing of might", "blessing of kings", "blessing of light", "blessing of sanctuary" };
         }
     }
 
@@ -140,11 +126,11 @@ std::vector<std::string> CastPvpBlessingAction::GetPossibleBlessingsForTarget(Un
         }
         else if (ai->IsHeal(player))
         {
-            blessings = { "blessing of wisdom", "blessing of kings", "blessing of light" };
+            blessings = { "blessing of wisdom", "blessing of kings", "blessing of light", "blessing of sanctuary" };
         }
         else
         {
-            blessings = { "blessing of might", "blessing of kings", "blessing of light" };
+            blessings = { "blessing of might", "blessing of kings", "blessing of light", "blessing of sanctuary" };
         }
     }
 
@@ -163,11 +149,11 @@ std::vector<std::string> CastRaidBlessingAction::GetPossibleBlessingsForTarget(U
         }
         else if (ai->IsHeal(player))
         {
-            blessings = { "blessing of wisdom", "blessing of kings", "blessing of salvation", "blessing of light" };
+            blessings = { "blessing of wisdom", "blessing of kings", "blessing of light", "blessing of sanctuary" };
         }
         else
         {
-            blessings = { "blessing of might", "blessing of kings", "blessing of salvation", "blessing of light" };
+            blessings = { "blessing of might", "blessing of kings", "blessing of light", "blessing of sanctuary" };
         }
     }
 
@@ -236,6 +222,20 @@ std::string CastBlessingOnPartyAction::GetBlessingForTarget(Unit* target)
         std::vector<std::string> possibleBlessings = GetPossibleBlessingsForTarget(target);
         for (const std::string& blessing : possibleBlessings)
         {
+            // Don't cast greater salvation on possible tank classes
+            if (greater && blessing == "blessing of salvation" && target->IsPlayer())
+            {
+                const uint8 playerClass = ((Player*)target)->getClass();
+#ifdef MANGOSBOT_TWO
+                if (playerClass == CLASS_PALADIN || playerClass == CLASS_WARRIOR || playerClass == CLASS_DRUID || playerClass == CLASS_DEATH_KNIGHT)
+#else
+                if (playerClass == CLASS_PALADIN || playerClass == CLASS_WARRIOR || playerClass == CLASS_DRUID)
+#endif
+                {
+                    break;
+                }
+            }
+
             const std::string greaterBlessing = "greater " + blessing;
             if ((greater || !ai->HasAura(blessing, target)) && !ai->HasAura(greaterBlessing, target))
             {
@@ -264,7 +264,7 @@ std::vector<std::string> CastPveBlessingOnPartyAction::GetPossibleBlessingsForTa
         }
         else if (ai->IsHeal(player))
         {
-            blessings = { "blessing of wisdom", "blessing of kings", "blessing of light" };
+            blessings = { "blessing of wisdom", "blessing of kings", "blessing of light", "blessing of sanctuary" };
         }
         else if (ai->IsRanged(player))
         {
@@ -274,18 +274,18 @@ std::vector<std::string> CastPveBlessingOnPartyAction::GetPossibleBlessingsForTa
             }
             else
             {
-                blessings = { "blessing of kings", "blessing of wisdom", "blessing of light" };
+                blessings = { "blessing of kings", "blessing of wisdom", "blessing of light", "blessing of sanctuary" };
             }
         }
         else
         {
-            blessings = { "blessing of might", "blessing of kings", "blessing of light" };
+            blessings = { "blessing of might", "blessing of kings", "blessing of light", "blessing of sanctuary" };
         }
     }
     else
     {
         // Blessings for pets
-        blessings = { "blessing of might", "blessing of kings", "blessing of light" };
+        blessings = { "blessing of might", "blessing of kings", "blessing of light", "blessing of sanctuary" };
     }
 
     return blessings;
@@ -303,7 +303,7 @@ std::vector<std::string> CastPvpBlessingOnPartyAction::GetPossibleBlessingsForTa
         }
         else if (ai->IsHeal(player))
         {
-            blessings = { "blessing of wisdom", "blessing of kings", "blessing of light" };
+            blessings = { "blessing of wisdom", "blessing of kings", "blessing of light", "blessing of sanctuary" };
         }
         else if (ai->IsRanged(player))
         {
@@ -313,18 +313,18 @@ std::vector<std::string> CastPvpBlessingOnPartyAction::GetPossibleBlessingsForTa
             }
             else
             {
-                blessings = { "blessing of kings", "blessing of wisdom", "blessing of light" };
+                blessings = { "blessing of kings", "blessing of wisdom", "blessing of light", "blessing of sanctuary" };
             }
         }
         else
         {
-            blessings = { "blessing of might", "blessing of kings", "blessing of light" };
+            blessings = { "blessing of might", "blessing of kings", "blessing of light", "blessing of sanctuary" };
         }
     }
     else
     {
         // Blessings for pets
-        blessings = { "blessing of might", "blessing of kings", "blessing of light" };
+        blessings = { "blessing of might", "blessing of kings", "blessing of light", "blessing of sanctuary" };
     }
 
     return blessings;
@@ -342,7 +342,7 @@ std::vector<std::string> CastRaidBlessingOnPartyAction::GetPossibleBlessingsForT
         }
         else if (ai->IsHeal(player))
         {
-            blessings = { "blessing of wisdom", "blessing of kings", "blessing of salvation", "blessing of light" };
+            blessings = { "blessing of wisdom", "blessing of kings", "blessing of sanctuary", "blessing of light" };
         }
         else if (ai->IsRanged(player))
         {
@@ -352,18 +352,18 @@ std::vector<std::string> CastRaidBlessingOnPartyAction::GetPossibleBlessingsForT
             }
             else
             {
-                blessings = { "blessing of salvation", "blessing of kings", "blessing of wisdom", "blessing of light" };
+                blessings = { "blessing of kings", "blessing of wisdom", "blessing of light", "blessing of sanctuary" };
             }
         }
         else
         {
-            blessings = { "blessing of might", "blessing of kings", "blessing of salvation", "blessing of light" };
+            blessings = { "blessing of might", "blessing of kings", "blessing of sanctuary", "blessing of light" };
         }
     }
     else
     {
         // Blessings for pets
-        blessings = { "blessing of might", "blessing of kings", "blessing of salvation", "blessing of light" };
+        blessings = { "blessing of might", "blessing of kings", "blessing of sanctuary", "blessing of light" };
     }
 
     return blessings;

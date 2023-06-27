@@ -7,13 +7,16 @@
 using namespace ai;
 using namespace std;
 
-Unit* PartyMemberValue::FindPartyMember(list<Player*>* party, FindPlayerPredicate &predicate)
+Unit* PartyMemberValue::FindPartyMember(list<Player*>* party, FindPlayerPredicate &predicate, bool ignoreTanks)
 {
     for (list<Player*>::iterator i = party->begin(); i != party->end(); ++i)
     {
         Player* player = *i;
 
         if (!player)
+            continue;
+
+        if (ignoreTanks && ai->IsTank(player))
             continue;
 
         if (bot->GetGroup() && !player->IsInGroup(bot) && !AI_VALUE2(bool, "can free move to", GuidPosition(player).to_string())) continue;
@@ -29,7 +32,7 @@ Unit* PartyMemberValue::FindPartyMember(list<Player*>* party, FindPlayerPredicat
     return NULL;
 }
 
-Unit* PartyMemberValue::FindPartyMember(FindPlayerPredicate &predicate, bool ignoreOutOfGroup)
+Unit* PartyMemberValue::FindPartyMember(FindPlayerPredicate &predicate, bool ignoreOutOfGroup, bool ignoreTanks)
 {
     Player* master = GetMaster();
     list<ObjectGuid> nearestPlayers;
@@ -69,14 +72,23 @@ Unit* PartyMemberValue::FindPartyMember(FindPlayerPredicate &predicate, bool ign
     for (list<ObjectGuid>::iterator i = nearestPlayers.begin(); i != nearestPlayers.end(); ++i)
     {
         Player* player = dynamic_cast<Player*>(ai->GetUnit(*i));
-        if (!player || player == bot) continue;
+        if (!player || player == bot) 
+        {
+            continue;
+        }
 
         if (ai->IsHeal(player))
+        {
             healers.push_back(player);
-        else if (ai->IsTank(player))
+        }
+        else if (ai->IsTank(player) && !ignoreTanks)
+        {
             tanks.push_back(player);
+        }
         else if (player != master)
+        {
             others.push_back(player);
+        }
     }
 
     list<list<Player*>* > lists;
@@ -88,7 +100,7 @@ Unit* PartyMemberValue::FindPartyMember(FindPlayerPredicate &predicate, bool ign
     for (list<list<Player*>* >::iterator i = lists.begin(); i != lists.end(); ++i)
     {
         list<Player*>* party = *i;
-        Unit* target = FindPartyMember(party, predicate);
+        Unit* target = FindPartyMember(party, predicate, ignoreTanks);
         if (target)
             return target;
     }
@@ -124,9 +136,11 @@ bool PartyMemberValue::IsTargetOfSpellCast(Player* target, SpellEntryPredicate &
 
         if (player->IsNonMeleeSpellCasted(true))
         {
-            for (int type = CURRENT_GENERIC_SPELL; type < CURRENT_MAX_SPELL; type++) {
+            for (int type = CURRENT_GENERIC_SPELL; type < CURRENT_MAX_SPELL; type++) 
+            {
                 Spell* spell = player->GetCurrentSpell((CurrentSpellTypes)type);
-                if (spell && predicate.Check(spell->m_spellInfo)) {
+                if (spell && predicate.Check(spell->m_spellInfo)) 
+                {
                     ObjectGuid unitTarget = spell->m_targets.getUnitTargetGuid();
                     if (unitTarget == targetGuid)
                         return true;

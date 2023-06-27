@@ -60,6 +60,12 @@ namespace ai
     public:
         BlessingOfMightOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of might", 4) {}
         bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+
+        Value<Unit*>* GetTargetValue() override
+        {
+            const std::string qualifier = spell + ",greater " + spell + "-" + (ignoreTanks ? "1" : "0");
+            return context->GetValue<Unit*>("friendly unit without aura", qualifier);
+        }
     };
 
     class GreaterBlessingOfMightOnPartyTrigger : public GreaterBuffOnPartyTrigger
@@ -73,6 +79,12 @@ namespace ai
     public:
         BlessingOfWisdomOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of wisdom", 4) {}
         bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+
+        Value<Unit*>* GetTargetValue() override
+        {
+            const std::string qualifier = spell + ",greater " + spell + "-" + (ignoreTanks ? "1" : "0");
+            return context->GetValue<Unit*>("friendly unit without aura", qualifier);
+        }
     };
 
     class GreaterBlessingOfWisdomOnPartyTrigger : public GreaterBuffOnPartyTrigger
@@ -86,6 +98,12 @@ namespace ai
     public:
         BlessingOfKingsOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of kings", 4) {}
         bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+
+        Value<Unit*>* GetTargetValue() override
+        {
+            const std::string qualifier = spell + ",greater " + spell + "-" + (ignoreTanks ? "1" : "0");
+            return context->GetValue<Unit*>("friendly unit without aura", qualifier);
+        }
     };
 
     class GreaterBlessingOfKingsOnPartyTrigger : public GreaterBuffOnPartyTrigger
@@ -99,6 +117,12 @@ namespace ai
     public:
         BlessingOfLightOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of light", 4) {}
         bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+
+        Value<Unit*>* GetTargetValue() override
+        {
+            const std::string qualifier = spell + ",greater " + spell + "-" + (ignoreTanks ? "1" : "0");
+            return context->GetValue<Unit*>("friendly unit without aura", qualifier);
+        }
     };
 
     class GreaterBlessingOfLightOnPartyTrigger : public GreaterBuffOnPartyTrigger
@@ -110,14 +134,20 @@ namespace ai
     class BlessingOfSalvationOnPartyTrigger : public BuffOnPartyTrigger
     {
     public:
-        BlessingOfSalvationOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of salvation", 4) {}
-        bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+        BlessingOfSalvationOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of salvation", 4, true) {}
+        bool IsActive() override { return BuffOnPartyTrigger::IsActive(); }
+
+        Value<Unit*>* GetTargetValue() override
+        {
+            const std::string qualifier = spell + ",greater " + spell + "-" + (ignoreTanks ? "1" : "0");
+            return context->GetValue<Unit*>("friendly unit without aura", qualifier);
+        }
     };
 
     class GreaterBlessingOfSalvationOnPartyTrigger : public GreaterBuffOnPartyTrigger
     {
     public:
-        GreaterBlessingOfSalvationOnPartyTrigger(PlayerbotAI* ai) : GreaterBuffOnPartyTrigger(ai, "greater blessing of salvation", "blessing of salvation", 4) {}
+        GreaterBlessingOfSalvationOnPartyTrigger(PlayerbotAI* ai) : GreaterBuffOnPartyTrigger(ai, "greater blessing of salvation", "blessing of salvation", 4, true) {}
     };
 
     class BlessingOfSanctuaryOnPartyTrigger : public BuffOnPartyTrigger
@@ -125,6 +155,12 @@ namespace ai
     public:
         BlessingOfSanctuaryOnPartyTrigger(PlayerbotAI* ai) : BuffOnPartyTrigger(ai, "blessing of sanctuary", 4) {}
         bool IsActive() override { return BuffOnPartyTrigger::IsActive() && !ai->HasAura("greater " + spell, GetTarget()); }
+
+        Value<Unit*>* GetTargetValue() override
+        {
+            const std::string qualifier = spell + ",greater " + spell + "-" + (ignoreTanks ? "1" : "0");
+            return context->GetValue<Unit*>("friendly unit without aura", qualifier);
+        }
     };
 
     class GreaterBlessingOfSanctuaryOnPartyTrigger : public GreaterBuffOnPartyTrigger

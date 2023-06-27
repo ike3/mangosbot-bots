@@ -236,12 +236,15 @@ namespace ai
     class BuffOnPartyAction : public CastBuffSpellAction, public PartyMemberActionNameSupport
     {
     public:
-        BuffOnPartyAction(PlayerbotAI* ai, string spell) : CastBuffSpellAction(ai, spell), PartyMemberActionNameSupport(spell) {}
+        BuffOnPartyAction(PlayerbotAI* ai, string spell, bool ignoreTanks = false) : CastBuffSpellAction(ai, spell), PartyMemberActionNameSupport(spell), ignoreTanks(ignoreTanks) {}
         
     protected:
         virtual string getName() override { return PartyMemberActionNameSupport::getName(); }
         virtual string GetTargetName() override { return "friendly unit without aura"; }
-        virtual string GetTargetQualifier() override { return GetSpellName(); }
+        virtual string GetTargetQualifier() override { return GetSpellName() + "-" + (ignoreTanks ? "1" : "0"); }
+
+    protected:
+        bool ignoreTanks;
     };
 
     //---------------------------------------------------------------------------------------------------------------------
@@ -249,12 +252,15 @@ namespace ai
     class GreaterBuffOnPartyAction : public CastBuffSpellAction, public PartyMemberActionNameSupport
     {
     public:
-        GreaterBuffOnPartyAction(PlayerbotAI* ai, string spell) : CastBuffSpellAction(ai, spell), PartyMemberActionNameSupport(spell) {}
+        GreaterBuffOnPartyAction(PlayerbotAI* ai, string spell, bool ignoreTanks = false) : CastBuffSpellAction(ai, spell), PartyMemberActionNameSupport(spell), ignoreTanks(ignoreTanks) {}
 
     protected:
         virtual string getName() override { return PartyMemberActionNameSupport::getName(); }
         virtual string GetTargetName() override { return "party member without aura"; }
-        virtual string GetTargetQualifier() override { return GetSpellName(); }
+        virtual string GetTargetQualifier() override { return GetSpellName() + "-" + (ignoreTanks ? "1" : "0"); }
+
+    private:
+        bool ignoreTanks;
     };
 
     //---------------------------------------------------------------------------------------------------------------------

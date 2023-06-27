@@ -132,17 +132,20 @@ bool MyBuffTrigger::IsActive()
 
 Value<Unit*>* BuffOnPartyTrigger::GetTargetValue()
 {
-	return context->GetValue<Unit*>("friendly unit without aura", spell);
+    const std::string qualifier = spell + "-" + (ignoreTanks ? "1" : "0");
+	return context->GetValue<Unit*>("friendly unit without aura", qualifier);
 }
 
 Value<Unit*>* GreaterBuffOnPartyTrigger::GetTargetValue()
 {
-    return context->GetValue<Unit*>("party member without aura", spell);
+    const std::string qualifier = spell + "-" + (ignoreTanks ? "1" : "0");
+    return context->GetValue<Unit*>("party member without aura", qualifier);
 }
 
 Value<Unit*>* MyBuffOnPartyTrigger::GetTargetValue()
 {
-    return context->GetValue<Unit*>("party member without my aura", spell);
+    const std::string qualifier = spell + "-" + (ignoreTanks ? "1" : "0");
+    return context->GetValue<Unit*>("party member without my aura", qualifier);
 }
 
 ai::Value<Unit*>* BuffOnTankTrigger::GetTargetValue()

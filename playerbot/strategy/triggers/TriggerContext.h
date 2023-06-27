@@ -164,6 +164,8 @@ namespace ai
             creators["in battleground without flag"] = &TriggerContext::player_is_in_battleground_no_flag;
             creators["wants in bg"] = &TriggerContext::player_wants_in_bg;
             creators["use trinket"] = &TriggerContext::use_trinket;
+            creators["has blessing of salvation"] = &TriggerContext::has_blessing_of_salvation;
+            creators["has greater blessing of salvation"] = &TriggerContext::has_greater_blessing_of_salvation;
 
             creators["mounted"] = &TriggerContext::mounted;
 
@@ -404,13 +406,14 @@ namespace ai
         static Trigger* in_pve(PlayerbotAI* ai) { return new InPveTrigger(ai); }
         static Trigger* in_pvp(PlayerbotAI* ai) { return new InPvpTrigger(ai); }
         static Trigger* in_raid_fight(PlayerbotAI* ai) { return new InRaidFightTrigger(ai); }
+        static Trigger* has_blessing_of_salvation(PlayerbotAI* ai) { return new HasBlessingOfSalvationTrigger(ai); }
+        static Trigger* has_greater_blessing_of_salvation(PlayerbotAI* ai) { return new HasGreaterBlessingOfSalvationTrigger(ai); }
 
         static Trigger* petition_signed(PlayerbotAI* ai) { return new PetitionTurnInTrigger(ai); }
         static Trigger* buy_tabard(PlayerbotAI* ai) { return new BuyTabardTrigger(ai); }        
         static Trigger* leave_large_guild(PlayerbotAI* ai) { return new LeaveLargeGuildTrigger(ai); }
 
         static Trigger* val(PlayerbotAI* ai) { return new ValueTrigger(ai); }
-
 
         static Trigger* rpg(PlayerbotAI* ai) { return new RpgTrigger(ai); }
         static Trigger* rpg_wander(PlayerbotAI* ai) { return new RpgWanderTrigger(ai); }

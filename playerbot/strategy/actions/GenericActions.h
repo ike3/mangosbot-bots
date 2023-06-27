@@ -3,6 +3,7 @@
 #include "ReachTargetActions.h"
 #include "ChooseTargetActions.h"
 #include "MovementActions.h"
+#include "RemoveAuraAction.h"
 
 namespace ai
 {
@@ -104,5 +105,17 @@ namespace ai
     private:
         std::vector<const StrategyToUpdate*> strategiesToAdd;
         std::vector<const StrategyToUpdate*> strategiesToRemove;
+    };
+
+    class RemoveBlessingOfSalvationAction : public RemoveAuraAction
+    {
+    public:
+        RemoveBlessingOfSalvationAction(PlayerbotAI* ai) : RemoveAuraAction(ai, "blessing of salvation") {}
+    };
+
+    class RemoveGreaterBlessingOfSalvationAction : public RemoveAuraAction
+    {
+    public:
+        RemoveGreaterBlessingOfSalvationAction(PlayerbotAI* ai) : RemoveAuraAction(ai, "greater blessing of salvation") {}
     };
 }

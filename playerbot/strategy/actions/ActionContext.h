@@ -148,6 +148,8 @@ namespace ai
             creators["greet"] = &ActionContext::greet;
             creators["check values"] = &ActionContext::check_values;
             creators["ra"] = &ActionContext::ra;
+            creators["remove blessing of salvation"] = &ActionContext::remove_blessing_of_salvation;
+            creators["remove greater blessing of salvation"] = &ActionContext::remove_greater_blessing_of_salvation;
             creators["apply stone"] = &ActionContext::apply_stone;
             creators["apply oil"] = &ActionContext::apply_oil;
             creators["try emergency"] = &ActionContext::try_emergency;
@@ -300,6 +302,8 @@ namespace ai
         static Action* give_water(PlayerbotAI* ai) { return new GiveWaterAction(ai); }
         static Action* give_food(PlayerbotAI* ai) { return new GiveFoodAction(ai); }
         static Action* ra(PlayerbotAI* ai) { return new RemoveAuraAction(ai); }
+        static Action* remove_blessing_of_salvation(PlayerbotAI* ai) { return new RemoveBlessingOfSalvationAction(ai); }
+        static Action* remove_greater_blessing_of_salvation(PlayerbotAI* ai) { return new RemoveGreaterBlessingOfSalvationAction(ai); }
         static Action* mark_rti(PlayerbotAI* ai) { return new MarkRtiAction(ai); }
         static Action* set_return_position(PlayerbotAI* ai) { return new SetReturnPositionAction(ai); }
         static Action* rpg(PlayerbotAI* ai) { return new RpgAction(ai); }

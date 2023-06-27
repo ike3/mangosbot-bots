@@ -30,8 +30,6 @@ public:
 	}
 
 	private:
-		
-		
 		static ActionNode* obliterate(PlayerbotAI* ai)
 		{
 		return new ActionNode("obliterate",
@@ -66,7 +64,6 @@ FrostDKStrategy::FrostDKStrategy(PlayerbotAI* ai) : GenericDKStrategy(ai)
 {
 	actionNodeFactories.Add(new FrostDKStrategyActionNodeFactory());
 }
-
 
 NextAction** FrostDKStrategy::GetDefaultCombatActions()
 {
