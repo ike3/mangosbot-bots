@@ -1,4 +1,7 @@
+#include "botpch.h"
+#include "../../playerbot.h"
 #include "RemoveAuraAction.h"
+#include "ServerFacade.h"
 
 using namespace ai;
 
