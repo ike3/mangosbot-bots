@@ -138,6 +138,14 @@ void BearTankDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers
     FeralDruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "has blessing of salvation",
+        NextAction::array(0, new NextAction("remove blessing of salvation", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "has greater blessing of salvation",
+        NextAction::array(0, new NextAction("remove greater blessing of salvation", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "thorns",
         NextAction::array(0, new NextAction("thorns", 66.0f), NULL))); //High prio to stop going back to bear form.
 

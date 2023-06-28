@@ -40,6 +40,14 @@ void ProtectionPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
     PaladinStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "has blessing of salvation",
+        NextAction::array(0, new NextAction("remove blessing of salvation", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "has greater blessing of salvation",
+        NextAction::array(0, new NextAction("remove greater blessing of salvation", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "holy shield",
         NextAction::array(0, new NextAction("holy shield", ACTION_HIGH + 3), NULL)));
 
@@ -63,6 +71,14 @@ void ProtectionPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 void ProtectionPaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     PaladinStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "has blessing of salvation",
+        NextAction::array(0, new NextAction("remove blessing of salvation", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "has greater blessing of salvation",
+        NextAction::array(0, new NextAction("remove greater blessing of salvation", ACTION_EMERGENCY), NULL)));
 }
 
 void ProtectionPaladinStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)

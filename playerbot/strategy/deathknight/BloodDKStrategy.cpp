@@ -75,6 +75,14 @@ void BloodDKStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     GenericDKStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "has blessing of salvation",
+        NextAction::array(0, new NextAction("remove blessing of salvation", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "has greater blessing of salvation",
+        NextAction::array(0, new NextAction("remove greater blessing of salvation", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "rune strike",
         NextAction::array(0, new NextAction("rune strike", ACTION_NORMAL + 3), NULL)));
 
