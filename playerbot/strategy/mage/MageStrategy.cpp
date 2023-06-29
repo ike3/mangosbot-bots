@@ -445,7 +445,8 @@ void MageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
     CureRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 void MageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
@@ -823,7 +824,8 @@ void MageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
     CureRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 void MageStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {

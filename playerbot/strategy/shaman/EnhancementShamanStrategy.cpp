@@ -375,7 +375,8 @@ void EnhancementShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 NextAction** EnhancementShamanStrategy::GetDefaultCombatActions()
 {
@@ -710,7 +711,8 @@ void EnhancementShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 NextAction** EnhancementShamanStrategy::GetDefaultCombatActions()
 {

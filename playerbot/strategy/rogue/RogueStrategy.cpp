@@ -458,7 +458,8 @@ void RoguePoisonsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
         NextAction::array(0, new NextAction("apply deadly poison off hand", ACTION_NORMAL), NULL)));
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 NextAction** RogueStrategy::GetDefaultCombatActions()
 {
@@ -845,7 +846,8 @@ void RoguePoisonsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
         NextAction::array(0, new NextAction("apply deadly poison off hand", ACTION_NORMAL), NULL)));
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 NextAction** RogueStrategy::GetDefaultCombatActions()
 {

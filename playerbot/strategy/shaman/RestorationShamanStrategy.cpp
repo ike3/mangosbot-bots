@@ -418,7 +418,8 @@ void RestorationShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 void RestorationShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
@@ -796,7 +797,8 @@ void RestorationShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
         NextAction::array(0, new NextAction("earth shield on party tank", ACTION_NORMAL), NULL)));
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 void RestorationShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {

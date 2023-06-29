@@ -386,7 +386,8 @@ void SubtletyRoguePoisonsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNo
     RoguePoisonsRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 void SubtletyRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
@@ -746,7 +747,8 @@ void SubtletyRoguePoisonsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNo
     RoguePoisonsRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 void SubtletyRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {

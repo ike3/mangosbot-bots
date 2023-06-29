@@ -320,7 +320,8 @@ void DestructionWarlockCursesRaidStrategy::InitCombatTriggers(std::list<TriggerN
     WarlockCursesRaidStrategy::InitCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 ai::NextAction** DestructionWarlockStrategy::GetDefaultCombatActions()
 {
@@ -646,7 +647,8 @@ void DestructionWarlockCursesRaidStrategy::InitCombatTriggers(std::list<TriggerN
     WarlockCursesRaidStrategy::InitCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 ai::NextAction** DestructionWarlockStrategy::GetDefaultCombatActions()
 {

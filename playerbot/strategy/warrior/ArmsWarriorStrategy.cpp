@@ -1,6 +1,5 @@
 #include "botpch.h"
 #include "../../playerbot.h"
-#include "WarriorMultipliers.h"
 #include "ArmsWarriorStrategy.h"
 
 using namespace ai;
@@ -17,89 +16,36 @@ public:
         creators["heroic strike"] = &heroic_strike;
         creators["mortal strike"] = &mortal_strike;
     }
+
 private:
     ACTION_NODE_A(charge, "charge", "reach melee");
+
     ACTION_NODE_A(death_wish, "death wish", "bloodrage");
+
     ACTION_NODE_A(piercing_howl, "piercing howl", "mocking blow");
+
     ACTION_NODE_A(mocking_blow, "mocking blow", "hamstring");
+
     ACTION_NODE_A(heroic_strike, "heroic strike", "melee");
+
     ACTION_NODE_A(mortal_strike, "mortal strike", "heroic strike");
 };
 
-ArmsWarriorStrategy::ArmsWarriorStrategy(PlayerbotAI* ai) : GenericWarriorStrategy(ai)
+ArmsWarriorStrategy::ArmsWarriorStrategy(PlayerbotAI* ai) : WarriorStrategy(ai)
 {
     actionNodeFactories.Add(new ArmsWarriorStrategyActionNodeFactory());
-    //actionNodeFactories.Add(new WarriorStanceRequirementActionNodeFactory());
 }
+
+#ifdef MANGOSBOT_ZERO // Vanilla
 
 NextAction** ArmsWarriorStrategy::GetDefaultCombatActions()
 {
-    return NextAction::array(0, new NextAction("melee", ACTION_NORMAL), NULL);
+    return NextAction::array(0, new NextAction("melee", ACTION_IDLE), NULL);
 }
 
-void ArmsWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
+void ArmsWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    GenericWarriorStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "enemy out of melee",
-        NextAction::array(0, new NextAction("charge", 60.f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "battle stance",
-        NextAction::array(0, new NextAction("battle stance", ACTION_HIGH + 9), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "battle shout",
-        NextAction::array(0, new NextAction("battle shout", ACTION_HIGH + 8), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "medium rage available",
-        NextAction::array(0, new NextAction("heroic strike", ACTION_HIGH + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "mortal strike",
-        NextAction::array(0, new NextAction("mortal strike", ACTION_HIGH + 6), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "target critical health",
-        NextAction::array(0, new NextAction("execute", ACTION_HIGH + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "sudden death",
-        NextAction::array(0, new NextAction("execute", ACTION_HIGH + 10), NULL)));
-
-	triggers.push_back(new TriggerNode(
-		"hamstring",
-		NextAction::array(0, new NextAction("piercing howl", ACTION_HIGH + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "overpower",
-        NextAction::array(0, new NextAction("overpower", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "taste for blood",
-        NextAction::array(0, new NextAction("overpower", ACTION_HIGH + 3), NULL)));
-
-	triggers.push_back(new TriggerNode(
-		"victory rush",
-		NextAction::array(0, new NextAction("victory rush", ACTION_INTERRUPT), NULL)));
-
-    /*triggers.push_back(new TriggerNode(
-        "high rage available",
-        NextAction::array(0, new NextAction("slam", ACTION_HIGH + 1), NULL)));*/
-
-    triggers.push_back(new TriggerNode(
-        "bloodrage",
-        NextAction::array(0, new NextAction("bloodrage", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "death wish",
-        NextAction::array(0, new NextAction("death wish", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rend",
-        NextAction::array(0, new NextAction("rend", ACTION_HIGH + 5), NULL)));
+    WarriorStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
         "critical health",
@@ -107,5 +53,833 @@ void ArmsWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("charge", ACTION_MOVE), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "target critical health",
+        NextAction::array(0, new NextAction("execute", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "overpower",
+        NextAction::array(0, new NextAction("overpower", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium rage available",
+        NextAction::array(0, new NextAction("heroic strike", ACTION_NORMAL + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "mortal strike",
+        NextAction::array(0, new NextAction("mortal strike", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rend",
+        NextAction::array(0, new NextAction("rend", ACTION_NORMAL), NULL)));
 }
+
+void ArmsWarriorStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitCombatTriggers(triggers);
+    WarriorPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitNonCombatTriggers(triggers);
+    WarriorPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitReactionTriggers(triggers);
+    WarriorPveStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitDeadTriggers(triggers);
+    WarriorPveStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitCombatTriggers(triggers);
+    WarriorPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitNonCombatTriggers(triggers);
+    WarriorPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitReactionTriggers(triggers);
+    WarriorPvpStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitDeadTriggers(triggers);
+    WarriorPvpStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitCombatTriggers(triggers);
+    WarriorRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitNonCombatTriggers(triggers);
+    WarriorRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitReactionTriggers(triggers);
+    WarriorRaidStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitDeadTriggers(triggers);
+    WarriorRaidStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorAoeStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("sweeping strikes", ACTION_HIGH), NULL)));
+}
+
+void ArmsWarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorAoeStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitCombatTriggers(triggers);
+    WarriorAoePveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitNonCombatTriggers(triggers);
+    WarriorAoePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitCombatTriggers(triggers);
+    WarriorAoePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitNonCombatTriggers(triggers);
+    WarriorAoePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitCombatTriggers(triggers);
+    WarriorAoeRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitNonCombatTriggers(triggers);
+    WarriorAoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "battle stance",
+        NextAction::array(0, new NextAction("battle stance", ACTION_EMERGENCY), NULL)));
+}
+
+void ArmsWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBuffStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitCombatTriggers(triggers);
+    WarriorBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitNonCombatTriggers(triggers);
+    WarriorBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitCombatTriggers(triggers);
+    WarriorBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitNonCombatTriggers(triggers);
+    WarriorBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitCombatTriggers(triggers);
+    WarriorBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitNonCombatTriggers(triggers);
+    WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorCcStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "hamstring",
+        NextAction::array(0, new NextAction("piercing howl", ACTION_HIGH), NULL)));
+}
+
+void ArmsWarriorCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorCcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitCombatTriggers(triggers);
+    WarriorCcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitNonCombatTriggers(triggers);
+    WarriorCcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitCombatTriggers(triggers);
+    WarriorCcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitNonCombatTriggers(triggers);
+    WarriorCcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitCombatTriggers(triggers);
+    WarriorCcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitNonCombatTriggers(triggers);
+    WarriorCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+#endif
+#ifdef MANGOSBOT_ONE // TBC
+
+
+NextAction** ArmsWarriorStrategy::GetDefaultCombatActions()
+{
+    return NextAction::array(0, new NextAction("melee", ACTION_IDLE), NULL);
+}
+
+void ArmsWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("intimidating shout", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("charge", ACTION_MOVE), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "target critical health",
+        NextAction::array(0, new NextAction("execute", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "overpower",
+        NextAction::array(0, new NextAction("overpower", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium rage available",
+        NextAction::array(0, new NextAction("heroic strike", ACTION_NORMAL + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "mortal strike",
+        NextAction::array(0, new NextAction("mortal strike", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rend",
+        NextAction::array(0, new NextAction("rend", ACTION_NORMAL), NULL)));
+}
+
+void ArmsWarriorStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitCombatTriggers(triggers);
+    WarriorPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitNonCombatTriggers(triggers);
+    WarriorPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitReactionTriggers(triggers);
+    WarriorPveStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitDeadTriggers(triggers);
+    WarriorPveStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitCombatTriggers(triggers);
+    WarriorPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitNonCombatTriggers(triggers);
+    WarriorPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitReactionTriggers(triggers);
+    WarriorPvpStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitDeadTriggers(triggers);
+    WarriorPvpStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitCombatTriggers(triggers);
+    WarriorRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitNonCombatTriggers(triggers);
+    WarriorRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitReactionTriggers(triggers);
+    WarriorRaidStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitDeadTriggers(triggers);
+    WarriorRaidStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorAoeStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorAoeStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitCombatTriggers(triggers);
+    WarriorAoePveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitNonCombatTriggers(triggers);
+    WarriorAoePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitCombatTriggers(triggers);
+    WarriorAoePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitNonCombatTriggers(triggers);
+    WarriorAoePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitCombatTriggers(triggers);
+    WarriorAoeRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitNonCombatTriggers(triggers);
+    WarriorAoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "battle stance",
+        NextAction::array(0, new NextAction("battle stance", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "death wish",
+        NextAction::array(0, new NextAction("death wish", ACTION_HIGH), NULL)));
+}
+
+void ArmsWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBuffStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitCombatTriggers(triggers);
+    WarriorBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitNonCombatTriggers(triggers);
+    WarriorBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitCombatTriggers(triggers);
+    WarriorBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitNonCombatTriggers(triggers);
+    WarriorBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitCombatTriggers(triggers);
+    WarriorBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitNonCombatTriggers(triggers);
+    WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorCcStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "hamstring",
+        NextAction::array(0, new NextAction("piercing howl", ACTION_HIGH), NULL)));
+}
+
+void ArmsWarriorCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorCcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitCombatTriggers(triggers);
+    WarriorCcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitNonCombatTriggers(triggers);
+    WarriorCcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitCombatTriggers(triggers);
+    WarriorCcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitNonCombatTriggers(triggers);
+    WarriorCcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitCombatTriggers(triggers);
+    WarriorCcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitNonCombatTriggers(triggers);
+    WarriorCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
+
+NextAction** ArmsWarriorStrategy::GetDefaultCombatActions()
+{
+    return NextAction::array(0, new NextAction("melee", ACTION_IDLE), NULL);
+}
+
+void ArmsWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("intimidating shout", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy out of melee",
+        NextAction::array(0, new NextAction("charge", ACTION_MOVE), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "target critical health",
+        NextAction::array(0, new NextAction("execute", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "sudden death",
+        NextAction::array(0, new NextAction("execute", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "overpower",
+        NextAction::array(0, new NextAction("overpower", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "taste for blood",
+        NextAction::array(0, new NextAction("overpower", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium rage available",
+        NextAction::array(0, new NextAction("heroic strike", ACTION_NORMAL + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "mortal strike",
+        NextAction::array(0, new NextAction("mortal strike", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rend",
+        NextAction::array(0, new NextAction("rend", ACTION_NORMAL), NULL)));
+}
+
+void ArmsWarriorStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitCombatTriggers(triggers);
+    WarriorPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitNonCombatTriggers(triggers);
+    WarriorPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitReactionTriggers(triggers);
+    WarriorPveStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitDeadTriggers(triggers);
+    WarriorPveStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitCombatTriggers(triggers);
+    WarriorPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitNonCombatTriggers(triggers);
+    WarriorPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitReactionTriggers(triggers);
+    WarriorPvpStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorPvpStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitDeadTriggers(triggers);
+    WarriorPvpStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitCombatTriggers(triggers);
+    WarriorRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitNonCombatTriggers(triggers);
+    WarriorRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitReactionTriggers(triggers);
+    WarriorRaidStrategy::InitReactionTriggers(triggers);
+}
+
+void ArmsWarriorRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorStrategy::InitDeadTriggers(triggers);
+    WarriorRaidStrategy::InitDeadTriggers(triggers);
+}
+
+void ArmsWarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorAoeStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "medium aoe",
+        NextAction::array(0, new NextAction("bladestorm", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "light aoe",
+        NextAction::array(0, new NextAction("sweeping strikes", ACTION_HIGH), NULL)));
+}
+
+void ArmsWarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorAoeStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitCombatTriggers(triggers);
+    WarriorAoePveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitNonCombatTriggers(triggers);
+    WarriorAoePveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitCombatTriggers(triggers);
+    WarriorAoePvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoePvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitNonCombatTriggers(triggers);
+    WarriorAoePvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitCombatTriggers(triggers);
+    WarriorAoeRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorAoeStrategy::InitNonCombatTriggers(triggers);
+    WarriorAoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "battle stance",
+        NextAction::array(0, new NextAction("battle stance", ACTION_EMERGENCY), NULL)));
+}
+
+void ArmsWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBuffStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitCombatTriggers(triggers);
+    WarriorBuffPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitNonCombatTriggers(triggers);
+    WarriorBuffPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitCombatTriggers(triggers);
+    WarriorBuffPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitNonCombatTriggers(triggers);
+    WarriorBuffPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitCombatTriggers(triggers);
+    WarriorBuffRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBuffStrategy::InitNonCombatTriggers(triggers);
+    WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorCcStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "hamstring",
+        NextAction::array(0, new NextAction("piercing howl", ACTION_HIGH), NULL)));
+}
+
+void ArmsWarriorCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorCcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitCombatTriggers(triggers);
+    WarriorCcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitNonCombatTriggers(triggers);
+    WarriorCcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitCombatTriggers(triggers);
+    WarriorCcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitNonCombatTriggers(triggers);
+    WarriorCcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitCombatTriggers(triggers);
+    WarriorCcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorCcStrategy::InitNonCombatTriggers(triggers);
+    WarriorCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+#endif

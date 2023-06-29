@@ -328,7 +328,8 @@ void AfflictionWarlockCursesRaidStrategy::InitCombatTriggers(std::list<TriggerNo
     WarlockCursesRaidStrategy::InitCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 ai::NextAction** AfflictionWarlockStrategy::GetDefaultCombatActions()
 {
@@ -658,7 +659,8 @@ void AfflictionWarlockCursesRaidStrategy::InitCombatTriggers(std::list<TriggerNo
     WarlockCursesRaidStrategy::InitCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 ai::NextAction** AfflictionWarlockStrategy::GetDefaultCombatActions()
 {

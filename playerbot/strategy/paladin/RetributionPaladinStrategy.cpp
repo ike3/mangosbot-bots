@@ -480,7 +480,8 @@ void RetributionPaladinBlessingRaidStrategy::InitNonCombatTriggers(std::list<Tri
     PaladinBlessingRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 NextAction** RetributionPaladinStrategy::GetDefaultCombatActions()
 {
@@ -916,7 +917,8 @@ void RetributionPaladinBlessingRaidStrategy::InitNonCombatTriggers(std::list<Tri
     PaladinBlessingRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 NextAction** RetributionPaladinStrategy::GetDefaultCombatActions()
 {

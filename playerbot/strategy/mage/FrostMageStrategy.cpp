@@ -304,7 +304,8 @@ void FrostMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& t
     MageCureRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 NextAction** FrostMageStrategy::GetDefaultCombatActions()
 {
@@ -615,7 +616,8 @@ void FrostMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& t
     MageCureRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 NextAction** FrostMageStrategy::GetDefaultCombatActions()
 {

@@ -382,7 +382,8 @@ void ShamanTotemBarSpiritsStrategy::InitCombatTriggers(std::list<TriggerNode*>& 
 
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 void ShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
@@ -735,7 +736,8 @@ void ShamanTotemBarSpiritsStrategy::InitCombatTriggers(std::list<TriggerNode*>& 
 
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 void ShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {

@@ -2,72 +2,71 @@
 #include "../../playerbot.h"
 #include "PaladinStrategy.h"
 
-namespace ai
+using namespace ai;
+
+class GenericPaladinStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
-    class GenericPaladinStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+public:
+    GenericPaladinStrategyActionNodeFactory()
     {
-    public:
-        GenericPaladinStrategyActionNodeFactory()
-        {
-            creators["cleanse poison"] = &cleanse_poison;
-            creators["cleanse disease"] = &cleanse_disease;
-            creators["cleanse poison on party"] = &cleanse_poison_on_party;
-            creators["cleanse disease on party"] = &cleanse_disease_on_party;
-            creators["judgement of wisdom"] = &judgement_of_wisdom;
-            creators["divine shield"] = &divine_shield;
-            creators["flash of light"] = &flash_of_light;
-            creators["flash of light on party"] = &flash_of_light_on_party;
-            creators["holy wrath"] = &holy_wrath;
-            creators["lay on hands"] = &lay_on_hands;
-            creators["greater blessing of might"] = &greater_blessing_of_might;
-            creators["greater blessing of kings"] = &greater_blessing_of_kings;
-            creators["greater blessing of wisdom"] = &greater_blessing_of_wisdom;
-            creators["greater blessing of sanctuary"] = &greater_blessing_of_sanctuary;
-            creators["greater blessing of might on party"] = &greater_blessing_of_might_on_party;
-            creators["greater blessing of kings on party"] = &greater_blessing_of_kings_on_party;
-            creators["greater blessing of wisdom on party"] = &greater_blessing_of_wisdom_on_party;
-        }
-    private:
-        ACTION_NODE_A(greater_blessing_of_might, "greater blessing of might", "blessing of might");
+        creators["cleanse poison"] = &cleanse_poison;
+        creators["cleanse disease"] = &cleanse_disease;
+        creators["cleanse poison on party"] = &cleanse_poison_on_party;
+        creators["cleanse disease on party"] = &cleanse_disease_on_party;
+        creators["judgement of wisdom"] = &judgement_of_wisdom;
+        creators["divine shield"] = &divine_shield;
+        creators["flash of light"] = &flash_of_light;
+        creators["flash of light on party"] = &flash_of_light_on_party;
+        creators["holy wrath"] = &holy_wrath;
+        creators["lay on hands"] = &lay_on_hands;
+        creators["greater blessing of might"] = &greater_blessing_of_might;
+        creators["greater blessing of kings"] = &greater_blessing_of_kings;
+        creators["greater blessing of wisdom"] = &greater_blessing_of_wisdom;
+        creators["greater blessing of sanctuary"] = &greater_blessing_of_sanctuary;
+        creators["greater blessing of might on party"] = &greater_blessing_of_might_on_party;
+        creators["greater blessing of kings on party"] = &greater_blessing_of_kings_on_party;
+        creators["greater blessing of wisdom on party"] = &greater_blessing_of_wisdom_on_party;
+    }
+private:
+    ACTION_NODE_A(greater_blessing_of_might, "greater blessing of might", "blessing of might");
 
-        ACTION_NODE_A(greater_blessing_of_kings, "greater blessing of kings", "blessing of kings");
+    ACTION_NODE_A(greater_blessing_of_kings, "greater blessing of kings", "blessing of kings");
 
-        ACTION_NODE_A(greater_blessing_of_wisdom, "greater blessing of wisdom", "blessing of wisdom");
+    ACTION_NODE_A(greater_blessing_of_wisdom, "greater blessing of wisdom", "blessing of wisdom");
 
-        ACTION_NODE_A(greater_blessing_of_sanctuary, "greater blessing of sanctuary", "blessing of sanctuary");
+    ACTION_NODE_A(greater_blessing_of_sanctuary, "greater blessing of sanctuary", "blessing of sanctuary");
 
-        ACTION_NODE_A(greater_blessing_of_might_on_party, "greater blessing of might on party", "blessing of might on party");
+    ACTION_NODE_A(greater_blessing_of_might_on_party, "greater blessing of might on party", "blessing of might on party");
 
-        ACTION_NODE_A(greater_blessing_of_kings_on_party, "greater blessing of kings on party", "blessing of kings on party");
+    ACTION_NODE_A(greater_blessing_of_kings_on_party, "greater blessing of kings on party", "blessing of kings on party");
 
-        ACTION_NODE_A(greater_blessing_of_wisdom_on_party, "greater blessing of wisdom on party", "blessing of wisdom on party");
+    ACTION_NODE_A(greater_blessing_of_wisdom_on_party, "greater blessing of wisdom on party", "blessing of wisdom on party");
 
-        static ActionNode* lay_on_hands(PlayerbotAI* ai)
-        {
-            return new ActionNode("lay on hands",
-                /*P*/ NULL,
-                /*A*/ NextAction::array(0, new NextAction("divine shield"), new NextAction("flash of light"), NULL),
-                /*C*/ NULL);
-        }
+    static ActionNode* lay_on_hands(PlayerbotAI* ai)
+    {
+        return new ActionNode("lay on hands",
+            /*P*/ NULL,
+            /*A*/ NextAction::array(0, new NextAction("divine shield"), new NextAction("flash of light"), NULL),
+            /*C*/ NULL);
+    }
 
-        ACTION_NODE_A(cleanse_poison, "cleanse poison", "purify poison");
+    ACTION_NODE_A(cleanse_poison, "cleanse poison", "purify poison");
 
-        ACTION_NODE_A(cleanse_disease, "cleanse disease", "purify disease");
+    ACTION_NODE_A(cleanse_disease, "cleanse disease", "purify disease");
 
-        ACTION_NODE_A(cleanse_poison_on_party, "cleanse poison on party", "purify poison on party");
+    ACTION_NODE_A(cleanse_poison_on_party, "cleanse poison on party", "purify poison on party");
 
-        ACTION_NODE_A(cleanse_disease_on_party, "cleanse disease on party", "purify disease on party");
+    ACTION_NODE_A(cleanse_disease_on_party, "cleanse disease on party", "purify disease on party");
 
-        ACTION_NODE_A(judgement_of_wisdom, "judgement of wisdom", "judgement of light");
+    ACTION_NODE_A(judgement_of_wisdom, "judgement of wisdom", "judgement of light");
 
-        ACTION_NODE_A(divine_shield, "divine shield", "divine protection");
+    ACTION_NODE_A(divine_shield, "divine shield", "divine protection");
 
-        ACTION_NODE_A(flash_of_light, "flash of light", "holy light");
+    ACTION_NODE_A(flash_of_light, "flash of light", "holy light");
 
-        ACTION_NODE_A(flash_of_light_on_party, "flash of light on party", "holy light on party");
+    ACTION_NODE_A(flash_of_light_on_party, "flash of light on party", "holy light on party");
 
-        ACTION_NODE_A(holy_wrath, "holy wrath", "consecration");
-    };
+    ACTION_NODE_A(holy_wrath, "holy wrath", "consecration");
 };
 
 PaladinStrategy::PaladinStrategy(PlayerbotAI* ai) : ClassStrategy(ai)
@@ -562,7 +561,8 @@ void PaladinBlessingRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
         NextAction::array(0, new NextAction("raid blessing", ACTION_NORMAL), NULL)));
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 void PaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
@@ -1053,7 +1053,8 @@ void PaladinBlessingRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
         NextAction::array(0, new NextAction("raid blessing", ACTION_NORMAL), NULL)));
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 void PaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {

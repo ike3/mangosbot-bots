@@ -416,7 +416,8 @@ void WarlockCursesRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 void WarlockStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
@@ -812,7 +813,8 @@ void WarlockCursesRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 void WarlockStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {

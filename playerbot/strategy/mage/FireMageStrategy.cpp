@@ -328,7 +328,8 @@ void FireMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
     MageCureRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 NextAction** FireMageStrategy::GetDefaultCombatActions()
 {
@@ -651,7 +652,8 @@ void FireMageCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
     MageCureRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 NextAction** FireMageStrategy::GetDefaultCombatActions()
 {

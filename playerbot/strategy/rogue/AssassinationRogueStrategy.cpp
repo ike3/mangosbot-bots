@@ -378,7 +378,8 @@ void AssassinationRoguePoisonsRaidStrategy::InitNonCombatTriggers(std::list<Trig
     RoguePoisonsRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 void AssassinationRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
@@ -726,7 +727,8 @@ void AssassinationRoguePoisonsRaidStrategy::InitNonCombatTriggers(std::list<Trig
     RoguePoisonsRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 void AssassinationRogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {

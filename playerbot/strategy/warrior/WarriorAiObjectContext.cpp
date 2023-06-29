@@ -1,57 +1,161 @@
 #include "botpch.h"
 #include "../../playerbot.h"
+#include "../NamedObjectContext.h"
 #include "WarriorActions.h"
+#include "WarriorTriggers.h"
 #include "WarriorAiObjectContext.h"
-#include "GenericWarriorNonCombatStrategy.h"
-#include "WarriorReactionStrategy.h"
-#include "TankWarriorStrategy.h"
+#include "ProtectionWarriorStrategy.h"
 #include "ArmsWarriorStrategy.h"
 #include "FuryWarriorStrategy.h"
-#include "../generic/PullStrategy.h"
-#include "WarriorTriggers.h"
-#include "../NamedObjectContext.h"
-
-using namespace ai;
-
 
 namespace ai
 {
     namespace warrior
     {
-        using namespace ai;
-
         class StrategyFactoryInternal : public NamedObjectContext<Strategy>
         {
         public:
             StrategyFactoryInternal()
             {
-                creators["nc"] = &warrior::StrategyFactoryInternal::nc;
-                creators["react"] = &warrior::StrategyFactoryInternal::react;
+                creators["aoe"] = &warrior::StrategyFactoryInternal::aoe;
+                creators["buff"] = &warrior::StrategyFactoryInternal::buff;
                 creators["pull"] = &warrior::StrategyFactoryInternal::pull;
-                creators["aoe"] = &warrior::StrategyFactoryInternal::warrior_aoe;
+                creators["cc"] = &warrior::StrategyFactoryInternal::cc;
             }
 
         private:
-            static Strategy* nc(PlayerbotAI* ai) { return new GenericWarriorNonCombatStrategy(ai); }
-            static Strategy* react(PlayerbotAI* ai) { return new WarriorReactionStrategy(ai); }
-            static Strategy* warrior_aoe(PlayerbotAI* ai) { return new WarrirorAoeStrategy(ai); }
+            static Strategy* aoe(PlayerbotAI* ai) { return new WarriorAoePlaceholderStrategy(ai); }
+            static Strategy* buff(PlayerbotAI* ai) { return new WarriorBuffPlaceholderStrategy(ai); }
+            static Strategy* cc(PlayerbotAI* ai) { return new WarriorCcPlaceholderStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
         };
 
-        class CombatStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        class AoeSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
         {
         public:
-            CombatStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            AoeSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
             {
-                creators["tank"] = &warrior::CombatStrategyFactoryInternal::tank;
-                creators["arms"] = &warrior::CombatStrategyFactoryInternal::arms;
-                creators["fury"] = &warrior::CombatStrategyFactoryInternal::fury;
+                creators["aoe arms pve"] = &warrior::AoeSituationStrategyFactoryInternal::aoe_arms_pve;
+                creators["aoe arms pvp"] = &warrior::AoeSituationStrategyFactoryInternal::aoe_arms_pvp;
+                creators["aoe arms raid"] = &warrior::AoeSituationStrategyFactoryInternal::aoe_arms_raid;
+                creators["aoe fury pve"] = &warrior::AoeSituationStrategyFactoryInternal::aoe_fury_pve;
+                creators["aoe fury pvp"] = &warrior::AoeSituationStrategyFactoryInternal::aoe_fury_pvp;
+                creators["aoe fury raid"] = &warrior::AoeSituationStrategyFactoryInternal::aoe_fury_raid;
+                creators["aoe protection pve"] = &warrior::AoeSituationStrategyFactoryInternal::aoe_protection_pve;
+                creators["aoe protection pvp"] = &warrior::AoeSituationStrategyFactoryInternal::aoe_protection_pvp;
+                creators["aoe protection raid"] = &warrior::AoeSituationStrategyFactoryInternal::aoe_protection_raid;
             }
 
         private:
-            static Strategy* tank(PlayerbotAI* ai) { return new TankWarriorStrategy(ai); }
-            static Strategy* arms(PlayerbotAI* ai) { return new ArmsWarriorStrategy(ai); }
-            static Strategy* fury(PlayerbotAI* ai) { return new FuryWarriorStrategy(ai); }
+            static Strategy* aoe_arms_pve(PlayerbotAI* ai) { return new ArmsWarriorAoePveStrategy(ai); }
+            static Strategy* aoe_arms_pvp(PlayerbotAI* ai) { return new ArmsWarriorAoePvpStrategy(ai); }
+            static Strategy* aoe_arms_raid(PlayerbotAI* ai) { return new ArmsWarriorAoeRaidStrategy(ai); }
+            static Strategy* aoe_fury_pve(PlayerbotAI* ai) { return new FuryWarriorAoePveStrategy(ai); }
+            static Strategy* aoe_fury_pvp(PlayerbotAI* ai) { return new FuryWarriorAoePvpStrategy(ai); }
+            static Strategy* aoe_fury_raid(PlayerbotAI* ai) { return new FuryWarriorAoeRaidStrategy(ai); }
+            static Strategy* aoe_protection_pve(PlayerbotAI* ai) { return new ProtectionWarriorAoePveStrategy(ai); }
+            static Strategy* aoe_protection_pvp(PlayerbotAI* ai) { return new ProtectionWarriorAoePvpStrategy(ai); }
+            static Strategy* aoe_protection_raid(PlayerbotAI* ai) { return new ProtectionWarriorAoeRaidStrategy(ai); }
+        };
+
+        class BuffSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            BuffSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["buff arms pve"] = &warrior::BuffSituationStrategyFactoryInternal::buff_arms_pve;
+                creators["buff arms pvp"] = &warrior::BuffSituationStrategyFactoryInternal::buff_arms_pvp;
+                creators["buff arms raid"] = &warrior::BuffSituationStrategyFactoryInternal::buff_arms_raid;
+                creators["buff fury pve"] = &warrior::BuffSituationStrategyFactoryInternal::buff_fury_pve;
+                creators["buff fury pvp"] = &warrior::BuffSituationStrategyFactoryInternal::buff_fury_pvp;
+                creators["buff fury raid"] = &warrior::BuffSituationStrategyFactoryInternal::buff_fury_raid;
+                creators["buff protection pve"] = &warrior::BuffSituationStrategyFactoryInternal::buff_protection_pve;
+                creators["buff protection pvp"] = &warrior::BuffSituationStrategyFactoryInternal::buff_protection_pvp;
+                creators["buff protection raid"] = &warrior::BuffSituationStrategyFactoryInternal::buff_protection_raid;
+            }
+
+        private:
+            static Strategy* buff_arms_pve(PlayerbotAI* ai) { return new ArmsWarriorBuffPveStrategy(ai); }
+            static Strategy* buff_arms_pvp(PlayerbotAI* ai) { return new ArmsWarriorBuffPvpStrategy(ai); }
+            static Strategy* buff_arms_raid(PlayerbotAI* ai) { return new ArmsWarriorBuffRaidStrategy(ai); }
+            static Strategy* buff_fury_pve(PlayerbotAI* ai) { return new FuryWarriorBuffPveStrategy(ai); }
+            static Strategy* buff_fury_pvp(PlayerbotAI* ai) { return new FuryWarriorBuffPvpStrategy(ai); }
+            static Strategy* buff_fury_raid(PlayerbotAI* ai) { return new FuryWarriorBuffRaidStrategy(ai); }
+            static Strategy* buff_protection_pve(PlayerbotAI* ai) { return new ProtectionWarriorBuffPveStrategy(ai); }
+            static Strategy* buff_protection_pvp(PlayerbotAI* ai) { return new ProtectionWarriorBuffPvpStrategy(ai); }
+            static Strategy* buff_protection_raid(PlayerbotAI* ai) { return new ProtectionWarriorBuffRaidStrategy(ai); }
+        };
+
+        class CcSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            CcSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["cc fury pve"] = &warrior::CcSituationStrategyFactoryInternal::cc_fury_pve;
+                creators["cc fury pvp"] = &warrior::CcSituationStrategyFactoryInternal::cc_fury_pvp;
+                creators["cc fury raid"] = &warrior::CcSituationStrategyFactoryInternal::cc_fury_raid;
+                creators["cc protection pve"] = &warrior::CcSituationStrategyFactoryInternal::cc_protection_pve;
+                creators["cc protection pvp"] = &warrior::CcSituationStrategyFactoryInternal::cc_protection_pvp;
+                creators["cc protection raid"] = &warrior::CcSituationStrategyFactoryInternal::cc_protection_raid;
+                creators["cc arms pve"] = &warrior::CcSituationStrategyFactoryInternal::cc_arms_pve;
+                creators["cc arms pvp"] = &warrior::CcSituationStrategyFactoryInternal::cc_arms_pvp;
+                creators["cc arms raid"] = &warrior::CcSituationStrategyFactoryInternal::cc_arms_raid;
+            }
+
+        private:
+            static Strategy* cc_fury_pve(PlayerbotAI* ai) { return new FuryWarriorCcPveStrategy(ai); }
+            static Strategy* cc_fury_pvp(PlayerbotAI* ai) { return new FuryWarriorCcPvpStrategy(ai); }
+            static Strategy* cc_fury_raid(PlayerbotAI* ai) { return new FuryWarriorCcRaidStrategy(ai); }
+            static Strategy* cc_protection_pve(PlayerbotAI* ai) { return new ProtectionWarriorCcPveStrategy(ai); }
+            static Strategy* cc_protection_pvp(PlayerbotAI* ai) { return new ProtectionWarriorCcPvpStrategy(ai); }
+            static Strategy* cc_protection_raid(PlayerbotAI* ai) { return new ProtectionWarriorCcRaidStrategy(ai); }
+            static Strategy* cc_arms_pve(PlayerbotAI* ai) { return new ArmsWarriorCcPveStrategy(ai); }
+            static Strategy* cc_arms_pvp(PlayerbotAI* ai) { return new ArmsWarriorCcPvpStrategy(ai); }
+            static Strategy* cc_arms_raid(PlayerbotAI* ai) { return new ArmsWarriorCcRaidStrategy(ai); }
+        };
+
+        class ClassStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            ClassStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["fury"] = &warrior::ClassStrategyFactoryInternal::fury;
+                creators["protection"] = &warrior::ClassStrategyFactoryInternal::protection;
+                creators["arms"] = &warrior::ClassStrategyFactoryInternal::arms;
+            }
+
+        private:
+            static Strategy* fury(PlayerbotAI* ai) { return new FuryWarriorPlaceholderStrategy(ai); }
+            static Strategy* protection(PlayerbotAI* ai) { return new ProtectionWarriorPlaceholderStrategy(ai); }
+            static Strategy* arms(PlayerbotAI* ai) { return new ArmsWarriorPlaceholderStrategy(ai); }
+        };
+
+        class ClassSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            ClassSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["arms pvp"] = &warrior::ClassSituationStrategyFactoryInternal::arms_pvp;
+                creators["arms pve"] = &warrior::ClassSituationStrategyFactoryInternal::arms_pve;
+                creators["arms raid"] = &warrior::ClassSituationStrategyFactoryInternal::arms_raid;
+                creators["fury pvp"] = &warrior::ClassSituationStrategyFactoryInternal::fury_pvp;
+                creators["fury pve"] = &warrior::ClassSituationStrategyFactoryInternal::fury_pve;
+                creators["fury raid"] = &warrior::ClassSituationStrategyFactoryInternal::fury_raid;
+                creators["protection pvp"] = &warrior::ClassSituationStrategyFactoryInternal::protection_pvp;
+                creators["protection pve"] = &warrior::ClassSituationStrategyFactoryInternal::protection_pve;
+                creators["protection raid"] = &warrior::ClassSituationStrategyFactoryInternal::protection_raid;
+            }
+
+        private:
+            static Strategy* arms_pvp(PlayerbotAI* ai) { return new ArmsWarriorPvpStrategy(ai); }
+            static Strategy* arms_pve(PlayerbotAI* ai) { return new ArmsWarriorPveStrategy(ai); }
+            static Strategy* arms_raid(PlayerbotAI* ai) { return new ArmsWarriorRaidStrategy(ai); }
+            static Strategy* fury_pvp(PlayerbotAI* ai) { return new FuryWarriorPvpStrategy(ai); }
+            static Strategy* fury_pve(PlayerbotAI* ai) { return new FuryWarriorPveStrategy(ai); }
+            static Strategy* fury_raid(PlayerbotAI* ai) { return new FuryWarriorRaidStrategy(ai); }
+            static Strategy* protection_pvp(PlayerbotAI* ai) { return new ProtectionWarriorPvpStrategy(ai); }
+            static Strategy* protection_pve(PlayerbotAI* ai) { return new ProtectionWarriorPveStrategy(ai); }
+            static Strategy* protection_raid(PlayerbotAI* ai) { return new ProtectionWarriorRaidStrategy(ai); }
         };
     };
 };
@@ -159,15 +263,6 @@ namespace ai
             static Trigger* intercept_and_far_enemy(PlayerbotAI* ai) { return new TwoTriggers(ai, "enemy is out of melee", "intercept can cast"); }
             static Trigger* intercept_and_rage(PlayerbotAI* ai) { return new TwoTriggers(ai, "intercept and far enemy", "light rage available"); }
         };
-    };
-};
-
-
-namespace ai
-{
-    namespace warrior
-    {
-        using namespace ai;
 
         class AiObjectContextInternal : public NamedObjectContext<Action>
         {
@@ -233,7 +328,9 @@ namespace ai
                 creators["heroic throw"] = &AiObjectContextInternal::heroic_throw;
                 creators["heroic throw on snare target"] = &AiObjectContextInternal::heroic_throw_on_snare_target;
                 creators["shattering throw"] = &AiObjectContextInternal::shattering_throw;
-
+                creators["update pve strats"] = &AiObjectContextInternal::update_pve_strats;
+                creators["update pvp strats"] = &AiObjectContextInternal::update_pvp_strats;
+                creators["update raid strats"] = &AiObjectContextInternal::update_raid_strats;
             }
 
         private:
@@ -296,7 +393,9 @@ namespace ai
             static Action* battle_shout_taunt(PlayerbotAI* ai) { return new CastBattleShoutTauntAction(ai); }
             static Action* thunder_clap(PlayerbotAI* ai) { return new CastThunderClapAction(ai); }
             static Action* shield_bash_on_enemy_healer(PlayerbotAI* ai) { return new CastShieldBashOnEnemyHealerAction(ai); }
-
+            static Action* update_pve_strats(PlayerbotAI* ai) { return new UpdateWarriorPveStrategiesAction(ai); }
+            static Action* update_pvp_strats(PlayerbotAI* ai) { return new UpdateWarriorPvpStrategiesAction(ai); }
+            static Action* update_raid_strats(PlayerbotAI* ai) { return new UpdateWarriorRaidStrategiesAction(ai); }
         };
     };
 };
@@ -304,7 +403,11 @@ namespace ai
 WarriorAiObjectContext::WarriorAiObjectContext(PlayerbotAI* ai) : AiObjectContext(ai)
 {
     strategyContexts.Add(new ai::warrior::StrategyFactoryInternal());
-    strategyContexts.Add(new ai::warrior::CombatStrategyFactoryInternal());
+    strategyContexts.Add(new ai::warrior::AoeSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::warrior::ClassStrategyFactoryInternal());
+    strategyContexts.Add(new ai::warrior::ClassSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::warrior::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::warrior::CcSituationStrategyFactoryInternal());
     actionContexts.Add(new ai::warrior::AiObjectContextInternal());
     triggerContexts.Add(new ai::warrior::TriggerFactoryInternal());
 }

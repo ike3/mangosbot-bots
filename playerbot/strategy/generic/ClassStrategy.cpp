@@ -312,7 +312,8 @@ void BuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
-#elif MANGOSBOT_ONE // TBC
+#endif
+#ifdef MANGOSBOT_ONE // TBC
 
 void ClassStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
@@ -618,7 +619,8 @@ void BuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 }
 
-#elif MANGOSBOT_TWO // WOTLK
+#endif
+#ifdef MANGOSBOT_TWO // WOTLK
 
 void ClassStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
