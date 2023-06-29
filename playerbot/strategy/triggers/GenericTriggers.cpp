@@ -49,7 +49,27 @@ bool ComboPointsAvailableTrigger::IsActive()
 
 bool LoseAggroTrigger::IsActive()
 {
-    return !AI_VALUE2(bool, "has aggro", "current target");
+    if(!AI_VALUE2(bool, "has aggro", "current target"))
+    {
+        // Check if the aggro has been taken by another tank
+        if(ai->IsTank(bot))
+        {
+            Unit* target = AI_VALUE(Unit*, "current target");
+            if(target && !target->IsPlayer())
+            {
+                Unit* targetsTarget = target->GetVictim();
+                if(targetsTarget && targetsTarget->IsPlayer())
+                {
+                    Player* targetsPlayerTarget = (Player*)targetsTarget;
+                    return !ai->IsTank(targetsPlayerTarget);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 bool HasAggroTrigger::IsActive()
