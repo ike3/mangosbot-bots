@@ -17,6 +17,7 @@ public:
         creators["heroic throw on snare target"] = &heroic_throw_on_snare_target;
         creators["heroic throw taunt"] = &heroic_throw_taunt;
         creators["taunt"] = &taunt;
+        creators["berserker rage fear"] = &berserker_rage_fear;
     }
 
 private:
@@ -35,6 +36,8 @@ private:
     ACTION_NODE_A(heroic_throw_taunt, "heroic throw", "taunt");
 
     ACTION_NODE_A(taunt, "taunt", "battle shout taunt");
+
+    ACTION_NODE_A(berserker_rage_fear, "berserker rage", "death wish");
 };
 
 ProtectionWarriorStrategy::ProtectionWarriorStrategy(PlayerbotAI* ai) : WarriorStrategy(ai)
@@ -270,6 +273,10 @@ void ProtectionWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& 
     triggers.push_back(new TriggerNode(
         "defensive stance",
         NextAction::array(0, new NextAction("defensive stance", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "feared",
+        NextAction::array(0, new NextAction("berserker rage fear", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "very often",

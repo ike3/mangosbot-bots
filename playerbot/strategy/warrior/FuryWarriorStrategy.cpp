@@ -212,16 +212,16 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
         NextAction::array(0, new NextAction("berserker stance", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "death wish",
-        NextAction::array(0, new NextAction("death wish", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "feared",
-        NextAction::array(0, new NextAction("berserker rage fear", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("berserker rage fear", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "stunned",
-        NextAction::array(0, new NextAction("berserker rage", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("berserker rage", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "death wish",
+        NextAction::array(0, new NextAction("death wish", ACTION_HIGH), NULL)));
 }
 
 void FuryWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -506,16 +506,16 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
         NextAction::array(0, new NextAction("berserker stance", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "rampage",
-        NextAction::array(0, new NextAction("rampage", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "feared",
-        NextAction::array(0, new NextAction("berserker rage fear", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("berserker rage fear", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "stunned",
-        NextAction::array(0, new NextAction("berserker rage", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("berserker rage", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "rampage",
+        NextAction::array(0, new NextAction("rampage", ACTION_HIGH), NULL)));
 }
 
 void FuryWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -804,12 +804,12 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
         NextAction::array(0, new NextAction("berserker stance", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "death wish",
-        NextAction::array(0, new NextAction("death wish", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "feared",
         NextAction::array(0, new NextAction("berserker rage fear", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "death wish",
+        NextAction::array(0, new NextAction("death wish", ACTION_HIGH), NULL)));
 }
 
 void FuryWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
