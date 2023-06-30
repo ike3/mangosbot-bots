@@ -921,7 +921,7 @@ namespace ai
     public:
         RootedTrigger(PlayerbotAI* ai) : Trigger(ai, "rooted") {}
 
-        virtual bool IsActive()
+        bool IsActive() override
         {
             return bot->HasAuraType(SPELL_AURA_MOD_ROOT) ||
                    bot->HasAuraType(SPELL_AURA_MOD_DECREASE_SPEED);
@@ -933,9 +933,42 @@ namespace ai
     public:
         PartyMemberRootedTrigger(PlayerbotAI* ai) : Trigger(ai, "party member rooted") {}
 
-        virtual bool IsActive()
+        bool IsActive() override
         {
             return AI_VALUE(Unit*, "party member to remove roots");
+        }
+    };
+
+    class FearedTrigger : public Trigger
+    {
+    public:
+        FearedTrigger(PlayerbotAI* ai) : Trigger(ai, "feared") {}
+
+        bool IsActive() override
+        {
+            return bot->HasAuraType(SPELL_AURA_MOD_FEAR);
+        }
+    };
+
+    class StunnedTrigger : public Trigger
+    {
+    public:
+        StunnedTrigger(PlayerbotAI* ai) : Trigger(ai, "stunned") {}
+
+        bool IsActive() override
+        {
+            return bot->HasAuraType(SPELL_AURA_MOD_STUN);
+        }
+    };
+
+    class CharmedTrigger : public Trigger
+    {
+    public:
+        CharmedTrigger(PlayerbotAI* ai) : Trigger(ai, "charmed") {}
+
+        bool IsActive() override
+        {
+            return bot->HasAuraType(SPELL_AURA_MOD_CHARM);
         }
     };
 

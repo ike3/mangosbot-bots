@@ -168,6 +168,11 @@ namespace ai
             creators["has greater blessing of salvation"] = &TriggerContext::has_greater_blessing_of_salvation;
 
             creators["mounted"] = &TriggerContext::mounted;
+            creators["rooted"] = &TriggerContext::rooted;
+            creators["party member rooted"] = &TriggerContext::party_member_rooted;
+            creators["feared"] = &TriggerContext::feared;
+            creators["charmed"] = &TriggerContext::charmed;
+            creators["stunned"] = &TriggerContext::stunned;
 
             // move to/enter dark portal if near
             creators["near dark portal"] = &TriggerContext::near_dark_portal;
@@ -225,8 +230,6 @@ namespace ai
             creators["blood fury"] = &TriggerContext::blood_fury;
             creators["cannibalize"] = &TriggerContext::cannibalize;
             creators["will of the forsaken"] = &TriggerContext::will_of_the_forsaken;
-            creators["rooted"] = &TriggerContext::rooted;
-            creators["party member rooted"] = &TriggerContext::party_member_rooted;
             creators["stoneform"] = &TriggerContext::stoneform;
             creators["shadowmeld"] = &TriggerContext::shadowmeld;
             creators["mana tap"] = &TriggerContext::mana_tap;
@@ -262,6 +265,9 @@ namespace ai
         static Trigger* cannibalize(PlayerbotAI* ai) { return new CannibalizeTrigger(ai); }
         static Trigger* will_of_the_forsaken(PlayerbotAI* ai) { return new WOtFTrigger(ai); }
         static Trigger* rooted(PlayerbotAI* ai) { return new RootedTrigger(ai); }
+        static Trigger* feared(PlayerbotAI* ai) { return new FearedTrigger(ai); }
+        static Trigger* stunned(PlayerbotAI* ai) { return new StunnedTrigger(ai); }
+        static Trigger* charmed(PlayerbotAI* ai) { return new CharmedTrigger(ai); }
         static Trigger* party_member_rooted(PlayerbotAI* ai) { return new PartyMemberRootedTrigger(ai); }
         static Trigger* stoneform(PlayerbotAI* ai) { return new StoneformTrigger(ai); }
         static Trigger* shadowmeld(PlayerbotAI* ai) { return new ShadowmeldTrigger(ai); }
