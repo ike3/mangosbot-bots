@@ -2,6 +2,7 @@
 #include "../Trigger.h"
 #include "../../PlayerbotAIConfig.h"
 #include "ServerFacade.h"
+#include "SpellAuraDefines.h"
 
 namespace ai
 {
@@ -123,7 +124,24 @@ namespace ai
 	{
     public:
         InterruptSpellTrigger(PlayerbotAI* ai, string spell) : SpellTrigger(ai, spell) {}
+        virtual string GetTargetName() { return "current target"; }
         virtual bool IsActive();
+    };
+
+    class TargetOfCastedAuraTypeTrigger : public Trigger
+    {
+    public:
+        TargetOfCastedAuraTypeTrigger(PlayerbotAI* ai, string name, AuraType auraType, int checkInterval = 1) : Trigger(ai, name, checkInterval), auraType(auraType) {}
+        virtual bool IsActive() override;
+
+    private:
+        AuraType auraType;
+    };
+
+    class TargetOfFearCastTrigger : public TargetOfCastedAuraTypeTrigger
+    {
+    public:
+        TargetOfFearCastTrigger(PlayerbotAI* ai, string name = "target of fear cast") : TargetOfCastedAuraTypeTrigger(ai, name, AuraType::SPELL_AURA_MOD_FEAR) {}
     };
 
     class DeflectSpellTrigger : public SpellTrigger

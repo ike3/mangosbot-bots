@@ -821,3 +821,64 @@ bool GreaterBuffOnPartyTrigger::IsActive()
     Unit* target = GetTarget();
     return target && bot->IsInGroup(target) && BuffOnPartyTrigger::IsActive() && !ai->HasAura(lowerSpell, target, false, checkIsOwner);
 }
+
+bool TargetOfCastedAuraTypeTrigger::IsActive()
+{
+    const list<ObjectGuid>& attackers = AI_VALUE(list<ObjectGuid>, "attackers");
+    for (const ObjectGuid& attackerGuid : attackers)
+    {
+        // Check against the given creature id
+        Unit* attacker = ai->GetUnit(attackerGuid);
+        if (attacker)
+        {
+            const Spell* auraTypeSpell = nullptr;
+            const Spell* genericSpell = attacker->GetCurrentSpell(CurrentSpellTypes::CURRENT_GENERIC_SPELL);
+            if (genericSpell)
+            {
+                const SpellEntry* spellInfo = genericSpell->m_spellInfo;
+                if (spellInfo)
+                {
+                    for (int32 i = SpellEffectIndex::EFFECT_INDEX_0; i <= SpellEffectIndex::EFFECT_INDEX_2; i++)
+                    {
+                        if ((spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA) && (spellInfo->EffectApplyAuraName[i] == auraType))
+                        {
+                            auraTypeSpell = genericSpell;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!auraTypeSpell)
+            {
+                const Spell* channeledSpell = attacker->GetCurrentSpell(CurrentSpellTypes::CURRENT_CHANNELED_SPELL);
+                if (channeledSpell)
+                {
+                    const SpellEntry* spellInfo = channeledSpell->m_spellInfo;
+                    if (spellInfo)
+                    {
+                        for (int32 i = SpellEffectIndex::EFFECT_INDEX_0; i <= SpellEffectIndex::EFFECT_INDEX_2; i++)
+                        {
+                            if ((spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA) && (spellInfo->EffectApplyAuraName[i] == auraType))
+                            {
+                                auraTypeSpell = channeledSpell;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (auraTypeSpell)
+            {
+                Unit* spellTarget = auraTypeSpell->m_targets.getUnitTarget();
+                if (spellTarget == bot)
+                {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}

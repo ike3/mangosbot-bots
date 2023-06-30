@@ -166,6 +166,7 @@ namespace ai
             creators["use trinket"] = &TriggerContext::use_trinket;
             creators["has blessing of salvation"] = &TriggerContext::has_blessing_of_salvation;
             creators["has greater blessing of salvation"] = &TriggerContext::has_greater_blessing_of_salvation;
+            creators["target of fear cast"] = &TriggerContext::target_of_fear_cast;
 
             creators["mounted"] = &TriggerContext::mounted;
             creators["rooted"] = &TriggerContext::rooted;
@@ -414,6 +415,7 @@ namespace ai
         static Trigger* in_raid_fight(PlayerbotAI* ai) { return new InRaidFightTrigger(ai); }
         static Trigger* has_blessing_of_salvation(PlayerbotAI* ai) { return new HasBlessingOfSalvationTrigger(ai); }
         static Trigger* has_greater_blessing_of_salvation(PlayerbotAI* ai) { return new HasGreaterBlessingOfSalvationTrigger(ai); }
+        static Trigger* target_of_fear_cast(PlayerbotAI* ai) { return new TargetOfFearCastTrigger(ai); }
 
         static Trigger* petition_signed(PlayerbotAI* ai) { return new PetitionTurnInTrigger(ai); }
         static Trigger* buy_tabard(PlayerbotAI* ai) { return new BuyTabardTrigger(ai); }        
