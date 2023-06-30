@@ -936,28 +936,28 @@ void SpecPlaceholderStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 {
     triggers.push_back(new TriggerNode(
         "in pve",
-        NextAction::array(0, new NextAction("update pve strats", 100.0f), NULL)));
+        NextAction::array(0, new NextAction("update pve strats", ACTION_PASSTROUGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "in pvp",
-        NextAction::array(0, new NextAction("update pvp strats", 100.0f), NULL)));
+        NextAction::array(0, new NextAction("update pvp strats", ACTION_PASSTROUGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "in raid fight",
-        NextAction::array(0, new NextAction("update raid strats", 100.0f), NULL)));
+        NextAction::array(0, new NextAction("update raid strats", ACTION_PASSTROUGH), NULL)));
 }
 
 void SpecPlaceholderStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "in pve",
-        NextAction::array(0, new NextAction("update pve strats", 100.0f), NULL)));
+        NextAction::array(0, new NextAction("update pve strats", ACTION_PASSTROUGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "in pvp",
-        NextAction::array(0, new NextAction("update pvp strats", 100.0f), NULL)));
+        NextAction::array(0, new NextAction("update pvp strats", ACTION_PASSTROUGH), NULL)));
 
     triggers.push_back(new TriggerNode(
         "in raid fight",
-        NextAction::array(0, new NextAction("update raid strats", 100.0f), NULL)));
+        NextAction::array(0, new NextAction("update raid strats", ACTION_PASSTROUGH), NULL)));
 }
