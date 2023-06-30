@@ -7,7 +7,7 @@ name: CMaNGOS TBC Ubuntu Build
 on:
   schedule:
     # every day at 6am
-    - cron:  '20 * * *'
+    - cron:  '20 6 * * *'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
