@@ -759,7 +759,11 @@ void WarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("bloodrage", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "berserker rage",
+        "feared",
+        NextAction::array(0, new NextAction("berserker rage fear", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "stunned",
         NextAction::array(0, new NextAction("berserker rage", ACTION_HIGH), NULL)));
 }
 

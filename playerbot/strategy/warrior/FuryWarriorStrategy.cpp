@@ -10,23 +10,17 @@ public:
     FuryWarriorStrategyActionNodeFactory()
     {
         creators["charge"] = &charge;
-        creators["intercept"] = &intercept;
-        creators["death wish"] = &death_wish;
+        creators["berserker rage fear"] = &berserker_rage_fear;
         creators["piercing howl"] = &piercing_howl;
-        creators["bloodthirst"] = &bloodthirst;
         creators["pummel"] = &pummel;
     }
 
 private:
     ACTION_NODE_A(charge, "charge", "intercept");
 
-    ACTION_NODE_A(intercept, "intercept", "reach melee");
-
     ACTION_NODE_A(piercing_howl, "piercing howl", "hamstring");
 
-    ACTION_NODE_A(death_wish, "death wish", "berserker rage");
-
-    ACTION_NODE_A(bloodthirst, "bloodthirst", "melee");
+    ACTION_NODE_A(berserker_rage_fear, "berserker rage", "death wish");
 
     ACTION_NODE_A(pummel, "pummel", "intercept");
 };
@@ -222,7 +216,11 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
         NextAction::array(0, new NextAction("death wish", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "berserker rage",
+        "feared",
+        NextAction::array(0, new NextAction("berserker rage fear", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "stunned",
         NextAction::array(0, new NextAction("berserker rage", ACTION_HIGH), NULL)));
 }
 
@@ -512,8 +510,12 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
         NextAction::array(0, new NextAction("rampage", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "berserker rage",
-        NextAction::array(0, new NextAction("berserker rage", ACTION_HIGH + 1), NULL)));
+        "feared",
+        NextAction::array(0, new NextAction("berserker rage fear", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "stunned",
+        NextAction::array(0, new NextAction("berserker rage", ACTION_HIGH), NULL)));
 }
 
 void FuryWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -804,6 +806,10 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
     triggers.push_back(new TriggerNode(
         "death wish",
         NextAction::array(0, new NextAction("death wish", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "feared",
+        NextAction::array(0, new NextAction("berserker rage fear", ACTION_HIGH), NULL)));
 }
 
 void FuryWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
