@@ -168,7 +168,7 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     AoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -180,7 +180,7 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 2), NULL)));
 }
 
@@ -415,7 +415,7 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     AoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -427,7 +427,7 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH), NULL)));
 }
 
@@ -658,7 +658,7 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     AoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -670,7 +670,7 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH ), NULL)));
 }
 

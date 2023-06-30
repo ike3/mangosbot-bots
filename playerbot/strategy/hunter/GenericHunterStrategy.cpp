@@ -100,11 +100,11 @@ void GenericHunterStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers
     */
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "ranged light aoe",
         NextAction::array(0, new NextAction("frost trap", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "ranged light aoe",
         NextAction::array(0, new NextAction("explosive trap", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(

@@ -18,6 +18,7 @@ namespace ai
         AoeCountValue(PlayerbotAI* ai) : CalculatedValue<uint8>(ai, "aoe count") {}
 
 	public:
+        static list<ObjectGuid> FindMaxDensity(Player* bot, float range = 100.0f);
         virtual uint8 Calculate();
     };
 

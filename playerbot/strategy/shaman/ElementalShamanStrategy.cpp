@@ -146,7 +146,7 @@ void ElementalShamanAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
     ShamanAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "ranged light aoe",
         NextAction::array(0, new NextAction("chain lightning", ACTION_HIGH), NULL)));
 }
 
@@ -478,7 +478,7 @@ void ElementalShamanAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
     ShamanAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "ranged light aoe",
         NextAction::array(0, new NextAction("chain lightning", ACTION_HIGH), NULL)));
 }
 
@@ -810,7 +810,7 @@ void ElementalShamanAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
     ShamanAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "ranged light aoe",
         NextAction::array(0, new NextAction("chain lightning", ACTION_HIGH), NULL)));
 }
 

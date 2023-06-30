@@ -217,12 +217,16 @@ void ProtectionWarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& t
     WarriorAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("challenging shout", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("battle shout taunt", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "melee light aoe",
+        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH), NULL)));
 }
 
 void ProtectionWarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -277,10 +281,6 @@ void ProtectionWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& 
     triggers.push_back(new TriggerNode(
         "feared",
         NextAction::array(0, new NextAction("berserker rage fear", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH + 1), NULL)));
 }
 
 void ProtectionWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -563,12 +563,16 @@ void ProtectionWarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& t
     WarriorAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("challenging shout", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("battle shout taunt", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "melee light aoe",
+        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH), NULL)));
 }
 
 void ProtectionWarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -619,10 +623,6 @@ void ProtectionWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& 
     triggers.push_back(new TriggerNode(
         "defensive stance",
         NextAction::array(0, new NextAction("defensive stance", ACTION_MOVE), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "commanding shout",
@@ -905,12 +905,16 @@ void ProtectionWarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& t
     WarriorAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("challenging shout", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("battle shout taunt", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "melee light aoe",
+        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH), NULL)));
 }
 
 void ProtectionWarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -961,10 +965,6 @@ void ProtectionWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& 
     triggers.push_back(new TriggerNode(
         "defensive stance",
         NextAction::array(0, new NextAction("defensive stance", ACTION_MOVE), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "commanding shout",

@@ -173,7 +173,7 @@ void WarlockAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("corruption on attacker", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "ranged medium aoe",
         NextAction::array(0, new NextAction("rain of fire", ACTION_HIGH), NULL)));
 }
 
@@ -570,7 +570,7 @@ void WarlockAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("corruption on attacker", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "ranged medium aoe",
         NextAction::array(0, new NextAction("rain of fire", ACTION_HIGH), NULL)));
 }
 
@@ -967,7 +967,7 @@ void WarlockAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("corruption on attacker", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "ranged medium aoe",
         NextAction::array(0, new NextAction("rain of fire", ACTION_HIGH), NULL)));
 }
 

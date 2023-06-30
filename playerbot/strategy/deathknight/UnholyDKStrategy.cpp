@@ -78,7 +78,7 @@ void UnholyDKAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 		NextAction::array(0, new NextAction("corpse explosion", ACTION_NORMAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("death and decay", ACTION_NORMAL + 3),
 			new NextAction("corpse explosion", ACTION_NORMAL + 3), NULL)));
 }

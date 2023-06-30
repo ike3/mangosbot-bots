@@ -6,45 +6,57 @@
 #include "../../ServerFacade.h"
 using namespace ai;
 
-list<ObjectGuid> FindMaxDensity(Player* bot)
+list<ObjectGuid> AoeCountValue::FindMaxDensity(Player* bot, float range)
 {
-    list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid>>("possible attack targets");
-    map<ObjectGuid, list<ObjectGuid> > groups;
     int maxCount = 0;
     ObjectGuid maxGroup;
-    for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
+    map<ObjectGuid, list<ObjectGuid> > groups;
+    if (bot)
     {
-        Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
-        if (!unit)
-            continue;
-
-        for (list<ObjectGuid>::iterator j = units.begin(); j != units.end(); ++j)
+        list<ObjectGuid> units = *bot->GetPlayerbotAI()->GetAiObjectContext()->GetValue<list<ObjectGuid>>("attackers");
+        
+        for (list<ObjectGuid>::iterator i = units.begin(); i != units.end(); ++i)
         {
-            Unit* other = bot->GetPlayerbotAI()->GetUnit(*j);
-            if (!other)
-                continue;
+            Unit* unit = bot->GetPlayerbotAI()->GetUnit(*i);
+            if (unit)
+            {
+                float distanceToPlayer = sServerFacade.GetDistance2d(unit, bot);
+                if (sServerFacade.IsDistanceLessOrEqualThan(distanceToPlayer, range))
+                {
+                    for (list<ObjectGuid>::iterator j = units.begin(); j != units.end(); ++j)
+                    {
+                        Unit* other = bot->GetPlayerbotAI()->GetUnit(*j);
+                        if (other)
+                        {
+                            float d = sServerFacade.GetDistance2d(unit, other);
+                            if (sServerFacade.IsDistanceLessOrEqualThan(d, sPlayerbotAIConfig.aoeRadius * 2.0f))
+                            {
+                                groups[*i].push_back(*j);
+                            }
+                        }
+                    }
 
-            float d = sServerFacade.GetDistance2d(unit, other);
-            if (sServerFacade.IsDistanceLessOrEqualThan(d, sPlayerbotAIConfig.aoeRadius * 2))
-                groups[*i].push_back(*j);
-        }
-
-        if (maxCount < groups[*i].size())
-        {
-            maxCount = groups[*i].size();
-            maxGroup = *i;
+                    if (maxCount < groups[*i].size())
+                    {
+                        maxCount = groups[*i].size();
+                        maxGroup = *i;
+                    }
+                }
+            }
         }
     }
 
     if (!maxCount)
+    {
         return list<ObjectGuid>();
+    }
 
     return groups[maxGroup];
 }
 
 WorldLocation AoePositionValue::Calculate()
 {
-    list<ObjectGuid> group = FindMaxDensity(bot);
+    list<ObjectGuid> group = AoeCountValue::FindMaxDensity(bot);
     if (group.empty())
         return WorldLocation();
 

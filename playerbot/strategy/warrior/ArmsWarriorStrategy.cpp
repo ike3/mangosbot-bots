@@ -168,8 +168,12 @@ void ArmsWarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
     WarriorAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("sweeping strikes", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "melee light aoe",
+        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH), NULL)));
 }
 
 void ArmsWarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -733,12 +737,16 @@ void ArmsWarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
     WarriorAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("bladestorm", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("sweeping strikes", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "melee light aoe",
+        NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH), NULL)));
 }
 
 void ArmsWarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

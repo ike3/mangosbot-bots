@@ -150,7 +150,7 @@ void CasterDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 void CasterDruidAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
 	triggers.push_back(new TriggerNode(
-		"high aoe",
+		"ranged high aoe",
 		NextAction::array(0, new NextAction("starfall", ACTION_HIGH + 1), NULL)));
 }
 

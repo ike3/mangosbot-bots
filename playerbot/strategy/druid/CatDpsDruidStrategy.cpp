@@ -191,6 +191,6 @@ void CatDpsDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 void CatAoeDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("swipe (cat)", ACTION_HIGH + 2), NULL)));
 }

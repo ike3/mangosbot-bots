@@ -11,7 +11,7 @@ void RacialsStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &triggers)
 		NextAction::array(0, new NextAction("gift of the naaru", 71.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("war stomp", 71.0f), NULL)));
 
     triggers.push_back(new TriggerNode(

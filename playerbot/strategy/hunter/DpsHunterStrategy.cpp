@@ -116,7 +116,7 @@ void DpsHunterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 void DpsAoeHunterStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "ranged light aoe",
         NextAction::array(0, new NextAction("multi shot", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -124,7 +124,7 @@ void DpsAoeHunterStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("multi shot", ACTION_HIGH), NULL)));
 
 	triggers.push_back(new TriggerNode(
-		"medium aoe",
+		"ranged medium aoe",
 		NextAction::array(0, new NextAction("volley", 10.0f), NULL)));
 
 	triggers.push_back(new TriggerNode(

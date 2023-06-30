@@ -162,11 +162,11 @@ void BearTankDruidStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers
         NextAction::array(0, new NextAction("growl", ACTION_HIGH + 8), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium aoe",
+        "melee medium aoe",
         NextAction::array(0, new NextAction("demoralizing roar", ACTION_HIGH + 6), new NextAction("swipe (bear)", ACTION_HIGH + 6), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("swipe (bear)", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(

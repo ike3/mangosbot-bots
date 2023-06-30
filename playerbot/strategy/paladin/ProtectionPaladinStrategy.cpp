@@ -172,11 +172,11 @@ void ProtectionPaladinAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& t
     PaladinAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("consecration", ACTION_HIGH + 1), NULL)));
 }
 
@@ -612,11 +612,11 @@ void ProtectionPaladinAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& t
     PaladinAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("consecration", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -1052,16 +1052,16 @@ void ProtectionPaladinAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& t
     PaladinAoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("oil of immolation", ACTION_HIGH + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("hammer of the righteous", ACTION_HIGH + 3),
                              new NextAction("avenger's shield", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee light aoe",
         NextAction::array(0, new NextAction("consecration", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(

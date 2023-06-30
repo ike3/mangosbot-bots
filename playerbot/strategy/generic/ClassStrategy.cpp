@@ -147,11 +147,11 @@ void ClassRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 void AoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee very high aoe",
         NextAction::array(0, new NextAction("goblin sapper", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "ranged medium aoe",
         NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
 }
 
@@ -454,11 +454,11 @@ void ClassRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 void AoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee very high aoe",
         NextAction::array(0, new NextAction("goblin sapper", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "ranged medium aoe",
         NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
 }
 
@@ -765,11 +765,11 @@ void ClassRaidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 void AoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "melee very high aoe",
         NextAction::array(0, new NextAction("goblin sapper", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "light aoe",
+        "ranged medium aoe",
         NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
 }
 

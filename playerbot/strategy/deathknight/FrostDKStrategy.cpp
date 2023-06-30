@@ -85,6 +85,6 @@ void FrostDKStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 void FrostDKAoeStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
 {
 	triggers.push_back(new TriggerNode(
-		"light aoe",
+		"melee light aoe",
 		NextAction::array(0, new NextAction("howling blast", ACTION_NORMAL + 4), NULL)));
 }

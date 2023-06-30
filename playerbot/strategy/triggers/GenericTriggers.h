@@ -223,31 +223,60 @@ namespace ai
     class AoeTrigger : public AttackerCountTrigger
     {
     public:
-        AoeTrigger(PlayerbotAI* ai, int amount = 3, float range = 15.0f) : AttackerCountTrigger(ai, amount), range(range) {}
-
-        virtual bool IsActive();
-        virtual string getName() { return "aoe"; }
+        AoeTrigger(PlayerbotAI* ai, int amount = 3, float range = 40.0f) : AttackerCountTrigger(ai, amount), range(range) {}
+        string getName() override { return "aoe"; }
+        bool IsActive() override;
 
     private:
         float range;
     };
 
-    class LightAoeTrigger : public AoeTrigger
+    class MeleeLightAoeTrigger : public AoeTrigger
     {
     public:
-        LightAoeTrigger(PlayerbotAI* ai) : AoeTrigger(ai, 2, 15.0f) {}
+        MeleeLightAoeTrigger(PlayerbotAI* ai) : AoeTrigger(ai, 2, 5.0f) {}
     };
 
-    class MediumAoeTrigger : public AoeTrigger
+    class MeleeMediumAoeTrigger : public AoeTrigger
     {
     public:
-        MediumAoeTrigger(PlayerbotAI* ai) : AoeTrigger(ai, 3, 17.0f) {}
+        MeleeMediumAoeTrigger(PlayerbotAI* ai) : AoeTrigger(ai, 3, 5.0f) {}
     };
 
-    class HighAoeTrigger : public AoeTrigger
+    class MeleeHighAoeTrigger : public AoeTrigger
     {
     public:
-        HighAoeTrigger(PlayerbotAI* ai) : AoeTrigger(ai, 4, 20.0f) {}
+        MeleeHighAoeTrigger(PlayerbotAI* ai) : AoeTrigger(ai, 6, 5.0f) {}
+    };
+
+    class MeleeVeryHighAoeTrigger : public AoeTrigger
+    {
+    public:
+        MeleeVeryHighAoeTrigger(PlayerbotAI* ai) : AoeTrigger(ai, 10, 5.0f) {}
+    };
+
+    class RangedLightAoeTrigger : public AoeTrigger
+    {
+    public:
+        RangedLightAoeTrigger(PlayerbotAI* ai) : AoeTrigger(ai, 2) {}
+    };
+
+    class RangedMediumAoeTrigger : public AoeTrigger
+    {
+    public:
+        RangedMediumAoeTrigger(PlayerbotAI* ai) : AoeTrigger(ai, 3) {}
+    };
+
+    class RangedHighAoeTrigger : public AoeTrigger
+    {
+    public:
+        RangedHighAoeTrigger(PlayerbotAI* ai) : AoeTrigger(ai, 6) {}
+    };
+
+    class RangedVeryHighAoeTrigger : public AoeTrigger
+    {
+    public:
+        RangedVeryHighAoeTrigger(PlayerbotAI* ai) : AoeTrigger(ai, 10) {}
     };
 
     class BuffTrigger : public SpellTrigger

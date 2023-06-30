@@ -4,6 +4,7 @@
 #include "../../LootObjectStack.h"
 #include "../../PlayerbotAIConfig.h"
 #include "../values/PositionValue.h"
+#include "../values/AoeValues.h"
 
 using namespace ai;
 
@@ -255,7 +256,8 @@ bool NoThreatTrigger::IsActive()
 
 bool AoeTrigger::IsActive()
 {
-    return AI_VALUE2(bool, "combat", "self target") && AI_VALUE(uint8, "aoe count") >= amount;
+    std::list<ObjectGuid> aoeEnemies = AoeCountValue::FindMaxDensity(bot, range);
+    return aoeEnemies.size() >= amount;
 }
 
 bool DebuffTrigger::IsActive()
