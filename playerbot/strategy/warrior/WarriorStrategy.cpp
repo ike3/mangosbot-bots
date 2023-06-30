@@ -235,7 +235,11 @@ void WarriorCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shield bash",
+        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
 }
 
 void WarriorCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -482,7 +486,11 @@ void WarriorCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shield bash",
+        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
 }
 
 void WarriorCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -725,7 +733,11 @@ void WarriorCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shield bash",
+        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
 }
 
 void WarriorCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

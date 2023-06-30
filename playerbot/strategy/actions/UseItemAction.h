@@ -294,10 +294,10 @@ namespace ai
         bool ShouldReactionInterruptMovement() const override { return true; }
     };
 
-    class UseAdamantiteGrenadeAction : public UseTargetedItemIdAction
+    class ThrowGrenadeAction : public UseTargetedItemIdAction
     {
     public:
-        UseAdamantiteGrenadeAction(PlayerbotAI* ai) : UseTargetedItemIdAction(ai, "adamantite grenade") {}
+        ThrowGrenadeAction(PlayerbotAI* ai) : UseTargetedItemIdAction(ai, "throw grenade") {}
 
         virtual string GetTargetName() override { return "current target"; }
 

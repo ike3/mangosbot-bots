@@ -189,7 +189,7 @@ namespace ai
             creators["goblin sapper"] = &ActionContext::goblin_sapper;
             creators["oil of immolation"] = &ActionContext::oil_of_immolation;
             creators["dark rune"] = &ActionContext::dark_rune;
-            creators["adamantite grenade"] = &ActionContext::adamantite_grenade;
+            creators["throw grenade"] = &ActionContext::adamantite_grenade;
             creators["bg banner"] = &ActionContext::bg_banner;
             creators["use bandage"] = &ActionContext::use_bandage;
             creators["rocket boots"] = &ActionContext::rocket_boots;
@@ -437,7 +437,7 @@ namespace ai
         static Action* goblin_sapper(PlayerbotAI* ai) { return new UseGoblinSapperChargeAction(ai); }
         static Action* oil_of_immolation(PlayerbotAI* ai) { return new UseOilOfImmolationAction(ai); }
         static Action* dark_rune(PlayerbotAI* ai) { return new UseDarkRuneAction(ai); }
-        static Action* adamantite_grenade(PlayerbotAI* ai) { return new UseAdamantiteGrenadeAction(ai); }
+        static Action* adamantite_grenade(PlayerbotAI* ai) { return new ThrowGrenadeAction(ai); }
         static Action* bg_banner(PlayerbotAI* ai) { return new UseBgBannerAction(ai); }
         static Action* use_bandage(PlayerbotAI* ai) { return new UseBandageAction(ai); }
         static Action* rocket_boots(PlayerbotAI* ai) { return new UseRocketBootsAction(ai); }

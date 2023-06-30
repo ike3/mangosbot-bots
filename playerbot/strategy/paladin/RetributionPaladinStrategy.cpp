@@ -317,7 +317,7 @@ void RetributionPaladinCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
 }
 
 void RetributionPaladinCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -754,7 +754,7 @@ void RetributionPaladinCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
 }
 
 void RetributionPaladinCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1207,7 +1207,7 @@ void RetributionPaladinCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("adamantite grenade", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
 }
 
 void RetributionPaladinCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
