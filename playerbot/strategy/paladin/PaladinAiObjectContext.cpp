@@ -155,6 +155,7 @@ namespace ai
             {
                 creators["retribution"] = &paladin::ClassStrategyFactoryInternal::retribution;
                 creators["protection"] = &paladin::ClassStrategyFactoryInternal::protection;
+                creators["tank"] = &paladin::ClassStrategyFactoryInternal::protection;
                 creators["holy"] = &paladin::ClassStrategyFactoryInternal::holy;
             }
 

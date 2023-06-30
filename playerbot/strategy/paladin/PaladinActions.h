@@ -724,33 +724,33 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "blessing retribution pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "blessing retribution pve", strategiesRequired);
 
-            strategiesRequired = { "protection" };
+            strategiesRequired = { "protection/tank" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "protection pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "protection pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "protection pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "protection pve", strategiesRequired);
 
-            strategiesRequired = { "protection", "aoe" };
+            strategiesRequired = { "protection/tank", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe protection pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe protection pve", strategiesRequired);
 
-            strategiesRequired = { "protection", "cure" };
+            strategiesRequired = { "protection/tank", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure protection pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure protection pve", strategiesRequired);
 
-            strategiesRequired = { "protection", "buff" };
+            strategiesRequired = { "protection/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff protection pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff protection pve", strategiesRequired);
 
-            strategiesRequired = { "protection", "cc" };
+            strategiesRequired = { "protection/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc protection pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc protection pve", strategiesRequired);
 
-            strategiesRequired = { "protection", "aura" };
+            strategiesRequired = { "protection/tank", "aura" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aura protection pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aura protection pve", strategiesRequired);
 
-            strategiesRequired = { "protection", "blessing" };
+            strategiesRequired = { "protection/tank", "blessing" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "blessing protection pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "blessing protection pve", strategiesRequired);
         }
@@ -821,33 +821,33 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "blessing retribution pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "blessing retribution pvp", strategiesRequired);
 
-            strategiesRequired = { "protection" };
+            strategiesRequired = { "protection/tank" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "protection pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "protection pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "protection pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "protection pvp", strategiesRequired);
 
-            strategiesRequired = { "protection", "aoe" };
+            strategiesRequired = { "protection/tank", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe protection pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe protection pvp", strategiesRequired);
 
-            strategiesRequired = { "protection", "cure" };
+            strategiesRequired = { "protection/tank", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure protection pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure protection pvp", strategiesRequired);
 
-            strategiesRequired = { "protection", "buff" };
+            strategiesRequired = { "protection/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff protection pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff protection pvp", strategiesRequired);
 
-            strategiesRequired = { "protection", "cc" };
+            strategiesRequired = { "protection/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc protection pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc protection pvp", strategiesRequired);
 
-            strategiesRequired = { "protection", "aura" };
+            strategiesRequired = { "protection/tank", "aura" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aura protection pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aura protection pvp", strategiesRequired);
 
-            strategiesRequired = { "protection", "blessing" };
+            strategiesRequired = { "protection/tank", "blessing" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "blessing protection pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "blessing protection pvp", strategiesRequired);
         }
@@ -918,33 +918,33 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "blessing retribution raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "blessing retribution raid", strategiesRequired);
 
-            strategiesRequired = { "protection" };
+            strategiesRequired = { "protection/tank" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "protection raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "protection raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "protection raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "protection raid", strategiesRequired);
 
-            strategiesRequired = { "protection", "aoe" };
+            strategiesRequired = { "protection/tank", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe protection raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe protection raid", strategiesRequired);
 
-            strategiesRequired = { "protection", "cure" };
+            strategiesRequired = { "protection/tank", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure protection raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure protection raid", strategiesRequired);
 
-            strategiesRequired = { "protection", "buff" };
+            strategiesRequired = { "protection/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff protection raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff protection raid", strategiesRequired);
 
-            strategiesRequired = { "protection", "cc" };
+            strategiesRequired = { "protection/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc protection raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc protection raid", strategiesRequired);
 
-            strategiesRequired = { "protection", "aura" };
+            strategiesRequired = { "protection/tank", "aura" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aura protection raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aura protection raid", strategiesRequired);
 
-            strategiesRequired = { "protection", "blessing" };
+            strategiesRequired = { "protection/tank", "blessing" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "blessing protection raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "blessing protection raid", strategiesRequired);
         }

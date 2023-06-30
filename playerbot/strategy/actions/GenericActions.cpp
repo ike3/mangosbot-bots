@@ -49,9 +49,32 @@ bool UpdateStrategyDependenciesAction::isUseful()
         {
             // Ignore if the strategies required are not found
             bool requiredStrategyMissing = false;
-            for (const std::string strategyRequired : strategy.strategiesRequired)
+            for (const std::string& strategyRequired : strategy.strategiesRequired)
             {
-                if (!ai->HasStrategy(strategyRequired, strategy.state))
+                // Check if the strategy required has any aliases
+                std::vector<std::string> strategyRequiredAliases = { strategyRequired };
+                if (strategyRequired.find("/") != std::string::npos)
+                {
+                    strategyRequiredAliases.clear();
+                    std::string alias;
+                    std::stringstream ss(strategyRequired);
+                    while (std::getline(ss, alias, '/'))
+                    {
+                        strategyRequiredAliases.push_back(alias);
+                    }
+                }
+
+                bool synonymFound = false;
+                for (const std::string& strategyRequiredAlias : strategyRequiredAliases)
+                {
+                    if (ai->HasStrategy(strategyRequiredAlias, strategy.state))
+                    {
+                        synonymFound = true;
+                        break;
+                    }
+                }
+
+                if (!synonymFound)
                 {
                     requiredStrategyMissing = true;
                     break;

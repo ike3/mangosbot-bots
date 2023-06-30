@@ -121,6 +121,7 @@ namespace ai
             {
                 creators["fury"] = &warrior::ClassStrategyFactoryInternal::fury;
                 creators["protection"] = &warrior::ClassStrategyFactoryInternal::protection;
+                creators["tank"] = &warrior::ClassStrategyFactoryInternal::protection;
                 creators["arms"] = &warrior::ClassStrategyFactoryInternal::arms;
             }
 
