@@ -41,11 +41,15 @@ float GetAngle(const float x1, const float y1, const float x2, const float y2)
     return ang;
 }
 
+bool SeeSpellAction::isUseful()
+{
+    return ai->GetMaster() && ai->HasStrategy("rtsc", ai->GetState());
+}
+
 bool SeeSpellAction::Execute(Event& event)
 {
-    WorldPacket p(event.getPacket()); // 
+    WorldPacket p(event.getPacket());
     uint32 spellId;
-    Player* master = ai->GetMaster();
 
     p.rpos(0);
 #ifndef MANGOSBOT_TWO
@@ -63,12 +67,6 @@ bool SeeSpellAction::Execute(Event& event)
     p >> cast_flags;
 #endif
 
-    if (!master)
-        return false;
-
-    if (!ai->HasStrategy("rtsc", ai->GetState()))
-        return false;
-
     if (spellId != RTSC_MOVE_SPELL)
         return false;
 
@@ -78,6 +76,7 @@ bool SeeSpellAction::Execute(Event& event)
 
     p >> targets.ReadForCaster(ai->GetMaster());
 
+    Player* master = ai->GetMaster();
     WorldPosition spellPosition(master->GetMapId(), targets.m_destPos);
     SET_AI_VALUE(WorldPosition, "see spell location", spellPosition);
 
@@ -115,7 +114,6 @@ bool SeeSpellAction::Execute(Event& event)
 
         ai->TellPlayer(GetMaster(), out);
     }
-
 
     bool selected = AI_VALUE(bool, "RTSC selected");
     bool inRange = spellPosition.distance(bot) <= 10;
@@ -234,4 +232,3 @@ void SeeSpellAction::SetFormationOffset(WorldPosition& spellPosition)
         spellPosition += formationLocation;
     }
 }
-
