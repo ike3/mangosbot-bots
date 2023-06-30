@@ -209,15 +209,15 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 
     triggers.push_back(new TriggerNode(
         "berserker stance",
-        NextAction::array(0, new NextAction("berserker stance", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("berserker stance", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "feared",
-        NextAction::array(0, new NextAction("berserker rage fear", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("berserker rage fear", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "stunned",
-        NextAction::array(0, new NextAction("berserker rage", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("berserker rage", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "death wish",
@@ -503,15 +503,15 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 
     triggers.push_back(new TriggerNode(
         "berserker stance",
-        NextAction::array(0, new NextAction("berserker stance", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("berserker stance", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "feared",
-        NextAction::array(0, new NextAction("berserker rage fear", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("berserker rage fear", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "stunned",
-        NextAction::array(0, new NextAction("berserker rage", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("berserker rage", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "rampage",
@@ -801,11 +801,11 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 
     triggers.push_back(new TriggerNode(
         "berserker stance",
-        NextAction::array(0, new NextAction("berserker stance", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("berserker stance", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "feared",
-        NextAction::array(0, new NextAction("berserker rage fear", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("berserker rage fear", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "death wish",

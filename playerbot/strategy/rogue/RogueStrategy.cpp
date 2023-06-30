@@ -86,20 +86,8 @@ void RogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
                              new NextAction("feint", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "kick on enemy healer",
-        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "kick",
-        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "sprint",
         NextAction::array(0, new NextAction("sprint", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "medium health",
-        NextAction::array(0, new NextAction("gouge", ACTION_HIGH), NULL)));
 }
 
 void RogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -286,8 +274,20 @@ void RogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     CcStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "kick on enemy healer",
+        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "kick",
+        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "sap",
-        NextAction::array(0, new NextAction("sap", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("sap", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium health",
+        NextAction::array(0, new NextAction("gouge", ACTION_INTERRUPT), NULL)));
 }
 
 void RogueCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -482,20 +482,8 @@ void RogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
                              new NextAction("feint", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "kick on enemy healer",
-        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "kick",
-        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "sprint",
         NextAction::array(0, new NextAction("sprint", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "medium health",
-        NextAction::array(0, new NextAction("gouge", ACTION_HIGH), NULL)));
 }
 
 void RogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -678,8 +666,20 @@ void RogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     CcStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "kick on enemy healer",
+        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "kick",
+        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "sap",
-        NextAction::array(0, new NextAction("sap", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("sap", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium health",
+        NextAction::array(0, new NextAction("gouge", ACTION_INTERRUPT), NULL)));
 }
 
 void RogueCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -874,20 +874,8 @@ void RogueStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("cloak of shadows", ACTION_INTERRUPT + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "kick on enemy healer",
-        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "kick",
-        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "sprint",
         NextAction::array(0, new NextAction("sprint", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "medium health",
-        NextAction::array(0, new NextAction("gouge", ACTION_HIGH), NULL)));
 }
 
 void RogueStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1070,8 +1058,20 @@ void RogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     CcStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "kick on enemy healer",
+        NextAction::array(0, new NextAction("kick on enemy healer", ACTION_INTERRUPT + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "kick",
+        NextAction::array(0, new NextAction("kick", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "sap",
-        NextAction::array(0, new NextAction("sap", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("sap", ACTION_INTERRUPT + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "medium health",
+        NextAction::array(0, new NextAction("gouge", ACTION_INTERRUPT), NULL)));
 }
 
 void RogueCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

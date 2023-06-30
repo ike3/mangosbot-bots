@@ -219,7 +219,7 @@ void ArmsWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 
     triggers.push_back(new TriggerNode(
         "battle stance",
-        NextAction::array(0, new NextAction("battle stance", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("battle stance", ACTION_MOVE), NULL)));
 }
 
 void ArmsWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -494,7 +494,7 @@ void ArmsWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 
     triggers.push_back(new TriggerNode(
         "battle stance",
-        NextAction::array(0, new NextAction("battle stance", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("battle stance", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "death wish",
@@ -788,7 +788,7 @@ void ArmsWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 
     triggers.push_back(new TriggerNode(
         "battle stance",
-        NextAction::array(0, new NextAction("battle stance", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("battle stance", ACTION_MOVE), NULL)));
 }
 
 void ArmsWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

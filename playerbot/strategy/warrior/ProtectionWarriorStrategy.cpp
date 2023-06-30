@@ -272,11 +272,11 @@ void ProtectionWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& 
 
     triggers.push_back(new TriggerNode(
         "defensive stance",
-        NextAction::array(0, new NextAction("defensive stance", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("defensive stance", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "feared",
-        NextAction::array(0, new NextAction("berserker rage fear", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("berserker rage fear", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "very often",
@@ -618,7 +618,7 @@ void ProtectionWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& 
 
     triggers.push_back(new TriggerNode(
         "defensive stance",
-        NextAction::array(0, new NextAction("defensive stance", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("defensive stance", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "very often",
@@ -960,7 +960,7 @@ void ProtectionWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& 
 
     triggers.push_back(new TriggerNode(
         "defensive stance",
-        NextAction::array(0, new NextAction("defensive stance", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("defensive stance", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "very often",

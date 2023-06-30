@@ -33,7 +33,6 @@ namespace ai
     DEBUFF_TRIGGER(ShockwaveTrigger, "shockwave");
     BOOST_TRIGGER(DeathWishTrigger, "death wish");
     BUFF_TRIGGER(BloodthirstBuffTrigger, "bloodthirst");
-    BUFF_TRIGGER(BerserkerRageBuffTrigger, "berserker rage");
     INTERRUPT_HEALER_TRIGGER(ShieldBashInterruptEnemyHealerSpellTrigger, "shield bash");
     INTERRUPT_TRIGGER(ShieldBashInterruptSpellTrigger, "shield bash");
     INTERRUPT_HEALER_TRIGGER(PummelInterruptEnemyHealerSpellTrigger, "pummel");
@@ -44,4 +43,21 @@ namespace ai
     HAS_AURA_TRIGGER(SuddenDeathTrigger, "sudden death");
     HAS_AURA_TRIGGER(SlamInstantTrigger, "slam!");
     HAS_AURA_TRIGGER(TasteForBloodTrigger, "taste for blood");
+
+    class BerserkerRageBuffTrigger : public TargetOfFearCastTrigger
+    {
+    public:
+        BerserkerRageBuffTrigger(PlayerbotAI* ai) : TargetOfFearCastTrigger(ai) {}
+        bool IsActive() override
+        {
+            // Check for spell cooldown
+            uint32 spellid = AI_VALUE2(uint32, "spell id", "berserker rage");
+            if (spellid && bot->IsSpellReady(spellid))
+            {
+                return TargetOfFearCastTrigger::IsActive();
+            }
+
+            return false;
+        }
+    };
 }

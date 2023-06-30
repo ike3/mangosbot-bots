@@ -33,6 +33,7 @@ public:
         creators["intervene"] = &intervene;
         */
 
+        creators["berserker rage"] = &berserker_rage;
         creators["whirlwind"] = &whirlwind;
     }
 
@@ -69,6 +70,8 @@ private:
 
     ACTION_NODE_P(mortal_strike, "mortal strike", "battle stance");
     */
+
+    ACTION_NODE_P(berserker_rage, "berserker rage", "berserker stance");
 
     ACTION_NODE_A(whirlwind, "whirlwind", "cleave");
 };
@@ -263,6 +266,10 @@ void WarriorCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigg
 void WarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "berserker rage",
+        NextAction::array(0, new NextAction("berserker rage", ACTION_INTERRUPT), NULL)));
 
     triggers.push_back(new TriggerNode(
         "battle shout",
