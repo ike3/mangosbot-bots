@@ -6,6 +6,23 @@
 
 using namespace ai;
 
+class DemonologyWarlockStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+{
+public:
+    DemonologyWarlockStrategyActionNodeFactory()
+    {
+        creators["demonic sacrifice raid"] = &demonic_sacrifice_raid;
+    }
+
+private:
+    ACTION_NODE_P(demonic_sacrifice_raid, "demonic sacrifice", "summon succubus");
+};
+
+DemonologyWarlockStrategy::DemonologyWarlockStrategy(PlayerbotAI* ai) : WarlockStrategy(ai)
+{
+    actionNodeFactories.Add(new DemonologyWarlockStrategyActionNodeFactory());
+}
+
 #ifdef MANGOSBOT_ZERO // Vanilla
 
 ai::NextAction** DemonologyWarlockStrategy::GetDefaultCombatActions()
@@ -202,7 +219,7 @@ void DemonologyWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
 
     triggers.push_back(new TriggerNode(
         "demonic sacrifice",
-        NextAction::array(0, new NextAction("summon succubus", ACTION_HIGH), new NextAction("demonic sacrifice", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("demonic sacrifice raid", ACTION_HIGH), NULL)));
 }
 
 void DemonologyWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -519,7 +536,7 @@ void DemonologyWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
 
     triggers.push_back(new TriggerNode(
         "demonic sacrifice",
-        NextAction::array(0, new NextAction("summon felguard", ACTION_HIGH), new NextAction("demonic sacrifice", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("demonic sacrifice raid", ACTION_HIGH), NULL)));
 }
 
 void DemonologyWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -844,7 +861,7 @@ void DemonologyWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
 
     triggers.push_back(new TriggerNode(
         "demonic sacrifice",
-        NextAction::array(0, new NextAction("summon succubus", ACTION_HIGH), new NextAction("demonic sacrifice", ACTION_HIGH), NULL)));
+        NextAction::array(0, new NextAction("demonic sacrifice raid", ACTION_HIGH), NULL)));
 }
 
 void DemonologyWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

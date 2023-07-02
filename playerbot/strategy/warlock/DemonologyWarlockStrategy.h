@@ -14,7 +14,7 @@ namespace ai
     class DemonologyWarlockStrategy : public WarlockStrategy
     {
     public:
-        DemonologyWarlockStrategy(PlayerbotAI* ai) : WarlockStrategy(ai) {}
+        DemonologyWarlockStrategy(PlayerbotAI* ai);
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;

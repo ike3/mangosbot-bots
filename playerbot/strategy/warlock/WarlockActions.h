@@ -255,6 +255,17 @@ namespace ai
 	public:
 		CastSummonImpAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "summon imp") {}
         string GetTargetName() override { return "self target"; }
+
+        bool isUseful() override
+        {
+            Unit* pet = AI_VALUE(Unit*, "pet target");
+            if (pet)
+            {
+                return pet->GetEntry() != 416;
+            }
+
+            return true;
+        }
 	};
 
     class CastSummonSuccubusAction : public CastSpellAction
@@ -262,6 +273,17 @@ namespace ai
     public:
         CastSummonSuccubusAction(PlayerbotAI* ai) : CastSpellAction(ai, "summon succubus") {}
         string GetTargetName() override { return "self target"; }
+
+        bool isUseful() override
+        {
+            Unit* pet = AI_VALUE(Unit*, "pet target");
+            if (pet)
+            {
+                return pet->GetEntry() != 1863;
+            }
+
+            return true;
+        }
     };
 
 	class CastSummonFelhunterAction : public CastSpellAction
@@ -269,6 +291,17 @@ namespace ai
 	public:
 		CastSummonFelhunterAction(PlayerbotAI* ai) : CastSpellAction(ai, "summon felhunter") {}
         string GetTargetName() override { return "self target"; }
+
+        bool isUseful() override
+        {
+            Unit* pet = AI_VALUE(Unit*, "pet target");
+            if (pet)
+            {
+                return pet->GetEntry() != 417;
+            }
+
+            return true;
+        }
 	};
 
     class CastSummonVoidwalkerAction : public CastSpellAction
@@ -276,6 +309,17 @@ namespace ai
     public:
         CastSummonVoidwalkerAction(PlayerbotAI* ai) : CastSpellAction(ai, "summon voidwalker") {}
         string GetTargetName() override { return "self target"; }
+
+        bool isUseful() override
+        {
+            Unit* pet = AI_VALUE(Unit*, "pet target");
+            if (pet)
+            {
+                return pet->GetEntry() != 1860;
+            }
+
+            return true;
+        }
     };
 
     class CastSummonFelguardAction : public CastSpellAction
@@ -283,6 +327,17 @@ namespace ai
     public:
         CastSummonFelguardAction(PlayerbotAI* ai) : CastSpellAction(ai, "summon felguard") {}
         string GetTargetName() override { return "self target"; }
+
+        bool isUseful() override
+        {
+            Unit* pet = AI_VALUE(Unit*, "pet target");
+            if (pet)
+            {
+                return pet->GetEntry() != 17252;
+            }
+
+            return true;
+        }
     };
 
 	class CastSummonInfernoAction : public CastSpellAction

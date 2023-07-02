@@ -175,12 +175,22 @@ bool ConflagrateTrigger::IsActive()
 
 bool DemonicSacrificeTrigger::IsActive()
 {
-	return bot->HasSpell(18788) && !bot->HasAura(18788);
+	if (ai->HasStrategy("pet", BotState::BOT_STATE_COMBAT))
+	{
+		return ai->HasSpell(18788) &&
+			   !ai->HasAura(18789, bot) && // Burning Wish (Imp)
+			   !ai->HasAura(18790, bot) && // Fel Stamina (Voidwalker)
+			   !ai->HasAura(18791, bot) && // Touch of Shadow (Succubus)
+			   !ai->HasAura(18792, bot) && // Fel Energy (Felhunter)
+			   !ai->HasAura(35701, bot);   // Touch of Shadow (Felguard)
+	}
+
+	return false;
 }
 
 bool SoulLinkTrigger::IsActive()
 {
-	return bot->HasSpell(19028) && !bot->HasAura(19028) && AI_VALUE(Unit*, "pet target");
+	return ai->HasSpell(19028) && !ai->HasAura(19028, bot) && AI_VALUE(Unit*, "pet target");
 }
 
 bool NoSpecificPetTrigger::IsActive()
