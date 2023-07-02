@@ -1930,7 +1930,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     //tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldLocation const& l) {return l.mapid == bot->GetMapId() && sServerFacade.GetDistance2d(bot, l.coord_x, l.coord_y) > urand(0, 5000) + bot->GetLevel() * 15 * urand(5, 10); }), tlocs.end());
 
     // teleport to active areas only
-    if (activeOnly)
+    if (sPlayerbotAIConfig.randomBotTeleportNearPlayer && activeOnly)
     {
         tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldPosition l)
         {
@@ -2000,7 +2000,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
                 isEnemyZone = false;
                 break;
             }
-            if (isEnemyZone && bot->GetLevel() < 21)
+            if (isEnemyZone && (bot->GetLevel() < 21 || (zone->flags & AREA_FLAG_CAPITAL)))
                 return true;
 
             // filter other races zones
@@ -2049,8 +2049,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
     if (tlocs.empty())
     {
-        /*if (activeOnly)
-            return hearth ? RandomTeleportForRpg(bot, false) : RandomTeleportForLevel(bot, false);*/
         if (activeOnly)
         {
             if (hearth)

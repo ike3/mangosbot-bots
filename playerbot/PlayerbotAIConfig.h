@@ -80,6 +80,7 @@ public:
     std::list<string> toggleAlwaysOnlineAccounts;
     std::list<string> toggleAlwaysOnlineChars;
     uint32 randomBotTeleportDistance;
+    bool randomBotTeleportNearPlayer;
     uint32 randomGearMaxLevel;
     uint32 randomGearMaxDiff;
     std::list<uint32> randomGearBlacklist;
