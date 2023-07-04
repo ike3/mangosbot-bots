@@ -23,6 +23,7 @@ public:
     bool IsInRandomItemKeepList(uint32 id);
     bool IsInIgnoreLockSkillsGoList(uint32 id);
     bool IsInPvpProhibitedZone(uint32 id);
+    bool IsInIgnoredChatCommands(string command);
 
     bool enabled;
     bool allowGuildBots;
@@ -78,6 +79,7 @@ public:
     bool deleteRandomBotGuilds;
     std::list<uint32> randomBotGuilds;
     std::list<uint32> pvpProhibitedZoneIds;
+    std::list<string> ignoredChatCommands;
 
     bool guildTaskEnabled;
     uint32 minGuildTaskChangeTime, maxGuildTaskChangeTime;

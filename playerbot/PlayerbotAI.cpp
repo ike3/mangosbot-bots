@@ -264,6 +264,9 @@ bool PlayerbotAI::IsAllowedCommand(string text)
 
 void PlayerbotAI::HandleCommand(uint32 type, const string& text, Player& fromPlayer)
 {
+    if (sPlayerbotAIConfig.IsInIgnoredChatCommands(text))
+        return;
+
     if (!GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, type != CHAT_MSG_WHISPER, &fromPlayer))
         return;
 

@@ -30,6 +30,16 @@ void LoadList(string value, T &list)
     }
 }
 
+template <class T>
+void LoadStringList(string value, T &list)
+{
+    vector<string> ids = split(value, ',');
+    for (vector<string>::iterator i = ids.begin(); i != ids.end(); i++)
+    {
+        list.push_back(*i);
+    }
+}
+
 bool PlayerbotAIConfig::Initialize()
 {
     sLog.outString("Initializing AI Playerbot by ike3, based on the original Playerbot by blueboy");
@@ -107,6 +117,7 @@ bool PlayerbotAIConfig::Initialize()
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomBotQuestIds", "7848"), randomBotQuestIds);
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomBotKeepItemIds", "2901,7005,5956,6219,6948,16207"), randomBotKeepItemIds);
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.IgnoreLockSkillsGoIds", "13891,19535,182127"), ignoreLockSkillsGoIds);
+    LoadStringList<list<string> >(config.GetStringDefault("AiPlayerbot.IgnoredChatCommands", "Crb,Qui"), ignoredChatCommands);
 
     botAutologin = config.GetBoolDefault("AiPlayerbot.BotAutologin", false);
     randomBotAutologin = config.GetBoolDefault("AiPlayerbot.RandomBotAutologin", true);
@@ -218,6 +229,15 @@ bool PlayerbotAIConfig::IsInRandomItemKeepList(uint32 id)
 bool PlayerbotAIConfig::IsInIgnoreLockSkillsGoList(uint32 id)
 {
     return find(ignoreLockSkillsGoIds.begin(), ignoreLockSkillsGoIds.end(), id) != ignoreLockSkillsGoIds.end();
+}
+
+bool PlayerbotAIConfig::IsInIgnoredChatCommands(string command)
+{
+    for (std::list<string>::iterator i = ignoredChatCommands.begin(); i != ignoredChatCommands.end(); ++i)
+    {
+        if (command.find(*i) != string::npos) return true;
+    }
+    return false;
 }
 
 string PlayerbotAIConfig::GetValue(string name)
