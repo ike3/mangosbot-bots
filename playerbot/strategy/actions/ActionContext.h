@@ -120,6 +120,7 @@ namespace ai
             creators["attack least hp target"] = &ActionContext::attack_least_hp_target;
             creators["attack enemy player"] = &ActionContext::attack_enemy_player;
             creators["pull my target"] = &ActionContext::pull_my_target;
+            creators["pull rti target"] = &ActionContext::pull_rti_target;
             creators["pull start"] = &ActionContext::pull_start;
             creators["pull action"] = &ActionContext::pull_action;
             creators["return to pull position"] = &ActionContext::return_to_pull_position;
@@ -368,6 +369,7 @@ namespace ai
         static Action* attack_least_hp_target(PlayerbotAI* ai) { return new AttackLeastHpTargetAction(ai); }
         static Action* attack_enemy_player(PlayerbotAI* ai) { return new AttackEnemyPlayerAction(ai); }
         static Action* pull_my_target(PlayerbotAI* ai) { return new PullMyTargetAction(ai); }
+        static Action* pull_rti_target(PlayerbotAI* ai) { return new PullRTITargetAction(ai); }
         static Action* pull_start(PlayerbotAI* ai) { return new PullStartAction(ai); }
         static Action* pull_action(PlayerbotAI* ai) { return new PullAction(ai); }
         static Action* return_to_pull_position(PlayerbotAI* ai) { return new ReturnToPullPositionAction(ai); }

@@ -4,13 +4,32 @@
 
 namespace ai
 {
-    class PullMyTargetAction : public ChatCommandAction
+    class PullRequestAction : public ChatCommandAction
     {
     public:
-        PullMyTargetAction(PlayerbotAI* ai, string name = "pull my target") : ChatCommandAction(ai, name) {}
+        PullRequestAction(PlayerbotAI* ai, string name) : ChatCommandAction(ai, name) {}
+
+    protected:
+        virtual bool Execute(Event& event) override;
+        virtual Unit* GetTarget(Event& event) = 0;
+    };
+
+    class PullMyTargetAction : public PullRequestAction
+    {
+    public:
+        PullMyTargetAction(PlayerbotAI* ai) : PullRequestAction(ai, "pull my target") {}
     
     private:
-        bool Execute(Event& event) override;
+        Unit* GetTarget(Event& event);
+    };
+
+    class PullRTITargetAction : public PullRequestAction
+    {
+    public:
+        PullRTITargetAction(PlayerbotAI* ai) : PullRequestAction(ai, "pull rti target") {}
+
+    private:
+        Unit* GetTarget(Event& event);
     };
 
     class PullStartAction : public Action

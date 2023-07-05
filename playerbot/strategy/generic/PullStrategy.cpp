@@ -68,31 +68,28 @@ string PullStrategy::GetSpellName() const
             {
                 switch (itemPrototype->SubClass)
                 {
+#ifdef MANGOSBOT_ZERO
                     case ITEM_SUBCLASS_WEAPON_GUN:
                     {
-#ifdef MANGOSBOT_ZERO
                         spellName += " gun";
-#endif
                         break;
                     }
+
                     case ITEM_SUBCLASS_WEAPON_BOW:
                     {
-#ifdef MANGOSBOT_ZERO
                         spellName += " bow";
-#endif
                         break;
                     }
+
                     case ITEM_SUBCLASS_WEAPON_CROSSBOW:
                     {
-#ifdef MANGOSBOT_ZERO
                         spellName += " crossbow";
-#endif
                         break;
                     }
+#endif
                     case ITEM_SUBCLASS_WEAPON_THROWN:
                     {
                         spellName = "throw";
-
                         break;
                     }
 
@@ -232,6 +229,7 @@ float PullMultiplier::GetValue(Action* action)
     if (strategy && strategy->HasTarget())
     {
         if ((action->getName() == "pull my target") ||
+            (action->getName() == "pull rti target") ||
             (action->getName() == "reach pull") ||
             (action->getName() == "pull start") ||
             (action->getName() == "pull action") ||

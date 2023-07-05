@@ -2,13 +2,12 @@
 #include "../../playerbot.h"
 #include "../generic/PullStrategy.h"
 #include "../values/AttackersValue.h"
-#include "PlayerbotAIConfig.h"
 #include "PullActions.h"
 #include "../values/PositionValue.h"
 
 using namespace ai;
 
-bool PullMyTargetAction::Execute(Event& event)
+bool PullRequestAction::Execute(Event& event)
 {
     PullStrategy* strategy = PullStrategy::Get(ai);
     if (!strategy)
@@ -18,17 +17,7 @@ bool PullMyTargetAction::Execute(Event& event)
 
     Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
 
-    Unit* target = nullptr;
-    if (event.getSource() == "attack anything")
-    {
-        ObjectGuid guid = event.getObject();
-        target = ai->GetCreature(guid);
-    }
-    else if (requester)
-    {
-        target = ai->GetUnit(requester->GetSelectionGuid());
-    }
-
+    Unit* target = GetTarget(event);
     if (!target)
     {
         ai->TellPlayerNoFacing(requester, "You have no target");
@@ -65,6 +54,29 @@ bool PullMyTargetAction::Execute(Event& event)
 
     strategy->RequestPull(target);
     return true;
+}
+
+Unit* PullMyTargetAction::GetTarget(Event& event)
+{
+    Unit* target = nullptr;
+
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (event.getSource() == "attack anything")
+    {
+        ObjectGuid guid = event.getObject();
+        target = ai->GetCreature(guid);
+    }
+    else if (requester)
+    {
+        target = ai->GetUnit(requester->GetSelectionGuid());
+    }
+
+    return target;
+}
+
+Unit* PullRTITargetAction::GetTarget(Event& event)
+{
+    return AI_VALUE(Unit*, "rti target");
 }
 
 bool PullStartAction::Execute(Event& event)
@@ -104,8 +116,7 @@ bool PullStartAction::Execute(Event& event)
 }
 
 
-PullAction::PullAction(PlayerbotAI* ai, string name)
-    : CastSpellAction(ai, name)
+PullAction::PullAction(PlayerbotAI* ai, string name) : CastSpellAction(ai, name)
 {
     InitPullAction();
 }

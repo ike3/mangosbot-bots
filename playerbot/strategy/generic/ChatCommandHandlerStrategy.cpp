@@ -178,6 +178,10 @@ void ChatCommandHandlerStrategy::InitReactionTriggers(std::list<TriggerNode*> &t
         NextAction::array(0, new NextAction("pull my target", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "pull rti",
+        NextAction::array(0, new NextAction("pull rti target", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "accept",
         NextAction::array(0, new NextAction("accept quest", relevance), NULL)));
 
