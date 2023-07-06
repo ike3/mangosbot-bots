@@ -21,6 +21,14 @@ namespace ai
         virtual string GetTargetName() { return "dps target"; }
     };
 
+    class DefenseAction : public AttackAction
+    {
+    public:
+        DefenseAction(PlayerbotAI* ai) : AttackAction(ai, "defense") {}
+
+        virtual string GetTargetName() { return "defense target"; }
+    };
+
     class TankAssistAction : public AttackAction
     {
     public:

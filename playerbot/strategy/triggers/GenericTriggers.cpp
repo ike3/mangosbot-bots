@@ -210,6 +210,13 @@ bool NotDpsTargetActiveTrigger::IsActive()
     return dps && target != dps;
 }
 
+bool NotDefenseTargetActiveTrigger::IsActive()
+{
+    Unit* defense = AI_VALUE(Unit*, "defense target");
+    Unit* target = AI_VALUE(Unit*, "current target");
+    return defense && target != defense;
+}
+
 bool NotDpsAoeTargetActiveTrigger::IsActive()
 {
     Unit* dps = AI_VALUE(Unit*, "dps aoe target");

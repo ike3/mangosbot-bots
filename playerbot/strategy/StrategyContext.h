@@ -27,6 +27,7 @@
 #include "generic/ThreatStrategy.h"
 #include "generic/TellTargetStrategy.h"
 #include "generic/AttackEnemyPlayersStrategy.h"
+#include "generic/DefenseStrategy.h"
 #include "generic/MarkRtiStrategy.h"
 #include "generic/MeleeCombatStrategy.h"
 #include "generic/PatrolStrategy.h"
@@ -140,6 +141,7 @@ namespace ai
             creators["dps aoe"] = &AssistStrategyContext::dps_aoe;
             creators["tank aoe"] = &AssistStrategyContext::tank_aoe;
             creators["grind"] = &AssistStrategyContext::grind;
+            creators["defense"] = &AssistStrategyContext::defense;
         }
 
     private:
@@ -147,6 +149,7 @@ namespace ai
         static Strategy* dps_aoe(PlayerbotAI* ai) { return new DpsAoeStrategy(ai); }
         static Strategy* tank_aoe(PlayerbotAI* ai) { return new TankAoeStrategy(ai); }
         static Strategy* grind(PlayerbotAI* ai) { return new GrindingStrategy(ai); }
+        static Strategy* defense(PlayerbotAI* ai) { return new DefenseStrategy(ai); }
     };
 
     class QuestStrategyContext : public NamedObjectContext<Strategy>
