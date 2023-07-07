@@ -159,7 +159,7 @@ bool LootObject::IsLootPossible(Player* bot)
     PlayerbotAI* ai = bot->GetPlayerbotAI();
 
     if (reqItem && !bot->HasItemCount(reqItem, 1))
-        return false;
+        return TellNoItem(ai, reqItem);
 
     if (abs(GetWorldObject(bot)->GetPositionZ() - bot->GetPositionZ()) > INTERACTION_DISTANCE)
         return false;
@@ -171,22 +171,62 @@ bool LootObject::IsLootPossible(Player* bot)
         return false;
 
     if (!ai->HasSkill((SkillType)skillId))
-        return false;
+    {
+        GameObject* go = ai->GetGameObject(guid);
+        if (go && sPlayerbotAIConfig.IsInIgnoreLockSkillsGoList(go->GetGOInfo()->id))
+            return true;
+
+        return TellNoSkill(ai, skillId);
+    }
 
     if (!reqSkillValue)
         return true;
 
     uint32 skillValue = uint32(bot->GetSkillValue(skillId));
     if (reqSkillValue > skillValue)
-        return false;
+        return TellNoSkill(ai, skillId);
 
     if (skillId == SKILL_MINING && !bot->HasItemCount(2901, 1))
-        return false;
+        return TellNoItem(ai, 2901);
 
     if (skillId == SKILL_SKINNING && !bot->HasItemCount(7005, 1))
-        return false;
+        return TellNoItem(ai, 7005);
 
     return true;
+}
+
+bool LootObject::TellNoSkill(PlayerbotAI* ai, uint32 skill)
+{
+    ostringstream out;
+    out << "I need " << ChatHelper::formatSkill(skill) << " to loot ";
+
+    GameObject* go = ai->GetGameObject(guid);
+    if (go) out << ChatHelper::formatGameobject(go);
+
+    Creature* creature = ai->GetCreature(guid);
+    if (creature) out << creature->GetName();
+
+    ai->TellError(out.str());
+    return false;
+}
+
+bool LootObject::TellNoItem(PlayerbotAI* ai, uint32 item)
+{
+    ItemPrototype const * proto = sObjectMgr.GetItemPrototype(item);
+    if (proto)
+    {
+        ostringstream out;
+        out << "I need " << ChatHelper::formatItem(proto) << " to loot ";
+
+        GameObject* go = ai->GetGameObject(guid);
+        if (go) out << ChatHelper::formatGameobject(go);
+
+        Creature* creature = ai->GetCreature(guid);
+        if (creature) out << creature->GetName();
+
+        ai->TellError(out.str());
+    }
+    return false;
 }
 
 bool LootObjectStack::Add(ObjectGuid guid)

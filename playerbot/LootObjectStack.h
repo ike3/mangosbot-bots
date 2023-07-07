@@ -24,8 +24,11 @@ namespace ai
         bool IsLootPossible(Player* bot);
         void Refresh(Player* bot, ObjectGuid guid);
         WorldObject* GetWorldObject(Player* bot);
-        ObjectGuid guid;
 
+        bool TellNoSkill(PlayerbotAI* ai, uint32 skill);
+        bool TellNoItem(PlayerbotAI* ai, uint32 item);
+
+        ObjectGuid guid;
         uint32 skillId;
         uint32 reqSkillValue;
         uint32 reqItem;

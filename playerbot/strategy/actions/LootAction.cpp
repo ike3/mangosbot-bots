@@ -118,16 +118,37 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
     if (go && !sPlayerbotAIConfig.IsInIgnoreLockSkillsGoList(go->GetGOInfo()->id))
     {
         if (lootObject.skillId == SKILL_MINING)
-            return ai->HasSkill(SKILL_MINING) ? ai->CastSpell(MINING, bot) : false;
+        {
+            if (ai->HasSkill(SKILL_MINING))
+            {
+                ostringstream out; out << "Mining " << ChatHelper::formatGameobject(go);
+                ai->TellMasterNoFacing(out.str());
+                return ai->CastSpell(MINING, bot);
+            }
+            return false;
+        }
 
         if (lootObject.skillId == SKILL_HERBALISM)
-            return ai->HasSkill(SKILL_HERBALISM) ? ai->CastSpell(HERB_GATHERING, bot) : false;
+        {
+            if (ai->HasSkill(SKILL_HERBALISM))
+            {
+                ostringstream out; out << "Gathering " << ChatHelper::formatGameobject(go);
+                ai->TellMasterNoFacing(out.str());
+                return ai->CastSpell(HERB_GATHERING, bot);
+            }
+            return false;
+        }
     }
 
     uint32 spellId = GetOpeningSpell(lootObject);
     if (!spellId)
         return false;
 
+    if (go)
+    {
+        ostringstream out; out << "Opening " << ChatHelper::formatGameobject(go);
+        ai->TellMasterNoFacing(out.str());
+    }
     return ai->CastSpell(spellId, bot);
 }
 
