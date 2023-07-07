@@ -12,7 +12,12 @@
 #include "../values/Stances.h"
 #include "MotionGenerators/TargetedMovementGenerator.h"
 
+#include "GridNotifiers.h"
+#include "GridNotifiersImpl.h"
+#include "CellImpl.h"
+
 using namespace ai;
+using namespace MaNGOS;
 
 bool MovementAction::MoveNear(uint32 mapId, float x, float y, float z, float distance)
 {
@@ -415,6 +420,24 @@ bool MoveToLootAction::Execute(Event event)
         return false;
 
     WorldObject *wo = loot.GetWorldObject(bot);
+
+    list<Unit*> targets;
+    MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck u_check(bot, sPlayerbotAIConfig.aggroDistance);
+    MaNGOS::UnitListSearcher<MaNGOS::AnyUnfriendlyUnitInObjectRangeCheck> searcher(targets, u_check);
+    Cell::VisitAllObjects(wo, searcher, sPlayerbotAIConfig.aggroDistance);
+
+    for (list<Unit*>::iterator i = targets.begin(); i != targets.end(); ++i)
+    {
+        Unit* target = *i;
+        if (target && !target->GetObjectGuid().IsPlayer() && sServerFacade.IsAlive(target))
+        {
+            ostringstream out;
+            out << target->GetName() << " is preventing me to reach " << wo->GetName();
+            ai->TellError(out.str());
+            return false;
+        }
+    }
+
     return MoveNear(wo, sPlayerbotAIConfig.contactDistance);
 }
 
