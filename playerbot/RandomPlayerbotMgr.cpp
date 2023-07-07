@@ -2449,7 +2449,7 @@ void RandomPlayerbotMgr::RandomizeFirst(Player* bot)
         level = 60;
 #endif
 
-    if (level == CONFIG_UINT32_START_PLAYER_LEVEL)
+    if (level == sWorld.getConfig(CONFIG_UINT32_START_PLAYER_LEVEL))
         return;
 
     SetValue(bot, "level", level);
