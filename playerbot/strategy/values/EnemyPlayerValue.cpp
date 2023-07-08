@@ -53,6 +53,12 @@ bool EnemyPlayersValue::IsValid(Unit* target, Player* player)
                 return false;
             }
 
+            // Check that the target is not a mind controlled ally
+            if (target->HasAuraType(SPELL_AURA_MOD_CHARM) && !target->HasAuraType(SPELL_AURA_MOD_POSSESS))
+            {
+                return false;
+            }
+
             /*
             // Check if too far away (Do we need this?)
             const float maxPvPDistance = GetMaxAttackDistance(player);
