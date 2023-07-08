@@ -54,9 +54,12 @@ bool EnemyPlayersValue::IsValid(Unit* target, Player* player)
             }
 
             // Check that the target is not a mind controlled ally
-            if ((target->HasAuraType(SPELL_AURA_MOD_CHARM) || target->HasAuraType(SPELL_AURA_MOD_POSSESS)) && player->IsInGroup(target))
+            if (target->HasAuraType(SPELL_AURA_MOD_CHARM) || target->HasAuraType(SPELL_AURA_MOD_POSSESS))
             {
-                return false;
+                if (player && player->IsInGroup(target))
+                {
+                    return false;
+                }
             }
 
             /*
