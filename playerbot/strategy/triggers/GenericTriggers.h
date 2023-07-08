@@ -50,6 +50,17 @@ namespace ai
 		virtual bool IsActive();
 	};
 
+    class NoEnergyAvailableTrigger : public EnergyAvailable
+    {
+    public:
+        NoEnergyAvailableTrigger(PlayerbotAI* ai) : EnergyAvailable(ai, 20) {}
+
+        bool IsActive() override
+        {
+            return AI_VALUE2(uint8, "energy", "self target") < amount;
+        }
+    };
+
     class LightEnergyAvailableTrigger : public EnergyAvailable
     {
     public:

@@ -60,6 +60,7 @@ namespace ai
             creators["medium rage available"] = &TriggerContext::MediumRageAvailable;
             creators["high rage available"] = &TriggerContext::HighRageAvailable;
 
+            creators["no energy available"] = &TriggerContext::NoEnergyAvailable;
             creators["light energy available"] = &TriggerContext::LightEnergyAvailable;
             creators["medium energy available"] = &TriggerContext::MediumEnergyAvailable;
             creators["high energy available"] = &TriggerContext::HighEnergyAvailable;
@@ -356,6 +357,7 @@ namespace ai
         static Trigger* LightRageAvailable(PlayerbotAI* ai) { return new LightRageAvailableTrigger(ai); }
         static Trigger* MediumRageAvailable(PlayerbotAI* ai) { return new MediumRageAvailableTrigger(ai); }
         static Trigger* HighRageAvailable(PlayerbotAI* ai) { return new HighRageAvailableTrigger(ai); }
+        static Trigger* NoEnergyAvailable(PlayerbotAI* ai) { return new NoEnergyAvailableTrigger(ai); }
         static Trigger* LightEnergyAvailable(PlayerbotAI* ai) { return new LightEnergyAvailableTrigger(ai); }
         static Trigger* MediumEnergyAvailable(PlayerbotAI* ai) { return new MediumEnergyAvailableTrigger(ai); }
         static Trigger* HighEnergyAvailable(PlayerbotAI* ai) { return new HighEnergyAvailableTrigger(ai); }
