@@ -709,7 +709,7 @@ vector<WorldPosition> WorldPosition::frommGridPair(const mGridPair& gridPair, ui
 
 bool WorldPosition::loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y)
 {
-    string fileName = "load_map_grid.csv";
+    string logName = "load_map_grid.csv";
 
 #ifndef MANGOSBOT_TWO
     if (MMAP::MMapFactory::createOrGetMMapManager()->IsMMapIsLoaded(mapId, x, y))
@@ -728,19 +728,34 @@ bool WorldPosition::loadMapAndVMap(uint32 mapId, uint32 instanceId, int x, int y
     TerrainInfoAccess* terrain = reinterpret_cast<TerrainInfoAccess*>(const_cast<TerrainInfo*>(sTerrainMgr.LoadTerrain(mapId)));
     isLoaded = terrain->Load(x, y);
 #else 
+    //Fix to ignore bad mmap files.
+    uint32 pathLen = sWorld.GetDataPath().length() + strlen("mmaps/%03i.mmap") + 1;
+    char* fileName = new char[pathLen];
+    snprintf(fileName, pathLen, (sWorld.GetDataPath() + "mmaps/%03i.mmap").c_str(), mapId);
+
+    FILE* file = fopen(fileName, "rb");
+    if (!file)
+    {
+        sTravelMgr.addBadMmap(mapId, x, y);
+        delete[] fileName;
+        return false;
+    }
+
+    fclose(file);
+
     isLoaded = MMAP::MMapFactory::createOrGetMMapManager()->loadMap(mapId, instanceId, x, y, 0);
 #endif
 
     if(!isLoaded)
         sTravelMgr.addBadMmap(mapId, x, y);
 
-    if (sPlayerbotAIConfig.hasLog(fileName))
+    if (sPlayerbotAIConfig.hasLog(logName))
     {
         ostringstream out;
         out << sPlayerbotAIConfig.GetTimestampStr();
         out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr.isBadMmap(mapId, x, y) ? "0" : "1") << ",";
         printWKT(frommGridPair(mGridPair(x, y), mapId), out, 1, true);
-        sPlayerbotAIConfig.log(fileName, out.str().c_str());
+        sPlayerbotAIConfig.log(logName, out.str().c_str());
     }
 
     return isLoaded;
