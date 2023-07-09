@@ -56,8 +56,9 @@ bool KeepItemAction::Execute(Event& event)
         for (auto& id : ids)
         {
             ostringstream out;
-            out << chat->formatQItem(id);
-            out << ": " << keepName[AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", id, ForceItemUsage::FORCE_USAGE_NEED)] << " the item.";
+            ItemQualifier qualifier(id);
+            out << chat->formatItem(qualifier);
+            out << ": " << keepName[AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", id, ForceItemUsage::FORCE_USAGE_NONE)] << " the item.";
             ai->TellPlayer(GetMaster(), out.str());
 
         }
