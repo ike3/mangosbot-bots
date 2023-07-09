@@ -45,6 +45,8 @@ void LogAnalysis::AnalysePid()
         activeBots.push_back(stoi(tokens[6]));
         totalBots.push_back(stoi(tokens[7]));
         avgDiff.push_back(stoi(tokens[2]));
+        if (tokens[0][0] == '.')
+            tokens[0] = "0" + tokens[0];
 
         runTime = stoi(tokens[0]);
 
