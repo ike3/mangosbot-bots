@@ -183,8 +183,11 @@ namespace ai
 
         void Erase(const string& name)
         {
-            delete created[name];
-            created.erase(name);
+            if (created.find(name) != created.end())
+            {
+                delete created[name];
+                created.erase(name);
+            }
         }
 
         void Update()
