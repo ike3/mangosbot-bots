@@ -99,7 +99,6 @@ namespace ai
         WorldPosition lastMoveShort;
         TravelPath lastPath;
         time_t nextTeleport;
-        std::future<TravelPath> future;
     };
 
     class LastMovementValue : public ManualSetValue<LastMovement&>
