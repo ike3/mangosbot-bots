@@ -152,7 +152,7 @@ void AoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "ranged medium aoe",
-        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("throw grenade", ACTION_HIGH), NULL)));
 }
 
 void AoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -308,6 +308,46 @@ void BuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void BuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -459,7 +499,7 @@ void AoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "ranged medium aoe",
-        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("throw grenade", ACTION_HIGH), NULL)));
 }
 
 void AoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -615,6 +655,46 @@ void BuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void BuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -770,7 +850,7 @@ void AoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "ranged medium aoe",
-        NextAction::array(0, new NextAction("throw grenade", ACTION_INTERRUPT), NULL)));
+        NextAction::array(0, new NextAction("throw grenade", ACTION_HIGH), NULL)));
 }
 
 void AoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -926,6 +1006,46 @@ void BuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void BuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void StealthRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }

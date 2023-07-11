@@ -3,32 +3,11 @@
 
 namespace ai
 {
-    class ShamanAoePlaceholderStrategy : public AoePlaceholderStrategy
-    {
-    public:
-        ShamanAoePlaceholderStrategy(PlayerbotAI* ai) : AoePlaceholderStrategy(ai) {}
-        string getName() override { return "aoe"; }
-    };
-
-    class ShamanCurePlaceholderStrategy : public CurePlaceholderStrategy
-    {
-    public:
-        ShamanCurePlaceholderStrategy(PlayerbotAI* ai) : CurePlaceholderStrategy(ai) {}
-        string getName() override { return "cure"; }
-    };
-
     class ShamanTotemsPlaceholderStrategy : public PlaceholderStrategy
     {
     public:
         ShamanTotemsPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
         string getName() override { return "totems"; }
-    };
-
-    class ShamanBuffPlaceholderStrategy : public BuffPlaceholderStrategy
-    {
-    public:
-        ShamanBuffPlaceholderStrategy(PlayerbotAI* ai) : BuffPlaceholderStrategy(ai) {}
-        string getName() override { return "buff"; }
     };
 
     class ShamanStrategy : public ClassStrategy

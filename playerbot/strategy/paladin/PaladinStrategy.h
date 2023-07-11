@@ -3,34 +3,6 @@
 
 namespace ai
 {
-    class PaladinAoePlaceholderStrategy : public AoePlaceholderStrategy
-    {
-    public:
-        PaladinAoePlaceholderStrategy(PlayerbotAI* ai) : AoePlaceholderStrategy(ai) {}
-        string getName() override { return "aoe"; }
-    };
-
-    class PaladinCcPlaceholderStrategy : public CcPlaceholderStrategy
-    {
-    public:
-        PaladinCcPlaceholderStrategy(PlayerbotAI* ai) : CcPlaceholderStrategy(ai) {}
-        string getName() override { return "cc"; }
-    };
-
-    class PaladinCurePlaceholderStrategy : public CurePlaceholderStrategy
-    {
-    public:
-        PaladinCurePlaceholderStrategy(PlayerbotAI* ai) : CurePlaceholderStrategy(ai) {}
-        string getName() override { return "cure"; }
-    };
-
-    class PaladinBuffPlaceholderStrategy : public BuffPlaceholderStrategy
-    {
-    public:
-        PaladinBuffPlaceholderStrategy(PlayerbotAI* ai) : BuffPlaceholderStrategy(ai) {}
-        string getName() override { return "buff"; }
-    };
-
     class PaladinAuraPlaceholderStrategy : public PlaceholderStrategy
     {
     public:

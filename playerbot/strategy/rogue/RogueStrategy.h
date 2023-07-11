@@ -3,52 +3,6 @@
 
 namespace ai
 {
-    class RogueAoePlaceholderStrategy : public AoePlaceholderStrategy
-    {
-    public:
-        RogueAoePlaceholderStrategy(PlayerbotAI* ai) : AoePlaceholderStrategy(ai) {}
-        string getName() override { return "aoe"; }
-    };
-
-    class RogueCcPlaceholderStrategy : public CcPlaceholderStrategy
-    {
-    public:
-        RogueCcPlaceholderStrategy(PlayerbotAI* ai) : CcPlaceholderStrategy(ai) {}
-        string getName() override { return "cc"; }
-    };
-
-    class RogueStealthPlaceholderStrategy : public PlaceholderStrategy
-    {
-    public:
-        RogueStealthPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
-        string getName() override { return "stealth"; }
-    };
-
-    class RogueBuffPlaceholderStrategy : public BuffPlaceholderStrategy
-    {
-    public:
-        RogueBuffPlaceholderStrategy(PlayerbotAI* ai) : BuffPlaceholderStrategy(ai) {}
-        string getName() override { return "buff"; }
-    };
-
-    class RogueStealthedStrategy : public Strategy
-    {
-    public:
-        RogueStealthedStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        string getName() override { return "stealthed"; }
-
-    private:
-        void InitCombatMultipliers(std::list<Multiplier *>& multipliers) override;
-        void InitNonCombatMultipliers(std::list<Multiplier*>& multipliers) override;
-    };
-
-    class RogueStealthedStrategyMultiplier : public Multiplier
-    {
-    public:
-        RogueStealthedStrategyMultiplier(PlayerbotAI* ai) : Multiplier(ai, "stealthed") {}
-        float GetValue(Action* action) override;
-    };
-
     class RoguePoisonsPlaceholderStrategy : public PlaceholderStrategy
     {
     public:
@@ -190,7 +144,7 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class RogueStealthStrategy : public Strategy
+    class RogueStealthStrategy : public StealthStrategy
     {
     public:
         RogueStealthStrategy(PlayerbotAI* ai);
@@ -200,21 +154,21 @@ namespace ai
         virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
-    class RogueStealthPvpStrategy
+    class RogueStealthPvpStrategy : public StealthPvpStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class RogueStealthPveStrategy
+    class RogueStealthPveStrategy : public StealthPveStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    class RogueStealthRaidStrategy
+    class RogueStealthRaidStrategy : public StealthRaidStrategy
     {
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -270,5 +224,15 @@ namespace ai
         std::string name;
         std::string triggerName;
         std::string actionName;
+    };
+
+    class RogueStealthedStrategy : public StealthedStrategy
+    {
+    public:
+        RogueStealthedStrategy(PlayerbotAI* ai) : StealthedStrategy(ai) {}
+
+    private:
+        void InitCombatMultipliers(std::list<Multiplier*>& multipliers) override;
+        void InitNonCombatMultipliers(std::list<Multiplier*>& multipliers) override;
     };
 }

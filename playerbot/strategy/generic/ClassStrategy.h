@@ -172,6 +172,46 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
+    // Generic strategy to be used for stealth classes (druid and rogue) rotations
+    class StealthStrategy : public Strategy
+    {
+    public:
+        StealthStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class StealthPvpStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class StealthPveStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class StealthRaidStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    // Generic strategy to be used for white-listing what can be done during stealth (druid and rogue)
+    class StealthedStrategy : public Strategy
+    {
+    public:
+        StealthedStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "stealthed"; }
+    };
+
     // This is a strategy to be used only as a placeholder
     class PlaceholderStrategy : public Strategy
     {
@@ -196,6 +236,7 @@ namespace ai
     {
     public:
         AoePlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
+        string getName() override { return "aoe"; }
     };
 
     // This strategy is used to hold the cure strategy
@@ -203,6 +244,7 @@ namespace ai
     {
     public:
         CurePlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
+        string getName() override { return "cure"; }
     };
 
     // This strategy is used to hold the cc strategy
@@ -210,6 +252,7 @@ namespace ai
     {
     public:
         CcPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
+        string getName() override { return "cc"; }
     };
 
     // This strategy is used to hold the buff strategy
@@ -217,5 +260,14 @@ namespace ai
     {
     public:
         BuffPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
+        string getName() override { return "buff"; }
+    };
+
+    // This strategy is used to hold the stealth strategy
+    class StealthPlaceholderStrategy : public PlaceholderStrategy
+    {
+    public:
+        StealthPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
+        string getName() override { return "stealth"; }
     };
 }

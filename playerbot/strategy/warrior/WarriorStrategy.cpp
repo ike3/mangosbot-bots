@@ -4,10 +4,10 @@
 
 using namespace ai;
 
-class GenericWarriorStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+class WarriorStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
 public:
-    GenericWarriorStrategyActionNodeFactory()
+    WarriorStrategyActionNodeFactory()
     {
         /*
         // Stance requirements
@@ -78,7 +78,7 @@ private:
 
 WarriorStrategy::WarriorStrategy(PlayerbotAI* ai) : ClassStrategy(ai)
 {
-    actionNodeFactories.Add(new GenericWarriorStrategyActionNodeFactory());
+    actionNodeFactories.Add(new WarriorStrategyActionNodeFactory());
 }
 
 #ifdef MANGOSBOT_ZERO // Vanilla

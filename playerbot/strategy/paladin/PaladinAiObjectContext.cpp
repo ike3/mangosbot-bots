@@ -25,10 +25,10 @@ namespace ai
             }
 
         private:
-            static Strategy* aoe(PlayerbotAI* ai) { return new PaladinAoePlaceholderStrategy(ai); }
-            static Strategy* cure(PlayerbotAI* ai) { return new PaladinCurePlaceholderStrategy(ai); }
-            static Strategy* buff(PlayerbotAI* ai) { return new PaladinBuffPlaceholderStrategy(ai); }
-            static Strategy* cc(PlayerbotAI* ai) { return new PaladinCcPlaceholderStrategy(ai); }
+            static Strategy* aoe(PlayerbotAI* ai) { return new AoePlaceholderStrategy(ai); }
+            static Strategy* cure(PlayerbotAI* ai) { return new CurePlaceholderStrategy(ai); }
+            static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
+            static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
 #ifdef MANGOSBOT_TWO
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "judgement of light", "seal of righteousness"); }
 #else

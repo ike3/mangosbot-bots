@@ -28,11 +28,11 @@ namespace ai
 
         private:
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
-            static Strategy* aoe(PlayerbotAI* ai) { return new RogueAoePlaceholderStrategy(ai); }
-            static Strategy* buff(PlayerbotAI* ai) { return new RogueBuffPlaceholderStrategy(ai); }
-            static Strategy* stealth(PlayerbotAI* ai) { return new RogueStealthPlaceholderStrategy(ai); }
+            static Strategy* aoe(PlayerbotAI* ai) { return new AoePlaceholderStrategy(ai); }
+            static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
+            static Strategy* stealth(PlayerbotAI* ai) { return new StealthPlaceholderStrategy(ai); }
             static Strategy* stealthed(PlayerbotAI* ai) { return new RogueStealthedStrategy(ai); }
-            static Strategy* cc(PlayerbotAI* ai) { return new RogueCcPlaceholderStrategy(ai); }
+            static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
         };
 
         class AoeSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>

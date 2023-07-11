@@ -3,34 +3,6 @@
 
 namespace ai
 {
-    class MageAoePlaceholderStrategy : public AoePlaceholderStrategy
-    {
-    public:
-        MageAoePlaceholderStrategy(PlayerbotAI* ai) : AoePlaceholderStrategy(ai) {}
-        string getName() override { return "aoe"; }
-    };
-
-    class MageBuffPlaceholderStrategy : public BuffPlaceholderStrategy
-    {
-    public:
-        MageBuffPlaceholderStrategy(PlayerbotAI* ai) : BuffPlaceholderStrategy(ai) {}
-        string getName() override { return "buff"; }
-    };
-
-    class MageCcPlaceholderStrategy : public CcPlaceholderStrategy
-    {
-    public:
-        MageCcPlaceholderStrategy(PlayerbotAI* ai) : CcPlaceholderStrategy(ai) {}
-        string getName() override { return "cc"; }
-    };
-
-    class MageCurePlaceholderStrategy : public CurePlaceholderStrategy
-    {
-    public:
-        MageCurePlaceholderStrategy(PlayerbotAI* ai) : CurePlaceholderStrategy(ai) {}
-        string getName() override { return "cure"; }
-    };
-
     class MageStrategy : public ClassStrategy
     {
     public:

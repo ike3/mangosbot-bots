@@ -24,9 +24,9 @@ namespace ai
             }
 
         private:
-            static Strategy* aoe(PlayerbotAI* ai) { return new WarriorAoePlaceholderStrategy(ai); }
-            static Strategy* buff(PlayerbotAI* ai) { return new WarriorBuffPlaceholderStrategy(ai); }
-            static Strategy* cc(PlayerbotAI* ai) { return new WarriorCcPlaceholderStrategy(ai); }
+            static Strategy* aoe(PlayerbotAI* ai) { return new AoePlaceholderStrategy(ai); }
+            static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
+            static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
         };
 

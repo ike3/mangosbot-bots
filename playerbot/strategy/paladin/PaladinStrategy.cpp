@@ -4,10 +4,10 @@
 
 using namespace ai;
 
-class GenericPaladinStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+class PaladinStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
 public:
-    GenericPaladinStrategyActionNodeFactory()
+    PaladinStrategyActionNodeFactory()
     {
         creators["cleanse poison"] = &cleanse_poison;
         creators["cleanse disease"] = &cleanse_disease;
@@ -71,7 +71,7 @@ private:
 
 PaladinStrategy::PaladinStrategy(PlayerbotAI* ai) : ClassStrategy(ai)
 {
-    actionNodeFactories.Add(new GenericPaladinStrategyActionNodeFactory());
+    actionNodeFactories.Add(new PaladinStrategyActionNodeFactory());
 }
 
 #ifdef MANGOSBOT_ZERO // Vanilla

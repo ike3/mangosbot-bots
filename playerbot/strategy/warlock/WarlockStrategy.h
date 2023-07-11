@@ -3,27 +3,6 @@
 
 namespace ai
 {
-    class WarlockAoePlaceholderStrategy : public AoePlaceholderStrategy
-    {
-    public:
-        WarlockAoePlaceholderStrategy(PlayerbotAI* ai) : AoePlaceholderStrategy(ai) {}
-        string getName() override { return "aoe"; }
-    };
-
-    class WarlockBuffPlaceholderStrategy : public BuffPlaceholderStrategy
-    {
-    public:
-        WarlockBuffPlaceholderStrategy(PlayerbotAI* ai) : BuffPlaceholderStrategy(ai) {}
-        string getName() override { return "buff"; }
-    };
-
-    class WarlockCcPlaceholderStrategy : public CcPlaceholderStrategy
-    {
-    public:
-        WarlockCcPlaceholderStrategy(PlayerbotAI* ai) : CcPlaceholderStrategy(ai) {}
-        string getName() override { return "cc"; }
-    };
-
     class WarlockPetPlaceholderStrategy : public PlaceholderStrategy
     {
     public:

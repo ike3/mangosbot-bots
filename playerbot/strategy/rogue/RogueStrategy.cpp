@@ -58,7 +58,7 @@ RogueStrategy::RogueStrategy(PlayerbotAI* ai) : ClassStrategy(ai)
     actionNodeFactories.Add(new RogueStrategyActionNodeFactory());
 }
 
-RogueStealthStrategy::RogueStealthStrategy(PlayerbotAI* ai) : Strategy(ai)
+RogueStealthStrategy::RogueStealthStrategy(PlayerbotAI* ai) : StealthStrategy(ai)
 {
     actionNodeFactories.Add(new RogueStealthStrategyActionNodeFactory());
 }
@@ -335,6 +335,8 @@ void RogueCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigger
 
 void RogueStealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    StealthStrategy::InitCombatTriggers(triggers);
+
     triggers.push_back(new TriggerNode(
         "stealth",
         NextAction::array(0, new NextAction("stealth", ACTION_EMERGENCY), NULL)));
@@ -362,6 +364,8 @@ void RogueStealthStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
 void RogueStealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    StealthStrategy::InitNonCombatTriggers(triggers);
+
     triggers.push_back(new TriggerNode(
         "no stealth",
         NextAction::array(0, new NextAction("check stealth", ACTION_HIGH), NULL)));
@@ -373,6 +377,8 @@ void RogueStealthStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
 
 void RogueStealthPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    StealthPvpStrategy::InitCombatTriggers(triggers);
+
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
         NextAction::array(0, new NextAction("sprint", ACTION_HIGH), 
@@ -381,27 +387,27 @@ void RogueStealthPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 
 void RogueStealthPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    StealthPvpStrategy::InitNonCombatTriggers(triggers);
 }
 
 void RogueStealthPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    StealthPveStrategy::InitCombatTriggers(triggers);
 }
 
 void RogueStealthPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    StealthPveStrategy::InitNonCombatTriggers(triggers);
 }
 
 void RogueStealthRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    StealthRaidStrategy::InitCombatTriggers(triggers);
 }
 
 void RogueStealthRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-
+    StealthRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void RoguePoisonsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1260,6 +1266,54 @@ void RoguePoisonsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 
 #endif
 
+void RogueManualPoisonStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        triggerName,
+        NextAction::array(0, new NextAction(actionName, ACTION_NORMAL), NULL)));
+}
+
+class RogueStealthedStrategyMultiplier : public Multiplier
+{
+public:
+    RogueStealthedStrategyMultiplier(PlayerbotAI* ai) : Multiplier(ai, "stealthed") {}
+
+    float GetValue(Action* action) override
+    {
+        // Only allow stealth actions
+        const std::string& actionName = action->getName();
+        if ((actionName == "unstealth") ||
+            (actionName == "check stealth") ||
+            (actionName == "cold blood") ||
+            (actionName == "preparation") ||
+            (actionName == "premeditation") ||
+            (actionName == "shadowstep") ||
+            (actionName == "sprint") ||
+            (actionName == "ambush") ||
+            (actionName == "cheap shot") ||
+            (actionName == "sap") ||
+            (actionName == "garrote") ||
+            (actionName == "food") ||
+            (actionName == "backstab") ||
+            (actionName == "dps assist") ||
+            (actionName == "select new target") ||
+            (actionName == "follow") ||
+            (actionName == "reach melee") ||
+            (actionName == "set behind") ||
+            (actionName == "set combat state") ||
+            (actionName == "set non combat state") ||
+            (actionName == "set dead state") ||
+            (actionName == "update pvp strats") ||
+            (actionName == "update pve strats") ||
+            (actionName == "update raid strats"))
+        {
+            return 1.0f;
+        }
+
+        return 0.0f;
+    }
+};
+
 void RogueStealthedStrategy::InitCombatMultipliers(std::list<Multiplier*>& multipliers)
 {
     multipliers.push_back(new RogueStealthedStrategyMultiplier(ai));
@@ -1268,46 +1322,4 @@ void RogueStealthedStrategy::InitCombatMultipliers(std::list<Multiplier*>& multi
 void RogueStealthedStrategy::InitNonCombatMultipliers(std::list<Multiplier*>& multipliers)
 {
     RogueStealthedStrategy::InitCombatMultipliers(multipliers);
-}
-
-float RogueStealthedStrategyMultiplier::GetValue(Action* action)
-{
-    // Only allow stealth actions
-    const std::string& actionName = action->getName();
-    if ((actionName == "unstealth") ||
-        (actionName == "check stealth") ||
-        (actionName == "cold blood") ||
-        (actionName == "preparation") ||
-        (actionName == "premeditation") ||
-        (actionName == "shadowstep") ||
-        (actionName == "sprint") ||
-        (actionName == "ambush") ||
-        (actionName == "cheap shot") ||
-        (actionName == "sap") ||
-        (actionName == "garrote") ||
-        (actionName == "food") ||
-        (actionName == "backstab") ||
-        (actionName == "dps assist") ||
-        (actionName == "select new target") ||
-        (actionName == "follow") ||
-        (actionName == "reach melee") ||
-        (actionName == "set behind") ||
-        (actionName == "set combat state") ||
-        (actionName == "set non combat state") ||
-        (actionName == "set dead state") ||
-        (actionName == "update pvp strats") ||
-        (actionName == "update pve strats") ||
-        (actionName == "update raid strats"))
-    {
-        return 1.0f;
-    }
-
-    return 0.0f;
-}
-
-void RogueManualPoisonStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
-{
-    triggers.push_back(new TriggerNode(
-        triggerName,
-        NextAction::array(0, new NextAction(actionName, ACTION_NORMAL), NULL)));
 }
