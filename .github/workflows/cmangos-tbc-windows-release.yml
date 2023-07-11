@@ -87,7 +87,7 @@ jobs:
 
       - name: Archive files
         run: |
-          cd bin
+          cd ${{env.BUILD_DIR}}/bin
           7z a -tzip ${{env.ARCHIVE_FILENAME}} "x64_${{env.BUILD_TYPE}}\*"
           
       - name: Archive this artefact
