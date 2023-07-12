@@ -266,13 +266,7 @@ namespace ai
             static Strategy* subtlety_pve(PlayerbotAI* ai) { return new SubtletyRoguePveStrategy(ai); }
             static Strategy* subtlety_raid(PlayerbotAI* ai) { return new SubtletyRogueRaidStrategy(ai); }
         };
-    };
-};
 
-namespace ai
-{
-    namespace rogue
-    {
         class TriggerFactoryInternal : public NamedObjectContext<Trigger>
         {
         public:
@@ -354,14 +348,7 @@ namespace ai
             static Trigger* apply_wound_poison_off_hand(PlayerbotAI* ai) { return new ApplyWoundPoisonTrigger(ai, false); }
             static Trigger* apply_anesthetic_poison_off_hand(PlayerbotAI* ai) { return new ApplyAnestheticPoisonTrigger(ai, false); }
         };
-    };
-};
 
-
-namespace ai
-{
-    namespace rogue
-    {
         class AiObjectContextInternal : public NamedObjectContext<Action>
         {
         public:

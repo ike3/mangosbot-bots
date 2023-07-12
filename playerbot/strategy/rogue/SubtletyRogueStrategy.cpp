@@ -4,10 +4,10 @@
 
 using namespace ai;
 
-class AssassinationRogueStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+class SubtletyRogueStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
 public:
-    AssassinationRogueStrategyActionNodeFactory()
+    SubtletyRogueStrategyActionNodeFactory()
     {
         creators["hemorrhage back"] = &hemorrhage_back;
         creators["hemorrhage front"] = &hemorrhage_front;
@@ -27,7 +27,7 @@ private:
 
 SubtletyRogueStrategy::SubtletyRogueStrategy(PlayerbotAI* ai) : RogueStrategy(ai)
 {
-    actionNodeFactories.Add(new AssassinationRogueStrategyActionNodeFactory());
+    actionNodeFactories.Add(new SubtletyRogueStrategyActionNodeFactory());
 }
 
 #ifdef MANGOSBOT_ZERO // Vanilla

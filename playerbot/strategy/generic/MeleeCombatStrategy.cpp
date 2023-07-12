@@ -8,7 +8,7 @@ void MeleeCombatStrategy::InitCombatTriggers(list<TriggerNode*> &triggers)
 {
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
-        NextAction::array(0, new NextAction("reach melee", 60.0f), NULL)));
+        NextAction::array(0, new NextAction("reach melee", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy too close for melee",

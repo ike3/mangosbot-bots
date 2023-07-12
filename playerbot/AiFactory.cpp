@@ -379,7 +379,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         {
             if (tab == 1)
             {
-                combatEngine->addStrategies("protection", "tank assist", "pull", "pull back", "bthreat", "close", NULL);
+                combatEngine->addStrategies("protection", "tank assist", "pull", "pull back", "close", NULL);
 			}
             else if(tab == 0)
             {
@@ -387,7 +387,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             }
             else
             {
-                combatEngine->addStrategies("retribution", "dps assist", "close", NULL);
+                combatEngine->addStrategies("retribution", "dps assist", "threat", "close", NULL);
             }
 
             combatEngine->addStrategies("cure", "aoe", "cc", "buff", "aura", "blessing", NULL);
@@ -396,24 +396,20 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
         case CLASS_DRUID:
         {
-            if (tab == 0)
+            if (tab == 1)
             {
-                combatEngine->addStrategies("caster", "cure", "caster aoe", "threat", "flee", "dps assist", "ranged", "cc", NULL);
-                if (player->GetLevel() > 19)
-                {
-                    combatEngine->addStrategy("caster debuff");
-                }
+                combatEngine->addStrategies("tank feral", "tank assist", "pull", "pull back", "close", "behind", NULL);
             }
             else if (tab == 2)
             {
-                combatEngine->addStrategies("heal", "cure", "flee", "dps assist", "ranged", "cc", NULL);
+                combatEngine->addStrategies("restoration", "dps assist", "flee", "ranged", NULL);
             }
             else
             {
-                combatEngine->removeStrategy("ranged");
-                combatEngine->addStrategies("bear", "tank assist", "pull", "pull back", "flee", "close", "behind", NULL);
+                combatEngine->addStrategies("balance", "dps assist", "threat", "flee", "ranged", NULL);
             }
 
+            combatEngine->addStrategies("cure", "aoe", "cc", "buff", NULL);
             break;
         }
 
@@ -495,12 +491,14 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             
             if (player->getClass() == CLASS_DRUID && tab == 2)
             {
-                combatEngine->addStrategies("caster", "caster aoe", NULL);
+                combatEngine->addStrategies("balance", "ranged", NULL);
+                combatEngine->removeStrategy("close");
             }
 
-            if (player->getClass() == CLASS_DRUID && tab == 1 && urand(0, 100) > 50 && player->GetLevel() > 19)
+            if (player->getClass() == CLASS_DRUID && tab == 1 && urand(0, 100) > 50 && player->GetLevel() >= 20)
             {
-                combatEngine->addStrategy("dps");
+                combatEngine->addStrategies("dps feral", "close" "stealth", "behind", NULL);
+                combatEngine->removeStrategy("ranged");
             }
 
             if (player->getClass() == CLASS_PRIEST && tab == 1)
@@ -599,12 +597,12 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
         if (player->getClass() == CLASS_DRUID && tab == 2)
         {
-            combatEngine->addStrategies("caster", "caster aoe", NULL);
+            combatEngine->addStrategies("balance", NULL);
         }
 
         if (player->getClass() == CLASS_DRUID && tab == 1)
         {
-            combatEngine->addStrategies("behind", "dps", NULL);
+            combatEngine->addStrategies("behind", "dps feral", "stealth", NULL);
         }
         
         if (player->getClass() == CLASS_ROGUE)
@@ -737,13 +735,18 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         {
             if (tab == 1)
             {
-                nonCombatEngine->addStrategies("tank assist", "cure", NULL);
+                nonCombatEngine->addStrategies("tank feral", "tank assist", NULL);
+            }
+            else if (tab == 2)
+            {
+                nonCombatEngine->addStrategies("restoration", "dps assist", NULL);
             }
             else
             {
-                nonCombatEngine->addStrategies("dps assist", "cure", NULL);
+                nonCombatEngine->addStrategies("balance", "dps assist", NULL);
             }
 
+            nonCombatEngine->addStrategies("cure", "aoe", "cc", "buff", NULL);
             break;
         }
 
@@ -1096,6 +1099,24 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
 
             break;
         }
+
+        case CLASS_DRUID:
+        {
+            if (tab == 1)
+            {
+                deadEngine->addStrategy("tank feral");
+            }
+            else if (tab == 2)
+            {
+                deadEngine->addStrategy("restoration");
+            }
+            else
+            {
+                deadEngine->addStrategy("balance");
+            }
+
+            break;
+        }
     }
 }
 
@@ -1216,6 +1237,24 @@ void AiFactory::AddDefaultReactionStrategies(Player* player, PlayerbotAI* const 
             else
             {
                 reactionEngine->addStrategy("fury");
+            }
+
+            break;
+        }
+
+        case CLASS_DRUID:
+        {
+            if (tab == 1)
+            {
+                reactionEngine->addStrategy("tank feral");
+            }
+            else if (tab == 2)
+            {
+                reactionEngine->addStrategy("restoration");
+            }
+            else
+            {
+                reactionEngine->addStrategy("balance");
             }
 
             break;

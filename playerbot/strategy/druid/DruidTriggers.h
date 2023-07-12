@@ -3,7 +3,6 @@
 
 namespace ai 
 {
-
     class MarkOfTheWildOnPartyTrigger : public BuffOnPartyTrigger 
     {
     public:
@@ -57,7 +56,7 @@ namespace ai
     class RipTrigger : public NoDebuffAndComboPointsAvailableTrigger
     {
     public:
-        RipTrigger(PlayerbotAI* ai, uint8 comboPoints = 3) : NoDebuffAndComboPointsAvailableTrigger(ai, "rake", comboPoints) {}
+        RipTrigger(PlayerbotAI* ai, uint8 comboPoints = 3) : NoDebuffAndComboPointsAvailableTrigger(ai, "rip", comboPoints) {}
     };
 
     class InsectSwarmTrigger : public DebuffTrigger
@@ -157,6 +156,13 @@ namespace ai
         virtual bool IsActive() { return !ai->HasAura("tree of life", bot); }
     };
 
+    class MoonkinFormTrigger : public BuffTrigger
+    {
+    public:
+        MoonkinFormTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "moonkin form") {}
+        virtual bool IsActive() { return !ai->HasAura("moonkin form", bot); }
+    };
+
     class CatFormTrigger : public BuffTrigger
     {
     public:
@@ -186,5 +192,151 @@ namespace ai
     {
     public:
         NaturesSwiftnessTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "nature's swiftness") {}
+    };
+
+    class EnrageTrigger : public BuffTrigger
+    {
+    public:
+        EnrageTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "enrage") {}
+
+    private:
+        bool IsActive() override
+        {
+            return AI_VALUE2(uint8, "health", "self target") >= sPlayerbotAIConfig.mediumHealth &&
+                   AI_VALUE2(uint8, "rage", "self target") < 20;
+        }
+    };
+
+    class LacerateTrigger : public DebuffTrigger
+    {
+    public:
+        LacerateTrigger(PlayerbotAI* ai) : DebuffTrigger(ai, "lacerate") {}
+
+    private:
+        bool IsActive() override
+        {
+            Unit* target = GetTarget();
+            return target && !ai->HasAura("lacerate", target, true) && !HasMaxDebuffs();
+        }
+    };
+
+    class InStealthTrigger : public HasAuraTrigger
+    {
+    public:
+        InStealthTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "prowl") {}
+    };
+
+    class NoStealthTrigger : public HasNoAuraTrigger
+    {
+    public:
+        NoStealthTrigger(PlayerbotAI* ai) : HasNoAuraTrigger(ai, "prowl")
+        {
+            checkInterval = 2;
+        }
+    };
+
+    class UnstealthTrigger : public BuffTrigger
+    {
+    public:
+        UnstealthTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "prowl", 2) {}
+
+        bool IsActive() override
+        {
+            if (!ai->HasAura("prowl", bot))
+            {
+                return false;
+            }
+
+            if (bot->InBattleGround())
+            {
+                return false;
+            }
+
+            return ai->HasAura("prowl", bot) &&
+                !AI_VALUE(bool, "has attackers") &&
+                !AI_VALUE(bool, "has enemy player targets") &&
+                (AI_VALUE2(bool, "moving", "self target") &&
+                    ((ai->GetMaster() &&
+                        sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), 10.0f) &&
+                        AI_VALUE2(bool, "moving", "master target")) ||
+                        !AI_VALUE(bool, "has attackers")));
+        }
+    };
+
+    class StealthTrigger : public Trigger
+    {
+    public:
+        StealthTrigger(PlayerbotAI* ai) : Trigger(ai, "prowl") {}
+
+        bool IsActive() override
+        {
+            if (ai->HasAura("prowl", bot) || sServerFacade.IsInCombat(bot) || !sServerFacade.IsSpellReady(bot, 5215))
+            {
+                return false;
+            }
+
+            Unit* target = AI_VALUE(Unit*, "enemy player target");
+            if (!target)
+            {
+                target = AI_VALUE(Unit*, "grind target");
+            }
+            if (!target)
+            {
+                target = AI_VALUE(Unit*, "dps target");
+            }
+            if (!target)
+            {
+                return false;
+            }
+
+            float distance = 30.0f;
+            if (target && target->GetVictim())
+            {
+                distance -= 10;
+            }
+
+            if (sServerFacade.isMoving(target) && target->GetVictim())
+            {
+                distance -= 10;
+            }
+
+            if (bot->InBattleGround())
+            {
+                distance += 20;
+            }
+
+#ifndef MANGOSBOT_ZERO
+            if (bot->InArena())
+            {
+                distance += 20;
+            }
+#endif
+
+            return (target && sServerFacade.GetDistance2d(bot, target) < distance);
+        }
+    };
+
+    class PowershiftTrigger : public Trigger
+    {
+    public:
+        PowershiftTrigger(PlayerbotAI* ai) : Trigger(ai, "powershift") {}
+
+        bool IsActive() override
+        {
+            if (ai->HasAura("cat form", bot) &&
+                AI_VALUE2(uint8, "energy", "self target") < 20 &&
+                AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.lowMana)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    };
+
+    class FerociousBiteTrigger : public ComboPointsAvailableTrigger
+    {
+    public:
+        FerociousBiteTrigger(PlayerbotAI* ai) : ComboPointsAvailableTrigger(ai, 5) {}
     };
 }

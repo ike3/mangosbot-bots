@@ -185,21 +185,21 @@ namespace ai
 
     class StealthPvpStrategy
     {
-    protected:
+    public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
     class StealthPveStrategy
     {
-    protected:
+    public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
     class StealthRaidStrategy
     {
-    protected:
+    public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
