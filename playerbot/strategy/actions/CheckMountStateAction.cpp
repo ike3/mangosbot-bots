@@ -248,6 +248,9 @@ bool CheckMountStateAction::isUseful()
     if (!bot->GetPlayerbotAI()->HasStrategy("mount", BotState::BOT_STATE_NON_COMBAT) && !bot->IsMounted())
         return false;
 
+    if (!bot->IsMounted() && bot->IsInWater())
+        return false;
+
     bool firstmount = bot->GetLevel() >=
 #ifdef MANGOSBOT_ZERO
         40

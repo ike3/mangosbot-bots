@@ -418,22 +418,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         {
             if (!sTravelNodeMap.getNodes().empty() && !bot->InBattleGround())
             {
-                if (sPlayerbotAIConfig.tweakValue)
-                {
-                    if (lastMove.future.valid())
-                    {
-                        if(lastMove.future.wait_for(0s) != future_status::ready)
-                            return true; //we have no path. Wait until it is ready.
-                        movePath = lastMove.future.get();
-                    }
-                    else
-                    {
-                        lastMove.future = std::async(&TravelNodeMap::getFullPath, startPosition, endPosition, bot);
-                        return true;
-                    }
-                }
-                else
-                    movePath = sTravelNodeMap.getFullPath(startPosition, endPosition, bot);
+                movePath = sTravelNodeMap.getFullPath(startPosition, endPosition, bot);
 
                 if (movePath.empty())
                 {
