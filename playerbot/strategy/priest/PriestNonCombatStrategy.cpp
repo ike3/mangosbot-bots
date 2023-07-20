@@ -49,7 +49,7 @@ void PriestNonCombatStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &tri
 
 	triggers.push_back(new TriggerNode(
 		"party member dead",
-		NextAction::array(0, new NextAction("remove shadowform", 51.0f), new NextAction("resurrection", 50.0f), NULL)));
+		NextAction::array(0, new NextAction("remove shadowform", 91.0f), new NextAction("resurrection", 90.0f), NULL)));
 
     /*triggers.push_back(new TriggerNode(
         "swimming",

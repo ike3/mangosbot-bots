@@ -111,16 +111,16 @@ void PaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "party member dead",
+        NextAction::array(0, new NextAction("redemption", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("holy light", ACTION_MEDIUM_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member dead",
-        NextAction::array(0, new NextAction("redemption", ACTION_HIGH), NULL)));
 }
 
 void PaladinStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -599,16 +599,16 @@ void PaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "party member dead",
+        NextAction::array(0, new NextAction("redemption", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("holy light", ACTION_MEDIUM_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member dead",
-        NextAction::array(0, new NextAction("redemption", ACTION_HIGH), NULL)));
 }
 
 void PaladinStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -1091,16 +1091,16 @@ void PaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "party member dead",
+        NextAction::array(0, new NextAction("redemption", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("holy light", ACTION_MEDIUM_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member dead",
-        NextAction::array(0, new NextAction("redemption", ACTION_HIGH), NULL)));
 }
 
 void PaladinStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)

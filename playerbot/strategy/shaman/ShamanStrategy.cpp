@@ -69,16 +69,16 @@ void ShamanStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "party member dead",
+        NextAction::array(0, new NextAction("ancestral spirit", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("healing wave", ACTION_MEDIUM_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("healing wave on party", ACTION_LIGHT_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member dead",
-        NextAction::array(0, new NextAction("ancestral spirit", ACTION_HIGH), NULL)));
 }
 
 void ShamanStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -415,16 +415,16 @@ void ShamanStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "party member dead",
+        NextAction::array(0, new NextAction("ancestral spirit", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("healing wave", ACTION_MEDIUM_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("healing wave on party", ACTION_LIGHT_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member dead",
-        NextAction::array(0, new NextAction("ancestral spirit", ACTION_HIGH), NULL)));
 }
 
 void ShamanStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -776,16 +776,16 @@ void ShamanStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassStrategy::InitNonCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "party member dead",
+        NextAction::array(0, new NextAction("ancestral spirit", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("healing wave", ACTION_MEDIUM_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "party member low health",
         NextAction::array(0, new NextAction("healing wave on party", ACTION_LIGHT_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member dead",
-        NextAction::array(0, new NextAction("ancestral spirit", ACTION_HIGH), NULL)));
 
     if (sRandomPlayerbotMgr.IsRandomBot(ai->GetBot()))
     {
