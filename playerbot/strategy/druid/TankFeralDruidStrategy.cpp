@@ -282,6 +282,10 @@ void TankFeralDruidBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>&
 {
     TankFeralDruidBuffStrategy::InitCombatTriggers(triggers);
     DruidBuffRaidStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("stoneshield potion", ACTION_HIGH), NULL)));
 }
 
 void TankFeralDruidBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

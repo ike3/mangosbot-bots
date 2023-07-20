@@ -187,8 +187,11 @@ namespace ai
             creators["guild manage nearby"] = &ActionContext::guild_manage_nearby;
             creators["use trinket"] = &ActionContext::use_trinket;
             creators["reset"] = &ActionContext::reset;
+
+            // item helpers
             creators["goblin sapper"] = &ActionContext::goblin_sapper;
             creators["oil of immolation"] = &ActionContext::oil_of_immolation;
+            creators["stoneshield potion"] = &ActionContext::stoneshield_potion;
             creators["dark rune"] = &ActionContext::dark_rune;
             creators["throw grenade"] = &ActionContext::throw_grenade;
             creators["bg banner"] = &ActionContext::bg_banner;
@@ -438,6 +441,7 @@ namespace ai
         // item helpers
         static Action* goblin_sapper(PlayerbotAI* ai) { return new UseGoblinSapperChargeAction(ai); }
         static Action* oil_of_immolation(PlayerbotAI* ai) { return new UseOilOfImmolationAction(ai); }
+        static Action* stoneshield_potion(PlayerbotAI* ai) { return new UseStoneshieldPotionAction(ai); }
         static Action* dark_rune(PlayerbotAI* ai) { return new UseDarkRuneAction(ai); }
         static Action* throw_grenade(PlayerbotAI* ai) { return new ThrowGrenadeAction(ai); }
         static Action* bg_banner(PlayerbotAI* ai) { return new UseBgBannerAction(ai); }

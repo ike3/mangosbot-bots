@@ -181,6 +181,23 @@ namespace ai
         virtual uint32 GetItemId() override { return 8956; }
     };
 
+    // stoneshield potion
+    class UseStoneshieldPotionAction : public UseItemIdAction
+    {
+    public:
+        UseStoneshieldPotionAction(PlayerbotAI* ai) : UseItemIdAction(ai, "stoneshield potion") {}
+        virtual bool isUseful() override
+        {
+#ifndef MANGOSBOT_ZERO
+            if (bot->InArena())
+                return false;
+#endif
+            return bot->GetLevel() >= 46 && !ai->HasAura(17540, bot);
+        }
+
+        virtual uint32 GetItemId() override { return 13455; }
+    };
+
     class UseBgBannerAction : public UseItemIdAction
     {
     public:

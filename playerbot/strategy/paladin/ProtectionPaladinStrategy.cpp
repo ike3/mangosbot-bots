@@ -263,6 +263,10 @@ void ProtectionPaladinBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode
 {
     ProtectionPaladinBuffStrategy::InitCombatTriggers(triggers);
     PaladinBuffRaidStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("stoneshield potion", ACTION_HIGH), NULL)));
 }
 
 void ProtectionPaladinBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
