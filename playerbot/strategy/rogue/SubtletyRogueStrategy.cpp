@@ -197,10 +197,6 @@ void SubtletyRogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>
 void SubtletyRogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RogueBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("preparation", ACTION_HIGH + 3), NULL)));
 }
 
 void SubtletyRogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -242,6 +238,56 @@ void SubtletyRogueBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*
 {
     SubtletyRogueBuffStrategy::InitNonCombatTriggers(triggers);
     RogueBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("preparation", ACTION_HIGH + 3), NULL)));
+}
+
+void SubtletyRogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void SubtletyRogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -599,6 +645,56 @@ void SubtletyRogueBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*
 {
     SubtletyRogueBuffStrategy::InitNonCombatTriggers(triggers);
     RogueBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("preparation", ACTION_HIGH + 3), NULL)));
+}
+
+void SubtletyRogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void SubtletyRogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -960,6 +1056,56 @@ void SubtletyRogueBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*
 {
     SubtletyRogueBuffStrategy::InitNonCombatTriggers(triggers);
     RogueBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("preparation", ACTION_HIGH + 3), NULL)));
+}
+
+void SubtletyRogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void SubtletyRogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SubtletyRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void SubtletyRogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

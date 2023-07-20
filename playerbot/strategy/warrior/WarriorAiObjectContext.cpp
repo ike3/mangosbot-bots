@@ -19,6 +19,7 @@ namespace ai
             {
                 creators["aoe"] = &warrior::StrategyFactoryInternal::aoe;
                 creators["buff"] = &warrior::StrategyFactoryInternal::buff;
+                creators["boost"] = &warrior::StrategyFactoryInternal::boost;
                 creators["pull"] = &warrior::StrategyFactoryInternal::pull;
                 creators["cc"] = &warrior::StrategyFactoryInternal::cc;
             }
@@ -26,6 +27,7 @@ namespace ai
         private:
             static Strategy* aoe(PlayerbotAI* ai) { return new AoePlaceholderStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
+            static Strategy* boost(PlayerbotAI* ai) { return new BoostPlaceholderStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
         };
@@ -84,6 +86,34 @@ namespace ai
             static Strategy* buff_protection_pve(PlayerbotAI* ai) { return new ProtectionWarriorBuffPveStrategy(ai); }
             static Strategy* buff_protection_pvp(PlayerbotAI* ai) { return new ProtectionWarriorBuffPvpStrategy(ai); }
             static Strategy* buff_protection_raid(PlayerbotAI* ai) { return new ProtectionWarriorBuffRaidStrategy(ai); }
+        };
+
+        class BoostSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            BoostSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["boost arms pve"] = &warrior::BoostSituationStrategyFactoryInternal::boost_arms_pve;
+                creators["boost arms pvp"] = &warrior::BoostSituationStrategyFactoryInternal::boost_arms_pvp;
+                creators["boost arms raid"] = &warrior::BoostSituationStrategyFactoryInternal::boost_arms_raid;
+                creators["boost fury pve"] = &warrior::BoostSituationStrategyFactoryInternal::boost_fury_pve;
+                creators["boost fury pvp"] = &warrior::BoostSituationStrategyFactoryInternal::boost_fury_pvp;
+                creators["boost fury raid"] = &warrior::BoostSituationStrategyFactoryInternal::boost_fury_raid;
+                creators["boost protection pve"] = &warrior::BoostSituationStrategyFactoryInternal::boost_protection_pve;
+                creators["boost protection pvp"] = &warrior::BoostSituationStrategyFactoryInternal::boost_protection_pvp;
+                creators["boost protection raid"] = &warrior::BoostSituationStrategyFactoryInternal::boost_protection_raid;
+            }
+
+        private:
+            static Strategy* boost_arms_pve(PlayerbotAI* ai) { return new ArmsWarriorBoostPveStrategy(ai); }
+            static Strategy* boost_arms_pvp(PlayerbotAI* ai) { return new ArmsWarriorBoostPvpStrategy(ai); }
+            static Strategy* boost_arms_raid(PlayerbotAI* ai) { return new ArmsWarriorBoostRaidStrategy(ai); }
+            static Strategy* boost_fury_pve(PlayerbotAI* ai) { return new FuryWarriorBoostPveStrategy(ai); }
+            static Strategy* boost_fury_pvp(PlayerbotAI* ai) { return new FuryWarriorBoostPvpStrategy(ai); }
+            static Strategy* boost_fury_raid(PlayerbotAI* ai) { return new FuryWarriorBoostRaidStrategy(ai); }
+            static Strategy* boost_protection_pve(PlayerbotAI* ai) { return new ProtectionWarriorBoostPveStrategy(ai); }
+            static Strategy* boost_protection_pvp(PlayerbotAI* ai) { return new ProtectionWarriorBoostPvpStrategy(ai); }
+            static Strategy* boost_protection_raid(PlayerbotAI* ai) { return new ProtectionWarriorBoostRaidStrategy(ai); }
         };
 
         class CcSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -158,14 +188,6 @@ namespace ai
             static Strategy* protection_pve(PlayerbotAI* ai) { return new ProtectionWarriorPveStrategy(ai); }
             static Strategy* protection_raid(PlayerbotAI* ai) { return new ProtectionWarriorRaidStrategy(ai); }
         };
-    };
-};
-
-namespace ai
-{
-    namespace warrior
-    {
-        using namespace ai;
 
         class TriggerFactoryInternal : public NamedObjectContext<Trigger>
         {
@@ -216,6 +238,7 @@ namespace ai
                 creators["intercept can cast"] = &TriggerFactoryInternal::intercept_can_cast;
                 creators["intercept and far enemy"] = &TriggerFactoryInternal::intercept_and_far_enemy;
                 creators["intercept and rage"] = &TriggerFactoryInternal::intercept_and_rage;
+                creators["recklessness"] = &TriggerFactoryInternal::recklessness;
             }
 
         private:
@@ -263,6 +286,7 @@ namespace ai
             static Trigger* intercept_can_cast(PlayerbotAI* ai) { return new InterceptCanCastTrigger(ai); }
             static Trigger* intercept_and_far_enemy(PlayerbotAI* ai) { return new TwoTriggers(ai, "enemy is out of melee", "intercept can cast"); }
             static Trigger* intercept_and_rage(PlayerbotAI* ai) { return new TwoTriggers(ai, "intercept and far enemy", "light rage available"); }
+            static Trigger* recklessness(PlayerbotAI* ai) { return new RecklessnessTrigger(ai); }
         };
 
         class AiObjectContextInternal : public NamedObjectContext<Action>
@@ -408,6 +432,7 @@ WarriorAiObjectContext::WarriorAiObjectContext(PlayerbotAI* ai) : AiObjectContex
     strategyContexts.Add(new ai::warrior::ClassStrategyFactoryInternal());
     strategyContexts.Add(new ai::warrior::ClassSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::warrior::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::warrior::BoostSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::warrior::CcSituationStrategyFactoryInternal());
     actionContexts.Add(new ai::warrior::AiObjectContextInternal());
     triggerContexts.Add(new ai::warrior::TriggerFactoryInternal());

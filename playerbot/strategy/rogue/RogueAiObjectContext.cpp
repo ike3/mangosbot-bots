@@ -21,6 +21,7 @@ namespace ai
                 creators["pull"] = &rogue::StrategyFactoryInternal::pull;
                 creators["aoe"] = &rogue::StrategyFactoryInternal::aoe;
                 creators["buff"] = &rogue::StrategyFactoryInternal::buff;
+                creators["boost"] = &rogue::StrategyFactoryInternal::boost;
                 creators["stealth"] = &rogue::StrategyFactoryInternal::stealth;
                 creators["stealthed"] = &rogue::StrategyFactoryInternal::stealthed;
                 creators["cc"] = &rogue::StrategyFactoryInternal::cc;
@@ -30,6 +31,7 @@ namespace ai
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
             static Strategy* aoe(PlayerbotAI* ai) { return new AoePlaceholderStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
+            static Strategy* boost(PlayerbotAI* ai) { return new BoostPlaceholderStrategy(ai); }
             static Strategy* stealth(PlayerbotAI* ai) { return new StealthPlaceholderStrategy(ai); }
             static Strategy* stealthed(PlayerbotAI* ai) { return new RogueStealthedStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
@@ -89,6 +91,34 @@ namespace ai
             static Strategy* buff_subtlety_pve(PlayerbotAI* ai) { return new SubtletyRogueBuffPveStrategy(ai); }
             static Strategy* buff_subtlety_pvp(PlayerbotAI* ai) { return new SubtletyRogueBuffPvpStrategy(ai); }
             static Strategy* buff_subtlety_raid(PlayerbotAI* ai) { return new SubtletyRogueBuffRaidStrategy(ai); }
+        };
+
+        class BoostSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            BoostSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["boost combat pve"] = &rogue::BoostSituationStrategyFactoryInternal::boost_combat_pve;
+                creators["boost combat pvp"] = &rogue::BoostSituationStrategyFactoryInternal::boost_combat_pvp;
+                creators["boost combat raid"] = &rogue::BoostSituationStrategyFactoryInternal::boost_combat_raid;
+                creators["boost assassination pve"] = &rogue::BoostSituationStrategyFactoryInternal::boost_assassination_pve;
+                creators["boost assassination pvp"] = &rogue::BoostSituationStrategyFactoryInternal::boost_assassination_pvp;
+                creators["boost assassination raid"] = &rogue::BoostSituationStrategyFactoryInternal::boost_assassination_raid;
+                creators["boost subtlety pve"] = &rogue::BoostSituationStrategyFactoryInternal::boost_subtlety_pve;
+                creators["boost subtlety pvp"] = &rogue::BoostSituationStrategyFactoryInternal::boost_subtlety_pvp;
+                creators["boost subtlety raid"] = &rogue::BoostSituationStrategyFactoryInternal::boost_subtlety_raid;
+            }
+
+        private:
+            static Strategy* boost_combat_pve(PlayerbotAI* ai) { return new CombatRogueBoostPveStrategy(ai); }
+            static Strategy* boost_combat_pvp(PlayerbotAI* ai) { return new CombatRogueBoostPvpStrategy(ai); }
+            static Strategy* boost_combat_raid(PlayerbotAI* ai) { return new CombatRogueBoostRaidStrategy(ai); }
+            static Strategy* boost_assassination_pve(PlayerbotAI* ai) { return new AssassinationRogueBoostPveStrategy(ai); }
+            static Strategy* boost_assassination_pvp(PlayerbotAI* ai) { return new AssassinationRogueBoostPvpStrategy(ai); }
+            static Strategy* boost_assassination_raid(PlayerbotAI* ai) { return new AssassinationRogueBoostRaidStrategy(ai); }
+            static Strategy* boost_subtlety_pve(PlayerbotAI* ai) { return new SubtletyRogueBoostPveStrategy(ai); }
+            static Strategy* boost_subtlety_pvp(PlayerbotAI* ai) { return new SubtletyRogueBoostPvpStrategy(ai); }
+            static Strategy* boost_subtlety_raid(PlayerbotAI* ai) { return new SubtletyRogueBoostRaidStrategy(ai); }
         };
 
         class CcSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -468,6 +498,7 @@ RogueAiObjectContext::RogueAiObjectContext(PlayerbotAI* ai) : AiObjectContext(ai
     strategyContexts.Add(new ai::rogue::StrategyFactoryInternal());
     strategyContexts.Add(new ai::rogue::AoeSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::rogue::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::rogue::BoostSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::rogue::CcSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::rogue::StealthSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::rogue::PoisonsSituationStrategyFactoryInternal());

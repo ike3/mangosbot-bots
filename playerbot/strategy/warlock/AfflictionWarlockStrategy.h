@@ -150,6 +150,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class AfflictionWarlockBoostStrategy : public WarlockBoostStrategy
+    {
+    public:
+        AfflictionWarlockBoostStrategy(PlayerbotAI* ai) : WarlockBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class AfflictionWarlockBoostPveStrategy : public AfflictionWarlockBoostStrategy
+    {
+    public:
+        AfflictionWarlockBoostPveStrategy(PlayerbotAI* ai) : AfflictionWarlockBoostStrategy(ai) {}
+        string getName() override { return "boost affliction pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class AfflictionWarlockBoostPvpStrategy : public AfflictionWarlockBoostStrategy
+    {
+    public:
+        AfflictionWarlockBoostPvpStrategy(PlayerbotAI* ai) : AfflictionWarlockBoostStrategy(ai) {}
+        string getName() override { return "boost affliction pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class AfflictionWarlockBoostRaidStrategy : public AfflictionWarlockBoostStrategy
+    {
+    public:
+        AfflictionWarlockBoostRaidStrategy(PlayerbotAI* ai) : AfflictionWarlockBoostStrategy(ai) {}
+        string getName() override { return "boost affliction raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class AfflictionWarlockCcStrategy : public WarlockCcStrategy
     {
     public:

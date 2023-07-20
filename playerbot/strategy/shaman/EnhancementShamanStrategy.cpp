@@ -379,6 +379,52 @@ void EnhancementShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void EnhancementShamanBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 #endif
 #ifdef MANGOSBOT_ONE // TBC
 
@@ -719,6 +765,52 @@ void EnhancementShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void EnhancementShamanBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 #endif
 #ifdef MANGOSBOT_TWO // WOTLK
 
@@ -1057,6 +1149,52 @@ void EnhancementShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
 {
     EnhancementShamanBuffStrategy::InitNonCombatTriggers(triggers);
     ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void EnhancementShamanBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    EnhancementShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 #endif

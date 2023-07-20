@@ -150,6 +150,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class ProtectionWarriorBoostStrategy : public WarriorBoostStrategy
+    {
+    public:
+        ProtectionWarriorBoostStrategy(PlayerbotAI* ai) : WarriorBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ProtectionWarriorBoostPveStrategy : public ProtectionWarriorBoostStrategy
+    {
+    public:
+        ProtectionWarriorBoostPveStrategy(PlayerbotAI* ai) : ProtectionWarriorBoostStrategy(ai) {}
+        string getName() override { return "boost protection pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ProtectionWarriorBoostPvpStrategy : public ProtectionWarriorBoostStrategy
+    {
+    public:
+        ProtectionWarriorBoostPvpStrategy(PlayerbotAI* ai) : ProtectionWarriorBoostStrategy(ai) {}
+        string getName() override { return "boost protection pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ProtectionWarriorBoostRaidStrategy : public ProtectionWarriorBoostStrategy
+    {
+    public:
+        ProtectionWarriorBoostRaidStrategy(PlayerbotAI* ai) : ProtectionWarriorBoostStrategy(ai) {}
+        string getName() override { return "boost protection raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class ProtectionWarriorCcStrategy : public WarriorCcStrategy
     {
     public:

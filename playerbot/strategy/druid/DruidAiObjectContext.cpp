@@ -22,6 +22,7 @@ namespace ai
                 creators["pull"] = &druid::StrategyFactoryInternal::pull;
                 creators["aoe"] = &druid::StrategyFactoryInternal::aoe;
                 creators["buff"] = &druid::StrategyFactoryInternal::buff;
+                creators["boost"] = &druid::StrategyFactoryInternal::boost;
                 creators["stealth"] = &druid::StrategyFactoryInternal::stealth;
                 creators["stealthed"] = &druid::StrategyFactoryInternal::stealthed;
                 creators["cc"] = &druid::StrategyFactoryInternal::cc;
@@ -33,6 +34,7 @@ namespace ai
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "faerie fire", "dire bear form"); }
             static Strategy* aoe(PlayerbotAI* ai) { return new AoePlaceholderStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
+            static Strategy* boost(PlayerbotAI* ai) { return new BoostPlaceholderStrategy(ai); }
             static Strategy* stealth(PlayerbotAI* ai) { return new StealthPlaceholderStrategy(ai); }
             static Strategy* stealthed(PlayerbotAI* ai) { return new DpsFeralDruidStealthedStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
@@ -140,6 +142,40 @@ namespace ai
             static Strategy* buff_balance_pve(PlayerbotAI* ai) { return new BalanceDruidBuffPveStrategy(ai); }
             static Strategy* buff_balance_pvp(PlayerbotAI* ai) { return new BalanceDruidBuffPvpStrategy(ai); }
             static Strategy* buff_balance_raid(PlayerbotAI* ai) { return new BalanceDruidBuffRaidStrategy(ai); }
+        };
+
+        class BoostSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            BoostSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["boost tank feral pve"] = &druid::BoostSituationStrategyFactoryInternal::boost_tank_feral_pve;
+                creators["boost tank feral pvp"] = &druid::BoostSituationStrategyFactoryInternal::boost_tank_feral_pvp;
+                creators["boost tank feral raid"] = &druid::BoostSituationStrategyFactoryInternal::boost_tank_feral_raid;
+                creators["boost dps feral pve"] = &druid::BoostSituationStrategyFactoryInternal::boost_dps_feral_pve;
+                creators["boost dps feral pvp"] = &druid::BoostSituationStrategyFactoryInternal::boost_dps_feral_pvp;
+                creators["boost dps feral raid"] = &druid::BoostSituationStrategyFactoryInternal::boost_dps_feral_raid;
+                creators["boost restoration pve"] = &druid::BoostSituationStrategyFactoryInternal::boost_restoration_pve;
+                creators["boost restoration pvp"] = &druid::BoostSituationStrategyFactoryInternal::boost_restoration_pvp;
+                creators["boost restoration raid"] = &druid::BoostSituationStrategyFactoryInternal::boost_restoration_raid;
+                creators["boost balance pve"] = &druid::BoostSituationStrategyFactoryInternal::boost_balance_pve;
+                creators["boost balance pvp"] = &druid::BoostSituationStrategyFactoryInternal::boost_balance_pvp;
+                creators["boost balance raid"] = &druid::BoostSituationStrategyFactoryInternal::boost_balance_raid;
+            }
+
+        private:
+            static Strategy* boost_tank_feral_pve(PlayerbotAI* ai) { return new TankFeralDruidBoostPveStrategy(ai); }
+            static Strategy* boost_tank_feral_pvp(PlayerbotAI* ai) { return new TankFeralDruidBoostPvpStrategy(ai); }
+            static Strategy* boost_tank_feral_raid(PlayerbotAI* ai) { return new TankFeralDruidBoostRaidStrategy(ai); }
+            static Strategy* boost_dps_feral_pve(PlayerbotAI* ai) { return new DpsFeralDruidBoostPveStrategy(ai); }
+            static Strategy* boost_dps_feral_pvp(PlayerbotAI* ai) { return new DpsFeralDruidBoostPvpStrategy(ai); }
+            static Strategy* boost_dps_feral_raid(PlayerbotAI* ai) { return new DpsFeralDruidBoostRaidStrategy(ai); }
+            static Strategy* boost_restoration_pve(PlayerbotAI* ai) { return new RestorationDruidBoostPveStrategy(ai); }
+            static Strategy* boost_restoration_pvp(PlayerbotAI* ai) { return new RestorationDruidBoostPvpStrategy(ai); }
+            static Strategy* boost_restoration_raid(PlayerbotAI* ai) { return new RestorationDruidBoostRaidStrategy(ai); }
+            static Strategy* boost_balance_pve(PlayerbotAI* ai) { return new BalanceDruidBoostPveStrategy(ai); }
+            static Strategy* boost_balance_pvp(PlayerbotAI* ai) { return new BalanceDruidBoostPvpStrategy(ai); }
+            static Strategy* boost_balance_raid(PlayerbotAI* ai) { return new BalanceDruidBoostRaidStrategy(ai); }
         };
 
         class CcSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -516,6 +552,7 @@ DruidAiObjectContext::DruidAiObjectContext(PlayerbotAI* ai) : AiObjectContext(ai
     strategyContexts.Add(new ai::druid::AoeSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::druid::CureSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::druid::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::druid::BoostSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::druid::CcSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::druid::StealthSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::druid::ClassStrategyFactoryInternal());

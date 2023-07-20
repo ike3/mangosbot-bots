@@ -135,6 +135,37 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
+    class DruidBoostStrategy : public BoostStrategy
+    {
+    public:
+        DruidBoostStrategy(PlayerbotAI* ai) : BoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class DruidBoostPvpStrategy : public BoostPvpStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class DruidBoostPveStrategy : public BoostPveStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class DruidBoostRaidStrategy : public BoostRaidStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
     class DruidCureStrategy : public CureStrategy
     {
     public:
@@ -166,53 +197,3 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 }
-
-/*
-#pragma once
-#include "../generic/CombatStrategy.h"
-
-namespace ai
-{
-    class AiObjectContext;
-
-    class DruidStrategy : public CombatStrategy
-    {
-    public:
-        DruidStrategy(PlayerbotAI* ai);
-
-    protected:
-        virtual void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
-    };
-
-    class DruidCureStrategy : public Strategy
-    {
-    public:
-        DruidCureStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        string getName() override { return "cure"; }
-
-    private:
-        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
-        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
-    };
-
-    class DruidBoostStrategy : public Strategy
-    {
-    public:
-        DruidBoostStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        string getName() override { return "boost"; }
-
-    private:
-        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
-    };
-
-    class DruidCcStrategy : public Strategy
-    {
-    public:
-        DruidCcStrategy(PlayerbotAI* ai) : Strategy(ai) {}
-        string getName() override { return "cc"; }
-
-    private:
-        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
-    };
-}
-*/

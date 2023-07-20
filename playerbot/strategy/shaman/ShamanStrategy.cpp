@@ -367,6 +367,46 @@ void ShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trig
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void ShamanBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void ShamanTotemBarElementsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
@@ -660,14 +700,6 @@ void ShamanTotemsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 void ShamanBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "heroism",
-        NextAction::array(0, new NextAction("heroism", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "bloodlust",
-        NextAction::array(0, new NextAction("bloodlust", ACTION_HIGH), NULL)));
 }
 
 void ShamanBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -719,6 +751,54 @@ void ShamanBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
 void ShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "heroism",
+        NextAction::array(0, new NextAction("heroism", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "bloodlust",
+        NextAction::array(0, new NextAction("bloodlust", ACTION_HIGH), NULL)));
+}
+
+void ShamanBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanTotemBarElementsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1080,14 +1160,6 @@ void ShamanTotemsRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 void ShamanBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "heroism",
-        NextAction::array(0, new NextAction("heroism", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "bloodlust",
-        NextAction::array(0, new NextAction("bloodlust", ACTION_HIGH), NULL)));
 }
 
 void ShamanBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1139,6 +1211,54 @@ void ShamanBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
 void ShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "heroism",
+        NextAction::array(0, new NextAction("heroism", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "bloodlust",
+        NextAction::array(0, new NextAction("bloodlust", ACTION_HIGH), NULL)));
+}
+
+void ShamanBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanTotemBarElementsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

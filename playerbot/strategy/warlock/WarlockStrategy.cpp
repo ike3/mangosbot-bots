@@ -215,14 +215,6 @@ void WarlockAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trig
 void WarlockBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "amplify curse",
-        NextAction::array(0, new NextAction("amplify curse", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "inferno",
-        NextAction::array(0, new NextAction("inferno", ACTION_HIGH), NULL)));
 }
 
 void WarlockBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -266,6 +258,54 @@ void WarlockBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void WarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "amplify curse",
+        NextAction::array(0, new NextAction("amplify curse", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "inferno",
+        NextAction::array(0, new NextAction("inferno", ACTION_HIGH), NULL)));
+}
+
+void WarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void WarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void WarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void WarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void WarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -612,14 +652,6 @@ void WarlockAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trig
 void WarlockBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "amplify curse",
-        NextAction::array(0, new NextAction("amplify curse", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "inferno",
-        NextAction::array(0, new NextAction("inferno", ACTION_HIGH), NULL)));
 }
 
 void WarlockBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -663,6 +695,54 @@ void WarlockBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void WarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "amplify curse",
+        NextAction::array(0, new NextAction("amplify curse", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "inferno",
+        NextAction::array(0, new NextAction("inferno", ACTION_HIGH), NULL)));
+}
+
+void WarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void WarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void WarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void WarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void WarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1009,14 +1089,6 @@ void WarlockAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trig
 void WarlockBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "amplify curse",
-        NextAction::array(0, new NextAction("amplify curse", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "inferno",
-        NextAction::array(0, new NextAction("inferno", ACTION_HIGH), NULL)));
 }
 
 void WarlockBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1060,6 +1132,54 @@ void WarlockBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void WarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "amplify curse",
+        NextAction::array(0, new NextAction("amplify curse", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "inferno",
+        NextAction::array(0, new NextAction("inferno", ACTION_HIGH), NULL)));
+}
+
+void WarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void WarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void WarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void WarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void WarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void WarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

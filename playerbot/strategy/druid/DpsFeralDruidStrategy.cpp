@@ -333,6 +333,52 @@ void DpsFeralDruidBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*
     DruidBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void DpsFeralDruidBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void DpsFeralDruidCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     DruidCcStrategy::InitCombatTriggers(triggers);
@@ -779,6 +825,52 @@ void DpsFeralDruidBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*
 {
     DpsFeralDruidBuffStrategy::InitNonCombatTriggers(triggers);
     DruidBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void DpsFeralDruidCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1231,6 +1323,52 @@ void DpsFeralDruidBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*
 {
     DpsFeralDruidBuffStrategy::InitNonCombatTriggers(triggers);
     DruidBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DpsFeralDruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DpsFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void DpsFeralDruidCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

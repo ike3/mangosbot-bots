@@ -22,6 +22,7 @@ namespace ai
                 creators["aoe"] = &mage::StrategyFactoryInternal::aoe;
                 creators["cure"] = &mage::StrategyFactoryInternal::cure;
                 creators["buff"] = &mage::StrategyFactoryInternal::buff;
+                creators["boost"] = &mage::StrategyFactoryInternal::boost;
                 creators["pull"] = &mage::StrategyFactoryInternal::pull;
                 creators["cc"] = &mage::StrategyFactoryInternal::cc;
             }
@@ -30,6 +31,7 @@ namespace ai
             static Strategy* aoe(PlayerbotAI* ai) { return new AoePlaceholderStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new CurePlaceholderStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
+            static Strategy* boost(PlayerbotAI* ai) { return new BoostPlaceholderStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
         };
@@ -116,6 +118,34 @@ namespace ai
             static Strategy* buff_arcane_pve(PlayerbotAI* ai) { return new ArcaneMageBuffPveStrategy(ai); }
             static Strategy* buff_arcane_pvp(PlayerbotAI* ai) { return new ArcaneMageBuffPvpStrategy(ai); }
             static Strategy* buff_arcane_raid(PlayerbotAI* ai) { return new ArcaneMageBuffRaidStrategy(ai); }
+        };
+
+        class BoostSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            BoostSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["boost frost pve"] = &mage::BoostSituationStrategyFactoryInternal::boost_frost_pve;
+                creators["boost frost pvp"] = &mage::BoostSituationStrategyFactoryInternal::boost_frost_pvp;
+                creators["boost frost raid"] = &mage::BoostSituationStrategyFactoryInternal::boost_frost_raid;
+                creators["boost fire pve"] = &mage::BoostSituationStrategyFactoryInternal::boost_fire_pve;
+                creators["boost fire pvp"] = &mage::BoostSituationStrategyFactoryInternal::boost_fire_pvp;
+                creators["boost fire raid"] = &mage::BoostSituationStrategyFactoryInternal::boost_fire_raid;
+                creators["boost arcane pve"] = &mage::BoostSituationStrategyFactoryInternal::boost_arcane_pve;
+                creators["boost arcane pvp"] = &mage::BoostSituationStrategyFactoryInternal::boost_arcane_pvp;
+                creators["boost arcane raid"] = &mage::BoostSituationStrategyFactoryInternal::boost_arcane_raid;
+            }
+
+        private:
+            static Strategy* boost_frost_pve(PlayerbotAI* ai) { return new FrostMageBoostPveStrategy(ai); }
+            static Strategy* boost_frost_pvp(PlayerbotAI* ai) { return new FrostMageBoostPvpStrategy(ai); }
+            static Strategy* boost_frost_raid(PlayerbotAI* ai) { return new FrostMageBoostRaidStrategy(ai); }
+            static Strategy* boost_fire_pve(PlayerbotAI* ai) { return new FireMageBoostPveStrategy(ai); }
+            static Strategy* boost_fire_pvp(PlayerbotAI* ai) { return new FireMageBoostPvpStrategy(ai); }
+            static Strategy* boost_fire_raid(PlayerbotAI* ai) { return new FireMageBoostRaidStrategy(ai); }
+            static Strategy* boost_arcane_pve(PlayerbotAI* ai) { return new ArcaneMageBoostPveStrategy(ai); }
+            static Strategy* boost_arcane_pvp(PlayerbotAI* ai) { return new ArcaneMageBoostPvpStrategy(ai); }
+            static Strategy* boost_arcane_raid(PlayerbotAI* ai) { return new ArcaneMageBoostRaidStrategy(ai); }
         };
 
         class CcSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -307,15 +337,6 @@ namespace ai
             static Trigger* no_drink(PlayerbotAI* ai) { return new NoDrinkTrigger(ai); }
             static Trigger* no_mana_gem(PlayerbotAI* ai) { return new NoManaGemTrigger(ai); }
         };
-    };
-};
-
-
-namespace ai
-{
-    namespace mage
-    {
-        using namespace ai;
 
         class AiObjectContextInternal : public NamedObjectContext<Action>
         {
@@ -471,6 +492,7 @@ MageAiObjectContext::MageAiObjectContext(PlayerbotAI* ai) : AiObjectContext(ai)
     strategyContexts.Add(new ai::mage::ClassStrategyFactoryInternal());
     strategyContexts.Add(new ai::mage::ClassSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::mage::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::mage::BoostSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::mage::CcSituationStrategyFactoryInternal());
     actionContexts.Add(new ai::mage::AiObjectContextInternal());
     triggerContexts.Add(new ai::mage::TriggerFactoryInternal());

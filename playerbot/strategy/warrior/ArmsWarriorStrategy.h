@@ -150,6 +150,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class ArmsWarriorBoostStrategy : public WarriorBoostStrategy
+    {
+    public:
+        ArmsWarriorBoostStrategy(PlayerbotAI* ai) : WarriorBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ArmsWarriorBoostPveStrategy : public ArmsWarriorBoostStrategy
+    {
+    public:
+        ArmsWarriorBoostPveStrategy(PlayerbotAI* ai) : ArmsWarriorBoostStrategy(ai) {}
+        string getName() override { return "boost arms pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ArmsWarriorBoostPvpStrategy : public ArmsWarriorBoostStrategy
+    {
+    public:
+        ArmsWarriorBoostPvpStrategy(PlayerbotAI* ai) : ArmsWarriorBoostStrategy(ai) {}
+        string getName() override { return "boost arms pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ArmsWarriorBoostRaidStrategy : public ArmsWarriorBoostStrategy
+    {
+    public:
+        ArmsWarriorBoostRaidStrategy(PlayerbotAI* ai) : ArmsWarriorBoostStrategy(ai) {}
+        string getName() override { return "boost arms raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class ArmsWarriorCcStrategy : public WarriorCcStrategy
     {
     public:

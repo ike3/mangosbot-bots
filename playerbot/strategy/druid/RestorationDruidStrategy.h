@@ -148,6 +148,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class RestorationDruidBoostStrategy : public DruidBoostStrategy
+    {
+    public:
+        RestorationDruidBoostStrategy(PlayerbotAI* ai) : DruidBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class RestorationDruidBoostPveStrategy : public RestorationDruidBoostStrategy
+    {
+    public:
+        RestorationDruidBoostPveStrategy(PlayerbotAI* ai) : RestorationDruidBoostStrategy(ai) {}
+        string getName() override { return "boost restoration pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class RestorationDruidBoostPvpStrategy : public RestorationDruidBoostStrategy
+    {
+    public:
+        RestorationDruidBoostPvpStrategy(PlayerbotAI* ai) : RestorationDruidBoostStrategy(ai) {}
+        string getName() override { return "boost restoration pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class RestorationDruidBoostRaidStrategy : public RestorationDruidBoostStrategy
+    {
+    public:
+        RestorationDruidBoostRaidStrategy(PlayerbotAI* ai) : RestorationDruidBoostStrategy(ai) {}
+        string getName() override { return "boost restoration raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class RestorationDruidCcStrategy : public DruidCcStrategy
     {
     public:

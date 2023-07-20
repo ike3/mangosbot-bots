@@ -235,4 +235,47 @@ namespace ai
         void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
+
+    class EnhancementShamanBoostStrategy : public ShamanBoostStrategy
+    {
+    public:
+        EnhancementShamanBoostStrategy(PlayerbotAI* ai) : ShamanBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class EnhancementShamanBoostPveStrategy : public EnhancementShamanBoostStrategy
+    {
+    public:
+        EnhancementShamanBoostPveStrategy(PlayerbotAI* ai) : EnhancementShamanBoostStrategy(ai) {}
+        string getName() override { return "boost enhancement pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class EnhancementShamanBoostPvpStrategy : public EnhancementShamanBoostStrategy
+    {
+    public:
+        EnhancementShamanBoostPvpStrategy(PlayerbotAI* ai) : EnhancementShamanBoostStrategy(ai) {}
+        string getName() override { return "boost enhancement pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class EnhancementShamanBoostRaidStrategy : public EnhancementShamanBoostStrategy
+    {
+    public:
+        EnhancementShamanBoostRaidStrategy(PlayerbotAI* ai) : EnhancementShamanBoostStrategy(ai) {}
+        string getName() override { return "boost enhancement raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
 }

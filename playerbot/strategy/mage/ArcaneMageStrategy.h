@@ -150,6 +150,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class ArcaneMageBoostStrategy : public MageBoostStrategy
+    {
+    public:
+        ArcaneMageBoostStrategy(PlayerbotAI* ai) : MageBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ArcaneMageBoostPveStrategy : public ArcaneMageBoostStrategy
+    {
+    public:
+        ArcaneMageBoostPveStrategy(PlayerbotAI* ai) : ArcaneMageBoostStrategy(ai) {}
+        string getName() override { return "boost arcane pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ArcaneMageBoostPvpStrategy : public ArcaneMageBoostStrategy
+    {
+    public:
+        ArcaneMageBoostPvpStrategy(PlayerbotAI* ai) : ArcaneMageBoostStrategy(ai) {}
+        string getName() override { return "boost arcane pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ArcaneMageBoostRaidStrategy : public ArcaneMageBoostStrategy
+    {
+    public:
+        ArcaneMageBoostRaidStrategy(PlayerbotAI* ai) : ArcaneMageBoostStrategy(ai) {}
+        string getName() override { return "boost arcane raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class ArcaneMageCcStrategy : public MageCcStrategy
     {
     public:

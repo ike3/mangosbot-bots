@@ -418,6 +418,52 @@ void RestorationShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     ShamanBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void RestorationShamanBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 #endif
 #ifdef MANGOSBOT_ONE // TBC
 
@@ -797,6 +843,52 @@ void RestorationShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
         NextAction::array(0, new NextAction("earth shield on party tank", ACTION_NORMAL), NULL)));
 }
 
+void RestorationShamanBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 #endif
 #ifdef MANGOSBOT_TWO // WOTLK
 
@@ -1174,6 +1266,52 @@ void RestorationShamanBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     triggers.push_back(new TriggerNode(
         "earth shield on party tank",
         NextAction::array(0, new NextAction("earth shield on party tank", ACTION_NORMAL), NULL)));
+}
+
+void RestorationShamanBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationShamanBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationShamanBoostStrategy::InitNonCombatTriggers(triggers);
+    ShamanBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 #endif

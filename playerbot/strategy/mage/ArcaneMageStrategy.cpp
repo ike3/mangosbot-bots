@@ -180,14 +180,6 @@ void ArcaneMageAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& t
 void ArcaneMageBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     MageBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "arcane power",
-        NextAction::array(0, new NextAction("arcane power", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "presence of mind",
-        NextAction::array(0, new NextAction("presence of mind", ACTION_HIGH + 1), NULL)));
 }
 
 void ArcaneMageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -229,6 +221,60 @@ void ArcaneMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& 
 {
     ArcaneMageBuffStrategy::InitNonCombatTriggers(triggers);
     MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "arcane power",
+        NextAction::array(0, new NextAction("arcane power", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "presence of mind",
+        NextAction::array(0, new NextAction("presence of mind", ACTION_HIGH + 1), NULL)));
+}
+
+void ArcaneMageBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ArcaneMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -480,14 +526,6 @@ void ArcaneMageAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& t
 void ArcaneMageBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     MageBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "arcane power",
-        NextAction::array(0, new NextAction("arcane power", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "presence of mind",
-        NextAction::array(0, new NextAction("presence of mind", ACTION_HIGH + 1), NULL)));
 }
 
 void ArcaneMageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -529,6 +567,60 @@ void ArcaneMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& 
 {
     ArcaneMageBuffStrategy::InitNonCombatTriggers(triggers);
     MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "arcane power",
+        NextAction::array(0, new NextAction("arcane power", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "presence of mind",
+        NextAction::array(0, new NextAction("presence of mind", ACTION_HIGH + 1), NULL)));
+}
+
+void ArcaneMageBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ArcaneMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -833,6 +925,60 @@ void ArcaneMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& 
 {
     ArcaneMageBuffStrategy::InitNonCombatTriggers(triggers);
     MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "arcane power",
+        NextAction::array(0, new NextAction("arcane power", ACTION_HIGH + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "presence of mind",
+        NextAction::array(0, new NextAction("presence of mind", ACTION_HIGH + 1), NULL)));
+}
+
+void ArcaneMageBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArcaneMageBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArcaneMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ArcaneMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

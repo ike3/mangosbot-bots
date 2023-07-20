@@ -119,6 +119,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff arms pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff arms pve", strategiesRequired);
 
+            strategiesRequired = { "arms", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost arms pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost arms pve", strategiesRequired);
+
             strategiesRequired = { "arms", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc arms pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc arms pve", strategiesRequired);
@@ -137,6 +141,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff fury pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff fury pve", strategiesRequired);
 
+            strategiesRequired = { "fury", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost fury pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost fury pve", strategiesRequired);
+
             strategiesRequired = { "fury", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc fury pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc fury pve", strategiesRequired);
@@ -154,6 +162,10 @@ namespace ai
             strategiesRequired = { "protection/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff protection pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff protection pve", strategiesRequired);
+
+            strategiesRequired = { "protection/tank", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost protection pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost protection pve", strategiesRequired);
 
             strategiesRequired = { "protection/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc protection pve", strategiesRequired);
@@ -180,6 +192,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff arms pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff arms pvp", strategiesRequired);
 
+            strategiesRequired = { "arms", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost arms pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost arms pvp", strategiesRequired);
+
             strategiesRequired = { "arms", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc arms pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc arms pvp", strategiesRequired);
@@ -198,6 +214,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff fury pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff fury pvp", strategiesRequired);
 
+            strategiesRequired = { "fury", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost fury pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost fury pvp", strategiesRequired);
+
             strategiesRequired = { "fury", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc fury pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc fury pvp", strategiesRequired);
@@ -215,6 +235,10 @@ namespace ai
             strategiesRequired = { "protection/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff protection pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff protection pvp", strategiesRequired);
+
+            strategiesRequired = { "protection/tank", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost protection pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost protection pvp", strategiesRequired);
 
             strategiesRequired = { "protection/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc protection pvp", strategiesRequired);
@@ -241,6 +265,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff arms raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff arms raid", strategiesRequired);
 
+            strategiesRequired = { "arms", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost arms raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost arms raid", strategiesRequired);
+
             strategiesRequired = { "arms", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc arms raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc arms raid", strategiesRequired);
@@ -259,6 +287,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff fury raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff fury raid", strategiesRequired);
 
+            strategiesRequired = { "fury", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost fury raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost fury raid", strategiesRequired);
+
             strategiesRequired = { "fury", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc fury raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc fury raid", strategiesRequired);
@@ -276,6 +308,10 @@ namespace ai
             strategiesRequired = { "protection/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff protection raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff protection raid", strategiesRequired);
+
+            strategiesRequired = { "protection/tank", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost protection raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost protection raid", strategiesRequired);
 
             strategiesRequired = { "protection/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc protection raid", strategiesRequired);

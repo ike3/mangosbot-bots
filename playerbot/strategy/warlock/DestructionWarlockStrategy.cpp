@@ -205,6 +205,52 @@ void DestructionWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<Trigger
     WarlockBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void DestructionWarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void DestructionWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     WarlockCcStrategy::InitCombatTriggers(triggers);
@@ -522,6 +568,52 @@ void DestructionWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<Trigger
 {
     DestructionWarlockBuffStrategy::InitNonCombatTriggers(triggers);
     WarlockBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void DestructionWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -849,6 +941,52 @@ void DestructionWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<Trigger
 {
     DestructionWarlockBuffStrategy::InitNonCombatTriggers(triggers);
     WarlockBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DestructionWarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DestructionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void DestructionWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

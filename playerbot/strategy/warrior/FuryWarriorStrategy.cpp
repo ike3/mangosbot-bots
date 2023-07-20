@@ -218,10 +218,6 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
     triggers.push_back(new TriggerNode(
         "stunned",
         NextAction::array(0, new NextAction("berserker rage", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "death wish",
-        NextAction::array(0, new NextAction("death wish", ACTION_HIGH), NULL)));
 }
 
 void FuryWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -263,6 +259,60 @@ void FuryWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 {
     FuryWarriorBuffStrategy::InitNonCombatTriggers(triggers);
     WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "death wish",
+        NextAction::array(0, new NextAction("death wish", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "recklessness",
+        NextAction::array(0, new NextAction("recklessness", ACTION_HIGH), NULL)));
+}
+
+void FuryWarriorBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void FuryWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -512,10 +562,6 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
     triggers.push_back(new TriggerNode(
         "stunned",
         NextAction::array(0, new NextAction("berserker rage", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rampage",
-        NextAction::array(0, new NextAction("rampage", ACTION_HIGH), NULL)));
 }
 
 void FuryWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -557,6 +603,60 @@ void FuryWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 {
     FuryWarriorBuffStrategy::InitNonCombatTriggers(triggers);
     WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "rampage",
+        NextAction::array(0, new NextAction("rampage", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "recklessness",
+        NextAction::array(0, new NextAction("recklessness", ACTION_HIGH), NULL)));
+}
+
+void FuryWarriorBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void FuryWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -806,10 +906,6 @@ void FuryWarriorBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
     triggers.push_back(new TriggerNode(
         "feared",
         NextAction::array(0, new NextAction("berserker rage fear", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "death wish",
-        NextAction::array(0, new NextAction("death wish", ACTION_HIGH), NULL)));
 }
 
 void FuryWarriorBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -851,6 +947,60 @@ void FuryWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 {
     FuryWarriorBuffStrategy::InitNonCombatTriggers(triggers);
     WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "death wish",
+        NextAction::array(0, new NextAction("death wish", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "recklessness",
+        NextAction::array(0, new NextAction("recklessness", ACTION_HIGH), NULL)));
+}
+
+void FuryWarriorBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FuryWarriorBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FuryWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void FuryWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

@@ -581,57 +581,65 @@ namespace ai
     public:
         UpdateDruidPveStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update pve strats")
         {
-            std::vector<std::string> strategiesRequired = { "tank feral" };
+            std::vector<std::string> strategiesRequired = { "tank feral/bear/tank" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "tank feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "tank feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "tank feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "tank feral pve", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "aoe" };
+            strategiesRequired = { "tank feral/bear/tank", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe tank feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe tank feral pve", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "cc" };
+            strategiesRequired = { "tank feral/bear/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc tank feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc tank feral pve", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "stealth" };
+            strategiesRequired = { "tank feral/bear/tank", "stealth" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "stealth tank feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "stealth tank feral pve", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "cure" };
+            strategiesRequired = { "tank feral/bear/tank", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure tank feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure tank feral pve", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "buff" };
+            strategiesRequired = { "tank feral/bear/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff tank feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff tank feral pve", strategiesRequired);
 
-            strategiesRequired = { "dps feral" };
+            strategiesRequired = { "tank feral/bear/tank", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost tank feral pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost tank feral pve", strategiesRequired);
+
+            strategiesRequired = { "dps feral/cat" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "dps feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "dps feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "dps feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "dps feral pve", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "aoe" };
+            strategiesRequired = { "dps feral/cat", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe dps feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe dps feral pve", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "cc" };
+            strategiesRequired = { "dps feral/cat", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc dps feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc dps feral pve", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "stealth" };
+            strategiesRequired = { "dps feral/cat", "stealth" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "stealth dps feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "stealth dps feral pve", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "cure" };
+            strategiesRequired = { "dps feral/cat", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure dps feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure dps feral pve", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "buff" };
+            strategiesRequired = { "dps feral/cat", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff dps feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff dps feral pve", strategiesRequired);
+
+            strategiesRequired = { "dps feral/cat", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost dps feral pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost dps feral pve", strategiesRequired);
 
             strategiesRequired = { "restoration" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "restoration pve", strategiesRequired);
@@ -659,6 +667,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff restoration pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff restoration pve", strategiesRequired);
 
+            strategiesRequired = { "restoration", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost restoration pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost restoration pve", strategiesRequired);
+
             strategiesRequired = { "balance" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "balance pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "balance pve", strategiesRequired);
@@ -684,6 +696,10 @@ namespace ai
             strategiesRequired = { "balance", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff balance pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff balance pve", strategiesRequired);
+            
+            strategiesRequired = { "balance", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost balance pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost balance pve", strategiesRequired);
         }
     };
 
@@ -692,57 +708,65 @@ namespace ai
     public:
         UpdateDruidPvpStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update pvp strats")
         {
-            std::vector<std::string> strategiesRequired = { "tank feral" };
+            std::vector<std::string> strategiesRequired = { "tank feral/bear/tank" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "tank feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "tank feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "tank feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "tank feral pvp", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "aoe" };
+            strategiesRequired = { "tank feral/bear/tank", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe tank feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe tank feral pvp", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "cc" };
+            strategiesRequired = { "tank feral/bear/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc tank feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc tank feral pvp", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "stealth" };
+            strategiesRequired = { "tank feral/bear/tank", "stealth" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "stealth tank feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "stealth tank feral pvp", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "cure" };
+            strategiesRequired = { "tank feral/bear/tank", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure tank feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure tank feral pvp", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "buff" };
+            strategiesRequired = { "tank feral/bear/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff tank feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff tank feral pvp", strategiesRequired);
 
-            strategiesRequired = { "dps feral" };
+            strategiesRequired = { "tank feral/bear/tank", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost tank feral pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost tank feral pvp", strategiesRequired);
+
+            strategiesRequired = { "dps feral/cat" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "dps feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "dps feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "dps feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "dps feral pvp", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "aoe" };
+            strategiesRequired = { "dps feral/cat", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe dps feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe dps feral pvp", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "cc" };
+            strategiesRequired = { "dps feral/cat", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc dps feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc dps feral pvp", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "stealth" };
+            strategiesRequired = { "dps feral/cat", "stealth" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "stealth dps feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "stealth dps feral pvp", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "cure" };
+            strategiesRequired = { "dps feral/cat", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure dps feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure dps feral pvp", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "buff" };
+            strategiesRequired = { "dps feral/cat", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff dps feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff dps feral pvp", strategiesRequired);
+
+            strategiesRequired = { "dps feral/cat", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost dps feral pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost dps feral pvp", strategiesRequired);
 
             strategiesRequired = { "restoration" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "restoration pvp", strategiesRequired);
@@ -770,6 +794,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff restoration pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff restoration pvp", strategiesRequired);
 
+            strategiesRequired = { "restoration", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost restoration pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost restoration pvp", strategiesRequired);
+
             strategiesRequired = { "balance" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "balance pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "balance pvp", strategiesRequired);
@@ -795,6 +823,10 @@ namespace ai
             strategiesRequired = { "balance", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff balance pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff balance pvp", strategiesRequired);
+
+            strategiesRequired = { "balance", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost balance pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost balance pvp", strategiesRequired);
         }
     };
 
@@ -803,57 +835,65 @@ namespace ai
     public:
         UpdateDruidRaidStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update raid strats")
         {
-            std::vector<std::string> strategiesRequired = { "tank feral" };
+            std::vector<std::string> strategiesRequired = { "tank feral/bear/tank" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "tank feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "tank feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "tank feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "tank feral raid", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "aoe" };
+            strategiesRequired = { "tank feral/bear/tank", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe tank feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe tank feral raid", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "cc" };
+            strategiesRequired = { "tank feral/bear/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc tank feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc tank feral raid", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "stealth" };
+            strategiesRequired = { "tank feral/bear/tank", "stealth" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "stealth tank feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "stealth tank feral raid", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "cure" };
+            strategiesRequired = { "tank feral/bear/tank", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure tank feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure tank feral raid", strategiesRequired);
 
-            strategiesRequired = { "tank feral", "buff" };
+            strategiesRequired = { "tank feral/bear/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff tank feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff tank feral raid", strategiesRequired);
 
-            strategiesRequired = { "dps feral" };
+            strategiesRequired = { "tank feral/bear/tank", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost tank feral raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost tank feral raid", strategiesRequired);
+
+            strategiesRequired = { "dps feral/cat" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "dps feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "dps feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "dps feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "dps feral raid", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "aoe" };
+            strategiesRequired = { "dps feral/cat", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe dps feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe dps feral raid", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "cc" };
+            strategiesRequired = { "dps feral/cat", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc dps feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc dps feral raid", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "stealth" };
+            strategiesRequired = { "dps feral/cat", "stealth" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "stealth dps feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "stealth dps feral raid", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "cure" };
+            strategiesRequired = { "dps feral/cat", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure dps feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure dps feral raid", strategiesRequired);
 
-            strategiesRequired = { "dps feral", "buff" };
+            strategiesRequired = { "dps feral/cat", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff dps feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff dps feral raid", strategiesRequired);
+
+            strategiesRequired = { "dps feral/cat", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost dps feral raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost dps feral raid", strategiesRequired);
 
             strategiesRequired = { "restoration" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "restoration raid", strategiesRequired);
@@ -881,6 +921,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff restoration raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff restoration raid", strategiesRequired);
 
+            strategiesRequired = { "restoration", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost restoration raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost restoration raid", strategiesRequired);
+
             strategiesRequired = { "balance" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "balance raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "balance raid", strategiesRequired);
@@ -906,6 +950,10 @@ namespace ai
             strategiesRequired = { "balance", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff balance raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff balance raid", strategiesRequired);
+
+            strategiesRequired = { "balance", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost balance raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost balance raid", strategiesRequired);
         }
     };
 }

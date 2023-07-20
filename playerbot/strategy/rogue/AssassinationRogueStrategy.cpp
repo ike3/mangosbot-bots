@@ -193,10 +193,6 @@ void AssassinationRogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
 void AssassinationRogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RogueBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("cold blood", ACTION_HIGH + 5), NULL)));
 }
 
 void AssassinationRogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -238,6 +234,56 @@ void AssassinationRogueBuffRaidStrategy::InitNonCombatTriggers(std::list<Trigger
 {
     AssassinationRogueBuffStrategy::InitNonCombatTriggers(triggers);
     RogueBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("cold blood", ACTION_HIGH + 5), NULL)));
+}
+
+void AssassinationRogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void AssassinationRogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -542,10 +588,6 @@ void AssassinationRogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
 void AssassinationRogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RogueBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("cold blood", ACTION_HIGH + 5), NULL)));
 }
 
 void AssassinationRogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -587,6 +629,56 @@ void AssassinationRogueBuffRaidStrategy::InitNonCombatTriggers(std::list<Trigger
 {
     AssassinationRogueBuffStrategy::InitNonCombatTriggers(triggers);
     RogueBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("cold blood", ACTION_HIGH + 5), NULL)));
+}
+
+void AssassinationRogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void AssassinationRogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -891,10 +983,6 @@ void AssassinationRogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
 void AssassinationRogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RogueBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "very often",
-        NextAction::array(0, new NextAction("cold blood", ACTION_HIGH + 5), NULL)));
 }
 
 void AssassinationRogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -936,6 +1024,56 @@ void AssassinationRogueBuffRaidStrategy::InitNonCombatTriggers(std::list<Trigger
 {
     AssassinationRogueBuffStrategy::InitNonCombatTriggers(triggers);
     RogueBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("cold blood", ACTION_HIGH + 5), NULL)));
+}
+
+void AssassinationRogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void AssassinationRogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AssassinationRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void AssassinationRogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

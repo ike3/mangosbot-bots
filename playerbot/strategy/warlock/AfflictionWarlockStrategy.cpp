@@ -209,6 +209,52 @@ void AfflictionWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     WarlockBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void AfflictionWarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void AfflictionWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     WarlockCcStrategy::InitCombatTriggers(triggers);
@@ -540,6 +586,52 @@ void AfflictionWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     WarlockBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void AfflictionWarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void AfflictionWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     WarlockCcStrategy::InitCombatTriggers(triggers);
@@ -869,6 +961,52 @@ void AfflictionWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
 {
     AfflictionWarlockBuffStrategy::InitNonCombatTriggers(triggers);
     WarlockBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void AfflictionWarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    AfflictionWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void AfflictionWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

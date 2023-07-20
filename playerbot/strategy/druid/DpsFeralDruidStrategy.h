@@ -150,6 +150,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class DpsFeralDruidBoostStrategy : public DruidBoostStrategy
+    {
+    public:
+        DpsFeralDruidBoostStrategy(PlayerbotAI* ai) : DruidBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class DpsFeralDruidBoostPveStrategy : public DpsFeralDruidBoostStrategy
+    {
+    public:
+        DpsFeralDruidBoostPveStrategy(PlayerbotAI* ai) : DpsFeralDruidBoostStrategy(ai) {}
+        string getName() override { return "boost dps feral pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class DpsFeralDruidBoostPvpStrategy : public DpsFeralDruidBoostStrategy
+    {
+    public:
+        DpsFeralDruidBoostPvpStrategy(PlayerbotAI* ai) : DpsFeralDruidBoostStrategy(ai) {}
+        string getName() override { return "boost dps feral pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class DpsFeralDruidBoostRaidStrategy : public DpsFeralDruidBoostStrategy
+    {
+    public:
+        DpsFeralDruidBoostRaidStrategy(PlayerbotAI* ai) : DpsFeralDruidBoostStrategy(ai) {}
+        string getName() override { return "boost dps feral raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class DpsFeralDruidCcStrategy : public DruidCcStrategy
     {
     public:

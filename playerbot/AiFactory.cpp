@@ -333,7 +333,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 combatEngine->addStrategy("frost");
             }
 
-            combatEngine->addStrategies("dps", "dps assist", "threat", "flee", "cure", "ranged", "cc", "buff", "aoe", NULL);
+            combatEngine->addStrategies("dps", "dps assist", "threat", "flee", "cure", "ranged", "cc", "buff", "aoe", "boost", NULL);
             break;
         }
 
@@ -352,7 +352,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 combatEngine->addStrategies("fury", "dps assist", "threat", "behind", NULL);
             }
 
-            combatEngine->addStrategies("aoe", "cc", "buff", NULL);
+            combatEngine->addStrategies("aoe", "cc", "buff", "boost", NULL);
             break;
         }
 
@@ -371,7 +371,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 combatEngine->addStrategies("enhancement", "aoe", "bdps", "threat", "close", NULL);
             }
 
-            combatEngine->addStrategies("dps assist", "cure", "totems", "buff", NULL);
+            combatEngine->addStrategies("dps assist", "cure", "totems", "buff", "boost", NULL);
             break;
         }
 
@@ -390,7 +390,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 combatEngine->addStrategies("retribution", "dps assist", "threat", "close", NULL);
             }
 
-            combatEngine->addStrategies("cure", "aoe", "cc", "buff", "aura", "blessing", NULL);
+            combatEngine->addStrategies("cure", "aoe", "cc", "buff", "boost", "aura", "blessing", NULL);
             break;
         }
 
@@ -409,7 +409,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 combatEngine->addStrategies("balance", "dps assist", "threat", "flee", "ranged", NULL);
             }
 
-            combatEngine->addStrategies("cure", "aoe", "cc", "buff", NULL);
+            combatEngine->addStrategies("cure", "aoe", "cc", "buff", "boost", NULL);
             break;
         }
 
@@ -434,8 +434,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 combatEngine->addStrategy("combat");
             }
 
-            combatEngine->addStrategies("threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", "poisons", "buff", NULL);
-
+            combatEngine->addStrategies("threat", "dps assist", "aoe", "close", "cc", "behind", "stealth", "poisons", "buff", "boost", NULL);
             break;
         }
 
@@ -454,7 +453,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 combatEngine->addStrategy("destruction");
             }
 
-            combatEngine->addStrategies("dps assist", "flee", "ranged", "cc", "pet", "threat", "aoe", "buff", "curse", NULL);
+            combatEngine->addStrategies("dps assist", "flee", "ranged", "cc", "pet", "threat", "aoe", "buff", "boost", "curse", NULL);
             break;
         }
 
@@ -645,7 +644,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategies("retribution", "dps assist", NULL);
             }
 
-            nonCombatEngine->addStrategies("cure", "buff", "blessing", "aura", NULL);
+            nonCombatEngine->addStrategies("cure", "buff", "boost", "blessing", "aura", NULL);
             break;
         }
 
@@ -670,7 +669,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategies("enhancement", "bdps", NULL);
             }
 
-            nonCombatEngine->addStrategies("dps assist", "cure", "totems", "buff", NULL);
+            nonCombatEngine->addStrategies("dps assist", "cure", "totems", "buff", "boost", NULL);
             break;
         }
 
@@ -689,7 +688,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategy("combat");
             }
 
-            nonCombatEngine->addStrategies("dps assist", "poisons", "stealth", "buff", NULL);
+            nonCombatEngine->addStrategies("dps assist", "poisons", "stealth", "buff", "boost", NULL);
             break;
         }
 
@@ -708,7 +707,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategy("destruction");
             }
 
-            nonCombatEngine->addStrategies("dps assist", "pet", "buff", NULL);
+            nonCombatEngine->addStrategies("dps assist", "pet", "buff", "boost", NULL);
             break;
         }
 
@@ -727,7 +726,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategy("frost");
             }
 
-            nonCombatEngine->addStrategies("dps assist", "cure", "buff", NULL);
+            nonCombatEngine->addStrategies("dps assist", "cure", "buff", "boost", NULL);
             break;
         }
 
@@ -746,7 +745,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategies("balance", "dps assist", NULL);
             }
 
-            nonCombatEngine->addStrategies("cure", "aoe", "cc", "buff", NULL);
+            nonCombatEngine->addStrategies("cure", "aoe", "cc", "buff", "boost", NULL);
             break;
         }
 
@@ -765,7 +764,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategies("fury", "dps assist", NULL);
             }
 
-            nonCombatEngine->addStrategy("buff");
+            nonCombatEngine->addStrategies("buff", "boost", NULL);
             break;
         }
 

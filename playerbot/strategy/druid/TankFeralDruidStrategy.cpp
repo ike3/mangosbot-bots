@@ -294,6 +294,52 @@ void TankFeralDruidBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode
     DruidBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void TankFeralDruidBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void TankFeralDruidCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     DruidCcStrategy::InitCombatTriggers(triggers);
@@ -660,6 +706,52 @@ void TankFeralDruidBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode
     DruidBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void TankFeralDruidBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void TankFeralDruidCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     DruidCcStrategy::InitCombatTriggers(triggers);
@@ -1024,6 +1116,52 @@ void TankFeralDruidBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode
 {
     TankFeralDruidBuffStrategy::InitNonCombatTriggers(triggers);
     DruidBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void TankFeralDruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    TankFeralDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void TankFeralDruidCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

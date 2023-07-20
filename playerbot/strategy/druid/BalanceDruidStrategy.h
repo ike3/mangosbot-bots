@@ -152,6 +152,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class BalanceDruidBoostStrategy : public DruidBoostStrategy
+    {
+    public:
+        BalanceDruidBoostStrategy(PlayerbotAI* ai) : DruidBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class BalanceDruidBoostPveStrategy : public BalanceDruidBoostStrategy
+    {
+    public:
+        BalanceDruidBoostPveStrategy(PlayerbotAI* ai) : BalanceDruidBoostStrategy(ai) {}
+        string getName() override { return "boost balance pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class BalanceDruidBoostPvpStrategy : public BalanceDruidBoostStrategy
+    {
+    public:
+        BalanceDruidBoostPvpStrategy(PlayerbotAI* ai) : BalanceDruidBoostStrategy(ai) {}
+        string getName() override { return "boost balance pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class BalanceDruidBoostRaidStrategy : public BalanceDruidBoostStrategy
+    {
+    public:
+        BalanceDruidBoostRaidStrategy(PlayerbotAI* ai) : BalanceDruidBoostStrategy(ai) {}
+        string getName() override { return "boost balance raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class BalanceDruidCcStrategy : public DruidCcStrategy
     {
     public:

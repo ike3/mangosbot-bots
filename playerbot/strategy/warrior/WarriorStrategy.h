@@ -134,4 +134,35 @@ namespace ai
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
+
+    class WarriorBoostStrategy : public BoostStrategy
+    {
+    public:
+        WarriorBoostStrategy(PlayerbotAI* ai) : BoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class WarriorBoostPvpStrategy : public BoostPvpStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class WarriorBoostPveStrategy : public BoostPveStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class WarriorBoostRaidStrategy : public BoostRaidStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
 }

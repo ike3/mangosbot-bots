@@ -489,6 +489,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff demonology pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff demonology pve", strategiesRequired);
 
+            strategiesRequired = { "demonology", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost demonology pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost demonology pve", strategiesRequired);
+
             strategiesRequired = { "demonology", "curse" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "curse demonology pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "curse demonology pve", strategiesRequired);
@@ -515,6 +519,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff destruction pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff destruction pve", strategiesRequired);
 
+            strategiesRequired = { "destruction", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost destruction pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost destruction pve", strategiesRequired);
+
             strategiesRequired = { "destruction", "curse" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "curse destruction pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "curse destruction pve", strategiesRequired);
@@ -540,6 +548,10 @@ namespace ai
             strategiesRequired = { "affliction", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff affliction pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff affliction pve", strategiesRequired);
+
+            strategiesRequired = { "affliction", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost affliction pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost affliction pve", strategiesRequired);
 
             strategiesRequired = { "affliction", "curse" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "curse affliction pve", strategiesRequired);
@@ -574,6 +586,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff demonology pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff demonology pvp", strategiesRequired);
 
+            strategiesRequired = { "demonology", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost demonology pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost demonology pvp", strategiesRequired);
+
             strategiesRequired = { "demonology", "curse" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "curse demonology pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "curse demonology pvp", strategiesRequired);
@@ -600,6 +616,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff destruction pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff destruction pvp", strategiesRequired);
 
+            strategiesRequired = { "destruction", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost destruction pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost destruction pvp", strategiesRequired);
+
             strategiesRequired = { "destruction", "curse" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "curse destruction pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "curse destruction pvp", strategiesRequired);
@@ -625,6 +645,10 @@ namespace ai
             strategiesRequired = { "affliction", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff affliction pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff affliction pvp", strategiesRequired);
+
+            strategiesRequired = { "affliction", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost affliction pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost affliction pvp", strategiesRequired);
 
             strategiesRequired = { "affliction", "curse" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "curse affliction pvp", strategiesRequired);
@@ -659,6 +683,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff demonology raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff demonology raid", strategiesRequired);
 
+            strategiesRequired = { "demonology", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost demonology raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost demonology raid", strategiesRequired);
+
             strategiesRequired = { "demonology", "curse" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "curse demonology raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "curse demonology raid", strategiesRequired);
@@ -685,6 +713,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff destruction raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff destruction raid", strategiesRequired);
 
+            strategiesRequired = { "destruction", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost destruction raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost destruction raid", strategiesRequired);
+
             strategiesRequired = { "destruction", "curse" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "curse destruction raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "curse destruction raid", strategiesRequired);
@@ -710,6 +742,10 @@ namespace ai
             strategiesRequired = { "affliction", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff affliction raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff affliction raid", strategiesRequired);
+
+            strategiesRequired = { "affliction", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost affliction raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost affliction raid", strategiesRequired);
 
             strategiesRequired = { "affliction", "curse" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "curse affliction raid", strategiesRequired);

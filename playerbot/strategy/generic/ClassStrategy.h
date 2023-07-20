@@ -139,8 +139,7 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
-    // Generic strategy to be used for all class buff rotations 
-    // (combat for Boost CDs and non combat for buffs)
+    // Generic strategy to be used for all class buff rotations
     class BuffStrategy : public Strategy
     {
     public:
@@ -166,6 +165,38 @@ namespace ai
     };
 
     class BuffRaidStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    // Generic strategy to be used for all class boost CDs rotations 
+    class BoostStrategy : public Strategy
+    {
+    public:
+        BoostStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class BoostPvpStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class BoostPveStrategy
+    {
+    protected:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class BoostRaidStrategy
     {
     protected:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
@@ -261,6 +292,14 @@ namespace ai
     public:
         BuffPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
         string getName() override { return "buff"; }
+    };
+
+    // This strategy is used to hold the buff strategy
+    class BoostPlaceholderStrategy : public PlaceholderStrategy
+    {
+    public:
+        BoostPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
+        string getName() override { return "boost"; }
     };
 
     // This strategy is used to hold the stealth strategy

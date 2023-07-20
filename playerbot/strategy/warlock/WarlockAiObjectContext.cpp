@@ -21,6 +21,7 @@ namespace ai
             {
                 creators["aoe"] = &warlock::StrategyFactoryInternal::aoe;
                 creators["buff"] = &warlock::StrategyFactoryInternal::buff;
+                creators["boost"] = &warlock::StrategyFactoryInternal::boost;
                 creators["pull"] = &warlock::StrategyFactoryInternal::pull;
                 creators["cc"] = &warlock::StrategyFactoryInternal::cc;
             }
@@ -28,6 +29,7 @@ namespace ai
         private:
             static Strategy* aoe(PlayerbotAI* ai) { return new AoePlaceholderStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
+            static Strategy* boost(PlayerbotAI* ai) { return new BoostPlaceholderStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "shoot"); }
         };
@@ -86,6 +88,34 @@ namespace ai
             static Strategy* buff_affliction_pve(PlayerbotAI* ai) { return new AfflictionWarlockBuffPveStrategy(ai); }
             static Strategy* buff_affliction_pvp(PlayerbotAI* ai) { return new AfflictionWarlockBuffPvpStrategy(ai); }
             static Strategy* buff_affliction_raid(PlayerbotAI* ai) { return new AfflictionWarlockBuffRaidStrategy(ai); }
+        };
+
+        class BoostSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            BoostSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["boost destruction pve"] = &warlock::BoostSituationStrategyFactoryInternal::boost_destruction_pve;
+                creators["boost destruction pvp"] = &warlock::BoostSituationStrategyFactoryInternal::boost_destruction_pvp;
+                creators["boost destruction raid"] = &warlock::BoostSituationStrategyFactoryInternal::boost_destruction_raid;
+                creators["boost demonology pve"] = &warlock::BoostSituationStrategyFactoryInternal::boost_demonology_pve;
+                creators["boost demonology pvp"] = &warlock::BoostSituationStrategyFactoryInternal::boost_demonology_pvp;
+                creators["boost demonology raid"] = &warlock::BoostSituationStrategyFactoryInternal::boost_demonology_raid;
+                creators["boost affliction pve"] = &warlock::BoostSituationStrategyFactoryInternal::boost_affliction_pve;
+                creators["boost affliction pvp"] = &warlock::BoostSituationStrategyFactoryInternal::boost_affliction_pvp;
+                creators["boost affliction raid"] = &warlock::BoostSituationStrategyFactoryInternal::boost_affliction_raid;
+            }
+
+        private:
+            static Strategy* boost_destruction_pve(PlayerbotAI* ai) { return new DestructionWarlockBoostPveStrategy(ai); }
+            static Strategy* boost_destruction_pvp(PlayerbotAI* ai) { return new DestructionWarlockBoostPvpStrategy(ai); }
+            static Strategy* boost_destruction_raid(PlayerbotAI* ai) { return new DestructionWarlockBoostRaidStrategy(ai); }
+            static Strategy* boost_demonology_pve(PlayerbotAI* ai) { return new DemonologyWarlockBoostPveStrategy(ai); }
+            static Strategy* boost_demonology_pvp(PlayerbotAI* ai) { return new DemonologyWarlockBoostPvpStrategy(ai); }
+            static Strategy* boost_demonology_raid(PlayerbotAI* ai) { return new DemonologyWarlockBoostRaidStrategy(ai); }
+            static Strategy* boost_affliction_pve(PlayerbotAI* ai) { return new AfflictionWarlockBoostPveStrategy(ai); }
+            static Strategy* boost_affliction_pvp(PlayerbotAI* ai) { return new AfflictionWarlockBoostPvpStrategy(ai); }
+            static Strategy* boost_affliction_raid(PlayerbotAI* ai) { return new AfflictionWarlockBoostRaidStrategy(ai); }
         };
 
         class ClassStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -542,6 +572,7 @@ WarlockAiObjectContext::WarlockAiObjectContext(PlayerbotAI* ai) : AiObjectContex
     strategyContexts.Add(new ai::warlock::ClassStrategyFactoryInternal());
     strategyContexts.Add(new ai::warlock::ClassSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::warlock::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::warlock::BoostSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::warlock::PetManualStrategyFactoryInternal());
     strategyContexts.Add(new ai::warlock::PetSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::warlock::CurseSituationStrategyFactoryInternal());

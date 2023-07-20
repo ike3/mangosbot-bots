@@ -272,9 +272,7 @@ void CcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 void BuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
+
 }
 
 void BuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -308,6 +306,48 @@ void BuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void BuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
+}
+
+void BoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -619,9 +659,7 @@ void CcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 void BuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
+
 }
 
 void BuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -655,6 +693,48 @@ void BuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void BuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
+}
+
+void BoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -970,9 +1050,7 @@ void CcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
 void BuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
-    triggers.push_back(new TriggerNode(
-        "often",
-        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
+
 }
 
 void BuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1006,6 +1084,48 @@ void BuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void BuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("use trinket", ACTION_HIGH), NULL)));
+}
+
+void BoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void BoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }

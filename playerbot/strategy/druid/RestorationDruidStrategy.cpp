@@ -168,10 +168,6 @@ void RestorationDruidAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNod
 void RestorationDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     DruidBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "nature's swiftness",
-        NextAction::array(0, new NextAction("nature's swiftness", ACTION_HIGH), NULL)));
 }
 
 void RestorationDruidBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -213,6 +209,56 @@ void RestorationDruidBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNo
 {
     RestorationDruidBuffStrategy::InitNonCombatTriggers(triggers);
     DruidBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "nature's swiftness",
+        NextAction::array(0, new NextAction("nature's swiftness", ACTION_HIGH), NULL)));
+}
+
+void RestorationDruidBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void RestorationDruidCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -488,10 +534,6 @@ void RestorationDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& t
     triggers.push_back(new TriggerNode(
         "tree form",
         NextAction::array(0, new NextAction("tree form", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "nature's swiftness",
-        NextAction::array(0, new NextAction("nature's swiftness", ACTION_HIGH), NULL)));
 }
 
 void RestorationDruidBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -533,6 +575,56 @@ void RestorationDruidBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNo
 {
     RestorationDruidBuffStrategy::InitNonCombatTriggers(triggers);
     DruidBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "nature's swiftness",
+        NextAction::array(0, new NextAction("nature's swiftness", ACTION_HIGH), NULL)));
+}
+
+void RestorationDruidBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void RestorationDruidCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -808,10 +900,6 @@ void RestorationDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& t
     triggers.push_back(new TriggerNode(
         "tree form",
         NextAction::array(0, new NextAction("tree form", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "nature's swiftness",
-        NextAction::array(0, new NextAction("nature's swiftness", ACTION_HIGH), NULL)));
 }
 
 void RestorationDruidBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -853,6 +941,56 @@ void RestorationDruidBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNo
 {
     RestorationDruidBuffStrategy::InitNonCombatTriggers(triggers);
     DruidBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "nature's swiftness",
+        NextAction::array(0, new NextAction("nature's swiftness", ACTION_HIGH), NULL)));
+}
+
+void RestorationDruidBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void RestorationDruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RestorationDruidBoostStrategy::InitNonCombatTriggers(triggers);
+    DruidBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void RestorationDruidCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

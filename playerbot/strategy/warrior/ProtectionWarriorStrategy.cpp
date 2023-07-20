@@ -328,6 +328,52 @@ void ProtectionWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void ProtectionWarriorBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void ProtectionWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     WarriorCcStrategy::InitCombatTriggers(triggers);
@@ -674,6 +720,52 @@ void ProtectionWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void ProtectionWarriorBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void ProtectionWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     WarriorCcStrategy::InitCombatTriggers(triggers);
@@ -1014,6 +1106,52 @@ void ProtectionWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
 {
     ProtectionWarriorBuffStrategy::InitNonCombatTriggers(triggers);
     WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ProtectionWarriorBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ProtectionWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ProtectionWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

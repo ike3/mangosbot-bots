@@ -150,6 +150,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class FrostMageBoostStrategy : public MageBoostStrategy
+    {
+    public:
+        FrostMageBoostStrategy(PlayerbotAI* ai) : MageBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class FrostMageBoostPveStrategy : public FrostMageBoostStrategy
+    {
+    public:
+        FrostMageBoostPveStrategy(PlayerbotAI* ai) : FrostMageBoostStrategy(ai) {}
+        string getName() override { return "boost frost pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class FrostMageBoostPvpStrategy : public FrostMageBoostStrategy
+    {
+    public:
+        FrostMageBoostPvpStrategy(PlayerbotAI* ai) : FrostMageBoostStrategy(ai) {}
+        string getName() override { return "boost frost pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class FrostMageBoostRaidStrategy : public FrostMageBoostStrategy
+    {
+    public:
+        FrostMageBoostRaidStrategy(PlayerbotAI* ai) : FrostMageBoostStrategy(ai) {}
+        string getName() override { return "boost frost raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class FrostMageCcStrategy : public MageCcStrategy
     {
     public:

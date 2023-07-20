@@ -222,6 +222,52 @@ void DemonologyWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
         NextAction::array(0, new NextAction("demonic sacrifice raid", ACTION_HIGH), NULL)));
 }
 
+void DemonologyWarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void DemonologyWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     WarlockCcStrategy::InitCombatTriggers(triggers);
@@ -537,6 +583,52 @@ void DemonologyWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     triggers.push_back(new TriggerNode(
         "demonic sacrifice",
         NextAction::array(0, new NextAction("demonic sacrifice raid", ACTION_HIGH), NULL)));
+}
+
+void DemonologyWarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void DemonologyWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -862,6 +954,52 @@ void DemonologyWarlockBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerN
     triggers.push_back(new TriggerNode(
         "demonic sacrifice",
         NextAction::array(0, new NextAction("demonic sacrifice raid", ACTION_HIGH), NULL)));
+}
+
+void DemonologyWarlockBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarlockBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DemonologyWarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DemonologyWarlockBoostStrategy::InitNonCombatTriggers(triggers);
+    WarlockBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void DemonologyWarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

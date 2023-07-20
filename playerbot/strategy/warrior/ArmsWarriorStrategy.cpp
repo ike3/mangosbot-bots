@@ -267,6 +267,52 @@ void ArmsWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
     WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void ArmsWarriorBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void ArmsWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     WarriorCcStrategy::InitCombatTriggers(triggers);
@@ -544,6 +590,52 @@ void ArmsWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 {
     ArmsWarriorBuffStrategy::InitNonCombatTriggers(triggers);
     WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ArmsWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -838,6 +930,52 @@ void ArmsWarriorBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 {
     ArmsWarriorBuffStrategy::InitNonCombatTriggers(triggers);
     WarriorBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    WarriorBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ArmsWarriorBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ArmsWarriorBoostStrategy::InitNonCombatTriggers(triggers);
+    WarriorBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ArmsWarriorCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

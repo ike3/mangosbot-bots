@@ -148,6 +148,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class SubtletyRogueBoostStrategy : public RogueBoostStrategy
+    {
+    public:
+        SubtletyRogueBoostStrategy(PlayerbotAI* ai) : RogueBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class SubtletyRogueBoostPveStrategy : public SubtletyRogueBoostStrategy
+    {
+    public:
+        SubtletyRogueBoostPveStrategy(PlayerbotAI* ai) : SubtletyRogueBoostStrategy(ai) {}
+        string getName() override { return "boost subtlety pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class SubtletyRogueBoostPvpStrategy : public SubtletyRogueBoostStrategy
+    {
+    public:
+        SubtletyRogueBoostPvpStrategy(PlayerbotAI* ai) : SubtletyRogueBoostStrategy(ai) {}
+        string getName() override { return "boost subtlety pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class SubtletyRogueBoostRaidStrategy : public SubtletyRogueBoostStrategy
+    {
+    public:
+        SubtletyRogueBoostRaidStrategy(PlayerbotAI* ai) : SubtletyRogueBoostStrategy(ai) {}
+        string getName() override { return "boost subtlety raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class SubtletyRogueCcStrategy : public RogueCcStrategy
     {
     public:

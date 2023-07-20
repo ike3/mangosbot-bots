@@ -20,6 +20,7 @@ namespace ai
                 creators["aoe"] = &shaman::StrategyFactoryInternal::aoe;
                 creators["cure"] = &shaman::StrategyFactoryInternal::cure;
                 creators["buff"] = &shaman::StrategyFactoryInternal::buff;
+                creators["boost"] = &shaman::StrategyFactoryInternal::boost;
                 creators["pull"] = &shaman::StrategyFactoryInternal::pull;
             }
 
@@ -27,6 +28,7 @@ namespace ai
             static Strategy* aoe(PlayerbotAI* ai) { return new AoePlaceholderStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new CurePlaceholderStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
+            static Strategy* boost(PlayerbotAI* ai) { return new BoostPlaceholderStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "lightning bolt"); }            
         };
 
@@ -112,6 +114,34 @@ namespace ai
             static Strategy* buff_enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanBuffPveStrategy(ai); }
             static Strategy* buff_enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanBuffPvpStrategy(ai); }
             static Strategy* buff_enhancement_raid(PlayerbotAI* ai) { return new EnhancementShamanBuffRaidStrategy(ai); }
+        };
+
+        class BoostSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            BoostSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["boost elemental pve"] = &shaman::BoostSituationStrategyFactoryInternal::boost_elemental_pve;
+                creators["boost elemental pvp"] = &shaman::BoostSituationStrategyFactoryInternal::boost_elemental_pvp;
+                creators["boost elemental raid"] = &shaman::BoostSituationStrategyFactoryInternal::boost_elemental_raid;
+                creators["boost restoration pve"] = &shaman::BoostSituationStrategyFactoryInternal::boost_restoration_pve;
+                creators["boost restoration pvp"] = &shaman::BoostSituationStrategyFactoryInternal::boost_restoration_pvp;
+                creators["boost restoration raid"] = &shaman::BoostSituationStrategyFactoryInternal::boost_restoration_raid;
+                creators["boost enhancement pve"] = &shaman::BoostSituationStrategyFactoryInternal::boost_enhancement_pve;
+                creators["boost enhancement pvp"] = &shaman::BoostSituationStrategyFactoryInternal::boost_enhancement_pvp;
+                creators["boost enhancement raid"] = &shaman::BoostSituationStrategyFactoryInternal::boost_enhancement_raid;
+            }
+
+        private:
+            static Strategy* boost_elemental_pve(PlayerbotAI* ai) { return new ElementalShamanBoostPveStrategy(ai); }
+            static Strategy* boost_elemental_pvp(PlayerbotAI* ai) { return new ElementalShamanBoostPvpStrategy(ai); }
+            static Strategy* boost_elemental_raid(PlayerbotAI* ai) { return new ElementalShamanBoostRaidStrategy(ai); }
+            static Strategy* boost_restoration_pve(PlayerbotAI* ai) { return new RestorationShamanBoostPveStrategy(ai); }
+            static Strategy* boost_restoration_pvp(PlayerbotAI* ai) { return new RestorationShamanBoostPvpStrategy(ai); }
+            static Strategy* boost_restoration_raid(PlayerbotAI* ai) { return new RestorationShamanBoostRaidStrategy(ai); }
+            static Strategy* boost_enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanBoostPveStrategy(ai); }
+            static Strategy* boost_enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanBoostPvpStrategy(ai); }
+            static Strategy* boost_enhancement_raid(PlayerbotAI* ai) { return new EnhancementShamanBoostRaidStrategy(ai); }
         };
 
         class EarthTotemStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -575,6 +605,7 @@ ShamanAiObjectContext::ShamanAiObjectContext(PlayerbotAI* ai) : AiObjectContext(
     strategyContexts.Add(new ai::shaman::ClassStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::ClassSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::BoostSituationStrategyFactoryInternal());
     actionContexts.Add(new ai::shaman::AiObjectContextInternal());
     triggerContexts.Add(new ai::shaman::TriggerFactoryInternal());
 }

@@ -189,10 +189,6 @@ void FireMageAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tri
 void FireMageBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     MageBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "combustion",
-        NextAction::array(0, new NextAction("combustion", ACTION_HIGH + 1), NULL)));
 }
 
 void FireMageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -234,6 +230,56 @@ void FireMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 {
     FireMageBuffStrategy::InitNonCombatTriggers(triggers);
     MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "combustion",
+        NextAction::array(0, new NextAction("combustion", ACTION_HIGH + 1), NULL)));
+}
+
+void FireMageBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void FireMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -509,10 +555,6 @@ void FireMageAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tri
 void FireMageBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     MageBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "combustion",
-        NextAction::array(0, new NextAction("combustion", ACTION_HIGH + 1), NULL)));
 }
 
 void FireMageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -554,6 +596,56 @@ void FireMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 {
     FireMageBuffStrategy::InitNonCombatTriggers(triggers);
     MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "combustion",
+        NextAction::array(0, new NextAction("combustion", ACTION_HIGH + 1), NULL)));
+}
+
+void FireMageBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void FireMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -833,10 +925,6 @@ void FireMageAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tri
 void FireMageBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     MageBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "combustion",
-        NextAction::array(0, new NextAction("combustion", ACTION_HIGH + 1), NULL)));
 }
 
 void FireMageBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -878,6 +966,56 @@ void FireMageBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 {
     FireMageBuffStrategy::InitNonCombatTriggers(triggers);
     MageBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "combustion",
+        NextAction::array(0, new NextAction("combustion", ACTION_HIGH + 1), NULL)));
+}
+
+void FireMageBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    MageBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void FireMageBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void FireMageBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    FireMageBoostStrategy::InitNonCombatTriggers(triggers);
+    MageBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void FireMageCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

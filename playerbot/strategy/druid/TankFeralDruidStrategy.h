@@ -150,6 +150,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class TankFeralDruidBoostStrategy : public DruidBoostStrategy
+    {
+    public:
+        TankFeralDruidBoostStrategy(PlayerbotAI* ai) : DruidBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class TankFeralDruidBoostPveStrategy : public TankFeralDruidBoostStrategy
+    {
+    public:
+        TankFeralDruidBoostPveStrategy(PlayerbotAI* ai) : TankFeralDruidBoostStrategy(ai) {}
+        string getName() override { return "boost tank feral pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class TankFeralDruidBoostPvpStrategy : public TankFeralDruidBoostStrategy
+    {
+    public:
+        TankFeralDruidBoostPvpStrategy(PlayerbotAI* ai) : TankFeralDruidBoostStrategy(ai) {}
+        string getName() override { return "boost tank feral pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class TankFeralDruidBoostRaidStrategy : public TankFeralDruidBoostStrategy
+    {
+    public:
+        TankFeralDruidBoostRaidStrategy(PlayerbotAI* ai) : TankFeralDruidBoostStrategy(ai) {}
+        string getName() override { return "boost tank feral raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class TankFeralDruidCcStrategy : public DruidCcStrategy
     {
     public:
@@ -236,20 +279,3 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 }
-
-/*
-namespace ai
-{
-    class TankFeralDruidStrategy : public DruidStrategy
-    {
-    public:
-        TankFeralDruidStrategy(PlayerbotAI* ai);
-        string getName() override { return "tank feral"; }
-        int GetType() override { return STRATEGY_TYPE_TANK | STRATEGY_TYPE_MELEE; }
-
-    private:
-        void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
-        NextAction** GetDefaultCombatActions() override;
-    };
-}
-*/

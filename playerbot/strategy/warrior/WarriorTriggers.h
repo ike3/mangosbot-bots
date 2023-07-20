@@ -32,6 +32,7 @@ namespace ai
     SNARE_TRIGGER(ShockwaveSnareTrigger, "shockwave");
     DEBUFF_TRIGGER(ShockwaveTrigger, "shockwave");
     BOOST_TRIGGER(DeathWishTrigger, "death wish");
+    BOOST_TRIGGER(RecklessnessTrigger, "recklessness");
     BUFF_TRIGGER(BloodthirstBuffTrigger, "bloodthirst");
     INTERRUPT_HEALER_TRIGGER(ShieldBashInterruptEnemyHealerSpellTrigger, "shield bash");
     INTERRUPT_TRIGGER(ShieldBashInterruptSpellTrigger, "shield bash");

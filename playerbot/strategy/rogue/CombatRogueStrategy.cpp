@@ -175,14 +175,6 @@ void CombatRogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& 
 void CombatRogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RogueBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "adrenaline rush",
-        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "blade flurry",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 4), NULL)));
 }
 
 void CombatRogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -224,6 +216,60 @@ void CombatRogueBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 {
     CombatRogueBuffStrategy::InitNonCombatTriggers(triggers);
     RogueBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void CombatRogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "adrenaline rush",
+        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 5), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "blade flurry",
+        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 4), NULL)));
+}
+
+void CombatRogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void CombatRogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void CombatRogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void CombatRogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -536,14 +582,6 @@ void CombatRogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& 
 void CombatRogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RogueBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "adrenaline rush",
-        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "blade flurry",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 4), NULL)));
 }
 
 void CombatRogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -585,6 +623,60 @@ void CombatRogueBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 {
     CombatRogueBuffStrategy::InitNonCombatTriggers(triggers);
     RogueBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void CombatRogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "adrenaline rush",
+        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 5), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "blade flurry",
+        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 4), NULL)));
+}
+
+void CombatRogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void CombatRogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void CombatRogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void CombatRogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -897,18 +989,6 @@ void CombatRogueAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& 
 void CombatRogueBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     RogueBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "adrenaline rush",
-        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 6), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "blade flurry",
-        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "killing spree",
-        NextAction::array(0, new NextAction("killing spree", ACTION_HIGH + 4), NULL)));
 }
 
 void CombatRogueBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -950,6 +1030,64 @@ void CombatRogueBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 {
     CombatRogueBuffStrategy::InitNonCombatTriggers(triggers);
     RogueBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void CombatRogueBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    RogueBoostStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "adrenaline rush",
+        NextAction::array(0, new NextAction("adrenaline rush", ACTION_HIGH + 5), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "blade flurry",
+        NextAction::array(0, new NextAction("blade flurry", ACTION_HIGH + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "killing spree",
+        NextAction::array(0, new NextAction("killing spree", ACTION_HIGH + 4), NULL)));
+}
+
+void CombatRogueBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void CombatRogueBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void CombatRogueBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void CombatRogueBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CombatRogueBoostStrategy::InitNonCombatTriggers(triggers);
+    RogueBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void CombatRogueCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

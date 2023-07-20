@@ -150,6 +150,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class DestructionWarlockBoostStrategy : public WarlockBoostStrategy
+    {
+    public:
+        DestructionWarlockBoostStrategy(PlayerbotAI* ai) : WarlockBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class DestructionWarlockBoostPveStrategy : public DestructionWarlockBoostStrategy
+    {
+    public:
+        DestructionWarlockBoostPveStrategy(PlayerbotAI* ai) : DestructionWarlockBoostStrategy(ai) {}
+        string getName() override { return "boost destruction pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class DestructionWarlockBoostPvpStrategy : public DestructionWarlockBoostStrategy
+    {
+    public:
+        DestructionWarlockBoostPvpStrategy(PlayerbotAI* ai) : DestructionWarlockBoostStrategy(ai) {}
+        string getName() override { return "boost destruction pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class DestructionWarlockBoostRaidStrategy : public DestructionWarlockBoostStrategy
+    {
+    public:
+        DestructionWarlockBoostRaidStrategy(PlayerbotAI* ai) : DestructionWarlockBoostStrategy(ai) {}
+        string getName() override { return "boost destruction raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class DestructionWarlockCcStrategy : public WarlockCcStrategy
     {
     public:
