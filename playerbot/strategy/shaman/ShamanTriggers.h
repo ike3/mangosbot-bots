@@ -483,5 +483,20 @@ namespace ai
     {
     public:
         PartyTankEarthShieldTrigger(PlayerbotAI* ai) : BuffOnTankTrigger(ai, "earth shield") {}
+
+        virtual bool IsActive()
+        {
+            Group* group = bot->GetGroup();
+            if (group)
+            {
+                for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+                {
+                    if (ai->HasAura("earth shield", ref->getSource(), false, true))
+                        return false;
+                }
+            }
+
+            return BuffOnTankTrigger::IsActive();
+        }
     };
 }
