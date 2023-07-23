@@ -293,14 +293,6 @@ namespace ai
             static Strategy* cc_affliction_pvp(PlayerbotAI* ai) { return new AfflictionWarlockCcPvpStrategy(ai); }
             static Strategy* cc_affliction_raid(PlayerbotAI* ai) { return new AfflictionWarlockCcRaidStrategy(ai); }
         };
-    };
-};
-
-namespace ai
-{
-    namespace warlock
-    {
-        using namespace ai;
 
         class TriggerFactoryInternal : public NamedObjectContext<Trigger>
         {
@@ -410,14 +402,6 @@ namespace ai
             static Trigger* no_felhunter(PlayerbotAI* ai) { return new NoFelhunterTrigger(ai); }
             static Trigger* no_felguard(PlayerbotAI* ai) { return new NoFelguardTrigger(ai); }
         };
-    };
-};
-
-namespace ai
-{
-    namespace warlock
-    {
-        using namespace ai;
 
         class AiObjectContextInternal : public NamedObjectContext<Action>
         {

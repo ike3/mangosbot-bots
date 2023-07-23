@@ -19,7 +19,7 @@ private:
         return new ActionNode("pull start",
             /*P*/ NULL,
             /*A*/ NULL,
-            /*C*/ NextAction::array(0, new NextAction("pull action", 10.0f), NULL));
+            /*C*/ NextAction::array(0, new NextAction("pull action", ACTION_NORMAL), NULL));
     }
 };
 
@@ -45,7 +45,7 @@ string PullStrategy::GetPullActionName() const
     {
         if (modPullActionName == "faerie fire")
         {
-            if (ai->HasSpell("faerie fire (feral)") && (ai->HasStrategy("bear", BotState::BOT_STATE_COMBAT) || ai->HasStrategy("cat", BotState::BOT_STATE_COMBAT)))
+            if (ai->HasSpell("faerie fire (feral)") && (ai->HasStrategy("tank feral", BotState::BOT_STATE_COMBAT) || ai->HasStrategy("dps feral", BotState::BOT_STATE_COMBAT)))
             {
                 modPullActionName = "faerie fire (feral)";
             }
@@ -143,11 +143,11 @@ void PullStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "pull start",
-        NextAction::array(0, new NextAction("pull start", 60), new NextAction("pull action", 60), NULL)));
+        NextAction::array(0, new NextAction("pull start", ACTION_MOVE), new NextAction("pull action", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "pull end",
-        NextAction::array(0, new NextAction("pull end", 60), NULL)));
+        NextAction::array(0, new NextAction("pull end", ACTION_MOVE), NULL)));
 }
 
 void PullStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -220,7 +220,9 @@ void PullStrategy::RequestPull(Unit* target, bool resetTime)
     SetTarget(target);
     pendingToStart = true;
     if(resetTime)
+    {
         pullStartTime = time(0);
+    }
 }
 
 float PullMultiplier::GetValue(Action* action)
@@ -240,7 +242,9 @@ float PullMultiplier::GetValue(Action* action)
         }
 
         if (action->getRelevance() >= 100)
+        {
             return 0.01f;
+        }
 
         return 0.0f;
     }
@@ -252,14 +256,14 @@ void PossibleAdsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "possible ads",
-        NextAction::array(0, new NextAction("flee with pet", 60), NULL)));
+        NextAction::array(0, new NextAction("flee with pet", ACTION_EMERGENCY), NULL)));
 }
 
 void PullBackStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
         "return to pull position",
-        NextAction::array(0, new NextAction("return to pull position", 65.0f), NULL)));
+        NextAction::array(0, new NextAction("return to pull position", ACTION_MOVE + 5.0f), NULL)));
 }
 
 void PullBackStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

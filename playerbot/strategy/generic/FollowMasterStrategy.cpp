@@ -12,7 +12,7 @@ void FollowMasterStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &trigge
 
     triggers.push_back(new TriggerNode(
         "update follow",
-        NextAction::array(0, new NextAction("follow", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("follow", ACTION_IDLE), NULL)));
 }
 
 void FollowMasterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -23,7 +23,7 @@ void FollowMasterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "update follow",
-        NextAction::array(0, new NextAction("follow", 1.0f), NULL)));
+        NextAction::array(0, new NextAction("follow", ACTION_IDLE), NULL)));
 }
 
 void FollowMasterStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
@@ -35,7 +35,7 @@ void FollowMasterStrategy::InitReactionTriggers(std::list<TriggerNode*>& trigger
 {
     triggers.push_back(new TriggerNode(
         "stop follow",
-        NextAction::array(0, new NextAction("stop follow", 100.0f), NULL)));
+        NextAction::array(0, new NextAction("stop follow", ACTION_PASSTROUGH), NULL)));
 }
 
 void FollowMasterStrategy::OnStrategyAdded(BotState state)
