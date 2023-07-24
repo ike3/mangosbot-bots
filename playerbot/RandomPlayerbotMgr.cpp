@@ -2124,7 +2124,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             bot->GetMotionMaster()->Clear();
             bot->TeleportTo(loc.mapid, x, y, z, 0);
             bot->SendHeartBeat();
-            bot->GetPlayerbotAI()->ResetStrategies();
             bot->GetPlayerbotAI()->Reset(true);
 
             if (bot->GetGroup())
@@ -2143,7 +2142,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
                         member->GetMotionMaster()->Clear();
                         member->TeleportTo(loc.mapid, x, y, z, 0);
                         member->SendHeartBeat();
-                        member->GetPlayerbotAI()->ResetStrategies();
                         member->GetPlayerbotAI()->Reset(true);
                     }
 
