@@ -397,7 +397,7 @@ namespace ai
         static Action* food(PlayerbotAI* ai) { return new EatAction(ai); }
         static Action* mana_potion(PlayerbotAI* ai) { return new UseManaPotionAction(ai); }
         static Action* healing_potion(PlayerbotAI* ai) { return new UseHealingPotionAction(ai); }
-        static Action* healthstone(PlayerbotAI* ai) { return new UseItemAction(ai, "healthstone"); }
+        static Action* healthstone(PlayerbotAI* ai) { return new UseHealthstoneAction(ai); }
         static Action* move_out_of_enemy_contact(PlayerbotAI* ai) { return new MoveOutOfEnemyContactAction(ai); }
         static Action* set_facing(PlayerbotAI* ai) { return new SetFacingTargetAction(ai); }
         static Action* set_behind(PlayerbotAI* ai) { return new SetBehindTargetAction(ai); }

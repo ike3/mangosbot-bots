@@ -119,6 +119,57 @@ namespace ai
         bool ShouldReactionInterruptMovement() const override { return true; }
     };
 
+    class UseHealthstoneAction : public UseItemIdAction
+    {
+    public:
+        UseHealthstoneAction(PlayerbotAI* ai) : UseItemIdAction(ai, "healthstone") {}
+
+        bool isUseful() override { return AI_VALUE2(bool, "combat", "self target"); }
+
+        uint32 GetItemId() override
+        {
+            list<Item*> items = AI_VALUE2(list<Item*>, "inventory items", getName());
+            if (items.empty())
+            {
+                const uint32 level = bot->GetLevel();
+                if(level < 12)
+                {
+                    return 5512;
+                }
+                else if(level >= 12 && level < 24)
+                {
+                    return 5511;
+                }
+                else if(level >= 24 && level < 36)
+                {
+                    return 5509;
+                }
+                else if(level >= 36 && level < 48)
+                {
+                    return 5510;
+                }
+                else if(level >= 48 && level < 61)
+                {
+                    return 9421;
+                }
+                else if(level >= 61 && level < 63)
+                {
+                    return 22103;
+                }
+                else if(level >= 63 && level < 71)
+                {
+                    return 36889;
+                }
+                else
+                {
+                    return 36892;
+                }
+            }
+
+            return items.front()->GetProto()->ItemId;
+        }
+    };
+
     class UseRandomRecipeAction : public UseItemAction
     {
     public:
