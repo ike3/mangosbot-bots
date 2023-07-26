@@ -37,6 +37,28 @@ void BalanceDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     DruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "almost full health",
         NextAction::array(0, new NextAction("rejuvenation", ACTION_LIGHT_HEAL), NULL)));
 
@@ -221,7 +243,7 @@ void BalanceDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigg
 
     triggers.push_back(new TriggerNode(
         "moonkin form",
-        NextAction::array(0, new NextAction("moonkin form", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("moonkin form", ACTION_MOVE), NULL)));
 }
 
 void BalanceDruidBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -433,6 +455,28 @@ void BalanceDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     DruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "almost full health",
         NextAction::array(0, new NextAction("rejuvenation", ACTION_LIGHT_HEAL), NULL)));
 
@@ -605,7 +649,7 @@ void BalanceDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigg
 
     triggers.push_back(new TriggerNode(
         "moonkin form",
-        NextAction::array(0, new NextAction("moonkin form", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("moonkin form", ACTION_MOVE), NULL)));
 }
 
 void BalanceDruidBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -817,6 +861,28 @@ void BalanceDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     DruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "almost full health",
         NextAction::array(0, new NextAction("rejuvenation", ACTION_LIGHT_HEAL), NULL)));
 
@@ -997,7 +1063,7 @@ void BalanceDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigg
 
     triggers.push_back(new TriggerNode(
         "moonkin form",
-        NextAction::array(0, new NextAction("moonkin form", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("moonkin form", ACTION_MOVE), NULL)));
 }
 
 void BalanceDruidBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

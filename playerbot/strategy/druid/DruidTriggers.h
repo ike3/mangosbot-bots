@@ -339,4 +339,36 @@ namespace ai
     public:
         FerociousBiteTrigger(PlayerbotAI* ai) : ComboPointsAvailableTrigger(ai, 5) {}
     };
+
+    class RebirthOnPartyTrigger : public PartyMemberDeadTrigger
+    {
+    public:
+        RebirthOnPartyTrigger(PlayerbotAI* ai) : PartyMemberDeadTrigger(ai) {}
+
+        bool IsActive() override
+        {
+            if (PartyMemberDeadTrigger::IsActive())
+            {
+                return bot->IsSpellReady(AI_VALUE2(uint32, "spell id", "rebirth"));
+            }
+
+            return false;
+        }
+    };
+
+    class InnervateSelfTrigger : public LowManaTrigger
+    {
+    public:
+        InnervateSelfTrigger(PlayerbotAI* ai) : LowManaTrigger(ai) {}
+
+        bool IsActive() override
+        {
+            if (LowManaTrigger::IsActive())
+            {
+                return bot->IsSpellReady(AI_VALUE2(uint32, "spell id", "innervate"));
+            }
+
+            return false;
+        }
+    };
 }

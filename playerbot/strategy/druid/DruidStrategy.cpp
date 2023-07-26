@@ -25,6 +25,9 @@ public:
         creators["mark of the wild on party"] = &mark_of_the_wild_on_party;
         creators["gift of the wild on party"] = &gift_of_the_wild_on_party;
         creators["innervate self"] = &innervate_self;
+        creators["dire bear form"] = &dire_bear_form;
+        creators["cat form"] = &cat_form;
+        creators["travel form"] = &travel_form;
     }
 
 private:
@@ -49,6 +52,14 @@ private:
         return new ActionNode("innervate",
             /*P*/ NextAction::array(0, new NextAction("caster form"), NULL),
             /*A*/ NextAction::array(0, new NextAction("mana potion"), NULL),
+            /*C*/ NULL);
+    }
+
+    static ActionNode* dire_bear_form(PlayerbotAI* ai)
+    {
+        return new ActionNode("dire bear form",
+            /*P*/ NextAction::array(0, new NextAction("caster form"), NULL),
+            /*A*/ NextAction::array(0, new NextAction("bear form"), NULL),
             /*C*/ NULL);
     }
 
@@ -77,6 +88,10 @@ private:
     ACTION_NODE_P(mark_of_the_wild_on_party, "mark of the wild on party", "caster form");
 
     ACTION_NODE_P(gift_of_the_wild_on_party, "gift of the wild on party", "caster form");
+
+    ACTION_NODE_P(cat_form, "cat form", "caster form");
+
+    ACTION_NODE_P(travel_form, "travel form", "caster form");
 };
 
 DruidStrategy::DruidStrategy(PlayerbotAI* ai) : ClassStrategy(ai)
@@ -89,28 +104,6 @@ DruidStrategy::DruidStrategy(PlayerbotAI* ai) : ClassStrategy(ai)
 void DruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "party member dead",
-        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "critical health",
-        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1), 
-                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1), 
-                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void DruidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -371,7 +364,7 @@ void DruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     BuffStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "low mana",
+        "innervate self",
         NextAction::array(0, new NextAction("innervate self", ACTION_HIGH), NULL)));
 }
 
@@ -480,28 +473,6 @@ void DruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trig
 void DruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "party member dead",
-        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "critical health",
-        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
-            new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
-            new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void DruidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -748,7 +719,7 @@ void DruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     BuffStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "low mana",
+        "innervate self",
         NextAction::array(0, new NextAction("innervate self", ACTION_HIGH), NULL)));
 }
 
@@ -857,28 +828,6 @@ void DruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trig
 void DruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "party member dead",
-        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "critical health",
-        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
-            new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
-            new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void DruidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1125,7 +1074,7 @@ void DruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     BuffStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "low mana",
+        "innervate self",
         NextAction::array(0, new NextAction("innervate self", ACTION_HIGH), NULL)));
 }
 

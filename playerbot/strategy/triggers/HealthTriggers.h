@@ -108,10 +108,10 @@ namespace ai
             PartyMemberLowHealthTrigger(ai, "party member almost full health", sPlayerbotAIConfig.almostFullHealth,sPlayerbotAIConfig.mediumHealth) {}
     };
 
-    class TargetLowHealthTrigger : public HealthInRangeTrigger {
+    class TargetLowHealthTrigger : public HealthInRangeTrigger 
+    {
     public:
-        TargetLowHealthTrigger(PlayerbotAI* ai, float value, float minValue = 0) :
-            HealthInRangeTrigger(ai, "target low health", value, minValue) {}
+        TargetLowHealthTrigger(PlayerbotAI* ai, float value, float minValue = 0) : HealthInRangeTrigger(ai, "target low health", value, minValue) {}
         virtual string GetTargetName() { return "current target"; }
     };
 
@@ -121,21 +121,24 @@ namespace ai
         TargetCriticalHealthTrigger(PlayerbotAI* ai) : TargetLowHealthTrigger(ai, 20) {}
     };
 
-	class PartyMemberDeadTrigger : public Trigger {
+	class PartyMemberDeadTrigger : public Trigger 
+    {
 	public:
 		PartyMemberDeadTrigger(PlayerbotAI* ai) : Trigger(ai, "resurrect", 3) {}
         virtual string GetTargetName() { return "party member to resurrect"; }
 		virtual bool IsActive();
 	};
 
-    class DeadTrigger : public Trigger {
+    class DeadTrigger : public Trigger 
+    {
     public:
         DeadTrigger(PlayerbotAI* ai) : Trigger(ai, "dead") {}
         virtual string GetTargetName() { return "self target"; }
         virtual bool IsActive();
     };
 
-    class AoeHealTrigger : public Trigger {
+    class AoeHealTrigger : public Trigger 
+    {
     public:
     	AoeHealTrigger(PlayerbotAI* ai, string name, string type, int count) :
     		Trigger(ai, name), type(type), count(count) {}
@@ -146,5 +149,4 @@ namespace ai
         int count;
         string type;
     };
-
 }

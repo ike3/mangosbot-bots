@@ -219,7 +219,7 @@ NextAction** CastSpellAction::getPrerequisites()
         }
     }
 
-    return nullptr;
+    return Action::getPrerequisites();
 }
 
 void CastSpellAction::SetSpellName(const string& name, string spellIDContextName /*= "spell id"*/)

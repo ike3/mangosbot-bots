@@ -12,7 +12,6 @@ public:
     {
         creators["survival instincts"] = &survival_instincts;
         creators["omen of clarity"] = &omen_of_clarity;
-        creators["dire bear form"] = &dire_bear_form;
         creators["feral charge - bear"] = &feral_charge_bear;
         creators["mangle (bear)"] = &mangle_bear;
     }
@@ -21,8 +20,6 @@ private:
     ACTION_NODE_A(survival_instincts, "survival instincts", "barskin");
 
     ACTION_NODE_P(omen_of_clarity, "omen of clarity", "caster form");
-
-    ACTION_NODE_A(dire_bear_form, "dire bear form", "bear form");
 
     ACTION_NODE_A(feral_charge_bear, "feral charge - bear", "reach melee");
 
@@ -103,6 +100,28 @@ void TankFeralDruidStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 
 void TankFeralDruidPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+
     TankFeralDruidStrategy::InitCombatTriggers(triggers);
     DruidPveStrategy::InitCombatTriggers(triggers);
 }
@@ -127,6 +146,28 @@ void TankFeralDruidPveStrategy::InitDeadTriggers(std::list<TriggerNode*>& trigge
 
 void TankFeralDruidPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+
     TankFeralDruidStrategy::InitCombatTriggers(triggers);
     DruidPvpStrategy::InitCombatTriggers(triggers);
 }
@@ -238,7 +279,7 @@ void TankFeralDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
 
     triggers.push_back(new TriggerNode(
         "bear form",
-        NextAction::array(0, new NextAction("dire bear form", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("dire bear form", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enrage",
@@ -521,6 +562,28 @@ void TankFeralDruidPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 {
     TankFeralDruidStrategy::InitCombatTriggers(triggers);
     DruidPveStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void TankFeralDruidPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -545,6 +608,28 @@ void TankFeralDruidPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 {
     TankFeralDruidStrategy::InitCombatTriggers(triggers);
     DruidPvpStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void TankFeralDruidPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -654,7 +739,7 @@ void TankFeralDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
 
     triggers.push_back(new TriggerNode(
         "bear form",
-        NextAction::array(0, new NextAction("dire bear form", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("dire bear form", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enrage",
@@ -933,6 +1018,28 @@ void TankFeralDruidPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 {
     TankFeralDruidStrategy::InitCombatTriggers(triggers);
     DruidPveStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void TankFeralDruidPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -957,6 +1064,28 @@ void TankFeralDruidPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 {
     TankFeralDruidStrategy::InitCombatTriggers(triggers);
     DruidPvpStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void TankFeralDruidPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1066,7 +1195,7 @@ void TankFeralDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
 
     triggers.push_back(new TriggerNode(
         "bear form",
-        NextAction::array(0, new NextAction("dire bear form", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("dire bear form", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enrage",

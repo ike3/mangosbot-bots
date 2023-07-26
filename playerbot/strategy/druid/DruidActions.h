@@ -66,11 +66,6 @@ namespace ai
 	{
 	public:
 		CastRebirthAction(PlayerbotAI* ai) : ResurrectPartyMemberAction(ai, "rebirth") {}
-
-		virtual NextAction** getPrerequisites() 
-		{
-			return NextAction::merge( NextAction::array(0, new NextAction("caster form"), NULL), ResurrectPartyMemberAction::getPrerequisites());
-		}
 	};
 
 	BUFF_ACTION(CastMarkOfTheWildAction, "mark of the wild");

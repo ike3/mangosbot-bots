@@ -82,6 +82,28 @@ void DpsFeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
     DruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "faerie fire (feral)",
         NextAction::array(0, new NextAction("faerie fire (feral)", ACTION_NORMAL + 5), NULL)));
 
@@ -281,7 +303,7 @@ void DpsFeralDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 
     triggers.push_back(new TriggerNode(
         "cat form",
-        NextAction::array(0, new NextAction("cat form", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("cat form", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "tiger's fury",
@@ -568,6 +590,28 @@ void DpsFeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
     DruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "faerie fire (feral)",
         NextAction::array(0, new NextAction("faerie fire (feral)", ACTION_HIGH + 2), NULL)));
 
@@ -775,7 +819,7 @@ void DpsFeralDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 
     triggers.push_back(new TriggerNode(
         "cat form",
-        NextAction::array(0, new NextAction("cat form", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("cat form", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "tiger's fury",
@@ -1062,6 +1106,28 @@ void DpsFeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
     DruidStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "rebirth on party",
+        NextAction::array(0, new NextAction("rebirth", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "enemy out of melee",
         NextAction::array(0, new NextAction("feral charge - cat", ACTION_MOVE), NULL)));
 
@@ -1273,7 +1339,7 @@ void DpsFeralDruidBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 
     triggers.push_back(new TriggerNode(
         "cat form",
-        NextAction::array(0, new NextAction("cat form", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("cat form", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "tiger's fury",
