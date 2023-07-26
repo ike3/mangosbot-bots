@@ -364,17 +364,16 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     float maxDist = sPlayerbotAIConfig.sightDistance;           //Maximum distance a bot can move in one single action.
     float originalZ = z;                                        // save original destination height to check if bot needs to fly up
 
-
     bool generatePath = !bot->IsFlying() && !bot->HasMovementFlag(MOVEFLAG_SWIMMING) && !bot->IsInWater() && !sServerFacade.IsUnderwater(bot);
     if (noPath)
         generatePath = false;
 
-    if (!isVehicle && !IsMovingAllowed() && sServerFacade.UnitIsDead(bot))
+    if (!isVehicle && sServerFacade.UnitIsDead(bot))
     {
         return false;
     }
 
-    if (!isVehicle && bot->IsMoving() && !IsMovingAllowed())
+    if (!isVehicle && bot->IsMoving())
     {
         return false;
     }
@@ -631,14 +630,11 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                         transport->AddPassenger(bot, true);
                         bot->NearTeleportTo(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, bot->m_movementInfo.pos.z, bot->m_movementInfo.pos.o);
                         MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
-
                         entry = 0;
-
                         return true;
                     }
                     else
                     {
-
                         if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
                             ai->TellPlayer(GetMaster(), "transport at " + to_string(uint32(telePosition.distance(transport))) + "yards of entry");
 
@@ -670,6 +666,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
                                     break;
                                 }
                             }
+
                             entry = 0;
                         }
                     }
@@ -1260,31 +1257,7 @@ bool MovementAction::IsMovingAllowed(uint32 mapId, float x, float y, float z)
 
 bool MovementAction::IsMovingAllowed()
 {
-    // do not allow if not vehicle driver
-    if (ai->IsInVehicle() && !ai->IsInVehicle(true))
-        return false;
-
-    // test
     return ai->CanMove();
-
-    if (sServerFacade.IsFrozen(bot) || bot->IsPolymorphed() ||
-			(sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
-            bot->IsBeingTeleported() ||
-            sServerFacade.IsInRoots(bot) ||
-            bot->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION) ||
-            bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) || sServerFacade.IsCharmed(bot) ||
-            bot->HasAuraType(SPELL_AURA_MOD_STUN) || bot->IsTaxiFlying() ||
-            bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))// ||
-            //bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
-        return false;
-
-    MotionMaster &mm = *bot->GetMotionMaster();
-#ifdef CMANGOS
-    return mm.GetCurrentMovementGeneratorType() != TAXI_MOTION_TYPE;
-#endif
-#ifdef MANGOS
-    return mm.GetCurrentMovementGeneratorType() != FLIGHT_MOTION_TYPE;
-#endif
 }
 
 bool MovementAction::Follow(Unit* target, float distance)
@@ -2256,14 +2229,14 @@ bool SetBehindTargetAction::Execute(Event& event)
 bool SetBehindTargetAction::isUseful()
 {
     Unit* target = AI_VALUE(Unit*, "current target");
-    if (!target)
-        return false;
+    if (target && !bot->IsFacingTargetsBack(target))
+    {
+        // Don't move behind if the target is too far away
+        const float distance = bot->GetDistance(target, false);
+        return distance <= ATTACK_DISTANCE * 2.0f;
+    }
 
-    // Do not move if stay strategy is set
-    if(ai->HasStrategy("stay", ai->GetState()))
-        return false;
-
-    return !bot->IsFacingTargetsBack(target);
+    return false;
 }
 
 bool SetBehindTargetAction::isPossible()

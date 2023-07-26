@@ -107,7 +107,7 @@ bool MoveToPositionAction::isUseful()
 {
     ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
     float distance = AI_VALUE2(float, "distance", string("position_") + qualifier);
-    return pos.isSet() && distance > ai->GetRange("follow");
+    return pos.isSet() && distance > ai->GetRange("follow") && IsMovingAllowed();
 }
 
 bool GuardAction::isUseful()
