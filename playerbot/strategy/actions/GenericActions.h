@@ -19,12 +19,14 @@ namespace ai
     {
     public:
         UseLightwellAction(PlayerbotAI* ai) : MovementAction(ai, "lightwell") {}
-        virtual bool isUseful()
+        ActionThreatType getThreatType() override { return ActionThreatType::ACTION_THREAT_NONE; }
+
+        bool isUseful() override
         {
             return (bot->getClass() == CLASS_PRIEST || bot->GetGroup()) && bot->GetHealthPercent() < sPlayerbotAIConfig.mediumHealth && !ai->HasAura("lightwell renew", bot);
         }
-        virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
-        virtual bool Execute(Event& event)
+
+        bool isPossible() override
         {
             list<ObjectGuid> closeObjects = AI_VALUE(list<ObjectGuid>, "nearest game objects no los");
             if (closeObjects.empty())
@@ -42,7 +44,6 @@ namespace ai
                 if (!sServerFacade.isSpawned(go) || go->GetGoState() != GO_STATE_READY || !bot->CanInteract(go))
                     continue;
 
-                // handle summoned traps, usually by players
                 if (Unit* owner = go->GetOwner())
                 {
                     if (owner->GetTypeId() == TYPEID_PLAYER)
@@ -56,6 +57,18 @@ namespace ai
                     }
                 }
 
+                lightwellGameObject = *i;
+                return MovementAction::isPossible();
+            }
+
+            return false;
+        }
+        
+        virtual bool Execute(Event& event)
+        {
+            GameObject* go = ai->GetGameObject(lightwellGameObject);
+            if (go)
+            {
                 if (bot->IsWithinDistInMap(go, INTERACTION_DISTANCE, false))
                 {
                     WorldPacket data(CMSG_GAMEOBJ_USE);
@@ -68,8 +81,12 @@ namespace ai
                     return MoveNear(go, 4.0f);
                 }
             }
+
             return false;
         }
+
+    private:
+        ObjectGuid lightwellGameObject;
     };
 
     class ChatCommandAction : public Action
