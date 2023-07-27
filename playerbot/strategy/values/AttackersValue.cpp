@@ -101,7 +101,8 @@ void AttackersValue::AddTargetsOf(Player* player, set<Unit*>& targets, set<Objec
             const string ignoreValidate = std::to_string(true);
             const string range = std::to_string((int32)GetRange());
             const vector<string> qualifiers = { range, ignoreValidate };
-            for (auto guid : PAI_VALUE2(list<ObjectGuid>, "possible targets", Qualified::MultiQualify(qualifiers, ":")))
+            const list<ObjectGuid> possibleTargets = PAI_VALUE2(list<ObjectGuid>, "possible targets", Qualified::MultiQualify(qualifiers, ":"));
+            for (const ObjectGuid& guid : possibleTargets)
             {
                 if (Unit* unit = ai->GetUnit(guid))
                 {

@@ -20,15 +20,30 @@ namespace ai
         string getQualifier() { return qualifier; }
         void Reset() { qualifier.clear(); }
 
-        static string MultiQualify(vector<string> qualifiers, const string& separator, const string_view brackets = "{}")
+        static string MultiQualify(const vector<string>& qualifiers, const string& separator, const string_view brackets = "{}")
         { 
-            ostringstream out; 
-            for (auto& qualifier : qualifiers)
+            stringstream out;
+            for (uint8 i = 0; i < qualifiers.size(); i++)
             {
-                out << qualifier << (&qualifier != &qualifiers.back() ? separator : "");
+                const string& qualifier = qualifiers[i];
+                if (i == qualifiers.size() - 1)
+                {
+                    out << qualifier;
+                }
+                else
+                {
+                    out << qualifier << separator;
+                }
             }
-                
-            return brackets[0] + out.str() + brackets[1];
+
+            if (brackets.empty())
+            {
+                return out.str();
+            }
+            else
+            {
+                return brackets[0] + out.str() + brackets[1];
+            }
         }
 
         static vector<string> getMultiQualifiers(const string& qualifier1, const string& separator, const string_view brackets = "{}")
