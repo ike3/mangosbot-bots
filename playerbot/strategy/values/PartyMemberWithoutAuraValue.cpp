@@ -24,6 +24,15 @@ public:
 
         for (vector<string>::iterator i = auras.begin(); i != auras.end(); ++i)
         {
+            // Ignore caster spells for non caster units
+            if (*i == "arcane intellect" || *i == "divine spirit")
+            {
+                if (!unit->GetPower(POWER_MANA))
+                {
+                    continue;
+                }
+            }
+
             if (ai->HasAura(*i, unit))
                 return false;
         }
