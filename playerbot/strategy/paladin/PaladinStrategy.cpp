@@ -83,27 +83,6 @@ void PaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "critical health",
         NextAction::array(0, new NextAction("lay on hands", ACTION_EMERGENCY + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "critical health",
-        NextAction::array(0, new NextAction("divine shield", ACTION_EMERGENCY + 1), 
-                             new NextAction("holy light", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("lay on hands on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "protect party member",
-        NextAction::array(0, new NextAction("blessing of protection on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("holy light", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void PaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -113,14 +92,6 @@ void PaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "party member dead",
         NextAction::array(0, new NextAction("redemption", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("holy light", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void PaladinStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -435,6 +406,68 @@ void PaladinBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void PaladinBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("lay on hands on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "protect party member",
+        NextAction::array(0, new NextAction("blessing of protection on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void PaladinOffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void PaladinOffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinOffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinOffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPveStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinOffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinOffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinOffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void PaladinAuraStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -571,27 +604,6 @@ void PaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "critical health",
         NextAction::array(0, new NextAction("lay on hands", ACTION_EMERGENCY + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "critical health",
-        NextAction::array(0, new NextAction("divine shield", ACTION_EMERGENCY + 1),
-                             new NextAction("holy light", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("lay on hands on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "protect party member",
-        NextAction::array(0, new NextAction("blessing of protection on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("holy light", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void PaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -601,14 +613,6 @@ void PaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "party member dead",
         NextAction::array(0, new NextAction("redemption", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("holy light", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void PaladinStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -927,6 +931,68 @@ void PaladinBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void PaladinBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("lay on hands on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "protect party member",
+        NextAction::array(0, new NextAction("blessing of protection on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void PaladinOffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void PaladinOffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinOffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinOffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPveStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinOffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinOffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinOffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void PaladinAuraStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1063,27 +1129,6 @@ void PaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "critical health",
         NextAction::array(0, new NextAction("lay on hands", ACTION_EMERGENCY + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "critical health",
-        NextAction::array(0, new NextAction("divine shield", ACTION_EMERGENCY + 1),
-            new NextAction("holy light", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("lay on hands on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "protect party member",
-        NextAction::array(0, new NextAction("blessing of protection on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("holy light", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void PaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1093,14 +1138,6 @@ void PaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "party member dead",
         NextAction::array(0, new NextAction("redemption", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "low health",
-        NextAction::array(0, new NextAction("holy light", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void PaladinStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -1419,6 +1456,68 @@ void PaladinBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void PaladinBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("lay on hands on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "protect party member",
+        NextAction::array(0, new NextAction("blessing of protection on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void PaladinOffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("holy light on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void PaladinOffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinOffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinOffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPveStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinOffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinOffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinOffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void PaladinAuraStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

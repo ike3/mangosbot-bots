@@ -392,6 +392,46 @@ void StealthRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigger
 
 }
 
+void OffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 #endif
 #ifdef MANGOSBOT_ONE // TBC
 
@@ -775,6 +815,46 @@ void StealthRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void StealthRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }
@@ -1166,6 +1246,46 @@ void StealthRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 }
 
 void StealthRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void OffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
 
 }

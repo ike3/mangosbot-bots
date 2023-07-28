@@ -46,25 +46,8 @@ void BalanceDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
                              new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
-                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "almost full health",
-        NextAction::array(0, new NextAction("rejuvenation", ACTION_LIGHT_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member almost full health",
-        NextAction::array(0, new NextAction("rejuvenation on party", ACTION_LIGHT_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "faerie fire",
@@ -74,6 +57,10 @@ void BalanceDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 void BalanceDruidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     DruidStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void BalanceDruidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -464,25 +451,8 @@ void BalanceDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
                              new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
-                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "almost full health",
-        NextAction::array(0, new NextAction("rejuvenation", ACTION_LIGHT_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member almost full health",
-        NextAction::array(0, new NextAction("rejuvenation on party", ACTION_LIGHT_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "faerie fire",
@@ -504,6 +474,10 @@ void BalanceDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 void BalanceDruidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     DruidStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void BalanceDruidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -870,25 +844,8 @@ void BalanceDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
                              new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
-                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "almost full health",
-        NextAction::array(0, new NextAction("rejuvenation", ACTION_LIGHT_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member almost full health",
-        NextAction::array(0, new NextAction("rejuvenation on party", ACTION_LIGHT_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "eclipse (solar)",
@@ -918,6 +875,10 @@ void BalanceDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 void BalanceDruidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     DruidStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void BalanceDruidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)

@@ -695,6 +695,10 @@ namespace ai
             strategiesRequired = { "balance", "boost" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost balance pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost balance pve", strategiesRequired);
+
+            strategiesRequired = { "offheal" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "offheal pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "offheal pve", strategiesRequired);
         }
     };
 
@@ -822,6 +826,10 @@ namespace ai
             strategiesRequired = { "balance", "boost" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost balance pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost balance pvp", strategiesRequired);
+
+            strategiesRequired = { "offheal" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "offheal pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "offheal pvp", strategiesRequired);
         }
     };
 
@@ -949,6 +957,10 @@ namespace ai
             strategiesRequired = { "balance", "boost" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost balance raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost balance raid", strategiesRequired);
+
+            strategiesRequired = { "offheal" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "offheal raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "offheal raid", strategiesRequired);
         }
     };
 }

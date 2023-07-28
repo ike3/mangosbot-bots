@@ -48,10 +48,6 @@ void ShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("healing wave", ACTION_MEDIUM_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("healing wave on party", ACTION_LIGHT_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "purge",
         NextAction::array(0, new NextAction("purge", ACTION_DISPEL), NULL)));
 
@@ -75,10 +71,6 @@ void ShamanStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("healing wave", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("healing wave on party", ACTION_LIGHT_HEAL), NULL)));
 }
 
 void ShamanStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -269,6 +261,60 @@ void ShamanCureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
 void ShamanCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CureRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("healing wave on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void ShamanOffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("healing wave on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void ShamanOffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanOffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanOffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanOffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanOffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanOffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanTotemsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -655,6 +701,60 @@ void ShamanCureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
 void ShamanCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CureRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("healing wave on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void ShamanOffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("healing wave on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void ShamanOffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanOffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanOffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanOffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanOffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanOffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanTotemsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1115,6 +1215,60 @@ void ShamanCureRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
 void ShamanCureRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CureRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("healing wave on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void ShamanOffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("healing wave on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void ShamanOffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanOffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanOffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanOffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanOffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanOffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    ShamanOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanTotemsStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

@@ -91,17 +91,8 @@ void DpsFeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
                              new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
-                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "faerie fire (feral)",
@@ -123,6 +114,10 @@ void DpsFeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
 void DpsFeralDruidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     DruidStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void DpsFeralDruidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -599,17 +594,8 @@ void DpsFeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
                              new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
-                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "faerie fire (feral)",
@@ -639,6 +625,10 @@ void DpsFeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
 void DpsFeralDruidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     DruidStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void DpsFeralDruidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -655,14 +645,6 @@ void DpsFeralDruidPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigg
 {
     DpsFeralDruidStrategy::InitCombatTriggers(triggers);
     DruidPveStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "rip",
-        NextAction::array(0, new NextAction("rip", ACTION_NORMAL + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rake",
-        NextAction::array(0, new NextAction("rake", ACTION_NORMAL + 2), NULL)));
 }
 
 void DpsFeralDruidPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -699,14 +681,6 @@ void DpsFeralDruidPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigg
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
         NextAction::array(0, new NextAction("dash", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rip",
-        NextAction::array(0, new NextAction("rip", ACTION_NORMAL + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rake",
-        NextAction::array(0, new NextAction("rake", ACTION_NORMAL + 2), NULL)));
 }
 
 void DpsFeralDruidPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1115,17 +1089,8 @@ void DpsFeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
                              new NextAction("healing touch", ACTION_CRITICAL_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "party member critical health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
-                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member low health",
-        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy out of melee",
@@ -1159,6 +1124,10 @@ void DpsFeralDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
 void DpsFeralDruidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     DruidStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void DpsFeralDruidStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
@@ -1175,14 +1144,6 @@ void DpsFeralDruidPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigg
 {
     DpsFeralDruidStrategy::InitCombatTriggers(triggers);
     DruidPveStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "rip",
-        NextAction::array(0, new NextAction("rip", ACTION_NORMAL + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rake",
-        NextAction::array(0, new NextAction("rake", ACTION_NORMAL + 2), NULL)));
 }
 
 void DpsFeralDruidPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1219,14 +1180,6 @@ void DpsFeralDruidPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigg
     triggers.push_back(new TriggerNode(
         "enemy flagcarrier near",
         NextAction::array(0, new NextAction("dash", ACTION_HIGH), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rip",
-        NextAction::array(0, new NextAction("rip", ACTION_NORMAL + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "rake",
-        NextAction::array(0, new NextAction("rake", ACTION_NORMAL + 2), NULL)));
 }
 
 void DpsFeralDruidPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

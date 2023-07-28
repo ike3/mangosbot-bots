@@ -22,6 +22,7 @@ namespace ai
                 creators["buff"] = &paladin::StrategyFactoryInternal::buff;
                 creators["pull"] = &paladin::StrategyFactoryInternal::pull;
                 creators["cc"] = &paladin::StrategyFactoryInternal::cc;
+                creators["offheal"] = &paladin::StrategyFactoryInternal::offheal;
             }
 
         private:
@@ -29,6 +30,7 @@ namespace ai
             static Strategy* cure(PlayerbotAI* ai) { return new CurePlaceholderStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
+            static Strategy* offheal(PlayerbotAI* ai) { return new OffhealPlaceholderStrategy(ai); }
 #ifdef MANGOSBOT_TWO
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "judgement of light", "seal of righteousness"); }
 #else
@@ -118,6 +120,22 @@ namespace ai
             static Strategy* buff_protection_pve(PlayerbotAI* ai) { return new ProtectionPaladinBuffPveStrategy(ai); }
             static Strategy* buff_protection_pvp(PlayerbotAI* ai) { return new ProtectionPaladinBuffPvpStrategy(ai); }
             static Strategy* buff_protection_raid(PlayerbotAI* ai) { return new ProtectionPaladinBuffRaidStrategy(ai); }
+        };
+
+        class OffhealSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            OffhealSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["offheal pve"] = &paladin::OffhealSituationStrategyFactoryInternal::offheal_pve;
+                creators["offheal pvp"] = &paladin::OffhealSituationStrategyFactoryInternal::offheal_pvp;
+                creators["offheal raid"] = &paladin::OffhealSituationStrategyFactoryInternal::offheal_raid;
+            }
+
+        private:
+            static Strategy* offheal_pve(PlayerbotAI* ai) { return new PaladinOffhealPveStrategy(ai); }
+            static Strategy* offheal_pvp(PlayerbotAI* ai) { return new PaladinOffhealPvpStrategy(ai); }
+            static Strategy* offheal_raid(PlayerbotAI* ai) { return new PaladinOffhealRaidStrategy(ai); }
         };
 
         class CcSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -674,6 +692,7 @@ PaladinAiObjectContext::PaladinAiObjectContext(PlayerbotAI* ai) : AiObjectContex
     strategyContexts.Add(new ai::paladin::ClassStrategyFactoryInternal());
     strategyContexts.Add(new ai::paladin::ClassSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::paladin::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::paladin::OffhealSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::paladin::CcSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::paladin::AuraManualStrategyFactoryInternal());
     strategyContexts.Add(new ai::paladin::AuraSituationStrategyFactoryInternal());

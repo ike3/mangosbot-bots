@@ -22,6 +22,7 @@ namespace ai
                 creators["buff"] = &shaman::StrategyFactoryInternal::buff;
                 creators["boost"] = &shaman::StrategyFactoryInternal::boost;
                 creators["pull"] = &shaman::StrategyFactoryInternal::pull;
+                creators["offheal"] = &shaman::StrategyFactoryInternal::offheal;
             }
 
         private:
@@ -29,7 +30,8 @@ namespace ai
             static Strategy* cure(PlayerbotAI* ai) { return new CurePlaceholderStrategy(ai); }
             static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new BoostPlaceholderStrategy(ai); }
-            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "lightning bolt"); }            
+            static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "lightning bolt"); }        
+            static Strategy* offheal(PlayerbotAI* ai) { return new OffhealPlaceholderStrategy(ai); }
         };
 
         class AoeSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -114,6 +116,22 @@ namespace ai
             static Strategy* buff_enhancement_pve(PlayerbotAI* ai) { return new EnhancementShamanBuffPveStrategy(ai); }
             static Strategy* buff_enhancement_pvp(PlayerbotAI* ai) { return new EnhancementShamanBuffPvpStrategy(ai); }
             static Strategy* buff_enhancement_raid(PlayerbotAI* ai) { return new EnhancementShamanBuffRaidStrategy(ai); }
+        };
+
+        class OffhealSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            OffhealSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["offheal pve"] = &shaman::OffhealSituationStrategyFactoryInternal::offheal_pve;
+                creators["offheal pvp"] = &shaman::OffhealSituationStrategyFactoryInternal::offheal_pvp;
+                creators["offheal raid"] = &shaman::OffhealSituationStrategyFactoryInternal::offheal_raid;
+            }
+
+        private:
+            static Strategy* offheal_pve(PlayerbotAI* ai) { return new ShamanOffhealPveStrategy(ai); }
+            static Strategy* offheal_pvp(PlayerbotAI* ai) { return new ShamanOffhealPvpStrategy(ai); }
+            static Strategy* offheal_raid(PlayerbotAI* ai) { return new ShamanOffhealRaidStrategy(ai); }
         };
 
         class BoostSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -605,6 +623,7 @@ ShamanAiObjectContext::ShamanAiObjectContext(PlayerbotAI* ai) : AiObjectContext(
     strategyContexts.Add(new ai::shaman::ClassStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::ClassSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::OffhealSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::BoostSituationStrategyFactoryInternal());
     actionContexts.Add(new ai::shaman::AiObjectContextInternal());
     triggerContexts.Add(new ai::shaman::TriggerFactoryInternal());

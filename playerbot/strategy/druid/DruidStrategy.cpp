@@ -13,6 +13,8 @@ public:
         creators["healing touch on party"] = &healing_touch_on_party;
         creators["regrowth"] = &regrowth;
         creators["regrowth on party"] = &regrowth_on_party;
+        creators["rejuvenation"] = &rejuvenation;
+        creators["rejuvenation on party"] = &rejuvenation_on_party;
         creators["rebirth"] = &rebirth;
         creators["abolish poison"] = &abolish_poison;
         creators["abolish poison on party"] = &abolish_poison_on_party;
@@ -78,6 +80,10 @@ private:
     ACTION_NODE_P(healing_touch, "healing touch", "caster form");
 
     ACTION_NODE_P(healing_touch_on_party, "healing touch on party", "caster form");
+
+    ACTION_NODE_P(rejuvenation, "rejuvenation", "caster form");
+
+    ACTION_NODE_P(rejuvenation_on_party, "rejuvenation on party", "caster form");
 
     ACTION_NODE_P(thorns, "thorns", "caster form");
 
@@ -309,16 +315,6 @@ void DruidCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CcStrategy::InitCombatTriggers(triggers);
 
-    // MOVE TO BALANCE
-    triggers.push_back(new TriggerNode(
-        "entangling roots",
-        NextAction::array(0, new NextAction("entangling roots on cc", ACTION_INTERRUPT), NULL)));
-
-    // MOVE TO BALANCE
-    triggers.push_back(new TriggerNode(
-        "entangling roots kite",
-        NextAction::array(0, new NextAction("entangling roots", ACTION_INTERRUPT), NULL)));
-
     triggers.push_back(new TriggerNode(
         "hibernate",
         NextAction::array(0, new NextAction("hibernate on cc", ACTION_INTERRUPT), NULL)));
@@ -465,6 +461,65 @@ void DruidBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
 void DruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DruidOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+                             new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void DruidOffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void DruidOffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DruidOffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DruidOffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DruidOffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DruidOffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DruidOffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 #endif

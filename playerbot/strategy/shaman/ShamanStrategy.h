@@ -173,6 +173,49 @@ namespace ai
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
     };
 
+    class ShamanOffhealStrategy : public OffhealStrategy
+    {
+    public:
+        ShamanOffhealStrategy(PlayerbotAI* ai) : OffhealStrategy(ai) {}
+
+    protected:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ShamanOffhealPvpStrategy : public ShamanOffhealStrategy
+    {
+    public:
+        ShamanOffhealPvpStrategy(PlayerbotAI* ai) : ShamanOffhealStrategy(ai) {}
+        std::string getName() override { return "offheal pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ShamanOffhealPveStrategy : public ShamanOffhealStrategy
+    {
+    public:
+        ShamanOffhealPveStrategy(PlayerbotAI* ai) : ShamanOffhealStrategy(ai) {}
+        std::string getName() override { return "offheal pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ShamanOffhealRaidStrategy : public ShamanOffhealStrategy
+    {
+    public:
+        ShamanOffhealRaidStrategy(PlayerbotAI* ai) : ShamanOffhealStrategy(ai) {}
+        std::string getName() override { return "offheal raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class ShamanTotemsStrategy : public Strategy
     {
     public:

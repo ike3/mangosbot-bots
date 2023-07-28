@@ -61,6 +61,15 @@ void RetributionPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
                              new NextAction("holy light", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("divine shield", ACTION_EMERGENCY + 1), 
+                             new NextAction("holy light", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("holy light", ACTION_MEDIUM_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "low mana",
         NextAction::array(0, new NextAction("seal of wisdom", ACTION_HIGH + 1), NULL)));
 
@@ -84,6 +93,10 @@ void RetributionPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
 void RetributionPaladinStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     PaladinStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "low health",
+        NextAction::array(0, new NextAction("holy light", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void RetributionPaladinStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)

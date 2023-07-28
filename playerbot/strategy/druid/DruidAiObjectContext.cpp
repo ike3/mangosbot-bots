@@ -28,6 +28,7 @@ namespace ai
                 creators["cc"] = &druid::StrategyFactoryInternal::cc;
                 creators["cure"] = &druid::StrategyFactoryInternal::cure;
                 creators["powershift"] = &druid::StrategyFactoryInternal::powershift;
+                creators["offheal"] = &druid::StrategyFactoryInternal::offheal;
             }
 
         private:
@@ -40,6 +41,7 @@ namespace ai
             static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
             static Strategy* cure(PlayerbotAI* ai) { return new CurePlaceholderStrategy(ai); }
             static Strategy* powershift(PlayerbotAI* ai) { return new DpsFeralDruidPowershiftStrategy(ai); }
+            static Strategy* offheal(PlayerbotAI* ai) { return new OffhealPlaceholderStrategy(ai); }
         };
 
         class AoeSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -142,6 +144,22 @@ namespace ai
             static Strategy* buff_balance_pve(PlayerbotAI* ai) { return new BalanceDruidBuffPveStrategy(ai); }
             static Strategy* buff_balance_pvp(PlayerbotAI* ai) { return new BalanceDruidBuffPvpStrategy(ai); }
             static Strategy* buff_balance_raid(PlayerbotAI* ai) { return new BalanceDruidBuffRaidStrategy(ai); }
+        };
+
+        class OffhealSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            OffhealSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["offheal pve"] = &druid::OffhealSituationStrategyFactoryInternal::offheal_pve;
+                creators["offheal pvp"] = &druid::OffhealSituationStrategyFactoryInternal::offheal_pvp;
+                creators["offheal raid"] = &druid::OffhealSituationStrategyFactoryInternal::offheal_raid;
+            }
+
+        private:
+            static Strategy* offheal_pve(PlayerbotAI* ai) { return new DruidOffhealPveStrategy(ai); }
+            static Strategy* offheal_pvp(PlayerbotAI* ai) { return new DruidOffhealPvpStrategy(ai); }
+            static Strategy* offheal_raid(PlayerbotAI* ai) { return new DruidOffhealRaidStrategy(ai); }
         };
 
         class BoostSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -556,6 +574,7 @@ DruidAiObjectContext::DruidAiObjectContext(PlayerbotAI* ai) : AiObjectContext(ai
     strategyContexts.Add(new ai::druid::AoeSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::druid::CureSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::druid::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::druid::OffhealSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::druid::BoostSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::druid::CcSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::druid::StealthSituationStrategyFactoryInternal());
