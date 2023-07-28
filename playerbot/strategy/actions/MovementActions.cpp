@@ -2233,7 +2233,7 @@ bool SetBehindTargetAction::isUseful()
     {
         // Don't move behind if the target is too far away
         const float distance = bot->GetDistance(target, false);
-        return distance <= ATTACK_DISTANCE * 2.0f;
+        return distance <= 15.0f;
     }
 
     return false;
