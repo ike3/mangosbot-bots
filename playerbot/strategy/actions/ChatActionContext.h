@@ -121,7 +121,7 @@ namespace ai
             creators["react"] = &ChatActionContext::react;
             creators["all"] = &ChatActionContext::all;
             creators["trainer"] = &ChatActionContext::trainer;
-            creators["attack"] = &ChatActionContext::attack_my_target;
+            creators["attack my target"] = &ChatActionContext::attack_my_target;
             creators["chat"] = &ChatActionContext::chat;
             creators["home"] = &ChatActionContext::home;
             creators["destroy"] = &ChatActionContext::destroy;
