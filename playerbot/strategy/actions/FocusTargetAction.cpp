@@ -25,7 +25,7 @@ std::string LowercaseString(const char* string)
 bool FocusHealSetTargetAction::Execute(Event& event)
 {
     Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
-    if (ai->IsHeal(bot))
+    if (ai->IsHeal(bot) || ai->HasStrategy("offheal", BotState::BOT_STATE_COMBAT))
     {
         const std::string targetName = LowercaseString(event.getParam());
         if (!targetName.empty())
