@@ -94,6 +94,10 @@ bool FocusHealSetTargetAction::Execute(Event& event)
             ai->TellPlayerNoFacing(requester, "Please provide a target name");
         }
     }
+    else
+    {
+        ai->TellPlayerNoFacing(requester, "I'm not a healer or offhealer (please change my strats to heal or offheal)");
+    }
 
     return false;   
 }
