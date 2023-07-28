@@ -17,10 +17,25 @@ bool QuestAction::Execute(Event event)
     if (!guid)
         guid = master->GetSelectionGuid();
 
-    if (!guid)
-        return false;
+    if (guid)
+        return ProcessQuests(guid);
 
-    return ProcessQuests(guid);
+    list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
+    for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
+    {
+        Unit* unit = ai->GetUnit(*i);
+        if (unit && bot->GetDistance(unit) <= INTERACTION_DISTANCE)
+            return ProcessQuests(unit);
+    }
+    list<ObjectGuid> gos = AI_VALUE(list<ObjectGuid>, "nearest game objects");
+    for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)
+    {
+        GameObject* go = ai->GetGameObject(*i);
+        if (go && bot->GetDistance(go) <= INTERACTION_DISTANCE)
+            return ProcessQuests(go);
+    }
+
+    return false;
 }
 
 bool QuestAction::ProcessQuests(ObjectGuid questGiver)
