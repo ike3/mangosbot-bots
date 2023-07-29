@@ -14,10 +14,7 @@ namespace ai
 		{
             this->distance = distance;
         }
-        virtual bool Execute(Event event)
-		{
-			return MoveTo(AI_VALUE(Unit*, GetTargetName()), distance);
-        }
+        virtual bool Execute(Event event);
         virtual bool isUseful()
 		{
             return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", GetTargetName()), (distance + sPlayerbotAIConfig.contactDistance));
