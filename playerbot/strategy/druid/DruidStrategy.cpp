@@ -877,6 +877,65 @@ void DruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trig
     BoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void DruidOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+            new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void DruidOffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void DruidOffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DruidOffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DruidOffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DruidOffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DruidOffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DruidOffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 #endif
 #ifdef MANGOSBOT_TWO // WOTLK
 
@@ -1234,6 +1293,65 @@ void DruidBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigger
 void DruidBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DruidOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member critical health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_CRITICAL_HEAL + 1),
+            new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void DruidOffhealStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    OffhealStrategy::InitNonCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "party member low health",
+        NextAction::array(0, new NextAction("regrowth on party", ACTION_MEDIUM_HEAL), NULL)));
+}
+
+void DruidOffhealPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void DruidOffhealPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DruidOffhealPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealPveStrategy::InitCombatTriggers(triggers);
+}
+
+void DruidOffhealPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void DruidOffhealRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitCombatTriggers(triggers);
+    OffhealRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void DruidOffhealRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    DruidOffhealStrategy::InitNonCombatTriggers(triggers);
+    OffhealRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 #endif
