@@ -28,7 +28,7 @@ public:
             // Ignore caster spells for non caster units
             if (*i == "arcane intellect" || *i == "arcane brilliance" || *i == "divine spirit" || *i == "prayer of spirit")
             {
-                if (!unit->GetPowerType() != POWER_MANA)
+                if (unit->GetPowerType() != POWER_MANA)
                 {
                     continue;
                 }
