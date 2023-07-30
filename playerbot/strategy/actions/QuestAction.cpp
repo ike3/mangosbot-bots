@@ -118,7 +118,7 @@ bool QuestAction::AcceptQuest(Quest const* quest, uint64 questGiver)
     }
 
     out << " " << chat->formatQuest(quest);
-    ai->TellMaster(out);
+    ai->TellError(out.str());
     return false;
 }
 

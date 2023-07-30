@@ -24,4 +24,10 @@ namespace ai
         AcceptQuestShareAction(PlayerbotAI* ai) : Action(ai, "accept quest share") {}
         virtual bool Execute(Event event);
     };
+
+    class ConfirmQuestAction : public Action {
+    public:
+        ConfirmQuestAction(PlayerbotAI* ai) : Action(ai, "confirm quest") {}
+        virtual bool Execute(Event event);
+    };
 }
