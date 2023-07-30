@@ -25,12 +25,12 @@ public:
         for (vector<string>::iterator i = auras.begin(); i != auras.end(); ++i)
         {
 #ifdef MANGOSBOT_ZERO
-            // Ignore caster spells for non caster units
+            // Ignore mana buff spells for non mana users
             if (*i == "arcane intellect" || *i == "arcane brilliance" || *i == "divine spirit" || *i == "prayer of spirit")
             {
                 if (unit->GetPowerType() != POWER_MANA)
                 {
-                    continue;
+                    return false;
                 }
             }
 #endif
