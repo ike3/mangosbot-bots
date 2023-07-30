@@ -10,113 +10,130 @@ using namespace ai;
 bool SkipSpellsListAction::Execute(Event& event)
 {
     string cmd = event.getParam();
-
     set<uint32>& skipSpells = AI_VALUE(set<uint32>&, "skip spells list");
-
-    SpellIds spellIds = parseIds(cmd);
-    if (!spellIds.empty()) {
-        skipSpells.clear();
-        for (SpellIds::iterator i = spellIds.begin(); i != spellIds.end(); ++i)
-        {
-            skipSpells.insert(*i);
-        }
-        cmd = "?";
-    }
 
     if (cmd == "reset")
     {
         skipSpells.clear();
-        ai->TellPlayer(GetMaster(), "Ignored spell list is empty");
+        ai->TellPlayer(GetMaster(), "The ignored spell list has been cleared");
         return true;
     }
-
-    if (cmd.empty() || cmd == "?")
-    {
-        ostringstream out;
+    else if (cmd.empty() || cmd == "?")
+    {   
         if (skipSpells.empty())
         {
             ai->TellPlayer(GetMaster(), "Ignored spell list is empty");
-            return true;
-        }
-
-        out << "Ignored spell list: ";
-
-        bool first = true;
-        for (set<uint32>::iterator i = skipSpells.begin(); i != skipSpells.end(); i++)
-        {
-            SpellEntry const* spell = sServerFacade.LookupSpellInfo(*i);
-            if (!spell)
-                continue;
-
-            if (first) first = false; else out << ", ";
-            out << chat->formatSpell(spell);
-        }
-        ai->TellPlayer(GetMaster(), out);
-    }
-    else
-    {
-        bool remove = cmd.size() > 1 && cmd.substr(0, 1) == "-";
-        if (remove)
-            cmd = cmd.substr(1);
-
-        uint32 spellId = chat->parseSpell(cmd);
-        if (!spellId)
-        {
-            ai->TellError("Unknown spell");
-            return false;
-        }
-
-        SpellEntry const* spell = sServerFacade.LookupSpellInfo(spellId);
-        if (!spell)
-            return false;
-
-        if (remove)
-        {
-            set<uint32>::iterator j = skipSpells.find(spellId);
-            if (j != skipSpells.end())
-            {
-                skipSpells.erase(j);
-                ostringstream out;
-                out << chat->formatSpell(spell) << " removed from ignored spells";
-                ai->TellPlayer(GetMaster(), out);
-                return true;
-            }
         }
         else
         {
-            set<uint32>::iterator j = skipSpells.find(spellId);
-            if (j == skipSpells.end())
+            bool first = true;
+            ostringstream out;
+            out << "Ignored spell list: ";
+            for (set<uint32>::iterator i = skipSpells.begin(); i != skipSpells.end(); i++)
             {
-                skipSpells.insert(spellId);
-                ostringstream out;
-                out << chat->formatSpell(spell) << " added to ignored spells";
-                ai->TellPlayer(GetMaster(), out);
-                return true;
+                const SpellEntry* spellEntry = sServerFacade.LookupSpellInfo(*i);
+                if (!spellEntry)
+                {
+                    continue;
+                }
+
+                if (first) first = false; else out << ", ";
+                out << chat->formatSpell(spellEntry);
             }
+
+            ai->TellPlayer(GetMaster(), out);
+        }
+
+        return true;
+    }
+    else
+    {
+        std::vector<string> spells = ParseSpells(cmd);
+        if (!spells.empty())
+        {
+            for (string& spell : spells)
+            {
+                const bool remove = spell.substr(0, 1) == "-";
+                if (remove)
+                {
+                    // Remove the -
+                    spell = spell.substr(1);
+                }
+
+                uint32 spellId = chat->parseSpell(spell);
+                if (!spellId)
+                {
+                    spellId = AI_VALUE2(uint32, "spell id", spell);
+                }
+
+                if (!spellId)
+                {
+                    ai->TellError("Unknown spell " + spell);
+                    continue;
+                }
+
+                const SpellEntry* spellEntry = sServerFacade.LookupSpellInfo(spellId);
+                if (!spellEntry)
+                {
+                    ai->TellError("Unknown spell " + spell);
+                    continue;
+                }
+
+                if (remove)
+                {
+                    set<uint32>::iterator j = skipSpells.find(spellId);
+                    if (j != skipSpells.end())
+                    {
+                        skipSpells.erase(j);
+                        ostringstream out;
+                        out << chat->formatSpell(spellEntry) << " removed from ignored spells";
+                        ai->TellPlayer(GetMaster(), out);
+                    }
+                }
+                else
+                {
+                    set<uint32>::iterator j = skipSpells.find(spellId);
+                    if (j == skipSpells.end())
+                    {
+                        skipSpells.insert(spellId);
+                        ostringstream out;
+                        out << chat->formatSpell(spellEntry) << " added to ignored spells";
+                        ai->TellPlayer(GetMaster(), out);
+                    }
+                }
+            }
+
+            return true;
+        }
+        else
+        {
+            ai->TellError("Please specify one or more spells to ignore");
         }
     }
 
     return false;
 }
 
-
-SpellIds SkipSpellsListAction::parseIds(string text)
+std::vector<string> SkipSpellsListAction::ParseSpells(const string& text)
 {
-    SpellIds spellIds;
+    std::vector<std::string> spells;
 
-    uint8 pos = 0;
-    while (pos < text.size())
+    size_t pos = 0;
+    while (pos != std::string::npos) 
     {
-        int endPos = text.find(',', pos);
-        if (endPos == -1)
-            endPos = text.size();
+        size_t nextPos = text.find(',', pos);
+        std::string token = text.substr(pos, nextPos - pos);
+        spells.push_back(token);
 
-        string idC = text.substr(pos, endPos - pos);
-        uint32 id = atol(idC.c_str());
-        pos = endPos + 1;
-        if (id)
-            spellIds.insert(id);
+        if (nextPos != std::string::npos) 
+        {
+            pos = nextPos + 1;
+        }
+        else 
+        {
+            break;
+        }
     }
 
-    return spellIds;
+    return spells;
 }

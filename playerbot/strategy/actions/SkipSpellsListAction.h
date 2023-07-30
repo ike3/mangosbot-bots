@@ -25,6 +25,6 @@ namespace ai
 #endif 
 
     private:
-        SpellIds parseIds(string text);
+        std::vector<string> ParseSpells(const string& text);
     };
 }
