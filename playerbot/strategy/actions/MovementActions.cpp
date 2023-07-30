@@ -2,6 +2,7 @@
 #include "../../playerbot.h"
 #include "../values/LastMovementValue.h"
 #include "MovementActions.h"
+
 #include "MotionMaster.h"
 #include "MovementGenerator.h"
 #include "../../FleeManager.h"
@@ -89,17 +90,26 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
             ai->InterruptSpell();
         }
 
-        MotionMaster &mm = *bot->GetMotionMaster();
-        MovementGenerator* mg = (MovementGenerator*)mm.GetCurrent();
-        if (mg)
-        {
-            mg->Interrupt(*bot);
-            mm.Clear(true, true);
+        float arc = M_PI_F / 2;
+        float ori = bot->GetOrientation();
+        float dir = bot->GetAngle(x, y);
+        float angle = dir - ori;
+        angle = MapManager::NormalizeOrientation(angle);
+        if (angle > M_PI_F)
+            angle -= 2.0f * M_PI_F;
 
-            if (ObjectGuid lootGUID = bot->GetLootGuid())
-                bot->SendLootRelease(lootGUID);
+        float lborder =  -1 * (arc / 2.0f);                     // in range -pi..0
+        float rborder = (arc / 2.0f);                           // in range 0..pi
+        bool inArc = ((angle >= lborder) && (angle <= rborder));
+
+        if (!inArc)
+        {
+            bot->SetFacingTo(dir);
+            ai->SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
+            return true;
         }
 
+        MotionMaster &mm = *bot->GetMotionMaster();
         mm.MovePoint(mapId, x, y, z, generatePath);
 
         AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
