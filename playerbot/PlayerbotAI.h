@@ -117,7 +117,7 @@ public:
     void HandleMasterOutgoingPacket(const WorldPacket& packet);
 	void HandleTeleportAck();
     void ChangeEngine(BotState type);
-    void DoNextAction();
+    void DoNextAction(uint32 diff);
     void DoSpecificAction(string name);
     void ChangeStrategy(string name, BotState type);
     void ClearStrategies(BotState type);

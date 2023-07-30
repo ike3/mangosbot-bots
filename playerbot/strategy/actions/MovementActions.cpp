@@ -90,6 +90,16 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle)
         }
 
         MotionMaster &mm = *bot->GetMotionMaster();
+        MovementGenerator* mg = (MovementGenerator*)mm.GetCurrent();
+        if (mg)
+        {
+            mg->Interrupt(*bot);
+            mm.Clear(true, true);
+
+            if (ObjectGuid lootGUID = bot->GetLootGuid())
+                bot->SendLootRelease(lootGUID);
+        }
+
         mm.MovePoint(mapId, x, y, z, generatePath);
 
         AI_VALUE(LastMovement&, "last movement").Set(x, y, z, bot->GetOrientation());
@@ -292,7 +302,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
 void MovementAction::WaitForReach(float distance)
 {
-    float delay = 1000.0f * distance / bot->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
+    float delay = 1000.0f * distance / bot->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.lagInterval;
 
     if (delay > sPlayerbotAIConfig.maxWaitForMove)
         delay = sPlayerbotAIConfig.maxWaitForMove;

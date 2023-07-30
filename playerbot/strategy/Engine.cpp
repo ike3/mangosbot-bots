@@ -116,7 +116,7 @@ void Engine::Init()
 }
 
 
-bool Engine::DoNextAction(Unit* unit, int depth)
+bool Engine::DoNextAction(Unit* unit, uint32 diff, int depth)
 {
     LogAction("--- AI Tick ---");
     if (sPlayerbotAIConfig.logValuesPerTick)
@@ -127,7 +127,7 @@ bool Engine::DoNextAction(Unit* unit, int depth)
 
     time_t currentTime = time(0);
     aiObjectContext->Update();
-    ProcessTriggers();
+    ProcessTriggers(diff);
 
     int iterations = 0;
     int iterationsPerTick = queue.Size() * sPlayerbotAIConfig.iterationsPerTick;
@@ -209,7 +209,7 @@ bool Engine::DoNextAction(Unit* unit, int depth)
         lastRelevance = 0.0f;
         PushDefaultActions();
         if (queue.Peek() && depth < 2)
-            return DoNextAction(unit, depth + 1);
+            return DoNextAction(unit, diff, depth + 1);
     }
 
     if (time(0) - currentTime > 1) {
@@ -378,7 +378,7 @@ bool Engine::HasStrategy(string name)
     return strategies.find(name) != strategies.end();
 }
 
-void Engine::ProcessTriggers()
+void Engine::ProcessTriggers(uint32 diff)
 {
     map<Trigger*, Event> fires;
     for (list<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
@@ -397,13 +397,17 @@ void Engine::ProcessTriggers()
         if (!trigger)
             continue;
 
-        if (testMode || trigger->needCheck())
+        if (testMode || trigger->needCheck(diff))
         {
             PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_TRIGGER, trigger->getName());
             Event event = trigger->Check();
             if (pmo) pmo->finish();
             if (!event)
+            {
+                trigger->DelayNextCheck();
                 continue;
+            }
+            trigger->Reset();
             fires[trigger] = event;
             LogAction("T:%s", trigger->getName().c_str());
         }
@@ -418,12 +422,6 @@ void Engine::ProcessTriggers()
             continue;
 
         MultiplyAndPush(node->getHandlers(), 0.0f, false, event, "trigger");
-    }
-
-    for (list<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
-    {
-        Trigger* trigger = (*i)->getTrigger();
-        if (trigger) trigger->Reset();
     }
 }
 

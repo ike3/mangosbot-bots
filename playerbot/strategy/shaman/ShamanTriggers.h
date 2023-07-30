@@ -13,7 +13,7 @@ namespace ai
 
     class TotemTrigger : public Trigger {
     public:
-        TotemTrigger(PlayerbotAI* ai, string spell, int attackerCount = 0) : Trigger(ai, spell), attackerCount(attackerCount) {}
+        TotemTrigger(PlayerbotAI* ai, string spell, int attackerCount = 0) : Trigger(ai, spell, 1), attackerCount(attackerCount) {}
 
         virtual bool IsActive()
 		{

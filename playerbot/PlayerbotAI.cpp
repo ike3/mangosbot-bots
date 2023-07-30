@@ -178,7 +178,7 @@ void PlayerbotAI::UpdateAIInternal(uint32 elapsed)
     masterIncomingPacketHandlers.Handle(helper);
     masterOutgoingPacketHandlers.Handle(helper);
 
-	DoNextAction();
+	DoNextAction(elapsed);
 	if (pmo) pmo->finish();
 }
 
@@ -203,6 +203,7 @@ void PlayerbotAI::HandleTeleportAck()
         bot->GetSession()->HandleMoveWorldportAckOpcode();
 		SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
 	}
+	bot->SendHeartBeat();
 }
 
 void PlayerbotAI::Reset()
@@ -500,7 +501,7 @@ void PlayerbotAI::ChangeEngine(BotState type)
     }
 }
 
-void PlayerbotAI::DoNextAction()
+void PlayerbotAI::DoNextAction(uint32 diff)
 {
     if (bot->IsBeingTeleported() || (GetMaster() && GetMaster()->IsBeingTeleported()))
     {
@@ -515,7 +516,7 @@ void PlayerbotAI::DoNextAction()
         return;
     }
 
-    currentEngine->DoNextAction(NULL);
+    currentEngine->DoNextAction(NULL, diff);
 
     if (currentEngine != engines[BOT_STATE_DEAD] && !sServerFacade.IsAlive(bot))
         ChangeEngine(BOT_STATE_DEAD);

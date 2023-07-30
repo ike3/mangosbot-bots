@@ -148,6 +148,7 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
     {
         ostringstream out; out << "Opening " << ChatHelper::formatGameobject(go);
         ai->TellMasterNoFacing(out.str());
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.openGoDelay);
     }
     return ai->CastSpell(spellId, bot);
 }

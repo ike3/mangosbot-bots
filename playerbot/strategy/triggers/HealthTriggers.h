@@ -7,7 +7,7 @@ namespace ai
     class ValueInRangeTrigger : public Trigger
     {
     public:
-        ValueInRangeTrigger(PlayerbotAI* ai, string name, float maxValue, float minValue) : Trigger(ai, name) {
+        ValueInRangeTrigger(PlayerbotAI* ai, string name, float maxValue, float minValue) : Trigger(ai, name, 1) {
             this->maxValue = maxValue;
             this->minValue = minValue;
         }
@@ -112,7 +112,7 @@ namespace ai
 
 	class PartyMemberDeadTrigger : public Trigger {
 	public:
-		PartyMemberDeadTrigger(PlayerbotAI* ai) : Trigger(ai, "resurrect", 3) {}
+		PartyMemberDeadTrigger(PlayerbotAI* ai) : Trigger(ai, "resurrect", 10) {}
         virtual string GetTargetName() { return "party member to resurrect"; }
 		virtual bool IsActive();
 	};

@@ -22,9 +22,9 @@ namespace ai
     class Trigger : public AiNamedObject
 	{
 	public:
-        Trigger(PlayerbotAI* ai, string name = "trigger", int checkInterval = 1) : AiNamedObject(ai, name) {
+        Trigger(PlayerbotAI* ai, string name = "trigger", int checkInterval = 0) : AiNamedObject(ai, name) {
 			this->checkInterval = checkInterval;
-			lastCheckTime = time(0) - rand() % checkInterval;
+			DelayNextCheck();
 		}
         virtual ~Trigger() {}
 
@@ -40,20 +40,12 @@ namespace ai
         virtual Value<Unit*>* GetTargetValue();
         virtual string GetTargetName() { return "self target"; }
 
-		bool needCheck() {
-		    if (checkInterval < 2) return true;
-
-		    time_t now = time(0);
-			if (!lastCheckTime || now - lastCheckTime >= checkInterval) {
-			    lastCheckTime = now;
-				return true;
-			}
-			return false;
-		}
+		bool needCheck(uint32 diff);
+		void DelayNextCheck();
 
     protected:
 		int checkInterval;
-		time_t lastCheckTime;
+		uint32 checkAfter;
 	};
 
 

@@ -28,7 +28,7 @@ namespace ai
 	class StatAvailable : public Trigger
 	{
 	public:
-		StatAvailable(PlayerbotAI* ai, int amount, string name = "stat available") : Trigger(ai, name)
+		StatAvailable(PlayerbotAI* ai, int amount, string name = "stat available") : Trigger(ai, name, 1)
 		{
 			this->amount = amount;
 		}
@@ -96,20 +96,20 @@ namespace ai
 
 	class LoseAggroTrigger : public Trigger {
 	public:
-		LoseAggroTrigger(PlayerbotAI* ai) : Trigger(ai, "lose aggro") {}
+		LoseAggroTrigger(PlayerbotAI* ai) : Trigger(ai, "lose aggro", 1) {}
 		virtual bool IsActive();
 	};
 
 	class HasAggroTrigger : public Trigger {
 	public:
-	    HasAggroTrigger(PlayerbotAI* ai) : Trigger(ai, "have aggro") {}
+	    HasAggroTrigger(PlayerbotAI* ai) : Trigger(ai, "have aggro", 1) {}
 		virtual bool IsActive();
 	};
 
 	class SpellTrigger : public Trigger
 	{
 	public:
-		SpellTrigger(PlayerbotAI* ai, string spell, int checkInterval = 1) : Trigger(ai, spell, checkInterval)
+		SpellTrigger(PlayerbotAI* ai, string spell, int checkInterval = 0) : Trigger(ai, spell, checkInterval)
 		{
 			this->spell = spell;
 		}
@@ -141,7 +141,7 @@ namespace ai
     class AttackerCountTrigger : public Trigger
     {
     public:
-        AttackerCountTrigger(PlayerbotAI* ai, int amount, float distance = sPlayerbotAIConfig.sightDistance) : Trigger(ai)
+        AttackerCountTrigger(PlayerbotAI* ai, int amount, float distance = sPlayerbotAIConfig.sightDistance) : Trigger(ai, "attacker count", 1)
         {
             this->amount = amount;
             this->distance = distance;
@@ -196,13 +196,13 @@ namespace ai
 
     class NoFoodTrigger : public Trigger {
     public:
-        NoFoodTrigger(PlayerbotAI* ai) : Trigger(ai, "no food trigger") {}
+        NoFoodTrigger(PlayerbotAI* ai) : Trigger(ai, "no food trigger", 5) {}
         virtual bool IsActive() { return AI_VALUE2(list<Item*>, "inventory items", "conjured food").empty(); }
     };
 
     class NoDrinkTrigger : public Trigger {
     public:
-        NoDrinkTrigger(PlayerbotAI* ai) : Trigger(ai, "no drink trigger") {}
+        NoDrinkTrigger(PlayerbotAI* ai) : Trigger(ai, "no drink trigger", 5) {}
         virtual bool IsActive() { return AI_VALUE2(list<Item*>, "inventory items", "conjured water").empty(); }
     };
 
@@ -245,27 +245,27 @@ namespace ai
     class NoAttackersTrigger : public Trigger
     {
     public:
-        NoAttackersTrigger(PlayerbotAI* ai) : Trigger(ai, "no attackers") {}
+        NoAttackersTrigger(PlayerbotAI* ai) : Trigger(ai, "no attackers", 1) {}
         virtual bool IsActive();
     };
 
     class NoTargetTrigger : public Trigger
     {
     public:
-        NoTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "no target") {}
+        NoTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "no target", 1) {}
         virtual bool IsActive();
     };
 
     class InvalidTargetTrigger : public Trigger
     {
     public:
-        InvalidTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "invalid target") {}
+        InvalidTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "invalid target", 1) {}
         virtual bool IsActive();
     };
 
     class TargetInSightTrigger : public Trigger {
     public:
-        TargetInSightTrigger(PlayerbotAI* ai) : Trigger(ai, "target in sight") {}
+        TargetInSightTrigger(PlayerbotAI* ai) : Trigger(ai, "target in sight", 1) {}
         virtual bool IsActive() { return AI_VALUE(Unit*, "grind target"); }
     };
 
@@ -306,7 +306,7 @@ namespace ai
     class RandomTrigger : public Trigger
     {
     public:
-        RandomTrigger(PlayerbotAI* ai, string name, int probability = 7) : Trigger(ai, name)
+        RandomTrigger(PlayerbotAI* ai, string name, int probability = 7) : Trigger(ai, name, 1)
         {
             this->probability = probability;
             lastCheck = time(0);
@@ -353,7 +353,7 @@ namespace ai
 	class LowManaTrigger : public Trigger
 	{
 	public:
-		LowManaTrigger(PlayerbotAI* ai) : Trigger(ai, "low mana") {}
+		LowManaTrigger(PlayerbotAI* ai) : Trigger(ai, "low mana", 1) {}
 
 		virtual bool IsActive();
 	};
@@ -361,20 +361,23 @@ namespace ai
 	class MediumManaTrigger : public Trigger
 	{
 	public:
-		MediumManaTrigger(PlayerbotAI* ai) : Trigger(ai, "medium mana") {}
+		MediumManaTrigger(PlayerbotAI* ai) : Trigger(ai, "medium mana", 1) {}
 
 		virtual bool IsActive();
 	};
 
-    BEGIN_TRIGGER(PanicTrigger, Trigger)
-        virtual string getName() { return "panic"; }
-    END_TRIGGER()
+    class PanicTrigger : public Trigger
+    {
+    public:
+	    PanicTrigger(PlayerbotAI* ai) : Trigger(ai, "panic", 1) {}
 
+        virtual bool IsActive();
+    };
 
 	class NoPetTrigger : public Trigger
 	{
 	public:
-		NoPetTrigger(PlayerbotAI* ai) : Trigger(ai, "no pet", 30) {}
+		NoPetTrigger(PlayerbotAI* ai) : Trigger(ai, "no pet", 10) {}
 
 		virtual bool IsActive() {
 			return !AI_VALUE(Unit*, "pet target") && !AI_VALUE2(bool, "mounted", "self target");
@@ -398,7 +401,7 @@ namespace ai
 
 	class HasAuraTrigger : public Trigger {
 	public:
-		HasAuraTrigger(PlayerbotAI* ai, string spell) : Trigger(ai, spell) {}
+		HasAuraTrigger(PlayerbotAI* ai, string spell) : Trigger(ai, spell, 1) {}
 
 		virtual string GetTargetName() { return "self target"; }
 		virtual bool IsActive();
@@ -408,7 +411,7 @@ namespace ai
     class TimerTrigger : public Trigger
     {
     public:
-        TimerTrigger(PlayerbotAI* ai) : Trigger(ai, "timer")
+        TimerTrigger(PlayerbotAI* ai) : Trigger(ai, "timer", 1)
         {
             lastCheck = 0;
         }
@@ -441,7 +444,7 @@ namespace ai
     class IsBehindTargetTrigger : public Trigger
     {
     public:
-        IsBehindTargetTrigger(PlayerbotAI* ai) : Trigger(ai) {}
+        IsBehindTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "is behind", 1) {}
 
     public:
         virtual bool IsActive();
@@ -450,7 +453,7 @@ namespace ai
     class IsNotBehindTargetTrigger : public Trigger
     {
     public:
-        IsNotBehindTargetTrigger(PlayerbotAI* ai) : Trigger(ai) {}
+        IsNotBehindTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "is not behind", 1) {}
 
     public:
         virtual bool IsActive();
@@ -459,7 +462,7 @@ namespace ai
     class IsNotFacingTargetTrigger : public Trigger
     {
     public:
-        IsNotFacingTargetTrigger(PlayerbotAI* ai) : Trigger(ai) {}
+        IsNotFacingTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "not facing", 1) {}
 
     public:
         virtual bool IsActive();
@@ -468,7 +471,7 @@ namespace ai
     class HasCcTargetTrigger : public Trigger
     {
     public:
-        HasCcTargetTrigger(PlayerbotAI* ai, string name) : Trigger(ai, name) {}
+        HasCcTargetTrigger(PlayerbotAI* ai, string name) : Trigger(ai, name, 1) {}
 
     public:
         virtual bool IsActive();
@@ -477,7 +480,7 @@ namespace ai
 	class NoMovementTrigger : public Trigger
 	{
 	public:
-		NoMovementTrigger(PlayerbotAI* ai, string name) : Trigger(ai, name) {}
+		NoMovementTrigger(PlayerbotAI* ai, string name) : Trigger(ai, name, 1) {}
 
 	public:
 		virtual bool IsActive();
@@ -487,7 +490,7 @@ namespace ai
     class NoPossibleTargetsTrigger : public Trigger
     {
     public:
-        NoPossibleTargetsTrigger(PlayerbotAI* ai) : Trigger(ai, "no possible targets") {}
+        NoPossibleTargetsTrigger(PlayerbotAI* ai) : Trigger(ai, "no possible targets", 1) {}
 
     public:
         virtual bool IsActive();
@@ -496,7 +499,7 @@ namespace ai
     class NotDpsTargetActiveTrigger : public Trigger
     {
     public:
-        NotDpsTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not dps target active") {}
+        NotDpsTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not dps target active", 1) {}
 
     public:
         virtual bool IsActive();
@@ -505,7 +508,7 @@ namespace ai
     class NotDefenseTargetActiveTrigger : public Trigger
     {
     public:
-        NotDefenseTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not defense target active") {}
+        NotDefenseTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not defense target active", 1) {}
 
     public:
         virtual bool IsActive();
@@ -514,7 +517,7 @@ namespace ai
     class NotDpsAoeTargetActiveTrigger : public Trigger
     {
     public:
-        NotDpsAoeTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not dps aoe target active") {}
+        NotDpsAoeTargetActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "not dps aoe target active", 1) {}
 
     public:
         virtual bool IsActive();
@@ -523,7 +526,7 @@ namespace ai
     class PossibleAdsTrigger : public Trigger
     {
     public:
-        PossibleAdsTrigger(PlayerbotAI* ai) : Trigger(ai, "possible ads") {}
+        PossibleAdsTrigger(PlayerbotAI* ai) : Trigger(ai, "possible ads", 1) {}
 
     public:
         virtual bool IsActive();
@@ -532,7 +535,7 @@ namespace ai
     class EnemyPlayerIsAttacking : public Trigger
     {
     public:
-        EnemyPlayerIsAttacking(PlayerbotAI* ai) : Trigger(ai, "enemy player is attacking") {}
+        EnemyPlayerIsAttacking(PlayerbotAI* ai) : Trigger(ai, "enemy player is attacking", 1) {}
 
     public:
         virtual bool IsActive();
@@ -541,7 +544,7 @@ namespace ai
     class IsSwimmingTrigger : public Trigger
     {
     public:
-        IsSwimmingTrigger(PlayerbotAI* ai) : Trigger(ai, "swimming") {}
+        IsSwimmingTrigger(PlayerbotAI* ai) : Trigger(ai, "swimming", 1) {}
 
     public:
         virtual bool IsActive();
@@ -559,7 +562,7 @@ namespace ai
     class HasItemForSpellTrigger : public Trigger
     {
     public:
-        HasItemForSpellTrigger(PlayerbotAI* ai, string spell) : Trigger(ai, spell) {}
+        HasItemForSpellTrigger(PlayerbotAI* ai, string spell) : Trigger(ai, spell, 1) {}
 
     public:
         virtual bool IsActive();
@@ -568,7 +571,7 @@ namespace ai
     class TargetChangedTrigger : public Trigger
     {
     public:
-        TargetChangedTrigger(PlayerbotAI* ai) : Trigger(ai, "target changed") {}
+        TargetChangedTrigger(PlayerbotAI* ai) : Trigger(ai, "target changed", 1) {}
 
     public:
         virtual bool IsActive();
@@ -610,7 +613,7 @@ namespace ai
     class NewPlayerNearbyTrigger : public Trigger
     {
     public:
-        NewPlayerNearbyTrigger(PlayerbotAI* ai) : Trigger(ai, "new player nearby", 2) {}
+        NewPlayerNearbyTrigger(PlayerbotAI* ai) : Trigger(ai, "new player nearby", 3) {}
 
     public:
         virtual bool IsActive()
@@ -658,7 +661,7 @@ namespace ai
     class GiveItemTrigger : public Trigger
     {
     public:
-        GiveItemTrigger(PlayerbotAI* ai, string name, string item) : Trigger(ai, name, 2), item(item) {}
+        GiveItemTrigger(PlayerbotAI* ai, string name, string item) : Trigger(ai, name, 5), item(item) {}
 
     public:
         virtual bool IsActive()

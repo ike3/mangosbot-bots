@@ -166,7 +166,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* ai) : PassTr
     supported.push_back("spells");
     supported.push_back("co");
     supported.push_back("nc");
-    supported.push_back("dead");
+    supported.push_back("ds");
     supported.push_back("trainer");
     supported.push_back("chat");
     supported.push_back("home");

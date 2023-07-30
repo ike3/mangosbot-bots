@@ -7,7 +7,7 @@ namespace ai
 {
     class EnemyTooCloseForSpellTrigger : public Trigger {
     public:
-        EnemyTooCloseForSpellTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for spell") {}
+        EnemyTooCloseForSpellTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for spell", 1) {}
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
@@ -18,7 +18,7 @@ namespace ai
 
     class EnemyTooCloseForShootTrigger : public Trigger {
     public:
-        EnemyTooCloseForShootTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for shoot") {}
+        EnemyTooCloseForShootTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for shoot", 1) {}
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
@@ -29,7 +29,7 @@ namespace ai
 
     class EnemyTooCloseForMeleeTrigger : public Trigger {
     public:
-        EnemyTooCloseForMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for melee") {}
+        EnemyTooCloseForMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy too close for melee", 1) {}
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
@@ -39,7 +39,7 @@ namespace ai
 
     class EnemyIsCloseTrigger : public Trigger {
     public:
-        EnemyIsCloseTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy is close") {}
+        EnemyIsCloseTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy is close", 1) {}
         virtual bool IsActive()
 		{
 			Unit* target = AI_VALUE(Unit*, "current target");
@@ -50,7 +50,7 @@ namespace ai
 
     class OutOfRangeTrigger : public Trigger {
     public:
-        OutOfRangeTrigger(PlayerbotAI* ai, string name, float distance) : Trigger(ai, name)
+        OutOfRangeTrigger(PlayerbotAI* ai, string name, float distance) : Trigger(ai, name, 1)
 		{
             this->distance = distance;
         }
@@ -87,7 +87,7 @@ namespace ai
 
     class FarFromMasterTrigger : public Trigger {
     public:
-        FarFromMasterTrigger(PlayerbotAI* ai, string name = "far from master", float distance = 12.0f, int checkInterval = 50) : Trigger(ai, name, checkInterval), distance(distance) {}
+        FarFromMasterTrigger(PlayerbotAI* ai, string name = "far from master", float distance = 12.0f, int checkInterval = 1) : Trigger(ai, name, checkInterval), distance(distance) {}
 
         virtual bool IsActive()
         {

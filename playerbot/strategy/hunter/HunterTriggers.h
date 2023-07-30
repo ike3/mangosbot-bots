@@ -4,14 +4,20 @@
 
 namespace ai
 {
-    BEGIN_TRIGGER(HunterNoStingsActiveTrigger, Trigger)
-    END_TRIGGER()
+    class HunterNoStingsActiveTrigger : public Trigger
+    {
+    public:
+        HunterNoStingsActiveTrigger(PlayerbotAI* ai) : Trigger(ai, "hunter no stings active", 1) {}
+
+    public:
+        virtual bool IsActive();
+    };
 
     class HunterAspectOfTheHawkTrigger : public BuffTrigger
     {
     public:
         HunterAspectOfTheHawkTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the hawk") {
-			checkInterval = 1;
+			checkInterval = 0;
 		}
     };
 
@@ -19,7 +25,7 @@ namespace ai
 	{
 	public:
 		HunterAspectOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the wild") {
-			checkInterval = 1;
+			checkInterval = 0;
 		}
 	};
 
@@ -42,11 +48,23 @@ namespace ai
         };
     };
 
-    BEGIN_TRIGGER(HuntersPetDeadTrigger, Trigger)
-    END_TRIGGER()
+    class HuntersPetDeadTrigger : public Trigger
+    {
+    public:
+        HuntersPetDeadTrigger(PlayerbotAI* ai) : Trigger(ai, "hunter pet dead", 1) {}
 
-    BEGIN_TRIGGER(HuntersPetLowHealthTrigger, Trigger)
-    END_TRIGGER()
+    public:
+        virtual bool IsActive();
+    };
+
+    class HuntersPetLowHealthTrigger : public Trigger
+    {
+    public:
+        HuntersPetLowHealthTrigger(PlayerbotAI* ai) : Trigger(ai, "hunter pet llow health", 1) {}
+
+    public:
+        virtual bool IsActive();
+    };
 
     class BlackArrowTrigger : public DebuffTrigger
     {

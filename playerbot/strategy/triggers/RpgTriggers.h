@@ -6,7 +6,7 @@ namespace ai
     class NoRpgTargetTrigger : public Trigger
     {
     public:
-        NoRpgTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "no rpg target") {}
+        NoRpgTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "no rpg target", 3) {}
 
         virtual bool IsActive();
     };
@@ -14,7 +14,7 @@ namespace ai
     class FarFromRpgTargetTrigger : public Trigger
     {
     public:
-        FarFromRpgTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "far from rpg target") {}
+        FarFromRpgTargetTrigger(PlayerbotAI* ai) : Trigger(ai, "far from rpg target", 3) {}
 
         virtual bool IsActive();
     };

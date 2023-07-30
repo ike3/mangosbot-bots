@@ -76,7 +76,7 @@ namespace ai
 		string GetLastAction() { return lastAction; }
 
     public:
-	    virtual bool DoNextAction(Unit*, int depth = 0);
+	    virtual bool DoNextAction(Unit*, uint32 diff, int depth = 0);
 	    ActionResult ExecuteAction(string name);
 
     public:
@@ -95,7 +95,7 @@ namespace ai
     private:
         bool MultiplyAndPush(NextAction** actions, float forceRelevance, bool skipPrerequisites, Event event, const char* pushType);
         void Reset();
-        void ProcessTriggers();
+        void ProcessTriggers(uint32 diff);
         void PushDefaultActions();
         void PushAgain(ActionNode* actionNode, float relevance, Event event);
         ActionNode* CreateActionNode(string name);

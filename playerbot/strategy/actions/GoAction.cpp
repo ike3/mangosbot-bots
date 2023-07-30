@@ -22,9 +22,10 @@ bool GoAction::Execute(Event event)
     {
         float x = bot->GetPositionX();
         float y = bot->GetPositionY();
+        float z = bot->GetPositionZ();
         Map2ZoneCoordinates(x, y, bot->GetZoneId());
         ostringstream out;
-        out << "I am at " << x << "," << y;
+        out << "I am at " << x << "," << y << " (z=" << z << ")";
         ai->TellMaster(out.str());
         return true;
     }
