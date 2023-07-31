@@ -1268,7 +1268,7 @@ TravelNode* TravelNodeMap::getNode(WorldPosition pos, vector<WorldPosition>& ppa
     float y = pos.getY();
     float z = pos.getZ();
 
-    if (bot && !bot->GetMap())
+    if (bot && !bot->IsInWorld())
         return NULL;
 
     uint32 c = 0;
@@ -1703,7 +1703,7 @@ void TravelNodeMap::manageNodes(Unit* bot, bool mapFull)
 {
     bool rePrint = false;
 
-    if (!bot->GetMap())
+    if (!bot->IsInWorld())
         return;
 
     if (m_nMapMtx.try_lock())

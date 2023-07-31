@@ -40,7 +40,7 @@ bool SayAction::Execute(Event& event)
         }
     }
 
-    if (bot->GetMap())
+    if (bot->IsInWorld())
     {
         if (AreaTableEntry const* area = GetAreaEntryByAreaID(sServerFacade.GetAreaId(bot)))
             placeholders["<subzone>"] = area->area_name[0];

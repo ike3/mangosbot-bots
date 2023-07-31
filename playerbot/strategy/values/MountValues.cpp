@@ -156,7 +156,7 @@ bool MountValue::IsValidLocation()
     // Ignore map check if spell have AreaId. AreaId already checked and this prevent special mount spells
     if (bot->GetTypeId() == TYPEID_PLAYER &&
         !isAQ40Mounted &&   // [-ZERO] && !m_spellInfo->AreaId)
-        (bot->GetMap() && !bot->GetMap()->IsMountAllowed()))
+        !bot->GetMap()->IsMountAllowed())
     {
         return false;  //SPELL_FAILED_NO_MOUNTS_ALLOWED;
     }

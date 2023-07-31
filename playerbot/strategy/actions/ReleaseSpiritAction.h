@@ -104,7 +104,7 @@ namespace ai
             if (!ai->HasActivePlayerMaster())
                 return true;
 
-            if (ai->HasActivePlayerMaster() && ai->GetGroupMaster()->GetMapId() == bot->GetMapId() && bot->GetMap() && (bot->GetMap()->IsRaid() || bot->GetMap()->IsDungeon()))
+            if (ai->HasActivePlayerMaster() && ai->GetGroupMaster()->GetMapId() == bot->GetMapId() && (bot->GetMap()->IsRaid() || bot->GetMap()->IsDungeon()))
                 return false;
 
             if(sServerFacade.UnitIsDead(ai->GetGroupMaster()))

@@ -53,7 +53,7 @@ namespace ai
                     }
                 }
 
-                if (bot->GetMap() && bot->GetMap()->IsRaid())
+                if (bot->GetMap()->IsRaid())
                     isRaid = true;
 
                 //if (isBoss || isRaid)
@@ -123,7 +123,7 @@ namespace ai
                     }
                 }
 
-                if (bot->GetMap() && bot->GetMap()->IsRaid())
+                if (bot->GetMap()->IsRaid())
                     isRaid = true;
 
                 //if (isBoss || isRaid)
