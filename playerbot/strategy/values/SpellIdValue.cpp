@@ -51,14 +51,31 @@ uint32 SpellIdValue::Calculate()
             continue;
 
         bool useByItem = false;
+        bool levelCheckFail = false;
         for (int i = 0; i < 3; ++i)
         {
-            if (pSpellInfo->Effect[i] == SPELL_EFFECT_CREATE_ITEM && itemIds.find(pSpellInfo->EffectItemType[i]) != itemIds.end())
+            if (pSpellInfo->Effect[i] == SPELL_EFFECT_CREATE_ITEM)
             {
-                useByItem = true;
-                break;
+                uint32 itemId = pSpellInfo->EffectItemType[i];
+                if (!namepart.find("conjure"))
+                {
+                    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+                    if (!proto) continue;
+                    if (proto->RequiredLevel > ai->GetBot()->getLevel())
+                    {
+                        levelCheckFail = true;
+                        continue;
+                    }
+                }
+                if (itemIds.find(itemId) != itemIds.end())
+                {
+                    useByItem = true;
+                    break;
+                }
             }
         }
+
+        if (levelCheckFail) continue;
 
         char* spellName = pSpellInfo->SpellName[loc];
         if (!useByItem && (tolower(spellName[0]) != firstSymbol || strlen(spellName) != spellLength || !Utf8FitTo(spellName, wnamepart)))
