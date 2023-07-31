@@ -26,12 +26,8 @@ void Formation::UpdateAllowedPositionZ(Player* bot, float x, float y, float &z)
 
     const TerrainInfo* terrain = bot->GetMap()->GetTerrain();
     terrain->GetWaterOrGroundLevel(x, y, z, &ground);
-    if (sServerFacade.IsDistanceLessThan(abs(ground - z), sPlayerbotAIConfig.meleeDistance))
-    {
-        z = ground;
-        return;
-    }
     if (terrain->IsUnderWater(x, y, z) || terrain->IsInWater(x, y, z)) z =  orig;
+    else z = ground;
 }
 
 WorldLocation MoveAheadFormation::GetLocation()
