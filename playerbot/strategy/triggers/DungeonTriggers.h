@@ -70,16 +70,23 @@ namespace ai
     class CloseToHazardTrigger : public Trigger
     {
     public:
-        CloseToHazardTrigger(PlayerbotAI* ai, string name, int checkInterval, float radius, time_t expirationTime)
+        CloseToHazardTrigger(PlayerbotAI* ai, string name, int checkInterval, float hazardRadius, time_t hazardDuration)
         : Trigger(ai, name, checkInterval)
-        , radius(radius)
-        , expirationTime(expirationTime) {}
+        , hazardRadius(hazardRadius)
+        , hazardDuration(hazardDuration) {}
 
-        bool IsActive() override = 0;
+        bool IsActive() override final;
 
     protected:
-        float radius;
-        time_t expirationTime;
+        virtual std::list<ObjectGuid> GetPossibleHazards() = 0;
+        virtual bool IsHazardValid(const ObjectGuid& hazzardGuid);
+
+    private:
+        float GetDistanceToHazard(const ObjectGuid& hazzardGuid);
+
+    protected:
+        float hazardRadius;
+        time_t hazardDuration;
     };
 
     class CloseToGameObjectHazardTrigger : public CloseToHazardTrigger
@@ -89,10 +96,36 @@ namespace ai
         : CloseToHazardTrigger(ai, name, 1, radius, expirationTime)
         , gameObjectID(gameObjectID) {}
 
-        bool IsActive() override;
+    private:
+        std::list<ObjectGuid> GetPossibleHazards() override;
 
     private:
         uint32 gameObjectID;
+    };
+
+    class CloseToCreatureHazardTrigger : public CloseToHazardTrigger
+    {
+    public:
+        CloseToCreatureHazardTrigger(PlayerbotAI* ai, string name, uint32 creatureID, float radius, time_t expirationTime)
+        : CloseToHazardTrigger(ai, name, 1, radius, expirationTime)
+        , creatureID(creatureID) {}
+
+    private:
+        std::list<ObjectGuid> GetPossibleHazards() override;
+        bool IsHazardValid(const ObjectGuid& hazzardGuid) override;
+
+    protected:
+        uint32 creatureID;
+    };
+
+    class CloseToHostileCreatureHazardTrigger : public CloseToCreatureHazardTrigger
+    {
+    public:
+        CloseToHostileCreatureHazardTrigger(PlayerbotAI* ai, string name, uint32 creatureID, float radius, time_t expirationTime)
+        : CloseToCreatureHazardTrigger(ai, name, creatureID, radius, expirationTime) {}
+
+    private:
+        std::list<ObjectGuid> GetPossibleHazards() override;
     };
 
     class CloseToCreatureTrigger : public Trigger

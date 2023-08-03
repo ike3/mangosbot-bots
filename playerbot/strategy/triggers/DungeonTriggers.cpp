@@ -84,31 +84,28 @@ bool EndBossFightTrigger::IsActive()
     return false;
 }
 
-bool CloseToGameObjectHazardTrigger::IsActive()
+bool CloseToHazardTrigger::IsActive()
 {
     // If the bot is ready
     bool closeToHazard = false;
     if (bot->IsInWorld() && !bot->IsBeingTeleported())
     {
-        AiObjectContext* context = ai->GetAiObjectContext();
-
-        // This has a maximum range equal to the sight distance on config file (default 60 yards)
-        const list<ObjectGuid>& gameObjects = AI_VALUE2(list<ObjectGuid>, "nearest game objects no los", gameObjectID);
-        for (const ObjectGuid& gameObjectGuid : gameObjects)
+        const list<ObjectGuid>& possibleHazards = GetPossibleHazards();
+        for (const ObjectGuid& possibleHazardGuid : possibleHazards)
         {
-            GameObject* gameObject = ai->GetGameObject(gameObjectGuid);
-            if (gameObject)
+            if (IsHazardValid(possibleHazardGuid))
             {
-                const float distance = bot->GetDistance(gameObject) + gameObject->GetObjectBoundingRadius();
-                if (distance <= radius)
+                // Check if the bot is inside the hazard
+                const float distanceToHazard = GetDistanceToHazard(possibleHazardGuid);
+                if (distanceToHazard <= hazardRadius)
                 {
                     closeToHazard = true;
                 }
-
-                // Cache the hazards
-                Hazard hazard(gameObjectGuid, expirationTime, radius);
-                SET_AI_VALUE(Hazard, "add hazard", std::move(hazard));
             }
+
+            // Cache the hazards
+            Hazard hazard(possibleHazardGuid, hazardDuration, hazardRadius);
+            SET_AI_VALUE(Hazard, "add hazard", std::move(hazard));
         }
     }
 
@@ -127,6 +124,94 @@ bool CloseToGameObjectHazardTrigger::IsActive()
     }
 
     return closeToHazard;
+}
+
+bool CloseToHazardTrigger::IsHazardValid(const ObjectGuid& hazzardGuid)
+{
+    if (hazzardGuid.IsGameObject())
+    {
+        return ai->GetGameObject(hazzardGuid) != nullptr;
+    }
+    else if (hazzardGuid.IsCreature())
+    {
+        return ai->GetCreature(hazzardGuid) != nullptr;
+    }
+
+    return false;
+}
+
+float CloseToHazardTrigger::GetDistanceToHazard(const ObjectGuid& hazzardGuid)
+{
+    if (hazzardGuid.IsGameObject())
+    {
+        GameObject* gameObjectHazard = ai->GetGameObject(hazzardGuid);
+        if (gameObjectHazard)
+        {
+            return bot->GetDistance(gameObjectHazard) + gameObjectHazard->GetObjectBoundingRadius();
+        }
+    }
+    else if (hazzardGuid.IsCreature())
+    {
+        Creature* creatureHazard = ai->GetCreature(hazzardGuid);
+        if (creatureHazard)
+        {
+            return bot->GetDistance(creatureHazard, true, DIST_CALC_COMBAT_REACH);
+        }
+    }
+
+    return 99999999.0f;
+}
+
+std::list<ObjectGuid> CloseToGameObjectHazardTrigger::GetPossibleHazards()
+{
+    // This game objects have a maximum range equal to the sight distance on config file (default 60 yards)
+    return AI_VALUE2(list<ObjectGuid>, "nearest game objects no los", gameObjectID);
+}
+
+std::list<ObjectGuid> CloseToCreatureHazardTrigger::GetPossibleHazards()
+{
+    std::list<ObjectGuid> possibleHazards;
+
+    std::list<Unit*> creatures;
+    MaNGOS::AllCreaturesOfEntryInRangeCheck u_check(bot, creatureID, hazardRadius);
+    MaNGOS::UnitListSearcher<MaNGOS::AllCreaturesOfEntryInRangeCheck> searcher(creatures, u_check);
+    Cell::VisitAllObjects(bot, searcher, hazardRadius);
+    for (Unit* unit : creatures)
+    {
+        possibleHazards.push_back(unit->GetObjectGuid());
+    }
+
+    return possibleHazards;
+}
+
+bool CloseToCreatureHazardTrigger::IsHazardValid(const ObjectGuid& hazzardGuid)
+{
+    Creature* creatureHazard = ai->GetCreature(hazzardGuid);
+    if (creatureHazard)
+    {
+        // Check if the creature is not targeting the bot
+        if (!creatureHazard->GetVictim() || (creatureHazard->GetVictim()->GetObjectGuid() != bot->GetObjectGuid()))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::list<ObjectGuid> CloseToHostileCreatureHazardTrigger::GetPossibleHazards()
+{
+    std::list<ObjectGuid> possibleHazards;
+    std::list<ObjectGuid>& attackers = AI_VALUE(std::list<ObjectGuid>, "attackers");
+
+    for (const ObjectGuid& attackerGuid : attackers)
+    {
+        Creature* attacker = ai->GetCreature(attackerGuid);
+        if (attacker && attacker->GetEntry() == creatureID)
+        {
+            possibleHazards.push_back(attackerGuid);
+        }
+    }
 }
 
 bool CloseToCreatureTrigger::IsActive()

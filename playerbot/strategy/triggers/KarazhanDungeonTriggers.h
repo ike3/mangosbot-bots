@@ -28,10 +28,10 @@ namespace ai
 		NetherspiteEndFightTrigger(PlayerbotAI* ai) : EndBossFightTrigger(ai, "end netherspite fight", "netherspite", 15689) {}
 	};
 
-	class VoidZoneTooCloseTrigger : public CloseToCreatureTrigger
+	class VoidZoneTooCloseTrigger : public CloseToCreatureHazardTrigger
 	{
 	public:
-		VoidZoneTooCloseTrigger(PlayerbotAI* ai) : CloseToCreatureTrigger(ai, "void zone too close", 16697, 5.0f) {}
+		VoidZoneTooCloseTrigger(PlayerbotAI* ai) : CloseToCreatureHazardTrigger(ai, "void zone too close", 16697, 5.0f, 99999999.0f) {}
 	};
 
 	class NetherspiteBeamsCheatNeedRefreshTrigger : public Trigger
