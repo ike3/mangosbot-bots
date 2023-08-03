@@ -38,7 +38,7 @@ void UsePotionsStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("use bandage", ACTION_MEDIUM_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "no mana",
+        "low mana",
         NextAction::array(0, new NextAction("dark rune", ACTION_HIGH), NULL)));
 }
 
