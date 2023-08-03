@@ -146,6 +146,11 @@ bool MoveAwayFromCreature::Execute(Event& event)
         }
     }
 
+    if (creatures.empty())
+    {
+        return false;
+    }
+
     const list<HazardPosition>& hazards = AI_VALUE(list<HazardPosition>, "hazards");
 
     // Get the closest creature reference
