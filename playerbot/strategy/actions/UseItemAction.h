@@ -48,6 +48,7 @@ namespace ai
     public:
         UseItemIdAction(PlayerbotAI* ai, string name = "use id", bool selfOnly = false, uint32 duration = sPlayerbotAIConfig.reactDelay) : UseItemAction(ai, name, selfOnly, duration), Qualified() {}
         virtual bool isPossible() override;
+        virtual bool isUseful() override;
 
     protected:
         virtual bool Execute(Event& event) override;

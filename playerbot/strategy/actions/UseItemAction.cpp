@@ -913,6 +913,30 @@ bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target, GameObject* goT
     return count;
 }
 
+bool UseItemIdAction::isUseful()
+{
+    const ItemPrototype* proto = sObjectMgr.GetItemPrototype(GetItemId());
+    if (proto)
+    {
+        set<uint32>& skipSpells = AI_VALUE(set<uint32>&, "skip spells list");
+        for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+        {
+            const _Spell& spellData = proto->Spells[i];
+            if (spellData.SpellId)
+            {
+                if (skipSpells.find(spellData.SpellId) != skipSpells.end())
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
 bool UseSpellItemAction::isUseful()
 {
    return AI_VALUE2(bool, "spell cast useful", getName());
@@ -927,7 +951,6 @@ bool UseHearthStoneAction::Execute(Event& event)
 
     if (AI_VALUE2(uint32, "current mount speed", "self target"))
     {
-
         if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
             return false;
 
