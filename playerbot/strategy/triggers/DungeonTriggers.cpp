@@ -202,7 +202,7 @@ bool CloseToCreatureHazardTrigger::IsHazardValid(const ObjectGuid& hazzardGuid)
 std::list<ObjectGuid> CloseToHostileCreatureHazardTrigger::GetPossibleHazards()
 {
     std::list<ObjectGuid> possibleHazards;
-    std::list<ObjectGuid>& attackers = AI_VALUE(std::list<ObjectGuid>, "attackers");
+    std::list<ObjectGuid> attackers = AI_VALUE(std::list<ObjectGuid>, "attackers");
 
     for (const ObjectGuid& attackerGuid : attackers)
     {
