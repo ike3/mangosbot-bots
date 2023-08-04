@@ -212,6 +212,8 @@ std::list<ObjectGuid> CloseToHostileCreatureHazardTrigger::GetPossibleHazards()
             possibleHazards.push_back(attackerGuid);
         }
     }
+
+    return possibleHazards;
 }
 
 bool CloseToCreatureTrigger::IsActive()
