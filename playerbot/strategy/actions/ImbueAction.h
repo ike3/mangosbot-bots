@@ -9,22 +9,24 @@ namespace ai
    class ImbueWithStoneAction : public Action
    {
    public:
-      ImbueWithStoneAction(PlayerbotAI* ai);
-      virtual bool Execute(Event& event);
+      ImbueWithStoneAction(PlayerbotAI* ai) : Action(ai, "apply stone") {}
+      bool Execute(Event& event) override;
+      bool isUseful() override;
    };
 
    class ImbueWithOilAction : public Action
    {
    public:
-      ImbueWithOilAction(PlayerbotAI* ai);
-      virtual bool Execute(Event& event);
+      ImbueWithOilAction(PlayerbotAI* ai) : Action(ai, "apply oil") {}
+      bool Execute(Event& event) override;
+      bool isUseful() override;
    };
 
    class TryEmergencyAction : public Action
    {
    public:
-      TryEmergencyAction(PlayerbotAI* ai);
-      virtual bool Execute(Event& event);
+      TryEmergencyAction(PlayerbotAI* ai) : Action(ai, "try emergency") {}
+      bool Execute(Event& event) override;
    };
 }
 

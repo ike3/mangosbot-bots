@@ -32,8 +32,8 @@ namespace ai
     class SuggestTradeAction : public SuggestWhatToDoAction
     {
     public:
-        SuggestTradeAction(PlayerbotAI* ai);
+        SuggestTradeAction(PlayerbotAI* ai) : SuggestWhatToDoAction(ai) {}
         virtual bool Execute(Event& event) override;
-        virtual bool isUseful() { return true; }
+        virtual bool isUseful() override;
     };
 }

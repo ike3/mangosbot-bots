@@ -6,73 +6,78 @@
 #include "../../ServerFacade.h"
 using namespace ai;
 
-// Search and apply stone to weapons
-ImbueWithStoneAction::ImbueWithStoneAction(PlayerbotAI* ai) : Action(ai, "apply stone")
-{
-}
-
 bool ImbueWithStoneAction::Execute(Event& event)
 {
-#ifdef CMANGOS
-   if (bot->IsInCombat())
-#endif
-#ifdef MANGOS
-   if (bot->IsInCombat())
-#endif
-      return false;
+    if (bot->IsInCombat())
+        return false;
 
-   // remove stealth
-   if (bot->HasAura(SPELL_AURA_MOD_STEALTH))
-      bot->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
+    // remove stealth
+    if (bot->HasAura(SPELL_AURA_MOD_STEALTH))
+        bot->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
 
-   // hp check
-   if (bot->getStandState() != UNIT_STAND_STATE_STAND)
-      bot->SetStandState(UNIT_STAND_STATE_STAND);
+    // hp check
+    if (bot->getStandState() != UNIT_STAND_STATE_STAND)
+        bot->SetStandState(UNIT_STAND_STATE_STAND);
 
+    // Search and apply stone to weapons
+    // Mainhand ...
+    Item * stone, *weapon;
+    weapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+    if (weapon && weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) == 0)
+    {
+        stone = ai->FindStoneFor(weapon);
+        if (stone)
+        {
+            ai->ImbueItem(stone, EQUIPMENT_SLOT_MAINHAND);
+            SetDuration(sPlayerbotAIConfig.globalCoolDown);
+            return true;
+        }
+    }
+    //... and offhand
+    weapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+    if (weapon && weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) == 0)
+    {
+        stone = ai->FindStoneFor(weapon);
+        if (stone)
+        {
+            ai->ImbueItem(stone, EQUIPMENT_SLOT_OFFHAND);
+            SetDuration(sPlayerbotAIConfig.globalCoolDown);
+            return true;
+        }
+    }
 
-   // Search and apply stone to weapons
-   // Mainhand ...
-   Item * stone, *weapon;
-   weapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
-   if (weapon && weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) == 0)
-   {
-      stone = ai->FindStoneFor(weapon);
-      if (stone)
-      {
-         ai->ImbueItem(stone, EQUIPMENT_SLOT_MAINHAND);
-         SetDuration(sPlayerbotAIConfig.globalCoolDown);
-         return true;
-      }
-   }
-   //... and offhand
-   weapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
-   if (weapon && weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) == 0)
-   {
-      stone = ai->FindStoneFor(weapon);
-      if (stone)
-      {
-         ai->ImbueItem(stone, EQUIPMENT_SLOT_OFFHAND);
-         SetDuration(sPlayerbotAIConfig.globalCoolDown);
-         return true;
-      }
-   }
-
-   return false;
+    return false;
 }
 
-// Search and apply oil to weapons
-ImbueWithOilAction::ImbueWithOilAction(PlayerbotAI* ai) : Action(ai, "apply oil")
+bool ImbueWithStoneAction::isUseful()
 {
+    // Search and apply stone to weapons
+    // Mainhand ...
+    Item* weapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+    if (weapon && weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) == 0)
+    {
+        if (ai->FindStoneFor(weapon))
+        {
+            return true;
+        }
+    }
+
+    //... and offhand
+    weapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+    if (weapon && weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) == 0)
+    {
+        if (ai->FindStoneFor(weapon))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool ImbueWithOilAction::Execute(Event& event)
 {
-#ifdef CMANGOS
    if (bot->IsInCombat())
-#endif
-#ifdef MANGOS
-   if (bot->IsInCombat())
-#endif
       return false;
 
    // remove stealth
@@ -82,7 +87,6 @@ bool ImbueWithOilAction::Execute(Event& event)
    // hp check
    if (bot->getStandState() != UNIT_STAND_STATE_STAND)
       bot->SetStandState(UNIT_STAND_STATE_STAND);
-
 
    // Search and apply oil to weapons
    Item* oil, *weapon;
@@ -101,8 +105,18 @@ bool ImbueWithOilAction::Execute(Event& event)
    return false;
 }
 
-TryEmergencyAction::TryEmergencyAction(PlayerbotAI* ai) : Action(ai, "try emergency")
+bool ImbueWithOilAction::isUseful()
 {
+    Item* weapon = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+    if (weapon && weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) == 0)
+    {
+        if (ai->FindOilFor(weapon))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool TryEmergencyAction::Execute(Event& event)

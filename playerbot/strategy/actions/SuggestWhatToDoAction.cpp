@@ -32,11 +32,18 @@ SuggestWhatToDoAction::SuggestWhatToDoAction(PlayerbotAI* ai, string name)
     suggestions.push_back(&SuggestWhatToDoAction::something);
 }
 
-bool SuggestWhatToDoAction::Execute(Event& event)
+bool SuggestWhatToDoAction::isUseful()
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot) || bot->GetGroup() || bot->GetInstanceId())
         return false;
 
+    string qualifier = "suggest what to do";
+    time_t lastSaid = AI_VALUE2(time_t, "last said", qualifier);
+    return (time(0) - lastSaid) > 30;
+}
+
+bool SuggestWhatToDoAction::Execute(Event& event)
+{
     int index = rand() % suggestions.size();
     (this->*suggestions[index])();
 
@@ -394,16 +401,16 @@ private:
     uint32 quality;
 };
 
-
-SuggestTradeAction::SuggestTradeAction(PlayerbotAI* ai) : SuggestWhatToDoAction(ai, "suggest trade")
-{
-}
-
-bool SuggestTradeAction::Execute(Event& event)
+bool SuggestTradeAction::isUseful()
 {
     if (!sRandomPlayerbotMgr.IsRandomBot(bot) || bot->GetGroup() || bot->GetInstanceId())
         return false;
 
+    return true;
+}
+
+bool SuggestTradeAction::Execute(Event& event)
+{
     uint32 quality = urand(0, 100);
     if (quality > 95)
         quality = ITEM_QUALITY_LEGENDARY;
@@ -460,11 +467,4 @@ bool SuggestTradeAction::Execute(Event& event)
 
     spam(BOT_TEXT2("suggest_sell", placeholders), urand(0, 1) ? 0x3C : 0, !urand(0, 2), !urand(0, 5));
     return true;
-}
-
-bool SuggestWhatToDoAction::isUseful()
-{
-    string qualifier = "suggest what to do";
-    time_t lastSaid = AI_VALUE2(time_t, "last said", qualifier);
-    return (time(0) - lastSaid) > 30;
 }
