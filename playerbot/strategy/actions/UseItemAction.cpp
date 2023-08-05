@@ -919,14 +919,17 @@ bool UseItemIdAction::isUseful()
     if (proto)
     {
         set<uint32>& skipSpells = AI_VALUE(set<uint32>&, "skip spells list");
-        for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+        if(!skipSpells.empty())
         {
-            const _Spell& spellData = proto->Spells[i];
-            if (spellData.SpellId)
+            for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
             {
-                if (skipSpells.find(spellData.SpellId) != skipSpells.end())
+                const _Spell& spellData = proto->Spells[i];
+                if (spellData.SpellId)
                 {
-                    return false;
+                    if (skipSpells.find(spellData.SpellId) != skipSpells.end())
+                    {
+                        return false;
+                    }
                 }
             }
         }

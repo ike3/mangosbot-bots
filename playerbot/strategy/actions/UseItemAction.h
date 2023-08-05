@@ -78,7 +78,7 @@ namespace ai
     public:
         UsePotionAction(PlayerbotAI* ai, string name, SpellEffects effect) : UseItemIdAction(ai, name), effect(effect) {}
 
-        bool isUseful() override { return AI_VALUE2(bool, "combat", "self target"); }
+        bool isUseful() override { return UseItemIdAction::isUseful() && AI_VALUE2(bool, "combat", "self target"); }
 
         virtual uint32 GetItemId() override
         {
@@ -125,7 +125,7 @@ namespace ai
     public:
         UseHealthstoneAction(PlayerbotAI* ai) : UseItemIdAction(ai, "healthstone") {}
 
-        bool isUseful() override { return AI_VALUE2(bool, "combat", "self target"); }
+        bool isUseful() override { return UseItemIdAction::isUseful() && AI_VALUE2(bool, "combat", "self target"); }
 
         uint32 GetItemId() override
         {
@@ -204,7 +204,7 @@ namespace ai
     {
     public:
         UseGoblinSapperChargeAction(PlayerbotAI* ai) : UseItemIdAction(ai, "goblin sapper") {}
-        virtual bool isUseful() override { return bot->GetSkillValue(202) >= 205 && bot->GetHealth() > 1000; }
+        virtual bool isUseful() override { return UseItemIdAction::isUseful() && bot->GetSkillValue(202) >= 205 && bot->GetHealth() > 1000; }
 
         virtual uint32 GetItemId() override
         { 
@@ -227,7 +227,7 @@ namespace ai
             if (bot->InArena())
                 return false;
 #endif
-            return bot->GetLevel() >= 31 && !ai->HasAura(11350, bot);
+            return UseItemIdAction::isUseful() && bot->GetLevel() >= 31 && !ai->HasAura(11350, bot);
         }
 
         virtual uint32 GetItemId() override { return 8956; }
@@ -244,7 +244,7 @@ namespace ai
             if (bot->InArena())
                 return false;
 #endif
-            return bot->GetLevel() >= 46 && !ai->HasAura(17540, bot);
+            return UseItemIdAction::isUseful() && bot->GetLevel() >= 46 && !ai->HasAura(17540, bot);
         }
 
         virtual uint32 GetItemId() override { return 13455; }
@@ -257,6 +257,9 @@ namespace ai
 
         virtual bool isUseful() override
         {
+            if (!UseItemIdAction::isUseful())
+                return false;
+
             if (!bot->InBattleGround() || bot->GetLevel() < 60 || !bot->IsInCombat())
                 return false;
 
@@ -293,6 +296,9 @@ namespace ai
 
         virtual bool isUseful() override
         {
+            if(!UseItemIdAction::isUseful())
+                return false;
+
             if (ai->HasAnyAuraOf(bot, "sprint", "speed", "goblin rocket boots", "dash", NULL))
                 return false;
 
@@ -312,6 +318,9 @@ namespace ai
 
         virtual bool isUseful() override
         {
+            if (!UseTargetedItemIdAction::isUseful())
+                return false;
+
             if (bot->HasAura(11196))
                 return false;
 
@@ -381,6 +390,9 @@ namespace ai
             if (!target)
                 return false;
 
+            if (!UseTargetedItemIdAction::isUseful())
+                return false;
+
             if (!target->IsNonMeleeSpellCasted(false) && target->IsStopped())
                 return false;
 
@@ -407,6 +419,9 @@ namespace ai
 
         virtual bool isUseful() override
         {
+            if(!UseItemIdAction::isUseful())
+                return false;
+
 #ifndef MANGOSBOT_ZERO
             if (bot->InArena())
                 return false;
@@ -428,7 +443,7 @@ namespace ai
 
         virtual bool isUseful() override
         {
-            return !bot->HasAura(17543) && (bot->GetLevel() >= 48);
+            return UseItemIdAction::isUseful() && !bot->HasAura(17543) && (bot->GetLevel() >= 48);
         }
 
         virtual uint32 GetItemId() override { return 13457; }
@@ -441,6 +456,9 @@ namespace ai
 
         virtual bool isUseful() override
         {
+            if (!UseItemIdAction::isUseful())
+                return false;
+
             if (bot->GetLevel() < 20 || bot->HasAura(6615))
                 return false;
 
