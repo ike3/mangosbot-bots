@@ -117,17 +117,13 @@ bool WaitForAttackStrategy::ShouldWait(PlayerbotAI* ai)
 
             if (!enemyPlayer)
             {
-                // Tanks and healers can avoid this check
-                if (!ai->IsTank(player) && !ai->IsHeal(player))
+                // Check if bot is currently in combat
+                const time_t combatStartTime = PAI_VALUE(time_t, "combat start time");
+                if (combatStartTime > 0)
                 {
-                    // Check if bot is currently in combat
-                    const time_t combatStartTime = PAI_VALUE(time_t, "combat start time");
-                    if (combatStartTime > 0)
-                    {
-                        // Check the amount of time elapsed from the combat start
-                        const time_t elapsedTime = time(0) - combatStartTime;
-                        return elapsedTime < GetWaitTime(ai);
-                    }
+                    // Check the amount of time elapsed from the combat start
+                    const time_t elapsedTime = time(0) - combatStartTime;
+                    return elapsedTime < GetWaitTime(ai);
                 }
             }
         }
