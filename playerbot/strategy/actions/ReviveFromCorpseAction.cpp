@@ -76,9 +76,10 @@ bool FindCorpseAction::Execute(Event& event)
     Player* master = ai->GetGroupMaster();
     if (master)
     {
-        if (!master->GetPlayerbotAI() &&
-            sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
+        if (!master->GetPlayerbotAI() && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "master target"), sPlayerbotAIConfig.farDistance))
+        {
             return false;
+        }
     }
 
     uint32 dCount = AI_VALUE(uint32, "death count");

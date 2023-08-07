@@ -368,14 +368,12 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     if (noPath)
         generatePath = false;
 
-    if (!isVehicle && sServerFacade.UnitIsDead(bot))
+    if(!isVehicle && !IsMovingAllowed())
     {
-        return false;
-    }
-
-    if (!isVehicle && bot->IsMoving())
-    {
-        return false;
+        if(sServerFacade.UnitIsDead(bot) || bot->IsMoving())
+        {
+            return false;
+        }
     }
 
     LastMovement& lastMove = *context->GetValue<LastMovement&>("last movement");
