@@ -163,7 +163,11 @@ bool PartyMemberToHeal::Check(Unit* player)
 {
     bool isBg = bot->InBattleGround();
 
-    float maxDist = isBg ? sPlayerbotAIConfig.sightDistance : sPlayerbotAIConfig.sightDistance * 2.0f;
+    float maxDist = ai->GetRange("heal");
+    if (isBg)
+    {
+        maxDist *= 0.5f;
+    }
 
     if (!player)
         return false;
@@ -199,7 +203,6 @@ Unit* PartyMemberToProtect::Calculate()
             continue;
 
         bool isRanged = false;
-
         if (unit->AI())
         {
             if (unit->AI()->IsRangedUnit())
