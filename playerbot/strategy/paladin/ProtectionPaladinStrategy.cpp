@@ -48,6 +48,10 @@ void ProtectionPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
         NextAction::array(0, new NextAction("remove greater blessing of salvation", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "lose aggro",
+        NextAction::array(0, new NextAction("hand of reckoning", ACTION_MOVE), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "holy shield",
         NextAction::array(0, new NextAction("holy shield", ACTION_HIGH + 3), NULL)));
 
@@ -492,6 +496,10 @@ void ProtectionPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
         NextAction::array(0, new NextAction("remove greater blessing of salvation", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "lose aggro",
+        NextAction::array(0, new NextAction("hand of reckoning", ACTION_MOVE), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "holy shield",
         NextAction::array(0, new NextAction("holy shield", ACTION_HIGH + 3), NULL)));
 
@@ -929,7 +937,7 @@ void ProtectionPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 
     triggers.push_back(new TriggerNode(
         "lose aggro",
-        NextAction::array(0, new NextAction("hand of reckoning", ACTION_EMERGENCY), NULL)));
+        NextAction::array(0, new NextAction("hand of reckoning", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
         "holy shield",

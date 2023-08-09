@@ -2485,6 +2485,12 @@ void PlayerbotFactory::InitAvailableSpells()
         {
             bot->learnSpell(33394, false);
         }
+
+        // hand of reckoning
+        if (!bot->HasSpell(33395))
+        {
+            bot->learnSpell(33395, false);
+        }
     }
 #endif
 
