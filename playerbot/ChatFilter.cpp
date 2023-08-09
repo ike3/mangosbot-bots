@@ -178,37 +178,38 @@ public:
     virtual string Filter(string message) override
     {
         Player* bot = ai->GetBot();
+        const bool inGroup = bot->GetGroup() != nullptr;
 
         bool tank = message.find("@tank") == 0;
-        if (tank && !ai->IsTank(bot, false))
+        if (tank && !ai->IsTank(bot, inGroup))
             return "";
 
         bool dps = message.find("@dps") == 0;
-        if (dps && (ai->IsTank(bot, false) || ai->IsHeal(bot, false)))
+        if (dps && (ai->IsTank(bot, inGroup) || ai->IsHeal(bot, inGroup)))
             return "";
 
         bool heal = message.find("@heal") == 0;
-        if (heal && !ai->IsHeal(bot, false))
+        if (heal && !ai->IsHeal(bot, inGroup))
             return "";
 
         bool notank = message.find("@notank") == 0;
-        if (notank && ai->IsTank(bot, false))
+        if (notank && ai->IsTank(bot, inGroup))
             return "";
 
         bool nodps = message.find("@nodps") == 0;
-        if (nodps && !ai->IsTank(bot, false) && !ai->IsHeal(bot, false))
+        if (nodps && !ai->IsTank(bot, inGroup) && !ai->IsHeal(bot, inGroup))
             return "";
 
         bool noheal = message.find("@noheal") == 0;
-        if (noheal && ai->IsHeal(bot, false))
+        if (noheal && ai->IsHeal(bot, inGroup))
             return "";
 
         bool ranged = message.find("@ranged") == 0;
-        if (ranged && !ai->IsRanged(bot, false))
+        if (ranged && !ai->IsRanged(bot, inGroup))
             return "";
 
         bool melee = message.find("@melee") == 0;
-        if (melee && ai->IsRanged(bot, false))
+        if (melee && ai->IsRanged(bot, inGroup))
             return "";
 
         if (tank || dps || heal || ranged || melee || noheal || nodps || nodps)
