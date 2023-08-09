@@ -240,7 +240,7 @@ BotRoles AiFactory::GetPlayerRoles(Player* player)
             }
             else if (tab == 1)
             {
-                role = (BotRoles)(BOT_ROLE_TANK | BOT_ROLE_DPS);
+                role = BOT_ROLE_DPS;
             }
             else if (tab == 2)
             {

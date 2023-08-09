@@ -7,7 +7,7 @@ namespace ai
     {
     public:
         TankFeralDruidPlaceholderStrategy(PlayerbotAI* ai) : SpecPlaceholderStrategy(ai) {}
-        int GetType() override { return STRATEGY_TYPE_HEAL | STRATEGY_TYPE_RANGED; }
+        int GetType() override { return STRATEGY_TYPE_TANK | STRATEGY_TYPE_MELEE; }
         string getName() override { return "tank feral"; }
     };
 
