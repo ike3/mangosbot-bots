@@ -1007,6 +1007,11 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell,
                     return false;
             }
         }
+        else
+        {
+            if (!sServerFacade.IsAlive(target))
+                return false;
+        }
 
         if (bot != target && bot->GetDistance(target) > sPlayerbotAIConfig.sightDistance)
             return false;
