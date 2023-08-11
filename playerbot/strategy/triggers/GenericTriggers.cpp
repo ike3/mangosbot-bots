@@ -87,7 +87,7 @@ bool PanicTrigger::IsActive()
 bool OutNumberedTrigger::IsActive()
 {
     // Don't trigger if the bot is a dungeon or raid
-    if (!bot->IsInWorld() || bot->GetMap()->IsDungeon() || bot->GetMap()->IsRaid())
+    if (!bot->IsInWorld() || bot->IsBeingTeleported() || bot->GetMap()->IsDungeon() || bot->GetMap()->IsRaid())
         return false;
 
     // Don't trigger if the bot is in a raid group
