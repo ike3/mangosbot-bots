@@ -150,6 +150,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class RetributionPaladinBoostStrategy : public PaladinBoostStrategy
+    {
+    public:
+        RetributionPaladinBoostStrategy(PlayerbotAI* ai) : PaladinBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class RetributionPaladinBoostPveStrategy : public RetributionPaladinBoostStrategy
+    {
+    public:
+        RetributionPaladinBoostPveStrategy(PlayerbotAI* ai) : RetributionPaladinBoostStrategy(ai) {}
+        string getName() override { return "boost retribution pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class RetributionPaladinBoostPvpStrategy : public RetributionPaladinBoostStrategy
+    {
+    public:
+        RetributionPaladinBoostPvpStrategy(PlayerbotAI* ai) : RetributionPaladinBoostStrategy(ai) {}
+        string getName() override { return "boost retribution pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class RetributionPaladinBoostRaidStrategy : public RetributionPaladinBoostStrategy
+    {
+    public:
+        RetributionPaladinBoostRaidStrategy(PlayerbotAI* ai) : RetributionPaladinBoostStrategy(ai) {}
+        string getName() override { return "boost retribution raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class RetributionPaladinCcStrategy : public PaladinCcStrategy
     {
     public:

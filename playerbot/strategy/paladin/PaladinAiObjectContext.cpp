@@ -23,6 +23,7 @@ namespace ai
                 creators["pull"] = &paladin::StrategyFactoryInternal::pull;
                 creators["cc"] = &paladin::StrategyFactoryInternal::cc;
                 creators["offheal"] = &paladin::StrategyFactoryInternal::offheal;
+                creators["boost"] = &paladin::StrategyFactoryInternal::boost;
             }
 
         private:
@@ -31,6 +32,7 @@ namespace ai
             static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
             static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
             static Strategy* offheal(PlayerbotAI* ai) { return new OffhealPlaceholderStrategy(ai); }
+            static Strategy* boost(PlayerbotAI* ai) { return new BoostPlaceholderStrategy(ai); }
 #ifdef MANGOSBOT_TWO
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "judgement of light", "seal of righteousness"); }
 #else
@@ -120,6 +122,34 @@ namespace ai
             static Strategy* buff_protection_pve(PlayerbotAI* ai) { return new ProtectionPaladinBuffPveStrategy(ai); }
             static Strategy* buff_protection_pvp(PlayerbotAI* ai) { return new ProtectionPaladinBuffPvpStrategy(ai); }
             static Strategy* buff_protection_raid(PlayerbotAI* ai) { return new ProtectionPaladinBuffRaidStrategy(ai); }
+        };
+
+        class BoostSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            BoostSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["boost holy pve"] = &paladin::BoostSituationStrategyFactoryInternal::boost_holy_pve;
+                creators["boost holy pvp"] = &paladin::BoostSituationStrategyFactoryInternal::boost_holy_pvp;
+                creators["boost holy raid"] = &paladin::BoostSituationStrategyFactoryInternal::boost_holy_raid;
+                creators["boost retribution pve"] = &paladin::BoostSituationStrategyFactoryInternal::boost_retribution_pve;
+                creators["boost retribution pvp"] = &paladin::BoostSituationStrategyFactoryInternal::boost_retribution_pvp;
+                creators["boost retribution raid"] = &paladin::BoostSituationStrategyFactoryInternal::boost_retribution_raid;
+                creators["boost protection pve"] = &paladin::BoostSituationStrategyFactoryInternal::boost_protection_pve;
+                creators["boost protection pvp"] = &paladin::BoostSituationStrategyFactoryInternal::boost_protection_pvp;
+                creators["boost protection raid"] = &paladin::BoostSituationStrategyFactoryInternal::boost_protection_raid;
+            }
+
+        private:
+            static Strategy* boost_holy_pve(PlayerbotAI* ai) { return new HolyPaladinBoostPveStrategy(ai); }
+            static Strategy* boost_holy_pvp(PlayerbotAI* ai) { return new HolyPaladinBoostPvpStrategy(ai); }
+            static Strategy* boost_holy_raid(PlayerbotAI* ai) { return new HolyPaladinBoostRaidStrategy(ai); }
+            static Strategy* boost_retribution_pve(PlayerbotAI* ai) { return new RetributionPaladinBoostPveStrategy(ai); }
+            static Strategy* boost_retribution_pvp(PlayerbotAI* ai) { return new RetributionPaladinBoostPvpStrategy(ai); }
+            static Strategy* boost_retribution_raid(PlayerbotAI* ai) { return new RetributionPaladinBoostRaidStrategy(ai); }
+            static Strategy* boost_protection_pve(PlayerbotAI* ai) { return new ProtectionPaladinBoostPveStrategy(ai); }
+            static Strategy* boost_protection_pvp(PlayerbotAI* ai) { return new ProtectionPaladinBoostPvpStrategy(ai); }
+            static Strategy* boost_protection_raid(PlayerbotAI* ai) { return new ProtectionPaladinBoostRaidStrategy(ai); }
         };
 
         class OffhealSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -692,6 +722,7 @@ PaladinAiObjectContext::PaladinAiObjectContext(PlayerbotAI* ai) : AiObjectContex
     strategyContexts.Add(new ai::paladin::ClassStrategyFactoryInternal());
     strategyContexts.Add(new ai::paladin::ClassSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::paladin::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::paladin::BoostSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::paladin::OffhealSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::paladin::CcSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::paladin::AuraManualStrategyFactoryInternal());

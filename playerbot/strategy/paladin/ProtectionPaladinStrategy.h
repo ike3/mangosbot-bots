@@ -150,6 +150,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class ProtectionPaladinBoostStrategy : public PaladinBoostStrategy
+    {
+    public:
+        ProtectionPaladinBoostStrategy(PlayerbotAI* ai) : PaladinBoostStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ProtectionPaladinBoostPveStrategy : public ProtectionPaladinBoostStrategy
+    {
+    public:
+        ProtectionPaladinBoostPveStrategy(PlayerbotAI* ai) : ProtectionPaladinBoostStrategy(ai) {}
+        string getName() override { return "boost protection pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ProtectionPaladinBoostPvpStrategy : public ProtectionPaladinBoostStrategy
+    {
+    public:
+        ProtectionPaladinBoostPvpStrategy(PlayerbotAI* ai) : ProtectionPaladinBoostStrategy(ai) {}
+        string getName() override { return "boost protection pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ProtectionPaladinBoostRaidStrategy : public ProtectionPaladinBoostStrategy
+    {
+    public:
+        ProtectionPaladinBoostRaidStrategy(PlayerbotAI* ai) : ProtectionPaladinBoostStrategy(ai) {}
+        string getName() override { return "boost protection raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class ProtectionPaladinCcStrategy : public PaladinCcStrategy
     {
     public:

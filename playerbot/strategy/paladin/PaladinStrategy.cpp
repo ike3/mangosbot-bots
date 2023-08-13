@@ -408,6 +408,46 @@ void PaladinBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tri
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void PaladinBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void PaladinOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     OffhealStrategy::InitCombatTriggers(triggers);
@@ -933,6 +973,46 @@ void PaladinBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tri
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void PaladinBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 void PaladinOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     OffhealStrategy::InitCombatTriggers(triggers);
@@ -1456,6 +1536,46 @@ void PaladinBuffRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void PaladinBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void PaladinBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void PaladinBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void PaladinOffhealStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

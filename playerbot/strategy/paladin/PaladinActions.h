@@ -682,6 +682,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff holy pve", strategiesRequired);
 
+            strategiesRequired = { "holy", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost holy pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost holy pve", strategiesRequired);
+
             strategiesRequired = { "holy", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc holy pve", strategiesRequired);
@@ -712,6 +716,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff retribution pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff retribution pve", strategiesRequired);
 
+            strategiesRequired = { "retribution", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost retribution pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost retribution pve", strategiesRequired);
+
             strategiesRequired = { "retribution", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc retribution pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc retribution pve", strategiesRequired);
@@ -741,6 +749,10 @@ namespace ai
             strategiesRequired = { "protection/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff protection pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff protection pve", strategiesRequired);
+
+            strategiesRequired = { "protection/tank", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost protection pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost protection pve", strategiesRequired);
 
             strategiesRequired = { "protection/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc protection pve", strategiesRequired);
@@ -783,6 +795,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff holy pvp", strategiesRequired);
 
+            strategiesRequired = { "holy", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost holy pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost holy pvp", strategiesRequired);
+
             strategiesRequired = { "holy", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc holy pvp", strategiesRequired);
@@ -813,6 +829,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff retribution pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff retribution pvp", strategiesRequired);
 
+            strategiesRequired = { "retribution", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost retribution pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost retribution pvp", strategiesRequired);
+
             strategiesRequired = { "retribution", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc retribution pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc retribution pvp", strategiesRequired);
@@ -842,6 +862,10 @@ namespace ai
             strategiesRequired = { "protection/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff protection pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff protection pvp", strategiesRequired);
+
+            strategiesRequired = { "protection/tank", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost protection pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost protection pvp", strategiesRequired);
 
             strategiesRequired = { "protection/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc protection pvp", strategiesRequired);
@@ -884,6 +908,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff holy raid", strategiesRequired);
 
+            strategiesRequired = { "holy", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost holy raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost holy raid", strategiesRequired);
+
             strategiesRequired = { "holy", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc holy raid", strategiesRequired);
@@ -914,6 +942,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff retribution raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff retribution raid", strategiesRequired);
 
+            strategiesRequired = { "retribution", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost retribution raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost retribution raid", strategiesRequired);
+
             strategiesRequired = { "retribution", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc retribution raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc retribution raid", strategiesRequired);
@@ -943,6 +975,10 @@ namespace ai
             strategiesRequired = { "protection/tank", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff protection raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff protection raid", strategiesRequired);
+
+            strategiesRequired = { "protection/tank", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost protection raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost protection raid", strategiesRequired);
 
             strategiesRequired = { "protection/tank", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc protection raid", strategiesRequired);

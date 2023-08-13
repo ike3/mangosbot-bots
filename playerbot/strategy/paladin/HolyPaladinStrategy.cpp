@@ -21,20 +21,18 @@ void HolyPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "party member low health",
-        NextAction::array(0, new NextAction("divine favor", ACTION_MEDIUM_HEAL + 6), 
-                             new NextAction("holy shock on party", ACTION_MEDIUM_HEAL + 5), 
+        NextAction::array(0, new NextAction("holy shock on party", ACTION_MEDIUM_HEAL + 5), 
                              new NextAction("holy light on party", ACTION_MEDIUM_HEAL + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low health",
-        NextAction::array(0, new NextAction("divine favor", ACTION_MEDIUM_HEAL + 3), 
-                             new NextAction("holy shock", ACTION_MEDIUM_HEAL + 2), 
+        NextAction::array(0, new NextAction("holy shock", ACTION_MEDIUM_HEAL + 2), 
                              new NextAction("holy light", ACTION_MEDIUM_HEAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "critical health",
         NextAction::array(0, new NextAction("divine shield", ACTION_EMERGENCY + 1),
-            new NextAction("holy light", ACTION_EMERGENCY), NULL)));
+                             new NextAction("holy light", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low health",
@@ -213,10 +211,6 @@ void HolyPaladinAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& 
 void HolyPaladinBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     PaladinBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "divine favor",
-        NextAction::array(0, new NextAction("divine favor", ACTION_HIGH), NULL)));
 }
 
 void HolyPaladinBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -258,6 +252,56 @@ void HolyPaladinBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 {
     HolyPaladinBuffStrategy::InitNonCombatTriggers(triggers);
     PaladinBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "divine favor",
+        NextAction::array(0, new NextAction("divine favor", ACTION_HIGH), NULL)));
+}
+
+void HolyPaladinBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitCombatTriggers(triggers);
+    PaladinBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitNonCombatTriggers(triggers);
+    PaladinBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitCombatTriggers(triggers);
+    PaladinBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitNonCombatTriggers(triggers);
+    PaladinBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitCombatTriggers(triggers);
+    PaladinBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitNonCombatTriggers(triggers);
+    PaladinBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void HolyPaladinCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -658,14 +702,6 @@ void HolyPaladinAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& 
 void HolyPaladinBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     PaladinBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "divine illumination",
-        NextAction::array(0, new NextAction("divine illumination", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "divine favor",
-        NextAction::array(0, new NextAction("divine favor", ACTION_HIGH), NULL)));
 }
 
 void HolyPaladinBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -707,6 +743,60 @@ void HolyPaladinBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 {
     HolyPaladinBuffStrategy::InitNonCombatTriggers(triggers);
     PaladinBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "divine illumination",
+        NextAction::array(0, new NextAction("divine illumination", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "divine favor",
+        NextAction::array(0, new NextAction("divine favor", ACTION_HIGH), NULL)));
+}
+
+void HolyPaladinBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitCombatTriggers(triggers);
+    PaladinBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitNonCombatTriggers(triggers);
+    PaladinBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitCombatTriggers(triggers);
+    PaladinBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitNonCombatTriggers(triggers);
+    PaladinBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitCombatTriggers(triggers);
+    PaladinBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitNonCombatTriggers(triggers);
+    PaladinBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void HolyPaladinCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1111,14 +1201,6 @@ void HolyPaladinAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& 
 void HolyPaladinBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     PaladinBuffStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "divine illumination",
-        NextAction::array(0, new NextAction("divine illumination", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "divine favor",
-        NextAction::array(0, new NextAction("divine favor", ACTION_HIGH), NULL)));
 }
 
 void HolyPaladinBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1160,6 +1242,60 @@ void HolyPaladinBuffRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>&
 {
     HolyPaladinBuffStrategy::InitNonCombatTriggers(triggers);
     PaladinBuffRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinBoostStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "divine illumination",
+        NextAction::array(0, new NextAction("divine illumination", ACTION_HIGH + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "divine favor",
+        NextAction::array(0, new NextAction("divine favor", ACTION_HIGH), NULL)));
+}
+
+void HolyPaladinBoostStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    PaladinBoostStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitCombatTriggers(triggers);
+    PaladinBoostPveStrategy::InitCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitNonCombatTriggers(triggers);
+    PaladinBoostPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitCombatTriggers(triggers);
+    PaladinBoostPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitNonCombatTriggers(triggers);
+    PaladinBoostPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitCombatTriggers(triggers);
+    PaladinBoostRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void HolyPaladinBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HolyPaladinBoostStrategy::InitNonCombatTriggers(triggers);
+    PaladinBoostRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void HolyPaladinCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
