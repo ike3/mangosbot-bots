@@ -3,9 +3,9 @@
 
 namespace ai
 {
-    class FocusHealTargetValue : public ManualSetValue<ObjectGuid>, public Qualified
+    class FocusHealTargetValue : public ManualSetValue<std::list<ObjectGuid>>, public Qualified
 	{
 	public:
-        FocusHealTargetValue(PlayerbotAI* ai) : ManualSetValue<ObjectGuid>(ai, ObjectGuid()), Qualified() {}
+        FocusHealTargetValue(PlayerbotAI* ai) : ManualSetValue<std::list<ObjectGuid>>(ai, {}), Qualified() {}
     };
 }

@@ -14,6 +14,9 @@ namespace ai
         virtual Unit* Calculate();
         bool CanHealPet(Pet* pet);
         virtual bool Check(Unit* player);
+
+    private:
+        std::vector<Player*> GetPartyMembers();
 	};
 
     class PartyMemberToProtect : public PartyMemberValue

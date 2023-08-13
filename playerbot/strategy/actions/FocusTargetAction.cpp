@@ -27,38 +27,93 @@ bool FocusHealSetTargetAction::Execute(Event& event)
     Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     if (ai->IsHeal(bot) || ai->HasStrategy("offheal", BotState::BOT_STATE_COMBAT))
     {
-        const std::string targetName = LowercaseString(event.getParam());
-        if (!targetName.empty())
+        const std::string param = LowercaseString(event.getParam());
+        if (!param.empty())
         {
-            ObjectGuid targetGuid;
-            const bool removeTarget = targetName == "none" || targetName == "unset";
-            if (!removeTarget)
+            bool removeTargets = false;
+            std::vector<std::string> targetNames;
+
+            // Multiple focus heal targets
+            if (param.find(',') != std::string::npos)
             {
-                // Look for the target in the group
+                std::string targetName;
+                std::stringstream ss(param);
+                
+                while (std::getline(ss, targetName, ','))
+                {
+                    targetNames.push_back(targetName);
+                }
+            }
+            else
+            {
+                removeTargets = param == "none" || param == "unset";
+                if (!removeTargets)
+                {
+                    targetNames.push_back(param);
+                }
+            }
+
+            std::list<ObjectGuid> focusHealTargets;
+            if (removeTargets)
+            {
+                ai->TellPlayerNoFacing(requester, "Removed focus heal target");
+            }
+            else
+            {
+                // Look for the targets in the group
                 const Group* group = bot->GetGroup();
                 if (group)
                 {
                     Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
-                    for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
+                    for (const std::string& targetName : targetNames)
                     {
-                        Player* member = sObjectMgr.GetPlayer(itr->guid);
-                        if (member)
+                        ObjectGuid targetGuid;
+                        for (Group::member_citerator itr = groupSlot.begin(); itr != groupSlot.end(); itr++)
                         {
-                            const std::string memberName = LowercaseString(member->GetName());
-                            if (memberName == targetName)
+                            Player* member = sObjectMgr.GetPlayer(itr->guid);
+                            if (member)
                             {
-                                targetGuid = itr->guid;
-                                break;
+                                const std::string memberName = LowercaseString(member->GetName());
+                                if (memberName == targetName)
+                                {
+                                    targetGuid = itr->guid;
+                                    break;
+                                }
                             }
+                        }
+
+                        if (!targetGuid.IsEmpty())
+                        {
+                            focusHealTargets.push_back(targetGuid);
+                            std::stringstream message; message << "Added " << targetName << " to focus heal targets";
+                            ai->TellPlayerNoFacing(requester, message.str());
+                        }
+                        else
+                        {
+                            std::stringstream message; message << "I'm not in a group with " << targetName;
+                            ai->TellPlayerNoFacing(requester, message.str());
                         }
                     }
                 }
+                else
+                {
+                    ai->TellPlayerNoFacing(requester, "I'm not in a group");
+                }
             }
 
-            // Update the focus target value
-            SET_AI_VALUE(ObjectGuid, "focus heal target", targetGuid);
+            SET_AI_VALUE(std::list<ObjectGuid>, "focus heal target", focusHealTargets);
 
-            if (!targetGuid.IsEmpty())
+            if (focusHealTargets.empty())
+            {
+                // Remove the focus heal target strategy if not set
+                if (ai->HasStrategy("focus heal target", BotState::BOT_STATE_COMBAT))
+                {
+                    ai->ChangeStrategy("-focus heal target", BotState::BOT_STATE_COMBAT);
+                }
+
+                return removeTargets;
+            }
+            else
             {
                 // Set the focus heal target strategy if not set
                 if (!ai->HasStrategy("focus heal target", BotState::BOT_STATE_COMBAT))
@@ -66,32 +121,12 @@ bool FocusHealSetTargetAction::Execute(Event& event)
                     ai->ChangeStrategy("+focus heal target", BotState::BOT_STATE_COMBAT);
                 }
 
-                std::stringstream message; message << "Set heal focus target to " << targetName;
-                ai->TellPlayerNoFacing(requester, message.str());  
                 return true;
-            }
-            else
-            {
-                if (removeTarget)
-                {
-                    ai->TellPlayerNoFacing(requester, "Removed heal focus target");
-                }
-                else
-                {
-                    std::stringstream message; message << "I'm not in a group with " << targetName;
-                    ai->TellPlayerNoFacing(requester, message.str());
-                }
-
-                // Remove the focus heal target strategy if not set
-                if (ai->HasStrategy("focus heal target", BotState::BOT_STATE_COMBAT))
-                {
-                    ai->ChangeStrategy("-focus heal target", BotState::BOT_STATE_COMBAT);
-                }
             }
         }
         else
         {
-            ai->TellPlayerNoFacing(requester, "Please provide a target name");
+            ai->TellPlayerNoFacing(requester, "Please provide one or more player names");
         }
     }
     else
