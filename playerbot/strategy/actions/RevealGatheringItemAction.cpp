@@ -92,6 +92,13 @@ bool RevealGatheringItemAction::Execute(Event event)
 
     // everything is fine, do it
     ai->Ping(go->GetPositionX(), go->GetPositionY());
-    bot->Say(msg.str(), LANG_UNIVERSAL);
+
+    string qualifier = "reveal";
+    time_t lastSaid = AI_VALUE2(time_t, "last said", qualifier);
+    if (!lastSaid || time(0) - lastSaid >= 15)
+    {
+        bot->Say(msg.str(), LANG_UNIVERSAL);
+        ai->GetAiObjectContext()->GetValue<time_t>("last said", qualifier)->Set(time(0) + urand(1, 15));
+    }
     return true;
 }

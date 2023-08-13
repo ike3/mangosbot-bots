@@ -589,7 +589,7 @@ namespace ai
     class RandomBotUpdateTrigger : public RandomTrigger
     {
     public:
-        RandomBotUpdateTrigger(PlayerbotAI* ai) : RandomTrigger(ai, "random bot update", 30) {}
+        RandomBotUpdateTrigger(PlayerbotAI* ai) : RandomTrigger(ai, "random bot update", 2) {}
 
     public:
         virtual bool IsActive()
