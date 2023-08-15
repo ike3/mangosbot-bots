@@ -173,6 +173,51 @@ bool EquipUpgradesAction::Execute(Event& event)
         if (status != TRADE_STATUS_TRADE_ACCEPT)
             return false;
     }
+    else if (event.getSource() == "item push result")
+    {
+        bool valid = false;
+        WorldPacket& data = event.getPacket();
+        if (!data.empty())
+        {
+            data.rpos(0);
+
+            ObjectGuid guid;
+            data >> guid;
+            if (guid != bot->GetObjectGuid())
+                return false;
+
+            uint32 received, created, isShowChatMessage, slotId, itemId, suffixFactor, count;
+            uint32 itemRandomPropertyId;
+            //uint32 invCount;
+            uint8 bagSlot;
+
+            data >> received;                               // 0=looted, 1=from npc
+            data >> created;                                // 0=received, 1=created
+            data >> isShowChatMessage;                                      // IsShowChatMessage
+            data >> bagSlot;
+            // item slot, but when added to stack: 0xFFFFFFFF
+            data >> slotId;
+            data >> itemId;
+            data >> suffixFactor;
+            data >> itemRandomPropertyId;
+            data >> count;
+            // data >> invCount; // [-ZERO] count of items in inventory
+
+            ItemQualifier itemQualifier(itemId, (int32)itemRandomPropertyId);
+            const ItemPrototype* itemProto = itemQualifier.GetProto();
+            if (itemProto && (itemProto->Class == ItemClass::ITEM_CLASS_WEAPON || 
+                              itemProto->Class == ItemClass::ITEM_CLASS_ARMOR ||
+                              itemProto->Class == ItemClass::ITEM_CLASS_CONTAINER))
+            {
+                return false;
+            }
+        }
+
+        if (!valid)
+        {
+            return false;
+        }
+    }
 
     context->ClearExpiredValues("item usage", 10); //Clear old item usage.
 
