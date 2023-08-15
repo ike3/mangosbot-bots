@@ -386,7 +386,7 @@ namespace ai
             static Trigger* omen_of_clarity(PlayerbotAI* ai) { return new OmenOfClarityTrigger(ai); }
             static Trigger* enrage(PlayerbotAI* ai) { return new EnrageTrigger(ai); }
             static Trigger* lacerate(PlayerbotAI* ai) { return new LacerateTrigger(ai); }
-            static Trigger* unstealth(PlayerbotAI* ai) { return new UnstealthTrigger(ai); }
+            static Trigger* unstealth(PlayerbotAI* ai) { return new DruidUnstealthTrigger(ai); }
             static Trigger* in_stealth(PlayerbotAI* ai) { return new InStealthTrigger(ai); }
             static Trigger* no_stealth(PlayerbotAI* ai) { return new NoStealthTrigger(ai); }
             static Trigger* stealth(PlayerbotAI* ai) { return new StealthTrigger(ai); }
@@ -560,7 +560,7 @@ namespace ai
             static Action* enrage(PlayerbotAI* ai) { return new CastEnrageAction(ai); }
             static Action* stealth(PlayerbotAI* ai) { return new CastProwlAction(ai); }
             static Action* check_stealth(PlayerbotAI* ai) { return new CheckStealthAction(ai); }
-            static Action* unstealth(PlayerbotAI* ai) { return new UnstealthAction(ai); }
+            static Action* unstealth(PlayerbotAI* ai) { return new DruidUnstealthAction(ai); }
             static Action* update_pve_strats(PlayerbotAI* ai) { return new UpdateDruidPveStrategiesAction(ai); }
             static Action* update_pvp_strats(PlayerbotAI* ai) { return new UpdateDruidPvpStrategiesAction(ai); }
             static Action* update_raid_strats(PlayerbotAI* ai) { return new UpdateDruidRaidStrategiesAction(ai); }

@@ -348,7 +348,7 @@ namespace ai
             static Trigger* slice_and_dice(PlayerbotAI* ai) { return new SliceAndDiceTrigger(ai); }
             static Trigger* expose_armor(PlayerbotAI* ai) { return new ExposeArmorTrigger(ai); }
             static Trigger* kick_on_enemy_healer(PlayerbotAI* ai) { return new KickInterruptEnemyHealerSpellTrigger(ai); }
-            static Trigger* unstealth(PlayerbotAI* ai) { return new UnstealthTrigger(ai); }
+            static Trigger* unstealth(PlayerbotAI* ai) { return new RogueUnstealthTrigger(ai); }
             static Trigger* sap(PlayerbotAI* ai) { return new SapTrigger(ai); }
             static Trigger* in_stealth(PlayerbotAI* ai) { return new InStealthTrigger(ai); }
             static Trigger* no_stealth(PlayerbotAI* ai) { return new NoStealthTrigger(ai); }
@@ -444,7 +444,7 @@ namespace ai
             static Action* cold_blood(PlayerbotAI* ai) { return new CastColdBloodAction(ai); }
             static Action* check_stealth(PlayerbotAI* ai) { return new CheckStealthAction(ai); }
             static Action* sap(PlayerbotAI* ai) { return new CastSapAction(ai); }
-            static Action* unstealth(PlayerbotAI* ai) { return new UnstealthAction(ai); }
+            static Action* unstealth(PlayerbotAI* ai) { return new RogueUnstealthAction(ai); }
             static Action* blind(PlayerbotAI* ai) { return new CastBlindAction(ai); }
             static Action* ambush(PlayerbotAI* ai) { return new CastAmbushAction(ai); }
             static Action* stealth(PlayerbotAI* ai) { return new CastStealthAction(ai); }

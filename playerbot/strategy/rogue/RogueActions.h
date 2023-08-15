@@ -70,12 +70,12 @@ namespace ai
         }
     };
 
-    class UnstealthAction : public Action 
+    class RogueUnstealthAction : public Action 
     {
     public:
-        UnstealthAction(PlayerbotAI* ai) : Action(ai, "unstealth") {}
+        RogueUnstealthAction(PlayerbotAI* ai) : Action(ai, "unstealth") {}
 
-        virtual bool Execute(Event& event) 
+        bool Execute(Event& event) override
         {
             if (ai->HasAura("stealth", bot))
             {

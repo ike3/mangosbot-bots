@@ -235,31 +235,32 @@ namespace ai
         }
     };
 
-    class UnstealthTrigger : public BuffTrigger
+    class DruidUnstealthTrigger : public BuffTrigger
     {
     public:
-        UnstealthTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "prowl", 2) {}
+        DruidUnstealthTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "prowl", 2) {}
 
         bool IsActive() override
         {
-            if (!ai->HasAura("prowl", bot))
+            if (ai->HasAura("prowl", bot) && !bot->InBattleGround())
             {
-                return false;
+                if (!AI_VALUE(bool, "has attackers") && !AI_VALUE(bool, "has enemy player targets"))
+                {
+                    if (AI_VALUE2(bool, "moving", "self target"))
+                    {
+                        if (ai->GetMaster())
+                        {
+                            return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), 10.0f);
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
             }
 
-            if (bot->InBattleGround())
-            {
-                return false;
-            }
-
-            return ai->HasAura("prowl", bot) &&
-                !AI_VALUE(bool, "has attackers") &&
-                !AI_VALUE(bool, "has enemy player targets") &&
-                (AI_VALUE2(bool, "moving", "self target") &&
-                    ((ai->GetMaster() &&
-                        sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), 10.0f) &&
-                        AI_VALUE2(bool, "moving", "master target")) ||
-                        !AI_VALUE(bool, "has attackers")));
+            return false;
         }
     };
 
