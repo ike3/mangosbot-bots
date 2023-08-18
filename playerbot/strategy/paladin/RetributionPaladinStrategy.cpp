@@ -1041,11 +1041,7 @@ void RetributionPaladinStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
 
     triggers.push_back(new TriggerNode(
         "art of war",
-        NextAction::array(0, new NextAction("exorcism", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "art of war",
-        NextAction::array(0, new NextAction("flash of light", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("exorcism", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "low mana",
