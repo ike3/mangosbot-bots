@@ -1521,13 +1521,33 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
 #else
     bool noCaster = (Classes)playerclass == CLASS_WARRIOR || (Classes)playerclass == CLASS_ROGUE || (Classes)playerclass == CLASS_HUNTER || spec == 30 || spec == 32 || spec == 21 || spec == 6;
     bool hasMana = !((Classes)playerclass == CLASS_WARRIOR || (Classes)playerclass == CLASS_ROGUE);
-
-    if (!proto->IsWeapon() && (proto->SubClass == ITEM_SUBCLASS_ARMOR_LIBRAM || proto->SubClass == ITEM_SUBCLASS_ARMOR_IDOL || proto->SubClass == ITEM_SUBCLASS_ARMOR_TOTEM))
-        return (uint32)(proto->Quality + proto->ItemLevel);
     
     if ((Classes)playerclass == CLASS_HUNTER && proto->SubClass == ITEM_SUBCLASS_WEAPON_THROWN)
         return (uint32)proto->ItemLevel;
 #endif
+
+    //check relicts
+    if (proto->InventoryType == INVTYPE_RELIC)
+    {
+        if (playerclass == CLASS_PALADIN && proto->SubClass != ITEM_SUBCLASS_ARMOR_LIBRAM)
+            return 0;
+
+        if (playerclass == CLASS_DRUID && proto->SubClass != ITEM_SUBCLASS_ARMOR_IDOL)
+            return 0;
+
+        if (playerclass == CLASS_SHAMAN && proto->SubClass != ITEM_SUBCLASS_ARMOR_TOTEM)
+            return 0;
+
+        if (playerclass == CLASS_WARRIOR
+            || playerclass == CLASS_HUNTER
+            || playerclass == CLASS_ROGUE
+            || playerclass == CLASS_PRIEST
+            || playerclass == CLASS_MAGE
+            || playerclass == CLASS_WARLOCK)
+            return 0;
+
+        return proto->Quality + proto->ItemLevel;
+    }
 
     bool isWhitelist = false;
     // whitelist
@@ -2133,6 +2153,7 @@ uint32 RandomItemMgr::CalculateStatWeight(uint8 playerclass, uint8 spec, ItemPro
         if (!isWhitelist && !playerAttacker)
             return 0;
     }
+    
 
     itSpec = (ItemSpecType)specType;
 
