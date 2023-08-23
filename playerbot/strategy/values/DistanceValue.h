@@ -55,6 +55,10 @@ namespace ai
                 if (target && target == GetMaster())
                 {
                     Formation* formation = AI_VALUE(Formation*, "formation");
+                    string targetName = formation->GetTargetName();
+                    if (!targetName.empty())
+                        return sServerFacade.GetDistance2d(ai->GetBot(), target);
+
                     WorldLocation loc = formation->GetLocation();
                     return sServerFacade.GetDistance2d(ai->GetBot(), loc.coord_x, loc.coord_y);
                 }

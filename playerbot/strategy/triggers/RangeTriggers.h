@@ -101,6 +101,6 @@ namespace ai
     class OutOfReactRangeTrigger : public FarFromMasterTrigger
     {
     public:
-        OutOfReactRangeTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "out of react range", sPlayerbotAIConfig.reactDistance / 2, 10) {}
+        OutOfReactRangeTrigger(PlayerbotAI* ai) : FarFromMasterTrigger(ai, "out of react range", sPlayerbotAIConfig.reactDistance / 2, 1) {}
     };
 }

@@ -264,18 +264,15 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     if (!IsMovingAllowed(target))
     {
-        ai->TellError("I am stuck while following");
+        ai->TellError("Movement is not allowed");
         return false;
     }
 
     if (sServerFacade.IsFriendlyTo(target, bot) && bot->IsMounted() && AI_VALUE(list<ObjectGuid>, "all targets").empty())
         distance += angle;
 
-    if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
-    {
-        ai->TellError("No need to follow");
-        return false;
-    }
+    if (sServerFacade.IsDistanceLessThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.followDistance))
+        return true;
 
     bot->HandleEmoteState(0);
     if (bot->IsSitState())
@@ -288,7 +285,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     }
 
     if (sServerFacade.isMoving(bot))
-        return false;
+        return true;
 
     AI_VALUE(LastMovement&, "last movement").Set(target);
     ClearIdleState();
