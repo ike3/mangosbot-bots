@@ -1017,6 +1017,9 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell,
             return false;
 	}
 
+    if (bot->IsPolymorphed() || bot->IsStunned() || sServerFacade.IsFeared(bot) || sServerFacade.IsCharmed(bot))
+        return false;
+
 	ObjectGuid oldSel = bot->GetSelectionGuid();
 	bot->SetSelectionGuid(target->GetObjectGuid());
 	Spell *spell = new Spell(bot, spellInfo, false);

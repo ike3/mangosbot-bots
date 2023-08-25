@@ -122,6 +122,9 @@ bool AttackAction::Attack(Unit* target)
     if (!sServerFacade.IsInFront(bot, target, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
         sServerFacade.SetFacingTo(bot, target);
 
+    if (bot->IsPolymorphed() || bot->IsStunned() || sServerFacade.IsFeared(bot) || sServerFacade.IsCharmed(bot))
+        return false;
+
     bot->Attack(target, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.tooCloseDistance);
     ai->ChangeEngine(BOT_STATE_COMBAT);
     return true;
