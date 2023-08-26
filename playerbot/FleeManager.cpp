@@ -61,7 +61,7 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
 
     Map* map = bot->GetMap();
     const TerrainInfo* terrain = map->GetTerrain();
-    float distIncrement = max(sPlayerbotAIConfig.followDistance, (maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance) / 10.0f);
+    float distIncrement = max(sPlayerbotAIConfig.followDistance, maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance) / 5.0f;
     for (float dist = maxAllowedDistance; dist >= sPlayerbotAIConfig.tooCloseDistance ; dist -= distIncrement)
     {
         float angleIncrement = max(M_PI / 20, M_PI / 4 / (1.0 + dist - sPlayerbotAIConfig.tooCloseDistance));
@@ -101,7 +101,7 @@ bool FleeManager::isTooCloseToEdge(float x, float y, float z, float angle)
     const TerrainInfo* terrain = map->GetTerrain();
     for (float a = angle; a <= angle + 2*M_PI; a += M_PI / 4)
     {
-        float dist = sPlayerbotAIConfig.tooCloseDistance;
+        float dist = sPlayerbotAIConfig.followDistance;
         float tx = x + cos(a) * dist;
         float ty = y + sin(a) * dist;
         float tz = z;

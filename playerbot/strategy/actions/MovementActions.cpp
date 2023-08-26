@@ -398,6 +398,11 @@ bool FleeAction::Execute(Event event)
     return Flee(AI_VALUE(Unit*, "current target"));
 }
 
+bool FleeAction::isUseful()
+{
+    return sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.tooCloseDistance);
+}
+
 bool FleeWithPetAction::Execute(Event event)
 {
     Pet* pet = bot->GetPet();
