@@ -2843,6 +2843,17 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 	//if (oldSel)
 	//	bot->SetSelectionGuid(oldSel);
 
+    // already active next melee swing spell
+    if (IsNextMeleeSwingSpell(spellInfo))
+    {
+        Spell* autorepeatSpell = bot->GetCurrentSpell(CURRENT_MELEE_SPELL);
+        if (autorepeatSpell)
+        {
+            if (autorepeatSpell->m_spellInfo->Id == spellInfo->Id)
+                return false;
+        }
+    }
+
     const bool ignoreReagents = HasCheat(BotCheatMask::item);
 
     switch (result)
