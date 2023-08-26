@@ -2785,8 +2785,6 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 	if (!spellInfo)
         return false;
 
-    uint32 CastingTime = !IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, bot) : GetSpellDuration(spellInfo);
-
     // already active next melee swing spell
     if (IsNextMeleeSwingSpell(spellInfo))
     {
@@ -2903,19 +2901,17 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effec
     if (!spellInfo)
         return false;
 
-    uint32 CastingTime = !IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, bot) : GetSpellDuration(spellInfo);
-   
-        bool damage = false;
-        for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
+    bool damage = false;
+    for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
+    {
+        if (spellInfo->Effect[(SpellEffectIndex)i] == SPELL_EFFECT_SCHOOL_DAMAGE)
         {
-            if (spellInfo->Effect[(SpellEffectIndex)i] == SPELL_EFFECT_SCHOOL_DAMAGE)
-            {
-                damage = true;
-                break;
-            }
+            damage = true;
+            break;
         }
-        if (sServerFacade.GetDistance2d(bot, goTarget) > sPlayerbotAIConfig.sightDistance)
-            return false;
+    }
+    if (sServerFacade.GetDistance2d(bot, goTarget) > sPlayerbotAIConfig.sightDistance)
+        return false;
 
     //ObjectGuid oldSel = bot->GetSelectionGuid();
     bot->SetSelectionGuid(goTarget->GetObjectGuid());
