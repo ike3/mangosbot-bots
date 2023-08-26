@@ -148,7 +148,15 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             else if (tab == 2)
                 engine->addStrategies("heal", "bmana", "flee", "ranged", NULL);
             else
-                engine->addStrategies("dps", "melee aoe", "bdps", "threat", "close", NULL);
+            {
+                engine->addStrategies("melee", "dps", "melee aoe", "bdps", "threat", "close", NULL);
+                if (player->getLevel() > 29)
+                    engine->addStrategy("air");
+                else if (player->getLevel() > 19)
+                    engine->addStrategy("fire");
+                else
+                    engine->addStrategy("earth");
+            }
 
             engine->addStrategies("dps assist", "cure", NULL);
             break;

@@ -53,16 +53,8 @@ void MeleeShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     GenericShamanStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "shaman weapon",
-        NextAction::array(0, new NextAction("windfury weapon", 22.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "searing totem",
         NextAction::array(0, new NextAction("reach melee", 22.0f), new NextAction("searing totem", 22.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "shock",
-        NextAction::array(0, new NextAction("earth shock", 20.0f), NULL)));
 
     triggers.push_back(new TriggerNode(
         "not facing target",
@@ -90,4 +82,48 @@ void MeleeAoeShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "medium aoe",
         NextAction::array(0, new NextAction("fire nova", 25.0f), NULL)));
+}
+
+void EarthShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "shaman weapon",
+        NextAction::array(0, new NextAction("rockbiter weapon", 22.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shock",
+        NextAction::array(0, new NextAction("earth shock", 20.0f), NULL)));
+}
+
+void FireShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "shaman weapon",
+        NextAction::array(0, new NextAction("flametongue weapon", 22.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shock",
+        NextAction::array(0, new NextAction("flame shock", 20.0f), NULL)));
+}
+
+void FrostShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "shaman weapon",
+        NextAction::array(0, new NextAction("frostbrand weapon", 22.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shock",
+        NextAction::array(0, new NextAction("frost shock", 20.0f), NULL)));
+}
+
+void AirShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "shaman weapon",
+        NextAction::array(0, new NextAction("windfury weapon", 22.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "shock",
+        NextAction::array(0, new NextAction("flame shock", 20.0f), NULL)));
 }

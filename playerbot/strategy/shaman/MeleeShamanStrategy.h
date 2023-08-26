@@ -25,4 +25,45 @@ namespace ai
         virtual void InitTriggers(std::list<TriggerNode*> &triggers);
         virtual string getName() { return "melee aoe"; }
     };
+
+    class EarthShamanStrategy : public CombatStrategy
+    {
+    public:
+        EarthShamanStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        virtual string getName() { return "earth"; }
+    };
+
+    class FireShamanStrategy : public CombatStrategy
+    {
+    public:
+        FireShamanStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        virtual string getName() { return "fire"; }
+    };
+
+    class FrostShamanStrategy : public CombatStrategy
+    {
+    public:
+        FrostShamanStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        virtual string getName() { return "frost"; }
+    };
+
+    class AirShamanStrategy : public CombatStrategy
+    {
+    public:
+        AirShamanStrategy(PlayerbotAI* ai) : CombatStrategy(ai) {}
+
+    public:
+        virtual void InitTriggers(std::list<TriggerNode*> &triggers);
+        virtual string getName() { return "air"; }
+    };
+
 }

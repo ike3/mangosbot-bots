@@ -40,6 +40,24 @@ namespace ai
             static Strategy* cure(PlayerbotAI* ai) { return new ShamanCureStrategy(ai); }
         };
 
+        class ElementsStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            ElementsStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["earth"] = &shaman::ElementsStrategyFactoryInternal::earth;
+                creators["fire"] = &shaman::ElementsStrategyFactoryInternal::fire;
+                creators["frost"] = &shaman::ElementsStrategyFactoryInternal::frost;
+                creators["air"] = &shaman::ElementsStrategyFactoryInternal::air;
+            }
+
+        private:
+            static Strategy* earth(PlayerbotAI* ai) { return new EarthShamanStrategy(ai); }
+            static Strategy* fire(PlayerbotAI* ai) { return new FireShamanStrategy(ai); }
+            static Strategy* frost(PlayerbotAI* ai) { return new FrostShamanStrategy(ai); }
+            static Strategy* air(PlayerbotAI* ai) { return new AirShamanStrategy(ai); }
+        };
+
         class BuffStrategyFactoryInternal : public NamedObjectContext<Strategy>
         {
         public:
@@ -289,6 +307,7 @@ ShamanAiObjectContext::ShamanAiObjectContext(PlayerbotAI* ai) : AiObjectContext(
     strategyContexts.Add(new ai::shaman::StrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::CombatStrategyFactoryInternal());
     strategyContexts.Add(new ai::shaman::BuffStrategyFactoryInternal());
+    strategyContexts.Add(new ai::shaman::ElementsStrategyFactoryInternal());
     actionContexts.Add(new ai::shaman::AiObjectContextInternal());
     triggerContexts.Add(new ai::shaman::TriggerFactoryInternal());
 }

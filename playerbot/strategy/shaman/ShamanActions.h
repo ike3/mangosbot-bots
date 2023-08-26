@@ -269,10 +269,10 @@ namespace ai
         CastEarthShockAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "earth shock") {}
     };
 
-    class CastFrostShockAction : public CastSnareSpellAction
+    class CastFrostShockAction : public CastDebuffSpellAction
     {
     public:
-        CastFrostShockAction(PlayerbotAI* ai) : CastSnareSpellAction(ai, "frost shock") {}
+        CastFrostShockAction(PlayerbotAI* ai) : CastDebuffSpellAction(ai, "frost shock") {}
     };
 
     class CastChainLightningAction : public CastSpellAction
