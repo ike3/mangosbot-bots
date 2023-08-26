@@ -2787,6 +2787,17 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 
     uint32 CastingTime = !IsChanneledSpell(spellInfo) ? GetSpellCastTime(spellInfo, bot) : GetSpellDuration(spellInfo);
 
+    // already active next melee swing spell
+    if (IsNextMeleeSwingSpell(spellInfo))
+    {
+        Spell* autorepeatSpell = bot->GetCurrentSpell(CURRENT_MELEE_SPELL);
+        if (autorepeatSpell)
+        {
+            if (autorepeatSpell->m_spellInfo->Id == spellInfo->Id)
+                return false;
+        }
+    }
+
 	if (!itemTarget)
 	{
         bool positiveSpell = IsPositiveSpell(spellInfo);
@@ -2829,17 +2840,6 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
         if (!ignoreRange && bot != target && sServerFacade.GetDistance2d(bot, target) > sPlayerbotAIConfig.sightDistance)
             return false;
 	}
-
-    // already active next melee swing spell
-    if (IsNextMeleeSwingSpell(spellInfo))
-    {
-        Spell* autorepeatSpell = bot->GetCurrentSpell(CURRENT_MELEE_SPELL);
-        if (autorepeatSpell)
-        {
-            if (autorepeatSpell->m_spellInfo->Id == spellInfo->Id)
-                return false;
-        }
-    }
 
 	ObjectGuid oldSel = bot->GetSelectionGuid();
 	//bot->SetSelectionGuid(target->GetObjectGuid());
