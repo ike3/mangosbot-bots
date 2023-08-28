@@ -34,7 +34,6 @@ namespace ai
     DEBUFF_TRIGGER(ShockwaveTrigger, "shockwave");
     BOOST_TRIGGER(DeathWishTrigger, "death wish");
     BOOST_TRIGGER(RecklessnessTrigger, "recklessness");
-    BUFF_TRIGGER(BloodthirstBuffTrigger, "bloodthirst");
     INTERRUPT_HEALER_TRIGGER(ShieldBashInterruptEnemyHealerSpellTrigger, "shield bash");
     INTERRUPT_TRIGGER(ShieldBashInterruptSpellTrigger, "shield bash");
     INTERRUPT_HEALER_TRIGGER(PummelInterruptEnemyHealerSpellTrigger, "pummel");
@@ -60,6 +59,53 @@ namespace ai
             }
 
             return false;
+        }
+    };
+
+    class BloodthirstBuffTrigger : public BuffTrigger
+    {
+    public:
+        BloodthirstBuffTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "bloodthirst") {}
+        bool IsActive() override
+        {
+#ifdef MANGOSBOT_ZERO
+            return BuffTrigger::IsActive() && (AI_VALUE2(uint8, "health", "current target") > 20 || ai->IsTank(bot));
+#elif MANGOSBOT_ONE
+            return BuffTrigger::IsActive() 
+                && (AI_VALUE2(uint8, "health", "current target") > 20 || AI_VALUE2(uint8, "rage", "self target") >= 40);
+#else
+            return BuffTrigger::IsActive();
+#endif
+
+        }
+    };
+
+    class WhirlwindTrigger : public MediumRageAvailableTrigger
+    {
+    public:
+        WhirlwindTrigger(PlayerbotAI* ai) : MediumRageAvailableTrigger(ai) {}
+        bool IsActive() override
+        {
+#ifdef MANGOSBOT_TWO
+            return MediumRageAvailableTrigger::IsActive();
+#else
+            return MediumRageAvailableTrigger::IsActive() && AI_VALUE2(uint8, "health", "current target") > 20;
+#endif
+        }
+    };
+
+    class HeroicStrikeTrigger : public MediumRageAvailableTrigger
+    {
+    public:
+        HeroicStrikeTrigger(PlayerbotAI* ai) : MediumRageAvailableTrigger(ai) {}
+        bool IsActive() override
+        {
+#ifdef MANGOSBOT_TWO
+            return MediumRageAvailableTrigger::IsActive();
+#else
+            return MediumRageAvailableTrigger::IsActive() 
+                && (AI_VALUE2(uint8, "health", "current target") > 20 || ai->IsTank(bot));
+#endif
         }
     };
 }

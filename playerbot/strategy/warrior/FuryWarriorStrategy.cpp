@@ -58,11 +58,11 @@ void FuryWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("bloodthirst", ACTION_NORMAL + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium rage available",
+        "whirlwind",
         NextAction::array(0, new NextAction("whirlwind", ACTION_NORMAL + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium rage available",
+        "heroic strike",
         NextAction::array(0, new NextAction("heroic strike", ACTION_NORMAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -402,11 +402,11 @@ void FuryWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("bloodthirst", ACTION_NORMAL + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium rage available",
+        "whirlwind",
         NextAction::array(0, new NextAction("whirlwind", ACTION_NORMAL + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium rage available",
+        "heroic strike",
         NextAction::array(0, new NextAction("heroic strike", ACTION_NORMAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -742,20 +742,20 @@ void FuryWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("slam", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "target critical health",
-        NextAction::array(0, new NextAction("execute", ACTION_NORMAL + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "bloodthirst",
-        NextAction::array(0, new NextAction("bloodthirst", ACTION_NORMAL + 3), NULL)));
+        NextAction::array(0, new NextAction("bloodthirst", ACTION_NORMAL + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium rage available",
-        NextAction::array(0, new NextAction("whirlwind", ACTION_NORMAL + 2), NULL)));
+        "whirlwind",
+        NextAction::array(0, new NextAction("whirlwind", ACTION_NORMAL + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "medium rage available",
-        NextAction::array(0, new NextAction("heroic strike", ACTION_NORMAL + 1), NULL)));
+        "heroic strike",
+        NextAction::array(0, new NextAction("heroic strike", ACTION_NORMAL + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "target critical health",
+        NextAction::array(0, new NextAction("execute", ACTION_NORMAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "intercept on snare target",

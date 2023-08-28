@@ -34,7 +34,6 @@ public:
         */
 
         creators["berserker rage"] = &berserker_rage;
-        creators["whirlwind"] = &whirlwind;
     }
 
 private:
@@ -72,8 +71,6 @@ private:
     */
 
     ACTION_NODE_P(berserker_rage, "berserker rage", "berserker stance");
-
-    ACTION_NODE_A(whirlwind, "whirlwind", "cleave");
 };
 
 WarriorStrategy::WarriorStrategy(PlayerbotAI* ai) : ClassStrategy(ai)
@@ -172,16 +169,20 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "melee medium aoe",
+        NextAction::array(0, new NextAction("cleave", ACTION_HIGH + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "thunder clap",
-        NextAction::array(0, new NextAction("thunder clap", ACTION_HIGH + 4), NULL)));
+        NextAction::array(0, new NextAction("thunder clap", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "thunder clap on snare target",
-        NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "melee light aoe",
-        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 2), NULL)));
+        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 1), NULL)));
 }
 
 void WarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -460,7 +461,11 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "melee medium aoe",
-        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "melee medium aoe",
+        NextAction::array(0, new NextAction("cleave", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "thunder clap",
@@ -747,7 +752,11 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "melee medium aoe",
-        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 3), NULL)));
+        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "melee medium aoe",
+        NextAction::array(0, new NextAction("cleave", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "thunder clap",
