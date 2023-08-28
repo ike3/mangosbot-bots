@@ -80,30 +80,31 @@ namespace ai
         }
     };
 
-    class WhirlwindTrigger : public MediumRageAvailableTrigger
+    class WhirlwindTrigger : public SpellCanBeCastTrigger
     {
     public:
-        WhirlwindTrigger(PlayerbotAI* ai) : MediumRageAvailableTrigger(ai) {}
+        WhirlwindTrigger(PlayerbotAI* ai) : SpellCanBeCastTrigger(ai, "whirlwind") {}
         bool IsActive() override
         {
 #ifdef MANGOSBOT_TWO
-            return MediumRageAvailableTrigger::IsActive();
+            return SpellCanBeCastTrigger::IsActive();
 #else
-            return MediumRageAvailableTrigger::IsActive() && AI_VALUE2(uint8, "health", "current target") > 20;
+            return SpellCanBeCastTrigger::IsActive() && AI_VALUE2(uint8, "health", "current target") > 20;
 #endif
         }
     };
 
-    class HeroicStrikeTrigger : public MediumRageAvailableTrigger
+    class HeroicStrikeTrigger : public SpellCanBeCastTrigger
     {
     public:
-        HeroicStrikeTrigger(PlayerbotAI* ai) : MediumRageAvailableTrigger(ai) {}
+        HeroicStrikeTrigger(PlayerbotAI* ai) : SpellCanBeCastTrigger(ai, "heroic strike") {}
         bool IsActive() override
         {
 #ifdef MANGOSBOT_TWO
-            return MediumRageAvailableTrigger::IsActive();
+            return SpellCanBeCastTrigger::IsActive();
 #else
-            return MediumRageAvailableTrigger::IsActive() 
+            return SpellCanBeCastTrigger::IsActive() 
+                && AI_VALUE2(uint8, "rage", "self target") >= 50
                 && (AI_VALUE2(uint8, "health", "current target") > 20 || ai->IsTank(bot));
 #endif
         }
