@@ -109,6 +109,10 @@ void ProtectionWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
         NextAction::array(0, new NextAction("shield slam", ACTION_HIGH), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "bloodthirst",
+        NextAction::array(0, new NextAction("bloodthirst", ACTION_HIGH), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "high rage available",
         NextAction::array(0, new NextAction("heroic strike", ACTION_NORMAL + 2), NULL)));
 
