@@ -166,7 +166,11 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "melee medium aoe",
-        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 5), NULL)));
+        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 6), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "melee medium aoe",
+        NextAction::array(0, new NextAction("bloodthirst", ACTION_HIGH + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
         "melee medium aoe",
@@ -460,8 +464,16 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     AoeStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "melee light aoe",
+        NextAction::array(0, new NextAction("sweeping strikes", ACTION_HIGH + 6), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "melee medium aoe",
-        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 4), NULL)));
+        NextAction::array(0, new NextAction("whirlwind", ACTION_HIGH + 5), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "melee medium aoe",
+        NextAction::array(0, new NextAction("bloodthirst", ACTION_HIGH + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
         "melee medium aoe",
