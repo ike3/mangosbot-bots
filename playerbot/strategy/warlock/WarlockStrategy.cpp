@@ -1344,7 +1344,7 @@ void WarlockManualCurseStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
 {
     triggers.push_back(new TriggerNode(
         triggerName + " on attacker",
-        NextAction::array(0, new NextAction(actionName + "on attacker", ACTION_HIGH + 1), NULL)));
+        NextAction::array(0, new NextAction(actionName + " on attacker", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         triggerName,
