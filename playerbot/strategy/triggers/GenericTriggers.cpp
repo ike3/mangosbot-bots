@@ -469,7 +469,7 @@ bool DeflectSpellTrigger::IsActive()
 
 bool HasAuraTrigger::IsActive()
 {
-	return ai->HasAura(getName(), GetTarget());
+	return ai->HasAura(getName(), GetTarget(), false, false, -1, false, 0, auraTypeId);
 }
 
 bool HasNoAuraTrigger::IsActive()
