@@ -443,22 +443,43 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
         if (sObjectMgr.GetPlayer(guid))
             return "player already logged in";
 
-        if (isRandomAccount)
-            sRandomPlayerbotMgr.AddRandomBot(guid.GetCounter());
+        // Only allow bots that are on the same account or same guild (if enabled)
+        Player* master = sObjectMgr.GetPlayer(masterguid);
+        uint32 guildId = Player::GetGuildIdFromDB(guid);
+        if (master && (isMasterAccount || sPlayerbotAIConfig.allowGuildBots && masterGuildId && guildId == masterGuildId))
+        {
+            if (isRandomAccount)
+                sRandomPlayerbotMgr.AddRandomBot(guid.GetCounter());
+            else if (isMasterAccount || sPlayerbotAIConfig.allowMultiAccountAltBots)
+                AddPlayerBot(guid.GetCounter(), masterAccountId);
+            else
+                return "Not in your account";
+        }
         else
-            AddPlayerBot(guid.GetCounter(), masterAccountId);
+        {
+            return "Not in your guild or account";
+        }
 
         return "ok";
     }
     else if (cmd == "remove" || cmd == "logout" || cmd == "rm")
     {
-        if (!sObjectMgr.GetPlayer(guid))
+        Player* player = sObjectMgr.GetPlayer(guid);
+        if (!player)
             return "player is offline";
 
-        if (!GetPlayerBot(guid.GetCounter()))
-            return "not your bot";
+        Player* master = sObjectMgr.GetPlayer(masterguid);
+        uint32 guildId = Player::GetGuildIdFromDB(guid);
+        if (master && (isMasterAccount || sPlayerbotAIConfig.allowGuildBots && masterGuildId && guildId == masterGuildId))
+        {
+            if (isRandomAccount)
+                sRandomPlayerbotMgr.Remove(player);
+            else if (GetPlayerBot(guid.GetCounter()))
+                LogoutPlayerBot(guid.GetCounter());
+            else
+                return "Not your bot";
+        }
 
-        LogoutPlayerBot(guid.GetCounter());
         return "ok";
     }
 
