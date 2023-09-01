@@ -130,7 +130,7 @@ namespace ai
     class BacklashTrigger : public HasAuraTrigger
     {
     public:
-        BacklashTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "backlash") {}
+        BacklashTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "backlash", 1, SPELL_AURA_ADD_PCT_MODIFIER) {}
     };
 
     class BanishTrigger : public HasCcTargetTrigger
