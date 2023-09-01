@@ -152,8 +152,8 @@ bool UseItemAction::Execute(Event& event)
         if (items.size() > 1)
         {
             list<Item*>::iterator i = items.begin();
-            Item* itemTarget = *i++;
-            Item* item = *i;
+            Item* item = *i++;
+            Item* itemTarget = *i;
             if(item->IsPotion() || item->GetProto()->Class == ITEM_CLASS_CONSUMABLE || itemTarget->GetProto() == item->GetProto())
             {
                 return UseItemAuto(requester, item);
@@ -188,7 +188,7 @@ bool UseItemAction::Execute(Event& event)
         }
     }
 
-    ai->TellPlayer(requester, "No items (or game objects) available");
+    ai->TellPlayer(requester, "No items or game objects available");
     return false;
 }
 
@@ -457,30 +457,51 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
 
     if (!targetSelected && !selfOnly)
     {
-        if (unitTarget)
+        // Prevent using a item target spell on a unit target
+        bool needsItemTarget = false;
+        for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; i++)
         {
-            if (item->IsTargetValidForItemUse(unitTarget))
+            spellId = item->GetProto()->Spells[i].SpellId;
+            if (spellId > 0)
             {
-                targetFlag = TARGET_FLAG_UNIT;
-                packet << targetFlag << unitTarget->GetObjectGuid().WriteAsPacked();
-                out << " on " << unitTarget->GetName();
-                targetSelected = true;
+                const SpellEntry* const pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+                if (pSpellInfo->Targets & TARGET_FLAG_ITEM)
+                {
+                    needsItemTarget = true;
+                    unitTarget = nullptr;
+                }
+
+                break;
             }
         }
-        else
+
+        if(needsItemTarget)
         {
-            if (!targetSelected && requester && ai->HasActivePlayerMaster())
+            if (unitTarget)
             {
-                ObjectGuid requesterSelection = requester->GetSelectionGuid();
-                if (requesterSelection)
+                if (item->IsTargetValidForItemUse(unitTarget))
                 {
-                    Unit* unit = ai->GetUnit(requesterSelection);
-                    if (unit && item->IsTargetValidForItemUse(unit))
+                    targetFlag = TARGET_FLAG_UNIT;
+                    packet << targetFlag << unitTarget->GetObjectGuid().WriteAsPacked();
+                    out << " on " << unitTarget->GetName();
+                    targetSelected = true;
+                }
+            }
+            else
+            {
+                if (!targetSelected && requester && ai->HasActivePlayerMaster())
+                {
+                    ObjectGuid requesterSelection = requester->GetSelectionGuid();
+                    if (requesterSelection)
                     {
-                        targetFlag = TARGET_FLAG_UNIT;
-                        packet << targetFlag << requesterSelection.WriteAsPacked();
-                        out << " on " << unit->GetName();
-                        targetSelected = true;
+                        Unit* unit = ai->GetUnit(requesterSelection);
+                        if (unit && item->IsTargetValidForItemUse(unit))
+                        {
+                            targetFlag = TARGET_FLAG_UNIT;
+                            packet << targetFlag << requesterSelection.WriteAsPacked();
+                            out << " on " << unit->GetName();
+                            targetSelected = true;
+                        }
                     }
                 }
             }
