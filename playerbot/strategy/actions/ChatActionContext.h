@@ -95,6 +95,7 @@ namespace ai
             creators["query item usage"] = &ChatActionContext::query_item_usage;
             creators["ll"] = &ChatActionContext::ll;
             creators["ss"] = &ChatActionContext::ss;
+            creators["loot"] = &ChatActionContext::add_all_loot;
             creators["add all loot"] = &ChatActionContext::add_all_loot;
             creators["roll"] = &ChatActionContext::roll;
             creators["release"] = &ChatActionContext::release;

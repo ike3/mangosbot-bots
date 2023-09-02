@@ -118,8 +118,18 @@ void ChatCommandHandlerStrategy::InitReactionTriggers(std::list<TriggerNode*> &t
     triggers.push_back(new TriggerNode(
         "add all loot",
         NextAction::array(0, 
-            new NextAction("add all loot", relevance), 
-            new NextAction("loot", relevance), NULL)));
+            new NextAction("add all loot", relevance + 3), 
+            new NextAction("loot", relevance + 2),
+            new NextAction("move to loot", relevance + 1),
+            new NextAction("open loot", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "loot",
+        NextAction::array(0,
+            new NextAction("add all loot", relevance + 3),
+            new NextAction("loot", relevance + 2),
+            new NextAction("move to loot", relevance + 1),
+            new NextAction("open loot", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "u",

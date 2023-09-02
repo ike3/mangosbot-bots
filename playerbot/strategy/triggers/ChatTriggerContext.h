@@ -22,7 +22,7 @@ namespace ai
             creators["q"] = &ChatTriggerContext::q;
             creators["ll"] = &ChatTriggerContext::ll;
             creators["ss"] = &ChatTriggerContext::ss;
-            creators["loot all"] = &ChatTriggerContext::loot_all;
+            creators["loot"] = &ChatTriggerContext::loot_all;
             creators["add all loot"] = &ChatTriggerContext::loot_all;
             creators["release"] = &ChatTriggerContext::release;
             creators["teleport"] = &ChatTriggerContext::teleport;
