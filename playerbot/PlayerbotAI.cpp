@@ -2870,6 +2870,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
     case SPELL_FAILED_LINE_OF_SIGHT:
         return ignoreRange;
     case SPELL_FAILED_REAGENTS:
+    case SPELL_FAILED_TOTEMS:
         return ignoreReagents;
     default:
         return false;

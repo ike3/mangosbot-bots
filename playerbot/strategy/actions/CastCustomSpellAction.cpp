@@ -117,8 +117,17 @@ bool CastCustomSpellAction::Execute(Event& event)
         return false;
     }
 
-    // Don't use totem items for totem spells
-    if (pSpellInfo->Totem[0] > 0)
+    // Don't use totem items for totem spells (except enchanting bars)
+    if (pSpellInfo->Totem[0] > 0 && 
+        pSpellInfo->Totem[0] != 6218 &&
+        pSpellInfo->Totem[0] != 6339 &&
+        pSpellInfo->Totem[0] != 11130 &&
+        pSpellInfo->Totem[0] != 11145 &&
+        pSpellInfo->Totem[0] != 16207 &&
+        pSpellInfo->Totem[0] != 22461 &&
+        pSpellInfo->Totem[0] != 22462 &&
+        pSpellInfo->Totem[0] != 22463 &&
+        pSpellInfo->Totem[0] != 44452)
     {
         itemTarget = nullptr;
     }
