@@ -408,26 +408,40 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
 #endif
 
     bool targetSelected = false;
-    ostringstream out; out << "Using " << chat->formatItem(item);
+
+    map<string, string> replyArgs;
+    replyArgs["%target"] = chat->formatItem(item);
+    ostringstream replyStr; replyStr << BOT_TEXT("use_command");
+
     if ((int)item->GetProto()->Stackable > 1)
     {
         uint32 count = item->GetCount();
         if (count > 1)
-            out << " (" << count << " available) ";
+        {
+            replyArgs["%amount"] = count;
+            replyStr << " " << BOT_TEXT("use_command_remaining");
+        }
         else
-            out << " (the last one!)";
+        {
+            replyStr << " " << BOT_TEXT("use_command_last");
+        }
     }
 
     if (goGuid)
     {
         GameObject* go = ai->GetGameObject(goGuid);
         if (!go || !sServerFacade.isSpawned(go))
+        {
             return false;
+        }
 
         targetFlag = TARGET_FLAG_GAMEOBJECT;
         packet << targetFlag;
         packet.appendPackGUID(goGuid.GetRawValue());
-        out << " on " << chat->formatGameobject(go);
+
+        replyArgs["%gameobject"] = chat->formatGameobject(go);
+        replyStr << " " << BOT_TEXT("use_command_target_go");
+
         targetSelected = true;
     }
 
@@ -438,7 +452,9 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
         {
             bool fit = SocketItem(requester, itemTarget, item) || SocketItem(requester, itemTarget, item, true);
             if (!fit)
-                ai->TellPlayer(requester, "Socket does not fit", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            {
+                ai->TellPlayer(requester, BOT_TEXT("use_command_socket_error"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            }
 
             return fit;
         }
@@ -448,7 +464,10 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
             targetFlag = TARGET_FLAG_ITEM;
             packet << targetFlag;
             packet.appendPackGUID(itemTarget->GetObjectGuid());
-            out << " on " << chat->formatItem(itemTarget);
+
+            replyArgs["%item"] = chat->formatItem(itemTarget);
+            replyStr << " " << BOT_TEXT("command_target_item");
+
             targetSelected = true;
 #ifndef MANGOSBOT_ZERO
         }
@@ -475,7 +494,7 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
             }
         }
 
-        if(needsItemTarget)
+        if(!needsItemTarget)
         {
             if (unitTarget)
             {
@@ -483,7 +502,10 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
                 {
                     targetFlag = TARGET_FLAG_UNIT;
                     packet << targetFlag << unitTarget->GetObjectGuid().WriteAsPacked();
-                    out << " on " << unitTarget->GetName();
+
+                    replyArgs["%unit"] = unitTarget->GetName();
+                    replyStr << " " << BOT_TEXT("command_target_unit");
+
                     targetSelected = true;
                 }
             }
@@ -499,7 +521,10 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
                         {
                             targetFlag = TARGET_FLAG_UNIT;
                             packet << targetFlag << requesterSelection.WriteAsPacked();
-                            out << " on " << unit->GetName();
+
+                            replyArgs["%unit"] = unit->GetName();
+                            replyStr << " " << BOT_TEXT("command_target_unit");
+
                             targetSelected = true;
                         }
                     }
@@ -567,8 +592,10 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
             packet << questid;
             packet << uint32(0);
             bot->GetSession()->HandleQuestgiverAcceptQuestOpcode(packet);
-            ostringstream out; out << "Got quest " << chat->formatQuest(qInfo);
-            ai->TellPlayerNoFacing(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+
+            map<string, string> args;
+            args["%quest"] = chat->formatQuest(qInfo);
+            ai->TellPlayerNoFacing(requester, BOT_TEXT2("use_command_quest_accepted", args), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             return true;
         }
     }
@@ -626,7 +653,7 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
                 targetFlag = TARGET_FLAG_TRADE_ITEM;
                 packet << targetFlag << (uint8)1 << (uint64)TRADE_SLOT_NONTRADED;
                 targetSelected = true;
-                out << " on traded item";
+                replyStr << " " << BOT_TEXT("command_target_trade");
             }
             else
             {
@@ -634,7 +661,9 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
                 packet << targetFlag;
                 packet.appendPackGUID(itemForSpell->GetObjectGuid());
                 targetSelected = true;
-                out << " on " << chat->formatItem(itemForSpell);
+
+                replyArgs["%item"] = chat->formatItem(itemForSpell);
+                replyStr << " " << BOT_TEXT("command_target_item");
             }
 
             Spell *spell = new Spell(bot, pSpellInfo, false);
@@ -650,14 +679,14 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
         packet << targetFlag;
         packet.appendPackGUID(bot->GetObjectGuid());
         targetSelected = true;
-        out << " on self";
+        replyStr << " " << BOT_TEXT("command_target_self");
     }
 
     if (!spellId)
        return false;
 
     SetDuration(sPlayerbotAIConfig.globalCoolDown);
-    ai->TellPlayerNoFacing(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayerNoFacing(requester, BOT_TEXT2(replyStr.str(), replyArgs), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     bot->GetSession()->HandleUseItemOpcode(packet);
     return true;

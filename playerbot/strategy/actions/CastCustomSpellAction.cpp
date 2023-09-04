@@ -101,19 +101,20 @@ bool CastCustomSpellAction::Execute(Event& event)
 
     uint32 spell = AI_VALUE2(uint32, "spell id", text);
 
-    ostringstream msg;
     if (!spell)
     {
-        msg << "Unknown spell " << text;
-        ai->TellPlayerNoFacing(requester, msg.str());
+        map<string, string> args;
+        args["%spell"] = text;
+        ai->TellPlayerNoFacing(requester, BOT_TEXT2("cast_spell_command_error_unknown_spell", args));
         return false;
     }
 
     SpellEntry const* pSpellInfo = sServerFacade.LookupSpellInfo(spell);
     if (!pSpellInfo)
     {
-        msg << "Unknown spell " << text;
-        ai->TellPlayerNoFacing(requester, msg.str());
+        map<string, string> args;
+        args["%spell"] = text;
+        ai->TellPlayerNoFacing(requester, BOT_TEXT2("cast_spell_command_error_unknown_spell", args));
         return false;
     }
 
@@ -136,6 +137,7 @@ bool CastCustomSpellAction::Execute(Event& event)
     {
         sServerFacade.SetFacingTo(bot, target);
         SetDuration(sPlayerbotAIConfig.globalCoolDown);
+        ostringstream msg;
         msg << "cast " << text;
         ai->HandleCommand(CHAT_MSG_WHISPER, msg.str(), *requester);
         return true;
@@ -163,47 +165,75 @@ bool CastCustomSpellAction::Execute(Event& event)
 
     ai->RemoveShapeshift();
 
-    ostringstream spellName;
-    spellName << ChatHelper::formatSpell(pSpellInfo);
-    if (bot->GetTrader()) spellName << " on " << "trade item";
-    else if (pSpellInfo->EffectItemType) spellName << "";
-    else if (itemTarget) spellName << " on " << chat->formatItem(itemTarget);
-    else if (target == bot) spellName << " on " << "self";
-    else spellName << " on " << target->GetName();
+    ostringstream replyStr;
+    map<string, string> replyArgs;
+    if (!pSpellInfo->EffectItemType[0])
+    {
+        replyStr << BOT_TEXT("cast_spell_command_spell");
+    }
+    else
+    {
+        replyStr << BOT_TEXT("cast_spell_command_craft");
+    }
+
+    replyArgs["%spell"] = ChatHelper::formatSpell(pSpellInfo);
+
+    if (bot->GetTrader())
+    {
+        replyStr << " " << BOT_TEXT("command_target_trade");
+    }
+    else if (itemTarget)
+    {
+        replyStr << " " << BOT_TEXT("command_target_item");
+        replyArgs["%item"] = chat->formatItem(itemTarget);
+    }
+    else if (pSpellInfo->EffectItemType)
+    {
+        replyStr << "";
+    }
+    else if (target == bot)
+    {
+        replyStr << " " << BOT_TEXT("command_target_self");
+    }
+    else
+    {
+        replyStr << " " << BOT_TEXT("command_target_unit");
+        replyArgs["%unit"] = target->GetName();
+    }
 
     if (!bot->GetTrader() && !ai->CanCastSpell(spell, target, 0, true, itemTarget, false))
     {
-        msg << "Cannot cast " << spellName.str();
-        ai->TellPlayerNoFacing(requester, msg.str());
+        map<string, string> args;
+        args["%spell"] = replyArgs["%spell"];
+        ai->TellPlayerNoFacing(requester, BOT_TEXT2("cast_spell_command_error", args));
         return false;
     }
 
     MotionMaster& mm = *bot->GetMotionMaster();
-
     uint32 spellDuration = sPlayerbotAIConfig.globalCoolDown;
 
     bool result = spell ? ai->CastSpell(spell, target, itemTarget,true, &spellDuration) : ai->CastSpell(text, target, itemTarget, true, &spellDuration);
     if (result)
     {
         SetDuration(spellDuration);
-        if (!pSpellInfo->EffectItemType[0])
-            msg << "Casting " << spellName.str();
-        else
-            msg << "Crafting " << spellName.str();
 
         if (castCount > 1)
         {
             ostringstream cmd;
             cmd << castString(target) << " " << text << " " << (castCount - 1);
             ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *requester);
-            msg << " |cffffff00(x" << (castCount - 1) << " left)|r";
+
+            replyStr << " " << BOT_TEXT("cast_spell_command_amount");
+            replyArgs["%amount"] = castCount - 1;
         }
-        ai->TellPlayerNoFacing(requester, msg.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+
+        ai->TellPlayerNoFacing(requester, BOT_TEXT2(replyStr.str(), replyArgs), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
     {
-        msg << "Cast " << spellName.str() << " is failed";
-        ai->TellPlayerNoFacing(requester, msg.str());
+        map<string, string> args;
+        args["%spell"] = replyArgs["%spell"];
+        ai->TellPlayerNoFacing(requester, BOT_TEXT2("cast_spell_command_error_failed", args));
     }
 
     return result;
@@ -317,23 +347,26 @@ bool CastCustomSpellAction::CastSummonPlayer(Player* requester, std::string comm
 
                         ostringstream msg;
                         msg << "Summoning " << target->GetName();
-                        ai->TellPlayerNoFacing(requester, msg.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+
+                        map<string, string> args;
+                        args["%target"] = target->GetName();
+                        ai->TellPlayerNoFacing(requester, BOT_TEXT2("cast_spell_command_summon", args), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
                         SetDuration(sPlayerbotAIConfig.globalCoolDown);
                         return true;
                     }
                     else
                     {
-                        ai->TellPlayerNoFacing(requester, "I don't have enough party members around to cast a summon");
+                        ai->TellPlayerNoFacing(requester, BOT_TEXT("cast_spell_command_summon_error_members"));
                     }
                 }
                 else
                 {
-                    ai->TellPlayerNoFacing(requester, "Failed to find the summon target");
+                    ai->TellPlayerNoFacing(requester, BOT_TEXT("cast_spell_command_summon_error_target"));
                 }
             }
             else
             {
-                ai->TellPlayerNoFacing(requester, "I can't summon because I'm in combat");
+                ai->TellPlayerNoFacing(requester, BOT_TEXT("cast_spell_command_summon_error_combat"));
             }
         }
     }
