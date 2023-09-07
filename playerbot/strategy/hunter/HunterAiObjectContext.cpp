@@ -84,6 +84,8 @@ namespace ai
                 creators["hunters pet low health"] = &TriggerFactoryInternal::hunters_pet_low_health;
                 creators["hunter's mark"] = &TriggerFactoryInternal::hunters_mark;
                 creators["freezing trap"] = &TriggerFactoryInternal::freezing_trap;
+                creators["frost trap"] = &TriggerFactoryInternal::frost_trap;
+                creators["explosive trap"] = &TriggerFactoryInternal::explosive_trap;
                 creators["aspect of the pack"] = &TriggerFactoryInternal::aspect_of_the_pack;
                 creators["rapid fire"] = &TriggerFactoryInternal::rapid_fire;
                 creators["aspect of the hawk"] = &TriggerFactoryInternal::aspect_of_the_hawk;
@@ -142,6 +144,8 @@ namespace ai
             static Trigger* hunters_pet_low_health(PlayerbotAI* ai) { return new HuntersPetLowHealthTrigger(ai); }
             static Trigger* hunters_mark(PlayerbotAI* ai) { return new HuntersMarkTrigger(ai); }
             static Trigger* freezing_trap(PlayerbotAI* ai) { return new FreezingTrapTrigger(ai); }
+            static Trigger* frost_trap(PlayerbotAI* ai) { return new FrostTrapTrigger(ai); }
+            static Trigger* explosive_trap(PlayerbotAI* ai) { return new ExplosiveTrapTrigger(ai); }
             static Trigger* aspect_of_the_pack(PlayerbotAI* ai) { return new HunterAspectOfThePackTrigger(ai); }
             static Trigger* rapid_fire(PlayerbotAI* ai) { return new RapidFireTrigger(ai); }
             static Trigger* aspect_of_the_hawk(PlayerbotAI* ai) { return new HunterAspectOfTheHawkTrigger(ai); }
@@ -190,7 +194,6 @@ namespace ai
                 creators["revive pet"] = &AiObjectContextInternal::revive_pet;
                 creators["call pet"] = &AiObjectContextInternal::call_pet;
                 creators["black arrow"] = &AiObjectContextInternal::black_arrow;
-                creators["freezing trap"] = &AiObjectContextInternal::freezing_trap;
                 creators["rapid fire"] = &AiObjectContextInternal::rapid_fire;
                 creators["boost"] = &AiObjectContextInternal::rapid_fire;
                 creators["readiness"] = &AiObjectContextInternal::readiness;
@@ -210,8 +213,6 @@ namespace ai
                 creators["scare beast"] = &AiObjectContextInternal::scare_beast;
                 creators["scare beast on cc"] = &AiObjectContextInternal::scare_beast_on_cc;
                 creators["remove feign death"] = &AiObjectContextInternal::remove_feign_death;
-                creators["frost trap"] = &AiObjectContextInternal::frost_trap;
-                creators["explosive trap"] = &AiObjectContextInternal::explosive_trap;
                 creators["scatter shot"] = &AiObjectContextInternal::scatter_shot;
                 creators["intimidation"] = &AiObjectContextInternal::intimidation;
                 creators["deterrence"] = &AiObjectContextInternal::deterrence;
@@ -225,6 +226,19 @@ namespace ai
                 creators["steady shot"] = &AiObjectContextInternal::steady_shot;
                 creators["tame beast"] = &AiObjectContextInternal::tame_beast;
                 creators["flare"] = &AiObjectContextInternal::flare;
+                creators["immolation trap"] = &AiObjectContextInternal::immolation_trap;
+                creators["frost trap"] = &AiObjectContextInternal::frost_trap;
+                creators["explosive trap"] = &AiObjectContextInternal::explosive_trap;
+                creators["freezing trap"] = &AiObjectContextInternal::freezing_trap;
+                creators["immolation trap on target"] = &AiObjectContextInternal::immolation_trap_on_target;
+                creators["frost trap on target"] = &AiObjectContextInternal::frost_trap_on_target;
+                creators["explosive trap on target"] = &AiObjectContextInternal::explosive_trap_on_target;
+                creators["freezing trap on target"] = &AiObjectContextInternal::freezing_trap_on_target;
+                creators["freezing trap on cc"] = &AiObjectContextInternal::freezing_trap_on_cc;
+                creators["immolation trap in place"] = &AiObjectContextInternal::immolation_trap_in_place;
+                creators["frost trap in place"] = &AiObjectContextInternal::frost_trap_in_place;
+                creators["explosive trap in place"] = &AiObjectContextInternal::explosive_trap_in_place;
+                creators["freezing trap in place"] = &AiObjectContextInternal::freezing_trap_in_place;
             }
 
         private:
@@ -239,8 +253,6 @@ namespace ai
             static Action* deterrence(PlayerbotAI* ai) { return new DeterrenceAction(ai); }
             static Action* intimidation(PlayerbotAI* ai) { return new IntimidationAction(ai); }
             static Action* scatter_shot(PlayerbotAI* ai) { return new CastScatterShotAction(ai); }
-            static Action* explosive_trap(PlayerbotAI* ai) { return new CastExplosiveTrapAction(ai); }
-            static Action* frost_trap(PlayerbotAI* ai) { return new CastFrostTrapAction(ai); }
             static Action* scare_beast(PlayerbotAI* ai) { return new CastScareBeastAction(ai); }
             static Action* scare_beast_on_cc(PlayerbotAI* ai) { return new CastScareBeastCcAction(ai); }
             static Action* bestial_wrath(PlayerbotAI* ai) { return new CastBestialWrathAction(ai); }
@@ -267,7 +279,6 @@ namespace ai
             static Action* revive_pet(PlayerbotAI* ai) { return new CastRevivePetAction(ai); }
             static Action* call_pet(PlayerbotAI* ai) { return new CastCallPetAction(ai); }
             static Action* black_arrow(PlayerbotAI* ai) { return new CastBlackArrow(ai); }
-            static Action* freezing_trap(PlayerbotAI* ai) { return new CastFreezingTrapAction(ai); }
             static Action* rapid_fire(PlayerbotAI* ai) { return new CastRapidFireAction(ai); }
             static Action* readiness(PlayerbotAI* ai) { return new CastReadinessAction(ai); }
             static Action* aspect_of_the_monkey(PlayerbotAI* ai) { return new CastAspectOfTheMonkeyAction(ai); }
@@ -281,6 +292,19 @@ namespace ai
             static Action* raptor_strike(PlayerbotAI* ai) { return new CastRaptorStrikeAction(ai); }
             static Action* remove_feign_death(PlayerbotAI* ai) { return new RemoveFeignDeathAction(ai); }
             static Action* tame_beast(PlayerbotAI* ai) { return new TameBeastAction(ai); }
+            static Action* immolation_trap(PlayerbotAI* ai) { return new CastImmolationTrapAction(ai); }
+            static Action* explosive_trap(PlayerbotAI* ai) { return new CastExplosiveTrapAction(ai); }
+            static Action* frost_trap(PlayerbotAI* ai) { return new CastFrostTrapAction(ai); }
+            static Action* freezing_trap(PlayerbotAI* ai) { return new CastFreezingTrapAction(ai); }
+            static Action* immolation_trap_on_target(PlayerbotAI* ai) { return new CastImmolationTrapOnTargetAction(ai); }
+            static Action* explosive_trap_on_target(PlayerbotAI* ai) { return new CastExplosiveTrapOnTargetAction(ai); }
+            static Action* frost_trap_on_target(PlayerbotAI* ai) { return new CastFrostTrapOnTargetAction(ai); }
+            static Action* freezing_trap_on_target(PlayerbotAI* ai) { return new CastFreezingTrapOnTargetAction(ai); }
+            static Action* freezing_trap_on_cc(PlayerbotAI* ai) { return new CastFreezingTrapOnCcAction(ai); }
+            static Action* immolation_trap_in_place(PlayerbotAI* ai) { return new CastImmolationTrapInPlaceAction(ai); }
+            static Action* explosive_trap_in_place(PlayerbotAI* ai) { return new CastExplosiveTrapInPlaceAction(ai); }
+            static Action* frost_trap_in_place(PlayerbotAI* ai) { return new CastFrostTrapInPlaceAction(ai); }
+            static Action* freezing_trap_in_place(PlayerbotAI* ai) { return new CastFreezingTrapInPlaceAction(ai); }
         };
     };
 };

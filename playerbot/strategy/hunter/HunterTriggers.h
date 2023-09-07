@@ -5,13 +5,15 @@
 namespace ai
 {
     HAS_AURA_TRIGGER_TIME(FeignDeathTrigger, "feign death", 2);
-    BEGIN_TRIGGER(HunterNoStingsActiveTrigger, Trigger)
-        END_TRIGGER()
 
-        class HunterAspectOfTheHawkTrigger : public BuffTrigger
+    BEGIN_TRIGGER(HunterNoStingsActiveTrigger, Trigger)
+    END_TRIGGER()
+
+    class HunterAspectOfTheHawkTrigger : public BuffTrigger
     {
     public:
-        HunterAspectOfTheHawkTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the hawk") {
+        HunterAspectOfTheHawkTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the hawk") 
+        {
             checkInterval = 1;
         }
 
@@ -19,6 +21,7 @@ namespace ai
         {
             if (!BuffTrigger::IsActive())
                 return false;
+
             Unit* target = AI_VALUE(Unit*, "current target");
             return target && !sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), 5.0);
         }
@@ -27,7 +30,8 @@ namespace ai
     class HunterAspectOfTheWildTrigger : public BuffTrigger
     {
     public:
-        HunterAspectOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the wild") {
+        HunterAspectOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the wild") 
+        {
             checkInterval = 1;
         }
     };
@@ -78,6 +82,69 @@ namespace ai
     {
     public:
         FreezingTrapTrigger(PlayerbotAI* ai) : HasCcTargetTrigger(ai, "freezing trap") {}
+
+#ifdef MANGOSBOT_ZERO
+        bool IsActive() override
+        {
+            // Check if feign death not on cooldown
+            if (sServerFacade.IsSpellReady(bot, 5384))
+            {
+                return HasCcTargetTrigger::IsActive();
+            }
+
+            return false;
+        }
+#endif
+    };
+
+    class FrostTrapTrigger : public MeleeLightAoeTrigger
+    {
+    public:
+        FrostTrapTrigger(PlayerbotAI* ai, string spell = "frost trap") : MeleeLightAoeTrigger(ai)
+        {
+            spellId = AI_VALUE2(uint32, "spell id", spell);
+        }
+
+        bool IsActive() override
+        {
+#ifdef MANGOSBOT_ZERO
+            // Check if feign death not on cooldown
+            if (!sServerFacade.IsSpellReady(bot, 5384))
+            {
+                return false;
+            }
+#endif
+
+            return sServerFacade.IsSpellReady(bot, spellId) && MeleeLightAoeTrigger::IsActive();
+        }
+
+    private:
+        uint32 spellId;
+    };
+
+    class ExplosiveTrapTrigger : public RangedMediumAoeTrigger
+    {
+    public:
+        ExplosiveTrapTrigger(PlayerbotAI* ai, string spell = "explosive trap") : RangedMediumAoeTrigger(ai)
+        {
+            spellId = AI_VALUE2(uint32, "spell id", spell);
+        }
+
+        bool IsActive() override
+        {
+#ifdef MANGOSBOT_ZERO
+            // Check if feign death not on cooldown
+            if (!sServerFacade.IsSpellReady(bot, 5384))
+            {
+                return false;
+            }
+#endif
+
+            return sServerFacade.IsSpellReady(bot, spellId) && RangedMediumAoeTrigger::IsActive();
+        }
+
+    private:
+        uint32 spellId;
     };
 
     class RapidFireTrigger : public BuffTrigger
@@ -219,7 +286,8 @@ namespace ai
         }
     };
 
-    class HunterNoPet : public Trigger {
+    class HunterNoPet : public Trigger 
+    {
     public:
         HunterNoPet(PlayerbotAI* ai) : Trigger(ai, "no beast", 1) {}
         virtual bool IsActive()
@@ -232,7 +300,8 @@ namespace ai
         }
     };
 
-    class StealthedNearbyTrigger : public Trigger {
+    class StealthedNearbyTrigger : public Trigger 
+    {
     public:
         StealthedNearbyTrigger(PlayerbotAI* ai) : Trigger(ai, "stealthed nearby", 5) {}
         virtual bool IsActive()

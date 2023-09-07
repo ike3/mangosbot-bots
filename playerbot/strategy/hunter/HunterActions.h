@@ -139,9 +139,6 @@ namespace ai
         CastBlackArrow(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "black arrow") {}
     };
 
-    BUFF_ACTION(CastFreezingTrapAction, "freezing trap");
-    BUFF_ACTION(CastFrostTrapAction, "frost trap");
-    BUFF_ACTION(CastExplosiveTrapAction, "explosive trap");
     SNARE_ACTION(CastBlackArrowSnareAction, "black arrow");
     SPELL_ACTION(CastSilencingShotAction, "silencing shot");
     ENEMY_HEALER_ACTION(CastSilencingShotOnHealerAction, "silencing shot");
@@ -224,5 +221,172 @@ namespace ai
     public:
         CastFlareAction(PlayerbotAI* ai) : CastSpellAction(ai, "flare") {}
         virtual string GetTargetName() override { return "nearest stealthed unit"; }
+    };
+
+    class TrapOnTargetAction : public CastSpellAction
+    {
+    public:
+#ifdef MANGOSBOT_ZERO
+        // For vanilla, bots need to feign death before dropping the trap
+        TrapOnTargetAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, "feign death"), trapSpell(spell)
+        {
+            trapSpellID = AI_VALUE2(uint32, "spell id", trapSpell);
+        }
+#else
+        TrapOnTargetAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell), trapSpell(spell) {}
+#endif
+
+    protected:
+        // Traps don't really have target for the spell
+        string GetTargetName() override { return "self target"; }
+
+        // The move to target
+        virtual string GetTrapTargetName() { return "current target"; }
+
+        // The trap spell that will be used
+        string GetTrapSpellName() { return trapSpell; }
+
+        string GetReachActionName() override { return "reach melee"; }
+        string GetTargetQualifier() override { return GetTrapSpellName(); }
+        ActionThreatType getThreatType() override { return ActionThreatType::ACTION_THREAT_NONE; }
+
+        NextAction** getPrerequisites() override
+        {
+            const string reachAction = GetReachActionName();
+            const string spellName = GetSpellName();
+            const string targetName = GetTrapTargetName();
+
+            // Generate the reach action with qualifiers
+            vector<string> qualifiers = { spellName, targetName, trapSpell };
+            const string qualifiersStr = Qualified::MultiQualify(qualifiers, "::");
+            return NextAction::merge(NextAction::array(0, new NextAction(reachAction + "::" + qualifiersStr), NULL), Action::getPrerequisites());
+        }
+
+#ifdef MANGOSBOT_ZERO
+        bool isPossible() override
+        {
+            // If the trap spell and feign death are not on cooldown
+            return sServerFacade.IsSpellReady(bot, trapSpellID) && sServerFacade.IsSpellReady(bot, 5384);
+        }
+
+        NextAction** getContinuers() override
+        {
+            return NextAction::merge(NextAction::array(0, new NextAction(trapSpell, ACTION_PASSTROUGH), NULL), CastSpellAction::getContinuers());
+        }
+#endif
+
+private:
+        string trapSpell;
+        uint32 trapSpellID;
+    };
+
+    class TrapOnCcTargetAction : public TrapOnTargetAction
+    {
+    public:
+        TrapOnCcTargetAction(PlayerbotAI* ai, string spell) : TrapOnTargetAction(ai, spell) {}
+        string GetTrapTargetName() override { return "cc target"; }
+    };
+
+    class TrapInPlace : public TrapOnTargetAction
+    {
+    public:
+        TrapInPlace(PlayerbotAI* ai, string spell) : TrapOnTargetAction(ai, spell) {}
+        string GetTrapTargetName() override { return "self target"; }
+    };
+
+    class CastTrapAction : public CastSpellAction
+    {
+    public:
+        CastTrapAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell) {}
+
+        // Traps don't really have target for the spell
+        string GetTargetName() override { return "self target"; }
+
+#ifdef MANGOSBOT_ZERO
+        bool Execute(Event& event) override
+        {
+            // The trap could come just after feign death, so better remove it
+            ai->RemoveAura("feign death");
+            return CastSpellAction::Execute(event);
+        }
+#endif
+    };
+
+    class CastImmolationTrapAction : public CastTrapAction
+    {
+    public:
+        CastImmolationTrapAction(PlayerbotAI* ai) : CastTrapAction(ai, "immolation trap") {}
+    };
+
+    class CastImmolationTrapOnTargetAction : public TrapOnTargetAction
+    {
+    public:
+        CastImmolationTrapOnTargetAction(PlayerbotAI* ai) : TrapOnTargetAction(ai, "immolation trap") {}
+    };
+
+    class CastImmolationTrapInPlaceAction : public TrapInPlace
+    {
+    public:
+        CastImmolationTrapInPlaceAction(PlayerbotAI* ai) : TrapInPlace(ai, "immolation trap") {}
+    };
+
+    class CastFreezingTrapAction : public CastTrapAction
+    {
+    public:
+        CastFreezingTrapAction(PlayerbotAI* ai) : CastTrapAction(ai, "freezing trap") {}
+    };
+
+    class CastFreezingTrapOnTargetAction : public TrapOnTargetAction
+    {
+    public:
+        CastFreezingTrapOnTargetAction(PlayerbotAI* ai) : TrapOnTargetAction(ai, "freezing trap") {}
+    };
+
+    class CastFreezingTrapInPlaceAction : public TrapInPlace
+    {
+    public:
+        CastFreezingTrapInPlaceAction(PlayerbotAI* ai) : TrapInPlace(ai, "freezing trap") {}
+    };
+
+    class CastFreezingTrapOnCcAction : public TrapOnCcTargetAction
+    {
+    public:
+        CastFreezingTrapOnCcAction(PlayerbotAI* ai) : TrapOnCcTargetAction(ai, "freezing trap") {}
+    };
+
+    class CastFrostTrapAction : public CastTrapAction
+    {
+    public:
+        CastFrostTrapAction(PlayerbotAI* ai) : CastTrapAction(ai, "frost trap") {}
+    };
+
+    class CastFrostTrapOnTargetAction : public TrapOnTargetAction
+    {
+    public:
+        CastFrostTrapOnTargetAction(PlayerbotAI* ai) : TrapOnTargetAction(ai, "frost trap") {}
+    };
+
+    class CastFrostTrapInPlaceAction : public TrapInPlace
+    {
+    public:
+        CastFrostTrapInPlaceAction(PlayerbotAI* ai) : TrapInPlace(ai, "frost trap") {}
+    };
+
+    class CastExplosiveTrapAction : public CastTrapAction
+    {
+    public:
+        CastExplosiveTrapAction(PlayerbotAI* ai) : CastTrapAction(ai, "explosive trap") {}
+    };
+
+    class CastExplosiveTrapOnTargetAction : public TrapOnTargetAction
+    {
+    public:
+        CastExplosiveTrapOnTargetAction(PlayerbotAI* ai) : TrapOnTargetAction(ai, "explosive trap") {}
+    };
+
+    class CastExplosiveTrapInPlaceAction : public TrapInPlace
+    {
+    public:
+        CastExplosiveTrapInPlaceAction(PlayerbotAI* ai) : TrapInPlace(ai, "explosive trap") {}
     };
 }
