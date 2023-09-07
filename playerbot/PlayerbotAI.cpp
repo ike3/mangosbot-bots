@@ -2758,18 +2758,25 @@ bool PlayerbotAI::HasSpell(uint32 spellid) const
     return false;
 }
 
-bool PlayerbotAI::CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget, bool ignoreRange)
+bool PlayerbotAI::CanCastSpell(string name, Unit* target, uint8 effectMask, Item* itemTarget, bool ignoreRange, bool ignoreInCombat)
 {
-    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, 0, true, itemTarget, ignoreRange);
+    return CanCastSpell(aiObjectContext->GetValue<uint32>("spell id", name)->Get(), target, 0, true, itemTarget, ignoreRange, ignoreInCombat);
 }
 
-bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange)
+bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange, bool ignoreInCombat)
 {
     if (!spellid)
         return false;
 
-    if (bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL) && !(spellid == 7744 || spellid == 11958 || spellid == 642 || spellid == 1020 || spellid == 1953))
-        return false;
+    if (bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
+    {
+        // Spells that can be casted while out of control
+        const std::list<uint32> ignoreOutOfControllSpells = { 642, 1020, 1499, 1953, 7744, 11958, 13795, 13809, 13813, 14302, 14303, 14304, 14305, 14310, 14311, 14316, 14317, 27023, 27025, 34600, 49055, 49056, 49066, 49067 };
+        if (std::find(ignoreOutOfControllSpells.begin(), ignoreOutOfControllSpells.end(), spellid) == ignoreOutOfControllSpells.end())
+        {
+            return false;
+        }
+    }
 
     if (!target)
         target = bot;
@@ -2801,12 +2808,18 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 
 	if (!itemTarget)
 	{
-        bool positiveSpell = IsPositiveSpell(spellInfo);
-        if (positiveSpell && sServerFacade.IsHostileTo(bot, target))
-            return false;
+        // Consider neutral spells (spells that are neither positive or negative (e.g. feign death, hunter traps, ...)
+        const std::list<uint32> neutralSpells = { 1499, 5384, 13795, 13809, 13813, 14302, 14303, 14304, 14305, 14310, 14311, 14316, 14317, 27023, 27025, 34600, 49055, 49056, 49066, 49067 };
+        const bool neutralSpell = std::find(neutralSpells.begin(), neutralSpells.end(), spellid) != neutralSpells.end();
+        if(!neutralSpell)
+        {
+            const bool positiveSpell = IsPositiveSpell(spellInfo);
+            if (positiveSpell && sServerFacade.IsHostileTo(bot, target))
+                return false;
 
-        if (!positiveSpell && sServerFacade.IsFriendlyTo(bot, target))
-            return false;
+            if (!positiveSpell && sServerFacade.IsFriendlyTo(bot, target))
+                return false;
+        }
 
         bool damage = false;
         for (int32 i = EFFECT_INDEX_0; i <= EFFECT_INDEX_2; i++)
@@ -2859,25 +2872,27 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, uint8 effectMask, b
 
     switch (result)
     {
-    case SPELL_FAILED_NOT_INFRONT:
-    case SPELL_FAILED_NOT_STANDING:
-    case SPELL_FAILED_UNIT_NOT_INFRONT:
-    case SPELL_FAILED_MOVING:
-    case SPELL_FAILED_TRY_AGAIN:
-    case SPELL_CAST_OK:
-        return true;
-    case SPELL_FAILED_OUT_OF_RANGE:
-    case SPELL_FAILED_LINE_OF_SIGHT:
-        return ignoreRange;
-    case SPELL_FAILED_REAGENTS:
-    case SPELL_FAILED_TOTEMS:
-        return ignoreReagents;
-    default:
-        return false;
+        case SPELL_FAILED_NOT_INFRONT:
+        case SPELL_FAILED_NOT_STANDING:
+        case SPELL_FAILED_UNIT_NOT_INFRONT:
+        case SPELL_FAILED_MOVING:
+        case SPELL_FAILED_TRY_AGAIN:
+        case SPELL_CAST_OK:
+            return true;
+        case SPELL_FAILED_OUT_OF_RANGE:
+        case SPELL_FAILED_LINE_OF_SIGHT:
+            return ignoreRange;
+        case SPELL_FAILED_REAGENTS:
+        case SPELL_FAILED_TOTEMS:
+            return ignoreReagents;
+        case SPELL_FAILED_AFFECTING_COMBAT:
+            return ignoreInCombat;
+        default:
+            return false;
     }
 }
 
-bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effectMask, bool checkHasSpell, bool ignoreRange)
+bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effectMask, bool checkHasSpell, bool ignoreRange, bool ignoreInCombat)
 {
     if (!spellid)
         return false;
@@ -2945,12 +2960,14 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, uint8 effec
         return ignoreRange;
     case SPELL_FAILED_REAGENTS:
         return ignoreReagents;
+    case SPELL_FAILED_AFFECTING_COMBAT:
+        return ignoreInCombat;
     default:
         return false;
     }
 }
 
-bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange)
+bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 effectMask, bool checkHasSpell, Item* itemTarget, bool ignoreRange, bool ignoreInCombat)
 {
     if (!spellid)
         return false;
@@ -3001,6 +3018,8 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, float x, float y, float z, uint8 
         return ignoreRange;
     case SPELL_FAILED_REAGENTS:
         return ignoreReagents;
+    case SPELL_FAILED_AFFECTING_COMBAT:
+        return ignoreInCombat;
     default:
         return false;
     }

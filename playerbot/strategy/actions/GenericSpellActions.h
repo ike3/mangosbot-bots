@@ -387,7 +387,7 @@ namespace ai
         
     private:
         virtual string GetReachActionName() override { return "reach spell"; }
-        virtual string GetTargetName() override { return "snare target"; }
+        virtual string GetTargetName() override { return "cc target"; }
         virtual string GetTargetQualifier() override { return GetSpellName(); }
         virtual ActionThreatType getThreatType() { return ActionThreatType::ACTION_THREAT_NONE; }
     };

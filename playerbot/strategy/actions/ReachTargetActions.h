@@ -73,10 +73,10 @@ namespace ai
                 if (target)
                 {
                     // Do not move while casting
-                    if (!bot->IsNonMeleeSpellCasted(true))
+                    if (!bot->IsNonMeleeSpellCasted(true, false, true))
                     {
                         // Check if the spell for which the reach action is used for can be casted
-                        if (!spellName.empty() && !ai->CanCastSpell(spellName, target, true, nullptr, true))
+                        if (!spellName.empty() && !ai->CanCastSpell(spellName, target, true, nullptr, true, true))
                         {
                             return false;
                         }
@@ -104,8 +104,13 @@ namespace ai
             // Get the target from the qualifiers
             if (!qualifier.empty())
             {
+                string targetQualifier;
                 const string targetName = Qualified::getMultiQualifierStr(qualifier, 1, "::");
-                const string targetQualifier = Qualified::getMultiQualifierStr(qualifier, 2, "::");
+                if (targetName != "current target")
+                {
+                    targetQualifier = Qualified::getMultiQualifierStr(qualifier, 2, "::");
+                }
+
                 return targetQualifier.empty() ? AI_VALUE(Unit*, targetName) : AI_VALUE2(Unit*, targetName, targetQualifier);
             }
             else

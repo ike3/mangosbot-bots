@@ -153,12 +153,10 @@ namespace ai
         CastHibernateAction(PlayerbotAI* ai) : CastSpellAction(ai, "hibernate") {}
 	};
 
-    class CastHibernateCcAction : public CastSpellAction
+    class CastHibernateCcAction : public CastCrowdControlSpellAction
     {
     public:
-        CastHibernateCcAction(PlayerbotAI* ai) : CastSpellAction(ai, "hibernate on cc") {}
-        virtual Value<Unit*>* GetTargetValue();
-        virtual bool Execute(Event& event);
+        CastHibernateCcAction(PlayerbotAI* ai) : CastCrowdControlSpellAction(ai, "hibernate") {}
     };
 
     class CastNaturesGraspAction : public CastBuffSpellAction

@@ -201,12 +201,10 @@ namespace ai
         CastScareBeastAction(PlayerbotAI* ai) : CastSpellAction(ai, "scare beast") {}
     };
 
-    class CastScareBeastCcAction : public CastSpellAction
+    class CastScareBeastCcAction : public CastCrowdControlSpellAction
     {
     public:
-        CastScareBeastCcAction(PlayerbotAI* ai) : CastSpellAction(ai, "scare beast on cc") {}
-        virtual Value<Unit*>* GetTargetValue();
-        virtual bool Execute(Event& event);
+        CastScareBeastCcAction(PlayerbotAI* ai) : CastCrowdControlSpellAction(ai, "scare beast") {}
     };
 
     BUFF_ACTION(IntimidationAction, "intimidation");

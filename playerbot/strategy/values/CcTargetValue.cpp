@@ -23,7 +23,7 @@ public:
 
         AiObjectContext* context = ai->GetAiObjectContext();
 
-        if (!ai->CanCastSpell(spell, creature, true))
+        if (!ai->CanCastSpell(spell, creature, true, nullptr, false, true))
             return;
 
         if (AI_VALUE(Unit*,"rti cc target") == creature)

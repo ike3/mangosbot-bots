@@ -108,6 +108,7 @@ bool CastSpellAction::Execute(Event& event)
     {
         if (ai->HasCheat(BotCheatMask::attackspeed))
             spellDuration = 1;
+
         SetDuration(spellDuration);
     }
 
@@ -196,7 +197,7 @@ bool CastSpellAction::isUseful()
 NextAction** CastSpellAction::getPrerequisites()
 {
     // Set the reach action as the cast spell prerequisite when needed
-    string reachAction = GetReachActionName();
+    const string reachAction = GetReachActionName();
     if (!reachAction.empty())
     {
         const string targetName = GetTargetName();
@@ -228,6 +229,12 @@ void CastSpellAction::SetSpellName(const string& name, string spellIDContextName
     {
         spellName = name;
         spellId = ai->GetAiObjectContext()->GetValue<uint32>(spellIDContextName, name)->Get();
+
+        float spellRange;
+        if (ai->GetSpellRange(spellName, &spellRange))
+        {
+            range = spellRange;
+        }
     }
 }
 
