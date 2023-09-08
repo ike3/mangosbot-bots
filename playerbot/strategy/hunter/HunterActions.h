@@ -11,7 +11,8 @@ namespace ai
     {
     public:
         CastAutoShotAction(PlayerbotAI* ai) : CastSpellAction(ai, "auto shot") {}
-        virtual bool isUseful();
+        bool Execute(Event& event) override;
+        bool isUseful() override;
     };
 
     BEGIN_RANGED_SPELL_ACTION(CastTranquilizingShotAction, "tranquilizing shot")

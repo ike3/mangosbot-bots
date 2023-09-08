@@ -100,12 +100,6 @@ void GenericHunterStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers
         "often",
         NextAction::array(0, new NextAction("immolation trap on target", ACTION_INTERRUPT + 1), NULL)));
 
-    // MOVE THIS TO PVP
-    // Traps must be on ACTION_INTERRUPT or higher due to its movements and chained actions
-    triggers.push_back(new TriggerNode(
-        "enemy is close",
-        NextAction::array(0, new NextAction("freezing trap in place", ACTION_INTERRUPT), NULL)));
-
     triggers.push_back(new TriggerNode(
         "high threat",
         NextAction::array(0, new NextAction("feign death", ACTION_EMERGENCY + 1), 
@@ -164,4 +158,9 @@ void HunterCcStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "frost trap",
         NextAction::array(0, new NextAction("frost trap on target", ACTION_INTERRUPT + 2), NULL)));
+
+    // MOVE THIS TO PVP
+    triggers.push_back(new TriggerNode(
+        "enemy is close",
+        NextAction::array(0, new NextAction("freezing trap in place", ACTION_INTERRUPT), NULL)));
 }

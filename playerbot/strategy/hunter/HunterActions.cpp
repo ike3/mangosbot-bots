@@ -36,3 +36,13 @@ bool CastAutoShotAction::isUseful()
 
     return ai->HasStrategy("ranged", BotState::BOT_STATE_COMBAT) && AI_VALUE(uint32, "active spell") != AI_VALUE2(uint32, "spell id", getName());
 }
+
+bool CastAutoShotAction::Execute(Event& event)
+{
+    if (!bot->IsStopped())
+    {
+        ai->StopMoving();
+    }
+
+    return CastSpellAction::Execute(event);
+}
