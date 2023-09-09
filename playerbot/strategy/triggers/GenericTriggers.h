@@ -245,7 +245,7 @@ namespace ai
     class NoAttackersTrigger : public Trigger
     {
     public:
-        NoAttackersTrigger(PlayerbotAI* ai) : Trigger(ai, "no attackers", 1) {}
+        NoAttackersTrigger(PlayerbotAI* ai, int checkInterval = 1) : Trigger(ai, "no attackers", checkInterval) {}
         virtual bool IsActive();
     };
 
@@ -434,7 +434,7 @@ namespace ai
 	class TankAoeTrigger : public NoAttackersTrigger
 	{
 	public:
-		TankAoeTrigger(PlayerbotAI* ai) : NoAttackersTrigger(ai) {}
+		TankAoeTrigger(PlayerbotAI* ai) : NoAttackersTrigger(ai, 0) {}
 
 	public:
 		virtual bool IsActive();

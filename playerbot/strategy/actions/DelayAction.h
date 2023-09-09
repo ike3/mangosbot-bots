@@ -21,6 +21,11 @@ namespace ai
             if (sServerFacade.IsInCombat(bot))
                 return true;
 
+            if (sServerFacade.isMoving(bot))
+                bot->StopMoving();
+            else
+                bot->SetOrientation(M_PI_F * 2 * urand(0, 100) / 100.0f);
+
             ai->SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay + sPlayerbotAIConfig.globalCoolDown);
             return true;
         }

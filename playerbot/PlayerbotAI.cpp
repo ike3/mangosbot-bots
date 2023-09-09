@@ -205,7 +205,6 @@ void PlayerbotAI::HandleTeleportAck()
         bot->GetSession()->HandleMoveWorldportAckOpcode();
 		SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
 	}
-	bot->SendHeartBeat();
 }
 
 void PlayerbotAI::Reset()
@@ -1195,7 +1194,8 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     }
 
 #ifdef MANGOS
-    spell->prepare(&targets);
+    SpellCastResult result = spell->prepare(&targets);
+    if (result != SPELL_CAST_OK) return false;
 #endif
 #ifdef CMANGOS
     spell->SpellStart(&targets);
