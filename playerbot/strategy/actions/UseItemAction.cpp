@@ -19,12 +19,18 @@ bool UseItemAction::Execute(Event event)
     {
         if (items.size() > 1)
         {
+            Item* item = *items.begin();
             list<Item*>::iterator i = items.begin();
-            Item* item = *i++;
-            Item* itemTarget = *i;
-            return UseItemOnItem(item, itemTarget);
+            for (++i; i != items.end(); ++i)
+            {
+                Item* itemTarget = *i;
+                if (item->GetProto()->ItemId == itemTarget->GetProto()->ItemId)
+                    continue;
+
+                return UseItemOnItem(item, itemTarget);
+            }
         }
-        else if (!items.empty())
+        if (!items.empty())
             return UseItemAuto(*items.begin());
     }
     else
@@ -218,7 +224,7 @@ bool UseItemAction::UseItem(Item* item, ObjectGuid goGuid, Item* itemTarget)
                 targetSelected = true;
                 out << " on traded item";
             }
-            else
+            else if (!targetSelected)
             {
                 targetFlag = TARGET_FLAG_ITEM;
                 packet << targetFlag;
