@@ -406,12 +406,8 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%u locations)",
                 bot->GetName(), area->area_name[0], x, y, z, attemtps, (*chooseFrom).size());
 
-        bot->GetMotionMaster()->Clear();
+        bot->InterruptMoving(true);
         bot->TeleportTo(loc.mapid, x, y, z, 0);
-        bot->SendHeartBeat();
-        float cx = (50 - urand(0, 100)) / 100.0f;
-        float cy = (50 - urand(0, 100)) / 100.0f;
-        bot->GetMotionMaster()->MovePoint(loc.mapid, x + cx, y + cy, z, true);
         bot->GetPlayerbotAI()->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
         if (pmo) pmo->finish();
         return;
