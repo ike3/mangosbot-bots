@@ -40,7 +40,11 @@ bool CastCustomSpellAction::Execute(Event event)
     {
         string param = text.substr(pos + 1);
         list<Item*> items = InventoryAction::parseItems(param, ITERATE_ITEMS_IN_BAGS);
-        if (!items.empty()) itemTarget = *items.begin();
+        if (!items.empty())
+        {
+            itemTarget = *items.begin();
+            text = text.substr(0, pos);
+        }
         else
         {
             castCount = atoi(param.c_str());
