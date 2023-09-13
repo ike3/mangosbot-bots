@@ -120,6 +120,9 @@ int AiFactory::GetPlayerSpecTab(Player* bot)
         case CLASS_PRIEST:
             tab = 1;
             break;
+        case CLASS_WARRIOR:
+            tab = 2;
+            break;
         }
         return tab;
     }
