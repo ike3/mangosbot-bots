@@ -25,7 +25,7 @@ namespace ai
 	class SealTrigger : public BuffTrigger
 	{
 	public:
-		SealTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "seal of justice") {}
+		SealTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "seal") {}
 		virtual bool IsActive();
 	};
 
