@@ -175,7 +175,7 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
             float z = summoner->GetPositionZ();
             if (summoner->IsWithinLOS(x, y, z))
             {
-                player->GetMotionMaster()->Clear();
+                player->InterruptMoving(true);
                 player->TeleportTo(mapId, x, y, z, 0);
                 return true;
             }
