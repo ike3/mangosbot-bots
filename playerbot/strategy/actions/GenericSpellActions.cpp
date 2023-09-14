@@ -57,7 +57,11 @@ bool CastSpellAction::Execute(Event& event)
     }
     else
     {
-        if (spellName == "freezing trap" || spellName == "frost trap") //Temporary fix for core crash
+        // Temporary fix for core crash
+        if (spellName == "freezing trap" || 
+            spellName == "frost trap" || 
+            spellName == "immolation trap" || 
+            spellName == "explosive trap") 
         {
             uint32 spellId = AI_VALUE2(uint32,"spell id", spellName);
 
@@ -70,12 +74,11 @@ bool CastSpellAction::Execute(Event& event)
                 uint8 slot = 0;
                 switch (pSpellInfo->Effect[j])
                 {
-                case SPELL_EFFECT_SUMMON_OBJECT_SLOT1: slot = 0; break;
-                case SPELL_EFFECT_SUMMON_OBJECT_SLOT2: slot = 1; break;
-                case SPELL_EFFECT_SUMMON_OBJECT_SLOT3: slot = 2; break;
-                case SPELL_EFFECT_SUMMON_OBJECT_SLOT4: slot = 3; break;
-                default: 
-                    continue;
+                    case SPELL_EFFECT_SUMMON_OBJECT_SLOT1: slot = 0; break;
+                    case SPELL_EFFECT_SUMMON_OBJECT_SLOT2: slot = 1; break;
+                    case SPELL_EFFECT_SUMMON_OBJECT_SLOT3: slot = 2; break;
+                    case SPELL_EFFECT_SUMMON_OBJECT_SLOT4: slot = 3; break;
+                    default: continue;
                 }
 
                 if (ObjectGuid guid = bot->m_ObjectSlotGuid[slot])
