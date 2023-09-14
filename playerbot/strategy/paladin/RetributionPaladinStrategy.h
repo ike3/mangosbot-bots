@@ -14,7 +14,7 @@ namespace ai
     class RetributionPaladinStrategy : public PaladinStrategy
     {
     public:
-        RetributionPaladinStrategy(PlayerbotAI* ai) : PaladinStrategy(ai) {}
+        RetributionPaladinStrategy(PlayerbotAI* ai);
 
     protected:
         virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;

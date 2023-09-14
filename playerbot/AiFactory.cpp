@@ -115,10 +115,13 @@ int AiFactory::GetPlayerSpecTab(Player* bot)
             tab = 1;
             break;
         case CLASS_PALADIN:
-            tab = 0;
+            tab = 2;
             break;
         case CLASS_PRIEST:
             tab = 1;
+            break;
+        case CLASS_WARRIOR:
+            tab = 2;
             break;
         }
         return tab;
@@ -516,13 +519,6 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 combatEngine->addStrategies("retribution", "close", NULL);
                 combatEngine->removeStrategy("ranged");
             }
-        }
-
-        // enable paladin fight at low level
-        if (player->getClass() == CLASS_PALADIN && tab == 0 && player->GetLevel() < 10)
-        {
-            combatEngine->addStrategies("retribution", "close", NULL);
-            combatEngine->removeStrategy("ranged");
         }
 
         // remove threat for now

@@ -44,6 +44,11 @@ private:
     ACTION_NODE_A(judgement, "judgement", "exorcism");
 };
 
+RetributionPaladinStrategy::RetributionPaladinStrategy(PlayerbotAI* ai) : PaladinStrategy(ai)
+{
+    actionNodeFactories.Add(new RetributionPaladinStrategyActionNodeFactory());
+}
+
 #ifdef MANGOSBOT_ZERO // Vanilla
 
 NextAction** RetributionPaladinStrategy::GetDefaultCombatActions()

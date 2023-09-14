@@ -1415,7 +1415,7 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool syncWithMaster)
                 if (!incremental)
                 {
                     if (level < 10)
-                        quality = urand(ITEM_QUALITY_POOR, ITEM_QUALITY_UNCOMMON);
+                        quality = ITEM_QUALITY_POOR;
                     else if (level < 20)
                         quality = urand(ITEM_QUALITY_NORMAL, ITEM_QUALITY_UNCOMMON);
                     else if (level < 40)

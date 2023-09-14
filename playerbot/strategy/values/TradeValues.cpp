@@ -47,6 +47,10 @@ list<Item*> ItemsUsefulToGiveValue::Calculate()
             if (!item->CanBeTraded())
                 continue;
 
+            // do not trade equipped items
+            if (item->IsEquipped())
+                continue;
+
             TradeData* trade = bot->GetTradeData();
 
             if (trade)
