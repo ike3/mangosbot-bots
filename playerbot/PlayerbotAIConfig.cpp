@@ -106,6 +106,7 @@ bool PlayerbotAIConfig::Initialize()
     randomGearLoweringChance = config.GetFloatDefault("AiPlayerbot.RandomGearLoweringChance", 0.15);
     randomBotMaxLevelChance = config.GetFloatDefault("AiPlayerbot.RandomBotMaxLevelChance", 0.15);
     randomBotRpgChance = config.GetFloatDefault("AiPlayerbot.RandomBotRpgChance", 0.4);
+    randomBotAttackChance = config.GetFloatDefault("AiPlayerbot.RandomBotAttackChance", 0.01);
 
     iterationsPerTick = config.GetIntDefault("AiPlayerbot.IterationsPerTick", 100);
 
@@ -133,8 +134,10 @@ bool PlayerbotAIConfig::Initialize()
     maxRandomBotInWorldTime = config.GetIntDefault("AiPlayerbot.MaxRandomBotInWorldTime", 14 * 24 * 3600);
     minRandomBotRandomizeTime = config.GetIntDefault("AiPlayerbot.MinRandomBotRandomizeTime", 2 * 3600);
     maxRandomBotRandomizeTime = config.GetIntDefault("AiPlayerbot.MaxRandomRandomizeTime", 14 * 24 * 3600);
-    minRandomBotChangeStrategyTime = config.GetIntDefault("AiPlayerbot.MinRandomBotChangeStrategyTime", 1800);
-    maxRandomBotChangeStrategyTime = config.GetIntDefault("AiPlayerbot.MaxRandomBotChangeStrategyTime", 2 * 3600);
+    minRandomBotChangeStrategyTime = config.GetIntDefault("AiPlayerbot.MinRandomBotChangeStrategyTime", 900);
+    maxRandomBotChangeStrategyTime = config.GetIntDefault("AiPlayerbot.MaxRandomBotChangeStrategyTime", 1800);
+    minRandomBotAttackTime = config.GetIntDefault("AiPlayerbot.MinRandomBotAttackTime", 900);
+    maxRandomBotAttackTime = config.GetIntDefault("AiPlayerbot.MaxRandomBotAttackTime", 1800);
     minRandomBotReviveTime = config.GetIntDefault("AiPlayerbot.MinRandomBotReviveTime", 60);
     maxRandomBotReviveTime = config.GetIntDefault("AiPlayerbot.MaxRandomReviveTime", 300);
     randomBotTeleportDistance = config.GetIntDefault("AiPlayerbot.RandomBotTeleportDistance", 100);
@@ -151,6 +154,11 @@ bool PlayerbotAIConfig::Initialize()
     randomBotLoginAtStartup = config.GetBoolDefault("AiPlayerbot.RandomBotLoginAtStartup", true);
     randomBotTeleLevel = config.GetIntDefault("AiPlayerbot.RandomBotTeleLevel", 5);
     openGoSpell = config.GetIntDefault("AiPlayerbot.OpenGoSpell", 6477);
+
+    randomRaidMaxTanks = config.GetIntDefault("AiPlayerbot.RandomRaidMaxTanks", 1);
+    randomRaidMaxHeals = config.GetIntDefault("AiPlayerbot.RandomRaidMaxHeals", 1);
+    randomRaidMaxDps = config.GetIntDefault("AiPlayerbot.RandomRaidMaxDps", 6);
+    randomRaidMax = config.GetIntDefault("AiPlayerbot.RandomRaidMax", 10);
 
     randomChangeMultiplier = config.GetFloatDefault("AiPlayerbot.RandomChangeMultiplier", 1.0);
 

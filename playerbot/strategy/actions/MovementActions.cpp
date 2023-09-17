@@ -523,7 +523,6 @@ bool MoveOutOfCollisionAction::Execute(Event event)
 {
     float angle = M_PI * 2000 / (float)urand(1, 1000);
     float distance = sPlayerbotAIConfig.followDistance;
-    ai->SetWalkMode(true);
     return MoveTo(bot->GetMapId(), bot->GetPositionX() + cos(angle) * distance, bot->GetPositionY() + sin(angle) * distance, bot->GetPositionZ());
 }
 

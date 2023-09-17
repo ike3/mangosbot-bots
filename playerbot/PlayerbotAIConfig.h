@@ -51,11 +51,13 @@ public:
     float randomGearLoweringChance;
     float randomBotMaxLevelChance;
     float randomBotRpgChance;
+    float randomBotAttackChance;
     uint32 minRandomBots, maxRandomBots;
     uint32 randomBotUpdateInterval, randomBotCountChangeMinInterval, randomBotCountChangeMaxInterval;
     uint32 minRandomBotInWorldTime, maxRandomBotInWorldTime;
     uint32 minRandomBotRandomizeTime, maxRandomBotRandomizeTime;
     uint32 minRandomBotChangeStrategyTime, maxRandomBotChangeStrategyTime;
+    uint32 minRandomBotAttackTime, maxRandomBotAttackTime;
     uint32 minRandomBotReviveTime, maxRandomBotReviveTime;
     uint32 minRandomBotPvpTime, maxRandomBotPvpTime;
     uint32 randomBotsPerInterval;
@@ -92,6 +94,8 @@ public:
 
     int commandServerPort;
     bool perfMonEnabled;
+
+    uint32 randomRaidMaxTanks, randomRaidMaxHeals, randomRaidMaxDps, randomRaidMax;
 
     std::string GetValue(std::string name);
     void SetValue(std::string name, std::string value);

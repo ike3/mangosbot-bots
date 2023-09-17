@@ -125,6 +125,7 @@ bool AttackAction::Attack(Unit* target)
     if (bot->IsPolymorphed() || bot->IsStunned() || sServerFacade.IsFeared(bot) || sServerFacade.IsCharmed(bot))
         return false;
 
+    ai->SetWalkMode(false);
     bot->Attack(target, !ai->IsRanged(bot) || sServerFacade.GetDistance2d(bot, target) <= sPlayerbotAIConfig.tooCloseDistance);
     ai->ChangeEngine(BOT_STATE_COMBAT);
     return true;

@@ -64,6 +64,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void Refresh(Player* bot);
         void RandomTeleportForLevel(Player* bot);
         void RandomTeleportForRpg(Player* bot);
+        void RandomTeleportForAttack(vector<Player*> bots);
         int GetMaxAllowedBotCount();
         bool ProcessBot(Player* player);
         void Revive(Player* player);
@@ -84,6 +85,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         uint32 AddRandomBots();
         bool ProcessBot(uint32 bot);
         void ScheduleRandomize(uint32 bot, uint32 time);
+        void ScheduleAttack(uint32 time = 0);
         void RandomTeleport(Player* bot);
         void RandomTeleport(Player* bot, vector<WorldLocation> &locs, bool useFleeManager, bool usePriorityList);
         uint32 GetZoneLevel(uint16 mapId, float teleX, float teleY, float teleZ);

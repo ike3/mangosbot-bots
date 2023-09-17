@@ -16,6 +16,7 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 #include "FleeManager.h"
+#include "RandomRaidMgr.h"
 #include "ServerFacade.h"
 
 using namespace ai;
@@ -85,6 +86,12 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed)
     {
         sLog.outString("Logging in %d random bots in the background", maxAllowedBotCount);
         loginProgressBar = new BarGoLink(maxAllowedBotCount);
+    }
+
+    if (!GetEventValue(0, "attack"))
+    {
+        sRandomRaidMgr.Attack();
+        ScheduleAttack();
     }
 
     SetNextCheckDelay(1000 * sPlayerbotAIConfig.randomBotUpdateInterval / (maxAllowedBotCount / sPlayerbotAIConfig.randomBotsPerInterval));
@@ -191,6 +198,13 @@ void RandomPlayerbotMgr::ScheduleChangeStrategy(uint32 bot, uint32 time)
     if (!time)
         time = urand(sPlayerbotAIConfig.minRandomBotChangeStrategyTime, sPlayerbotAIConfig.maxRandomBotChangeStrategyTime);
     SetEventValue(bot, "change_strategy", 1, time);
+}
+
+void RandomPlayerbotMgr::ScheduleAttack(uint32 time)
+{
+    if (!time)
+        time = urand(sPlayerbotAIConfig.minRandomBotAttackTime, sPlayerbotAIConfig.maxRandomBotAttackTime);
+    SetEventValue(0, "attack", 1, time);
 }
 
 bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
@@ -374,8 +388,8 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             bot->SetPosition(ox, oy, oz, 0);
         }
 
-        float x = loc.coord_x + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
-        float y = loc.coord_y + (attemtps > 0 ? urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2 : 0);
+        float x = loc.coord_x + urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2;
+        float y = loc.coord_y + urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2;
         float z = loc.coord_z;
 
         Map* map = sMapMgr.FindMap(loc.mapid, 0);
@@ -835,6 +849,12 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler* handler, cha
         return true;
     }
 
+    if (cmd == "attack")
+    {
+        sRandomRaidMgr.Attack();
+        return true;
+    }
+
     map<string, ConsoleCommandHandler> handlers;
     handlers["init"] = &RandomPlayerbotMgr::RandomizeFirst;
     handlers["levelup"] = handlers["level"] = &RandomPlayerbotMgr::IncreaseLevel;
@@ -1137,6 +1157,8 @@ void RandomPlayerbotMgr::PrintStats()
     sLog.outString("    teleport: %d", teleport);
     sLog.outString("    change_strategy: %d", changeStrategy);
     sLog.outString("    revive: %d", revive);
+
+    sRandomRaidMgr.PrintStats();
 }
 
 double RandomPlayerbotMgr::GetBuyMultiplier(Player* bot)
@@ -1219,22 +1241,36 @@ string RandomPlayerbotMgr::HandleRemoteCommand(string request)
 
 void RandomPlayerbotMgr::ChangeStrategy(Player* player)
 {
-    uint32 bot = player->GetGUIDLow();
-
     player->GetPlayerbotAI()->ResetStrategies(false);
-    if ((float)urand(0, 100) > 100 * sPlayerbotAIConfig.randomBotRpgChance)
+    player->GetPlayerbotAI()->Reset();
+
+    uint32 bot = player->GetGUIDLow();
+    uint32 roll = urand(0, 100);
+
+    if (roll < 100 * sPlayerbotAIConfig.randomBotRpgChance)
     {
-        sLog.outDetail("Changing strategy for bot %s to grinding", player->GetName());
-        player->GetPlayerbotAI()->ChangeStrategy("-rpg,+grind,+patrol", BOT_STATE_NON_COMBAT);
-        ScheduleTeleport(bot, 30);
-    }
-    else
-    {
+        sRandomRaidMgr.RemoveBot(player);
         sLog.outDetail("Changing strategy for bot %s to RPG", player->GetName());
         player->GetPlayerbotAI()->ChangeStrategy("+rpg,-grind,-patrol", BOT_STATE_NON_COMBAT);
         RandomTeleportForRpg(player);
+        ScheduleChangeStrategy(bot);
+        return;
+    }
+    else if (player->getLevel() >= 45 && roll < 100 * (sPlayerbotAIConfig.randomBotRpgChance + sPlayerbotAIConfig.randomBotAttackChance))
+    {
+        if (sRandomRaidMgr.AddBot(player))
+        {
+            sLog.outDetail("Changing strategy for bot %s to ATTACK", player->GetName());
+            player->GetPlayerbotAI()->ChangeStrategy("-rpg,+grind,+patrol,+pvp", BOT_STATE_NON_COMBAT);
+            ScheduleChangeStrategy(bot);
+            return;
+        }
     }
 
+    sRandomRaidMgr.RemoveBot(player);
+    sLog.outDetail("Changing strategy for bot %s to GRIND", player->GetName());
+    player->GetPlayerbotAI()->ChangeStrategy("-rpg,+grind,+patrol", BOT_STATE_NON_COMBAT);
+    ScheduleTeleport(bot, 30);
     ScheduleChangeStrategy(bot);
 }
 
@@ -1243,6 +1279,37 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
     uint32 race = bot->getRace();
     sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[race].size());
     RandomTeleport(bot, rpgLocsCache[race], false, false);
+}
+
+void RandomPlayerbotMgr::RandomTeleportForAttack(vector<Player*> bots)
+{
+    Player* leader = bots[urand(0, bots.size() - 1)];
+    uint32 race = leader->getRace();
+
+    if (IsAlliance(leader->getRace()))
+    {
+        uint32 races[] = { RACE_ORC, RACE_UNDEAD, RACE_TAUREN, RACE_TROLL };
+        race = races[urand(0, 3)];
+    }
+    else
+    {
+        uint32 races[] = { RACE_HUMAN, RACE_DWARF, RACE_NIGHTELF, RACE_GNOME };
+        race = races[urand(0, 3)];
+    }
+
+    vector<WorldLocation> locs = rpgLocsCache[race];
+    WorldLocation loc = locs[urand(0, locs.size())];
+
+    vector<WorldLocation> singleLocs;
+    singleLocs.push_back(loc);
+
+    for(vector<Player*>::iterator i = bots.begin(); i != bots.end(); ++i)
+    {
+        Player* bot = *i;
+        sLog.outString("Random teleporting bot %s for ATTACK (race = %d}", bot->GetName(), race);
+        Refresh(bot);
+        RandomTeleport(bot, singleLocs, true, true);
+    }
 }
 
 void RandomPlayerbotMgr::Remove(Player* bot)
