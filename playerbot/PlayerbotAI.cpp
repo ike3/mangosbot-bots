@@ -231,6 +231,7 @@ void PlayerbotAI::Reset()
     aiObjectContext->GetValue<LastMovement& >("last taxi")->Get().Set(NULL);
 
     bot->GetMotionMaster()->Clear();
+    bot->StopMoving();
 #ifdef MANGOS
     bot->m_taxi.ClearTaxiDestinations();
 #endif
