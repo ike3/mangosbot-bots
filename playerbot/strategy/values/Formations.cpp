@@ -28,6 +28,8 @@ void Formation::UpdateAllowedPositionZ(Player* bot, float x, float y, float &z)
     terrain->GetWaterOrGroundLevel(x, y, z, &ground);
     if (terrain->IsUnderWater(x, y, z) || terrain->IsInWater(x, y, z)) z =  orig;
     else z = ground;
+
+    if (abs(orig - z) > sPlayerbotAIConfig.farDistance) z = orig;
 }
 
 WorldLocation MoveAheadFormation::GetLocation()
