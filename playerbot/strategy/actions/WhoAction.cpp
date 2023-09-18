@@ -19,7 +19,7 @@ inline int strcmpi(const char* s1, const char* s2)
 bool WhoAction::Execute(Event event)
 {
     Player* owner = event.getOwner();
-    if (!owner)
+    if (!owner || !sObjectMgr.GetPlayer(owner->GetObjectGuid()))
         return false;
 
     ostringstream out;

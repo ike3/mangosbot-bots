@@ -15,7 +15,7 @@ using namespace ai;
 bool WtsAction::Execute(Event event)
 {
     Player* owner = event.getOwner();
-    if (!owner)
+    if (!owner || !sObjectMgr.GetPlayer(owner->GetObjectGuid()))
         return false;
 
     ostringstream out;

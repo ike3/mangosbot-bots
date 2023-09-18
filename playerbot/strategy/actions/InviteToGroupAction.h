@@ -12,7 +12,7 @@ namespace ai
         virtual bool Execute(Event event)
         {
             Player* master = event.getOwner();
-            if (!master)
+            if (!master || !sObjectMgr.GetPlayer(master->GetObjectGuid()))
                 return false;
 
             WorldPacket p;

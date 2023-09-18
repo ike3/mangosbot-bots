@@ -12,8 +12,8 @@ namespace ai
             packet = other.packet;
             owner = other.owner;
         }
-        Event() {}
-        Event(string source) : source(source) {}
+        Event() : owner(NULL) {}
+        Event(string source) : source(source), owner(NULL) {}
         Event(string source, string param, Player* owner = NULL) : source(source), param(param), owner(owner) {}
         Event(string source, WorldPacket &packet, Player* owner = NULL) : source(source), packet(packet), owner(owner) {}
         virtual ~Event() {}
