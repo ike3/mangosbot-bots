@@ -369,18 +369,18 @@ CREATE TABLE IF NOT EXISTS `ai_playerbot_texts` (
   `text` varchar(1024) NOT NULL COMMENT 'text',
   `say_type` tinyint(3) NOT NULL DEFAULT '0' COMMENT '0 - say, 1 - yell',
   `reply_type` tinyint(3) NOT NULL DEFAULT '0' COMMENT 'if > 0 then can be filtered as a response to chat',
-  `text_loc1` varchar(1024) NOT NULL,
-  `text_loc2` varchar(1024) NOT NULL,
-  `text_loc3` varchar(1024) NOT NULL,
-  `text_loc4` varchar(1024) NOT NULL,
-  `text_loc5` varchar(1024) NOT NULL,
-  `text_loc6` varchar(1024) NOT NULL,
-  `text_loc7` varchar(1024) NOT NULL,
-  `text_loc8` varchar(1024) NOT NULL,
+  `text_loc1` varchar(1024) NOT NULL DEFAULT '',
+  `text_loc2` varchar(1024) NOT NULL DEFAULT '',
+  `text_loc3` varchar(1024) NOT NULL DEFAULT '',
+  `text_loc4` varchar(1024) NOT NULL DEFAULT '',
+  `text_loc5` varchar(1024) NOT NULL DEFAULT '',
+  `text_loc6` varchar(1024) NOT NULL DEFAULT '',
+  `text_loc7` varchar(1024) NOT NULL DEFAULT '',
+  `text_loc8` varchar(1024) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=501 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table tbcplayerbots.ai_playerbot_texts: ~500 rows (approximately)
+-- Dumping data for table tbcplayerbots.ai_playerbot_texts: ~600 rows (approximately)
 /*!40000 ALTER TABLE `ai_playerbot_texts` DISABLE KEYS */;
 INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (1, 'suggest_instance', 'Anyone wants %instance?', 0, 0, '', 'Quelqu\'un fait %instance ?', '', '', '', '¿Alguien quiere ir a %instance?', '', '');
 INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (2, 'suggest_instance', 'Any groups for %instance?', 0, 0, '', 'Des groupes pour %instance ?', '', '', '', '¿Algún grupo para %instance?', '', '');
@@ -918,8 +918,8 @@ INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`
 INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (534, 'error_cant_put', 'I can\'t put ', 0, 0, '', '', '', '', '', 'No puedo depositar ', '', 'Я не могу положить');
 INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (535, 'error_gbank_rights', 'I have no rights to put items in the first guild bank tab', 0, 0, '', '', '', '', '', 'No tengo derechos para depositar objetos en la primera pestaña del banco de hermandad', '', 'Нет прав чтобы класть вещи в первую вкладку гильд банка');
 INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (536, 'gbank_put', ' put to guild bank', 0, 0, '', '', '', '', '', ' depositado en el banco de hermandad', '', ' теперь в гильд банке');
-INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (537, 'free_moving', 'Free moving', 0, 0, '', '', '', '', '', '', '', '');
-INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (538, 'guarding', 'Guarding', 0, 0, '', '', '', '', '', '', '', '');
+INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (537, 'free_moving', 'Free moving', 0, 0, '', '', '', '', '', 'Moviendome libremente', '', '');
+INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (538, 'guarding', 'Guarding', 0, 0, '', '', '', '', '', 'Protegiendo la posición', '', '');
 INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (539, 'use_command', 'Using %target', 0, 0, '', '', '', '', '', 'Usando %target', '', '');
 INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (540, 'command_target_unit', 'on %unit', 0, 0, '', '', '', '', '', 'en %unit', '', '');
 INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (541, 'use_command_remaining', '(%amount available)', 0, 0, '', '', '', '', '', '(%amount restante)', '', '');
@@ -941,7 +941,15 @@ INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`
 INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (557, 'cast_spell_command_error', 'Cannot cast %spell', 0, 0, '', '', '', '', '', 'No puedo lanzar %spell', '', '');
 INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (558, 'cast_spell_command_error_failed', 'Failed to cast %spell', 0, 0, '', '', '', '', '', 'Fallo al lanzar %spell', '', '');
 INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (559, 'cast_spell_command_amount', ' |cffffff00(x%amount left)|r', 0, 0, '', '', '', '', '', ' |cffffff00(x%amount restante)|r', '', '');
-
+INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (560, 'join_group', 'Hey %player, do you want join my group?', 0, 0, '', '', '', '', '', 'Oye %player, ¿Quieres unirte a mi grupo?', '', '');
+INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (561, 'join_raid', 'Hey %player, do you want join my group?', 0, 0, '', '', '', '', '', 'Oye %player, ¿Quieres unirte a mi banda?', '', '');
+INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (562, 'quest_error_talk', 'I can\'t talk with the quest giver', 0, 0, '', '', '', '', '', 'No puedo hablar con el propietario de la mision', '', '');
+INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (563, 'quest_error_completed', 'I have already completed %quest', 0, 0, '', '', '', '', '', 'Ya he completado la mision %quest', '', '');
+INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (564, 'quest_error_have_quest', 'I already have %quest', 0, 0, '', '', '', '', '', 'Ya tengo la mision %quest', '', '');
+INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (565, 'quest_error_cant_take', 'I can\'t take %quest', 0, 0, '', '', '', '', '', 'No puedo aceptar la mision %quest', '', '');
+INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (566, 'quest_error_log_full', 'I can\'t take %quest because my quest log is full', 0, 0, '', '', '', '', '', 'No puedo aceptar la mision %quest porque mi registro de misiones esta completo', '', '');
+INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (567, 'quest_error_bag_full', 'I can\'t take %quest because my bag is full', 0, 0, '', '', '', '', '', 'No puedo aceptar la mision %quest porque mi inventario esta lleno', '', '');
+INSERT INTO `ai_playerbot_texts` (`id`, `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8`) VALUES (568, 'quest_accepted', 'I have accepted %quest', 0, 0, '', '', '', '', '', 'He aceptado la mision %quest', '', '');
 /*!40000 ALTER TABLE `ai_playerbot_texts` ENABLE KEYS */;
 
 -- Dumping structure for table tbcplayerbots.ai_playerbot_texts_chance

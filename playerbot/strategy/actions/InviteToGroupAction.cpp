@@ -263,12 +263,12 @@ namespace ai
             if (sPlayerbotAIConfig.inviteChat && sRandomPlayerbotMgr.IsFreeBot(bot))
             {
                 map<string, string> placeholders;
-                placeholders["%name"] = player->GetName();
+                placeholders["%player"] = player->GetName();
 
                 if(group && group->IsRaidGroup())
-                    bot->Say(BOT_TEXT2("Hey %name do you want join my raid?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));                    
+                    bot->Say(BOT_TEXT2("join_raid", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));                    
                 else
-                    bot->Say(BOT_TEXT2("Hey %name do you want join my group?", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+                    bot->Say(BOT_TEXT2("join_group", placeholders), (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
             }
 
             return Invite(bot, player);

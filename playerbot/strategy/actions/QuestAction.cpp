@@ -11,20 +11,25 @@ bool QuestAction::Execute(Event& event)
     ObjectGuid guid = event.getObject();
 
     Player* master = GetMaster();
-    if (!master)
-    {
-        if (!guid)
-            guid = bot->GetSelectionGuid();
-    }
-    else {
-        if (!guid)
-            guid = master->GetSelectionGuid();
-    }
 
     if (!guid)
-        return false;
+    {
+        if (!master)
+        {
+            guid = bot->GetSelectionGuid();
+        }
+        else
+        {
+            guid = master->GetSelectionGuid();
+        }
+    }
 
-    return ProcessQuests(guid);
+    if (guid)
+    {
+        return ProcessQuests(guid);
+    }
+
+    return false;
 }
 
 bool QuestAction::CompleteQuest(Player* player, uint32 entry)
@@ -94,19 +99,16 @@ bool QuestAction::CompleteQuest(Player* player, uint32 entry)
         uint32 repValue = pQuest->GetRepObjectiveValue();
         uint32 curRep = player->GetReputationMgr().GetReputation(repFaction);
         if (curRep < repValue)
-#ifdef MANGOS
-            if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(repFaction))
-#endif
-#ifdef CMANGOS
+        {
 #ifdef MANGOSBOT_ONE
             if (FactionEntry const* factionEntry = sFactionStore.LookupEntry<FactionEntry>(repFaction))
 #else
             if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(repFaction))
 #endif
-#endif
             {
                 player->GetReputationMgr().SetReputation(factionEntry, repValue);
             }
+        }
     }
 
     // If the quest requires money
@@ -116,13 +118,7 @@ bool QuestAction::CompleteQuest(Player* player, uint32 entry)
         player->ModifyMoney(-ReqOrRewMoney);
     }
 
-#ifdef MANGOS
-    player->CompleteQuest(entry, QUEST_STATUS_FORCE_COMPLETE);
-#endif
-#ifdef CMANGOS
     player->CompleteQuest(entry);
-#endif
-
     return true;
 }
 
@@ -130,11 +126,15 @@ bool QuestAction::ProcessQuests(ObjectGuid questGiver)
 {
     GameObject *gameObject = ai->GetGameObject(questGiver);
     if (gameObject && gameObject->GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
+    {
         return ProcessQuests(gameObject);
+    }
 
     Creature* creature = ai->GetCreature(questGiver);
     if (creature)
+    {
         return ProcessQuests(creature);
+    }
 
     return false;
 }
@@ -145,26 +145,30 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
 
     if (sServerFacade.GetDistance2d(bot, questGiver) > INTERACTION_DISTANCE && !sPlayerbotAIConfig.syncQuestWithPlayer)
     {
-        ai->TellError("Cannot talk to quest giver");
+        Player* master = ai->GetMaster();
+        ai->TellPlayerNoFacing(master, BOT_TEXT("quest_error_talk"));
         return false;
     }
 
     if (!sServerFacade.IsInFront(bot, questGiver, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT))
+    {
         sServerFacade.SetFacingTo(bot, questGiver);
+    }
 
     bot->SetSelectionGuid(guid);
     bot->PrepareQuestMenu(guid);
     QuestMenu& questMenu = bot->GetPlayerMenu()->GetQuestMenu();
 
     bool hasAccept = false;
-
     for (uint32 i = 0; i < questMenu.MenuItemCount(); ++i)
     {
         QuestMenuItem const& menuItem = questMenu.GetItem(i);
         uint32 questID = menuItem.m_qId;
         Quest const* quest = sObjectMgr.GetQuestTemplate(questID);
         if (!quest)
+        {
             continue;
+        }
 
         hasAccept |= ProcessQuest(GetMaster(), quest, questGiver);
     }
@@ -174,24 +178,36 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
 
 bool QuestAction::AcceptQuest(Player* requester, Quest const* quest, uint64 questGiver)
 {
-    std::ostringstream out;
+    bool success = false;
+    const uint32 questId = quest->GetQuestId();
 
-    uint32 questId = quest->GetQuestId();
-
+    string outputMessage;
+    map<string, string> args;
+    args["%quest"] = chat->formatQuest(quest);
+    
     if (bot->GetQuestStatus(questId) == QUEST_STATUS_COMPLETE)
-        out << "Already completed";
+    {
+        outputMessage = BOT_TEXT2("quest_error_completed", args);
+    }
     else if (! bot->CanTakeQuest(quest, false))
     {
         if (! bot->SatisfyQuestStatus(quest, false))
-            out << "Already on";
+        {
+            outputMessage = BOT_TEXT2("quest_error_have_quest", args);
+        }
         else
-            out << "Can't take";
+        {
+            outputMessage = BOT_TEXT2("quest_error_cant_take", args);
+        }
     }
     else if (! bot->SatisfyQuestLog(false))
-        out << "Quest log is full";
+    {
+        outputMessage = BOT_TEXT2("quest_error_log_full", args);
+    }
     else if (! bot->CanAddQuest(quest, false))
-        out << "Bags are full";
-
+    {
+        outputMessage = BOT_TEXT2("quest_error_bag_full", args);
+    }
     else
     {
         WorldPacket p(CMSG_QUESTGIVER_ACCEPT_QUEST);
@@ -204,23 +220,18 @@ bool QuestAction::AcceptQuest(Player* requester, Quest const* quest, uint64 ques
         {
             Object* pObject = bot->GetObjectByTypeMask((ObjectGuid)questGiver, TYPEMASK_CREATURE_GAMEOBJECT_PLAYER_OR_ITEM);
             bot->AddQuest(quest, pObject);
-
         }
 
         if (bot->GetQuestStatus(questId) != QUEST_STATUS_NONE && bot->GetQuestStatus(questId) != QUEST_STATUS_AVAILABLE)
         {
-
             sPlayerbotAIConfig.logEvent(ai, "AcceptQuestAction", quest->GetTitle(), to_string(quest->GetQuestId()));
-
-            out << "Accepted " << chat->formatQuest(quest);
-            ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
-            return true;
+            outputMessage = BOT_TEXT2("quest_accepted", args);
+            success = true;
         }
     }
 
-    out << " " << chat->formatQuest(quest);
-    ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
-    return false;
+    ai->TellPlayer(requester, outputMessage, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    return success;
 }
 
 bool QuestObjectiveCompletedAction::Execute(Event& event)
@@ -237,18 +248,20 @@ bool QuestObjectiveCompletedAction::Execute(Event& event)
         entry &= 0x7FFFFFFF;
         GameObjectInfo const* info = sObjectMgr.GetGameObjectInfo(entry);
         if (info)
+        {
             ai->TellPlayer(GetMaster(), chat->formatQuestObjective(info->name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        }
     }
     else
     {
         CreatureInfo const* info = sObjectMgr.GetCreatureTemplate(entry);
         if (info)
+        {
             ai->TellPlayer(GetMaster(), chat->formatQuestObjective(info->Name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        }
     }
 
     Quest const* qInfo = sObjectMgr.GetQuestTemplate(questId);
-
     sPlayerbotAIConfig.logEvent(ai, "QuestObjectiveCompletedAction", qInfo->GetTitle(), to_string((float)available / (float)required));
-
     return false;
 }
