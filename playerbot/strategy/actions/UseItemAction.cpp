@@ -135,6 +135,38 @@ bool BotUseItemSpell::OpenLockCheck()
     return false;
 }
 
+vector<uint32> ParseItems(const string& text)
+{
+    vector<uint32> itemIds;
+
+    uint8 pos = 0;
+    while (true)
+    {
+        int i = text.find("Hitem:", pos);
+        if (i == -1)
+        {
+            break;
+        }
+
+        pos = i + 6;
+        int endPos = text.find(':', pos);
+        if (endPos == -1)
+        {
+            break;
+        }
+
+        string idC = text.substr(pos, endPos - pos);
+        uint32 id = atol(idC.c_str());
+        pos = endPos;
+        if (id)
+        {
+            itemIds.push_back(id);
+        }
+    }
+
+    return itemIds;
+}
+
 bool UseItemAction::Execute(Event& event)
 {
     Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
@@ -154,7 +186,18 @@ bool UseItemAction::Execute(Event& event)
             list<Item*>::iterator i = items.begin();
             Item* item = *i++;
             Item* itemTarget = *i;
-            if(item->IsPotion() || item->GetProto()->Class == ITEM_CLASS_CONSUMABLE || itemTarget->GetProto() == item->GetProto())
+
+            // Check if the items are in the correct order
+            const vector<uint32> itemIds = ParseItems(name);
+            if(!itemIds.empty() && item->GetEntry() != *itemIds.begin())
+            {
+                // Swap items to match command order
+                Item* tmp = item;
+                item = itemTarget;
+                itemTarget = tmp;
+            }
+
+            if(item->IsPotion() || itemTarget->GetProto() == item->GetProto())
             {
                 return UseItemAuto(requester, item);
             }
@@ -337,7 +380,7 @@ bool UseItemAction::UseItemOnGameObject(Player* requester, Item* item, ObjectGui
 
 bool UseItemAction::UseItemOnItem(Player* requester, Item* item, Item* itemTarget)
 {
-   return UseItem(requester, item, ObjectGuid(), itemTarget);
+    return UseItem(requester, item, ObjectGuid(), itemTarget);
 }
 
 bool UseItemAction::UseItemOnTarget(Player* requester, Item* item, Unit* target)
