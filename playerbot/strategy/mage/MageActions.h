@@ -40,6 +40,11 @@ namespace ai
     {
     public:
         CastArcaneMissilesAction(PlayerbotAI* ai) : CastSpellAction(ai, "arcane missiles") {}
+
+        virtual bool isUseful()
+        {
+            return !AI_VALUE2(bool, "has aggro", "current target");
+        }
     };
 
     class CastPyroblastAction : public CastSpellAction

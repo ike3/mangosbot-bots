@@ -172,8 +172,16 @@ namespace ai
     BEGIN_RANGED_SPELL_ACTION(CastMindBlastAction, "mind blast")
     END_SPELL_ACTION()
 
-    BEGIN_RANGED_SPELL_ACTION(CastMindFlayAction, "mind flay")
-    END_SPELL_ACTION()
+    class CastMindFlayAction : public CastSpellAction
+    {
+    public:
+        CastMindFlayAction(PlayerbotAI* ai) : CastSpellAction(ai, "mind flay") {}
+
+        virtual bool isUseful()
+        {
+            return !AI_VALUE2(bool, "has aggro", "current target");
+        }
+    };
 
 	class CastCureDiseaseAction : public CastCureSpellAction {
 	public:

@@ -45,7 +45,7 @@ ArcaneMageStrategy::ArcaneMageStrategy(PlayerbotAI* ai) : GenericMageStrategy(ai
 
 NextAction** ArcaneMageStrategy::getDefaultActions()
 {
-    return NextAction::array(0, new NextAction("arcane barrage", 10.0f), NULL);
+    return NextAction::array(0, new NextAction("arcane barrage", 10.0f), new NextAction("shoot", 1.0f), NULL);
 }
 
 void ArcaneMageStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
