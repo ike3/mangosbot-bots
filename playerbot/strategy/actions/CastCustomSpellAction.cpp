@@ -54,6 +54,7 @@ bool CastCustomSpellAction::Execute(Event event)
     }
 
     uint32 spell = AI_VALUE2(uint32, "spell id", text);
+    if (!spell) spell = AI_VALUE2(uint32, "spell id", event.getParam());
 
     ostringstream msg;
     if (!spell)
