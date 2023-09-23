@@ -363,7 +363,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         {
             if (tab == 0)
             {
-                combatEngine->addStrategies("elemental", "aoe", "bmana", "threat", "flee", "ranged", NULL);
+                combatEngine->addStrategies("elemental", "aoe", "cc", "bmana", "threat", "flee", "ranged", NULL);
             }
             else if (tab == 2)
             {
@@ -371,7 +371,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             }
             else
             {
-                combatEngine->addStrategies("enhancement", "aoe", "bdps", "threat", "close", NULL);
+                combatEngine->addStrategies("enhancement", "aoe", "cc", "bdps", "threat", "close", NULL);
             }
 
             combatEngine->addStrategies("dps assist", "cure", "totems", "buff", "boost", NULL);
@@ -511,7 +511,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
             if (player->getClass() == CLASS_SHAMAN && tab == 2)
             {
-                combatEngine->addStrategies("elemental", "aoe", NULL);
+                combatEngine->addStrategies("elemental", "aoe", "cc", NULL);
             }
 
             if (player->getClass() == CLASS_PALADIN && tab == 0)
@@ -587,7 +587,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
         if (player->getClass() == CLASS_SHAMAN && tab == 2)
         {
-            combatEngine->addStrategies("elemental", "aoe", NULL);
+            combatEngine->addStrategies("elemental", "aoe", "cc", NULL);
         }
 
         if (player->getClass() == CLASS_DRUID && tab == 2)
@@ -654,7 +654,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         {
             if (tab == 0)
             {
-                nonCombatEngine->addStrategies("elemental", "bmana", "aoe", NULL);
+                nonCombatEngine->addStrategies("elemental", "bmana", "aoe", "cc", NULL);
             }
             else if (tab == 2)
             {
@@ -662,7 +662,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             }
             else
             {
-                nonCombatEngine->addStrategies("enhancement", "bdps", NULL);
+                nonCombatEngine->addStrategies("enhancement", "bdps", "aoe", "cc", NULL);
             }
 
             nonCombatEngine->addStrategies("dps assist", "cure", "totems", "buff", "boost", NULL);

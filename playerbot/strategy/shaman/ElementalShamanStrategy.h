@@ -107,6 +107,49 @@ namespace ai
         void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
     };
 
+    class ElementalShamanCcStrategy : public ShamanCcStrategy
+    {
+    public:
+        ElementalShamanCcStrategy(PlayerbotAI* ai) : ShamanCcStrategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ElementalShamanCcPveStrategy : public ElementalShamanCcStrategy
+    {
+    public:
+        ElementalShamanCcPveStrategy(PlayerbotAI* ai) : ElementalShamanCcStrategy(ai) {}
+        string getName() override { return "cc elemental pve"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ElementalShamanCcPvpStrategy : public ElementalShamanCcStrategy
+    {
+    public:
+        ElementalShamanCcPvpStrategy(PlayerbotAI* ai) : ElementalShamanCcStrategy(ai) {}
+        string getName() override { return "cc elemental pvp"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class ElementalShamanCcRaidStrategy : public ElementalShamanCcStrategy
+    {
+    public:
+        ElementalShamanCcRaidStrategy(PlayerbotAI* ai) : ElementalShamanCcStrategy(ai) {}
+        string getName() override { return "cc elemental raid"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
     class ElementalShamanCureStrategy : public ShamanCureStrategy
     {
     public:

@@ -50,14 +50,6 @@ void ShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "purge",
         NextAction::array(0, new NextAction("purge", ACTION_DISPEL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "wind shear",
-        NextAction::array(0, new NextAction("wind shear", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "wind shear on enemy healer",
-        NextAction::array(0, new NextAction("wind shear on enemy healer", ACTION_INTERRUPT), NULL)));
 }
 
 void ShamanStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -189,6 +181,54 @@ void ShamanAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
 void ShamanAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     AoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "wind shear",
+        NextAction::array(0, new NextAction("wind shear", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "wind shear on enemy healer",
+        NextAction::array(0, new NextAction("wind shear on enemy healer", ACTION_INTERRUPT), NULL)));
+}
+
+void ShamanCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -486,14 +526,6 @@ void ShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "purge",
         NextAction::array(0, new NextAction("purge", ACTION_DISPEL), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "wind shear",
-        NextAction::array(0, new NextAction("wind shear", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "wind shear on enemy healer",
-        NextAction::array(0, new NextAction("wind shear on enemy healer", ACTION_INTERRUPT), NULL)));
 }
 
 void ShamanStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -629,6 +661,54 @@ void ShamanAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
 void ShamanAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     AoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "wind shear",
+        NextAction::array(0, new NextAction("wind shear", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "wind shear on enemy healer",
+        NextAction::array(0, new NextAction("wind shear on enemy healer", ACTION_INTERRUPT), NULL)));
+}
+
+void ShamanCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -935,14 +1015,6 @@ void ShamanStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         "purge",
         NextAction::array(0, new NextAction("purge", ACTION_DISPEL), NULL)));
 
-    triggers.push_back(new TriggerNode(
-        "wind shear",
-        NextAction::array(0, new NextAction("wind shear", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "wind shear on enemy healer",
-        NextAction::array(0, new NextAction("wind shear on enemy healer", ACTION_INTERRUPT), NULL)));
-
     if (sRandomPlayerbotMgr.IsRandomBot(ai->GetBot()))
     {
         triggers.push_back(new TriggerNode(
@@ -1095,6 +1167,54 @@ void ShamanAoeRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
 void ShamanAoeRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     AoeRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "wind shear",
+        NextAction::array(0, new NextAction("wind shear", ACTION_INTERRUPT), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "wind shear on enemy healer",
+        NextAction::array(0, new NextAction("wind shear on enemy healer", ACTION_INTERRUPT), NULL)));
+}
+
+void ShamanCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPveStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void ShamanCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void ShamanCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    CcRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 void ShamanCureStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)

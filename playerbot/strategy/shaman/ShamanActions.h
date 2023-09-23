@@ -523,6 +523,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe elemental pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe elemental pve", strategiesRequired);
 
+            strategiesRequired = { "elemental", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc elemental pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc elemental pve", strategiesRequired);
+
             strategiesRequired = { "elemental", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure elemental pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure elemental pve", strategiesRequired);
@@ -549,6 +553,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe enhancement pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe enhancement pve", strategiesRequired);
 
+            strategiesRequired = { "enhancement", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc enhancement pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc enhancement pve", strategiesRequired);
+
             strategiesRequired = { "enhancement", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure enhancement pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure enhancement pve", strategiesRequired);
@@ -574,6 +582,10 @@ namespace ai
             strategiesRequired = { "restoration", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe restoration pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe restoration pve", strategiesRequired);
+            
+            strategiesRequired = { "restoration", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc restoration pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc restoration pve", strategiesRequired);
 
             strategiesRequired = { "restoration", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure restoration pve", strategiesRequired);
@@ -612,6 +624,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe elemental pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe elemental pvp", strategiesRequired);
 
+            strategiesRequired = { "elemental", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc elemental pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc elemental pvp", strategiesRequired);
+
             strategiesRequired = { "elemental", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure elemental pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure elemental pvp", strategiesRequired);
@@ -638,6 +654,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe enhancement pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe enhancement pvp", strategiesRequired);
 
+            strategiesRequired = { "enhancement", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc enhancement pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc enhancement pvp", strategiesRequired);
+
             strategiesRequired = { "enhancement", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure enhancement pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure enhancement pvp", strategiesRequired);
@@ -663,6 +683,10 @@ namespace ai
             strategiesRequired = { "restoration", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe restoration pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe restoration pvp", strategiesRequired);
+
+            strategiesRequired = { "restoration", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc elemental pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc elemental pvp", strategiesRequired);
 
             strategiesRequired = { "restoration", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure restoration pvp", strategiesRequired);
@@ -701,6 +725,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe elemental raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe elemental raid", strategiesRequired);
 
+            strategiesRequired = { "elemental", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc elemental raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc elemental raid", strategiesRequired);
+
             strategiesRequired = { "elemental", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure elemental raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure elemental raid", strategiesRequired);
@@ -727,6 +755,10 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe enhancement raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe enhancement raid", strategiesRequired);
 
+            strategiesRequired = { "enhancement", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc enhancement raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc enhancement raid", strategiesRequired);
+
             strategiesRequired = { "enhancement", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure enhancement raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure enhancement raid", strategiesRequired);
@@ -752,6 +784,10 @@ namespace ai
             strategiesRequired = { "restoration", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe restoration raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe restoration raid", strategiesRequired);
+
+            strategiesRequired = { "restoration", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc restoration raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc restoration raid", strategiesRequired);
 
             strategiesRequired = { "restoration", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure restoration raid", strategiesRequired);
