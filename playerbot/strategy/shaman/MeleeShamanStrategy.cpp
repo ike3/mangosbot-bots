@@ -93,6 +93,10 @@ void EarthShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "shock",
         NextAction::array(0, new NextAction("earth shock", 20.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "strength of earth totem",
+        NextAction::array(0, new NextAction("reach melee", 22.0f), new NextAction("strength of earth totem", 18.0f), NULL)));
 }
 
 void FireShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
@@ -115,6 +119,10 @@ void FrostShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "shock",
         NextAction::array(0, new NextAction("frost shock", 20.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "mana spring totem",
+        NextAction::array(0, new NextAction("reach melee", 22.0f), new NextAction("mana spring totem", 19.0f), NULL)));
 }
 
 void AirShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
@@ -126,4 +134,8 @@ void AirShamanStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "shock",
         NextAction::array(0, new NextAction("flame shock", 20.0f), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "windfury totem",
+        NextAction::array(0, new NextAction("reach melee", 22.0f), new NextAction("windfury totem", 19.0f), NULL)));
 }
