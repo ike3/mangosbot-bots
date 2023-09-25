@@ -29,6 +29,7 @@ namespace ai
             }
 
             ai->ResetStrategies(!randomBot);
+            ai->ChangeStrategy("-follow,+stay", BOT_STATE_NON_COMBAT);
             return true;
         }
     };
