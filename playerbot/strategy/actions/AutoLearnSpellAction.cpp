@@ -3,7 +3,6 @@
 #include "AutoLearnSpellAction.h"
 #include "ServerFacade.h"
 
-
 using namespace ai;
 
 bool AutoLearnSpellAction::Execute(Event& event)
@@ -18,20 +17,20 @@ bool AutoLearnSpellAction::Execute(Event& event)
     {
         const std::string& temp = out.str();
         out.seekp(0);
-        out << "Learned spells: ";
         out << temp;
         out.seekp(-2, out.cur);
         out << ".";
-        ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+
+        map<string, string> args;
+        args["%spells"] = out.str();
+        ai->TellPlayer(GetMaster(), BOT_TEXT2("auto_learn_spell", args), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 
     return true;
 }
 
-
 void AutoLearnSpellAction::LearnSpells(ostringstream* out)
 {
-
     if (sPlayerbotAIConfig.guildFeedbackRate && frand(0, 100) <= sPlayerbotAIConfig.guildFeedbackRate && bot->GetGuildId() && sRandomPlayerbotMgr.IsFreeBot(bot))
     {
         Guild* guild = sGuildMgr.GetGuildById(bot->GetGuildId());

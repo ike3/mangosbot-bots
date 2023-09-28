@@ -22,30 +22,37 @@ bool EquipAction::Execute(Event& event)
     {
         //Get items based on text.
         list<Item*> found = ai->InventoryParseItems(text, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
+
         //Sort items on itemLevel descending.
         found.sort([](Item* i, Item* j) {return i->GetProto()->ItemLevel > j->GetProto()->ItemLevel; });
 
         vector< uint16> dests;
-
         for (auto& item : found)
         {
             uint32 itemId = item->GetProto()->ItemId;
             if (std::find(ids.begin(), ids.end(), itemId) != ids.end())
+            {
                 continue;
+            }
 
             uint16 dest;
             InventoryResult msg = bot->CanEquipItem(NULL_SLOT, dest, item, true);
 
             if (msg != EQUIP_ERR_OK)
+            {
                 continue;
+            }
 
             if (std::find(dests.begin(), dests.end(), dest) != dests.end())
+            {
                 continue;
+            }
 
             dests.push_back(dest);
             ids.insert(itemId);
         }
     }
+
     EquipItems(requester, ids);
     return true;
 }
@@ -83,7 +90,10 @@ void EquipAction::EquipItem(Player* requester, FindItemVisitor* visitor)
 {
     ai->InventoryIterateItems(visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
     list<Item*> items = visitor->GetResult();
-	if (!items.empty()) EquipItem(requester, *items.begin());
+	if (!items.empty()) 
+    {
+        EquipItem(requester, *items.begin());
+    }
 }
 
 //Return the bag slot with smallest bag
@@ -97,13 +107,17 @@ uint8 EquipAction::GetSmallestBagSlot()
         if (pBag)
         {
             if (curBag > 0 && curSlots < pBag->GetBagSize())
+            {
                 continue;
+            }
             
             curBag = bag;
             curSlots = pBag->GetBagSize();
         }
         else
+        {
             return bag;
+        }
     }
 
     return curBag;
@@ -153,9 +167,9 @@ void EquipAction::EquipItem(Player* requester, Item* item)
 
     sPlayerbotAIConfig.logEvent(ai, "EquipAction", item->GetProto()->Name1, to_string(item->GetProto()->ItemId));
 
-    ostringstream out; out << "equipping " << chat->formatItem(item);
-
-    ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    map<string, string> args;
+    args["%item"] = chat->formatItem(item);
+    ai->TellPlayer(requester, BOT_TEXT2("equip_command", args), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
 bool EquipUpgradesAction::Execute(Event& event)
@@ -171,7 +185,9 @@ bool EquipUpgradesAction::Execute(Event& event)
         p >> status;
 
         if (status != TRADE_STATUS_TRADE_ACCEPT)
+        {
             return false;
+        }
     }
     else if (event.getSource() == "item push result")
     {
@@ -184,7 +200,9 @@ bool EquipUpgradesAction::Execute(Event& event)
             ObjectGuid guid;
             data >> guid;
             if (guid != bot->GetObjectGuid())
+            {
                 return false;
+            }
 
             uint32 received, created, isShowChatMessage, slotId, itemId, suffixFactor, count;
             uint32 itemRandomPropertyId;
