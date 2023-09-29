@@ -107,13 +107,13 @@ bool CastCustomSpellAction::Execute(Event event)
             ostringstream cmd;
             cmd << "cast " << text << " " << (castCount - 1);
             ai->HandleCommand(CHAT_MSG_WHISPER, cmd.str(), *master);
-            msg << "|cffffff00(x" << (castCount-1) << " left)|r";
+            msg << "|cffffff00(x" << (castCount-1) << " queued)|r";
         }
         ai->TellMasterNoFacing(msg.str());
     }
     else
     {
-        msg << "Cast " << spellName.str() << " is failed";
+        msg << "Casting " << spellName.str() << " is failed";
         ai->TellError(msg.str());
     }
 
