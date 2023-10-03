@@ -27,6 +27,10 @@ bool GreetAction::Execute(Event event)
     ai->PlaySound(TEXTEMOTE_HELLO);
     bot->SetSelectionGuid(oldSel);
 
+    time_t lastSaid = AI_VALUE2(time_t, "last said", "greet");
+    uint32 nextTime = time(0) + urand(30, 60);
+    ai->GetAiObjectContext()->GetValue<time_t>("last said", "greet")->Set(nextTime);
+
     set<ObjectGuid>& alreadySeenPlayers = ai->GetAiObjectContext()->GetValue<set<ObjectGuid>& >("already seen players")->Get();
     alreadySeenPlayers.insert(guid);
 
@@ -35,4 +39,10 @@ bool GreetAction::Execute(Event event)
         alreadySeenPlayers.insert(*i);
     }
     return true;
+}
+
+bool GreetAction::isUseful()
+{
+    time_t lastSaid = AI_VALUE2(time_t, "last said", "greet");
+    return (time(0) - lastSaid) > 30;
 }

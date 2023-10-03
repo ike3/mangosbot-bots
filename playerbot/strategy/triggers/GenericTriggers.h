@@ -613,7 +613,7 @@ namespace ai
     class NewPlayerNearbyTrigger : public Trigger
     {
     public:
-        NewPlayerNearbyTrigger(PlayerbotAI* ai) : Trigger(ai, "new player nearby", 3) {}
+        NewPlayerNearbyTrigger(PlayerbotAI* ai) : Trigger(ai, "new player nearby", 5) {}
 
     public:
         virtual bool IsActive()
