@@ -37,6 +37,12 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
             new NextAction("query item usage", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "query",
+        NextAction::array(0,
+            new NextAction("query quest", relevance),
+            new NextAction("query item usage", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "add all loot",
         NextAction::array(0, new NextAction("add all loot", relevance), new NextAction("loot", relevance), NULL)));
 
@@ -45,7 +51,15 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("use", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "use",
+        NextAction::array(0, new NextAction("use", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "o",
+        NextAction::array(0, new NextAction("open", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "open",
         NextAction::array(0, new NextAction("open", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -53,7 +67,15 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("item count", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "count",
+        NextAction::array(0, new NextAction("item count", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "e",
+        NextAction::array(0, new NextAction("equip", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "equip",
         NextAction::array(0, new NextAction("equip", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -61,7 +83,15 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("unequip", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "unequip",
+        NextAction::array(0, new NextAction("unequip", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "t",
+        NextAction::array(0, new NextAction("trade", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "trade",
         NextAction::array(0, new NextAction("trade", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -69,7 +99,15 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("trade", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "non trade",
+        NextAction::array(0, new NextAction("trade", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "s",
+        NextAction::array(0, new NextAction("sell", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "sell",
         NextAction::array(0, new NextAction("sell", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -77,7 +115,15 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
         NextAction::array(0, new NextAction("buy", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "buy",
+        NextAction::array(0, new NextAction("buy", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "r",
+        NextAction::array(0, new NextAction("reward", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "reward",
         NextAction::array(0, new NextAction("reward", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -139,6 +185,46 @@ void ChatCommandHandlerStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "ready",
         NextAction::array(0, new NextAction("ready check", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "line of sight",
+        NextAction::array(0, new NextAction("los", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "loot list",
+        NextAction::array(0, new NextAction("ll", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "vendor list",
+        NextAction::array(0, new NextAction("vl", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "skip spell",
+        NextAction::array(0, new NextAction("ss", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "combat",
+        NextAction::array(0, new NextAction("co", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "non combat",
+        NextAction::array(0, new NextAction("nc", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "dead",
+        NextAction::array(0, new NextAction("ds", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "custom",
+        NextAction::array(0, new NextAction("cs", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "remove aura",
+        NextAction::array(0, new NextAction("ra", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "auction",
+        NextAction::array(0, new NextAction("ah", relevance), NULL)));
 }
 
 
