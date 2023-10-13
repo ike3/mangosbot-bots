@@ -31,7 +31,13 @@ namespace ai
         virtual bool IsActive()
         {
             Unit* target = GetTarget();
-            return BuffOnPartyTrigger::IsActive() && (!target->IsPlayer() || !ai->IsRanged((Player*)target));
+            if (BuffOnPartyTrigger::IsActive() && (!target->IsPlayer() || !ai->IsRanged((Player*)target)))
+            {
+                // Don't apply thorns if fire shield (conflict) is on the target
+                return !ai->HasAura("fire shield", target);
+            }
+
+            return false;
         }
     };
 
@@ -39,6 +45,17 @@ namespace ai
     {
     public:
         ThornsTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "thorns", 4) {}
+
+        bool IsActive() override
+        {
+            if (BuffTrigger::IsActive())
+            {
+                // Don't apply thorns if fire shield (conflict) is on the target
+                return !ai->HasAura("fire shield", GetTarget());
+            }
+
+            return false;
+        }
     };
 
     class OmenOfClarityTrigger : public BuffTrigger
