@@ -105,6 +105,9 @@ AiPlayerbot.RandomBotMaxLevelChance = 0.15
 # Chance bot chooses RPG (Teleport to random camp for their level) instead of grinding
 AiPlayerbot.RandomBotRpgChance = 0.20
 
+# Chance for bot to use potions
+#AiPlayerbot.UsePotionChance = 1.0
+
 # Bots will speed up when following to stay close.
 # AiPlayerbot.BoostFollow = 1
 
