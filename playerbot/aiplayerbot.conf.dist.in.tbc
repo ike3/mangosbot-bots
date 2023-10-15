@@ -686,9 +686,12 @@ AiPlayerbot.FleeingEnabled = 1
 # Random bot default strategies (applied after defaults)
 #AiPlayerbot.RandomBotCombatStrategies = +dps,+dps assist,-threat
 #AiPlayerbot.RandomBotNonCombatStrategies = +grind,+loot,+rpg,+custom::say
+#AiPlayerbot.RandomBotReactStrategies = 
+#AiPlayerbot.RandomBotDeadStrategies = 
 #AiPlayerbot.CombatStrategies = +custom::say
 #AiPlayerbot.NonCombatStrategies = +custom::say,+return,+delayed roll
-
+#AiPlayerbot.ReactStrategies = 
+#AiPlayerbot.DeadStrategies = 
 
 # How often tasks are changed
 #AiPlayerbot.MinGuildTaskChangeTime = 172800

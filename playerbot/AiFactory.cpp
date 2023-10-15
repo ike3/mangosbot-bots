@@ -1113,6 +1113,15 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
             break;
         }
     }
+
+    if (facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player))
+    {
+        deadEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotDeadStrategies);
+    }
+    else
+    {
+        deadEngine->ChangeStrategy(sPlayerbotAIConfig.deadStrategies);
+    }
 }
 
 Engine* AiFactory::createDeadEngine(Player* player, PlayerbotAI* const facade, AiObjectContext* AiObjectContext)
@@ -1254,6 +1263,15 @@ void AiFactory::AddDefaultReactionStrategies(Player* player, PlayerbotAI* const 
 
             break;
         }
+    }
+
+    if (facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player))
+    {
+        reactionEngine->ChangeStrategy(sPlayerbotAIConfig.randomBotReactStrategies);
+    }
+    else
+    {
+        reactionEngine->ChangeStrategy(sPlayerbotAIConfig.reactStrategies);
     }
 }
 

@@ -110,8 +110,8 @@ public:
     bool logInGroupOnly, logValuesPerTick;
     bool fleeingEnabled;
     bool summonAtInnkeepersEnabled;
-    std::string combatStrategies, nonCombatStrategies;
-    std::string randomBotCombatStrategies, randomBotNonCombatStrategies;
+    std::string combatStrategies, nonCombatStrategies, reactStrategies, deadStrategies;
+    std::string randomBotCombatStrategies, randomBotNonCombatStrategies, randomBotReactStrategies, randomBotDeadStrategies;
     uint32 randomBotMinLevel, randomBotMaxLevel;
     float randomChangeMultiplier;
     uint32 specProbability[MAX_CLASSES][10];
