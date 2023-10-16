@@ -348,6 +348,7 @@ namespace ai
                 creators["powershift"] = &TriggerFactoryInternal::powershift;
                 creators["rebirth on party"] = &TriggerFactoryInternal::rebirth_on_party;
                 creators["innervate self"] = &TriggerFactoryInternal::innervate_self;
+                creators["lifebloom"] = &TriggerFactoryInternal::lifebloom;
             }
 
         private:
@@ -393,6 +394,7 @@ namespace ai
             static Trigger* powershift(PlayerbotAI* ai) { return new PowershiftTrigger(ai); }
             static Trigger* rebirth_on_party(PlayerbotAI* ai) { return new RebirthOnPartyTrigger(ai); }
             static Trigger* innervate_self(PlayerbotAI* ai) { return new InnervateSelfTrigger(ai); }
+            static Trigger* lifebloom(PlayerbotAI* ai) { return new LifebloomTankTrigger(ai); }
         };
 
         class AiObjectContextInternal : public NamedObjectContext<Action>
@@ -481,6 +483,7 @@ namespace ai
                 creators["update pve strats"] = &AiObjectContextInternal::update_pve_strats;
                 creators["update pvp strats"] = &AiObjectContextInternal::update_pvp_strats;
                 creators["update raid strats"] = &AiObjectContextInternal::update_raid_strats;
+                creators["lifebloom"] = &AiObjectContextInternal::lifebloom;
             }
 
         private:
@@ -564,6 +567,7 @@ namespace ai
             static Action* update_pve_strats(PlayerbotAI* ai) { return new UpdateDruidPveStrategiesAction(ai); }
             static Action* update_pvp_strats(PlayerbotAI* ai) { return new UpdateDruidPvpStrategiesAction(ai); }
             static Action* update_raid_strats(PlayerbotAI* ai) { return new UpdateDruidRaidStrategiesAction(ai); }
+            static Action* lifebloom(PlayerbotAI* ai) { return new CastLifebloomAction(ai); }
         };
     };
 };

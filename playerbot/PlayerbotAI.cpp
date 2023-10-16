@@ -2477,7 +2477,7 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
                 if (minDuration > 0)
                 {
                     int32 auraDuration = aura->GetHolder()->GetAuraDuration();
-                    minDurationPassed = minDuration >= auraDuration;
+                    minDurationPassed = minDuration <= auraDuration;
                 }
 
                 if (maxAuraAmount < 0 && minDurationPassed)

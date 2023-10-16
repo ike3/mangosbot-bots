@@ -569,6 +569,14 @@ namespace ai
         CastEnrageAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "enrage") {}
     };
 
+    class CastLifebloomAction : public CastSpellAction
+    {
+    public:
+        explicit CastLifebloomAction(PlayerbotAI* ai) : CastSpellAction(ai, "lifebloom") {}
+
+        string GetTargetName() override { return "party tank without lifebloom"; }
+    };
+
     class UpdateDruidPveStrategiesAction : public UpdateStrategyDependenciesAction
     {
     public:

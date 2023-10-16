@@ -418,6 +418,10 @@ void RestorationDruidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigg
                              new NextAction("healing touch on party", ACTION_CRITICAL_HEAL), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "lifebloom",
+        NextAction::array(0, new NextAction("lifebloom", ACTION_MEDIUM_HEAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
 
@@ -450,7 +454,7 @@ void RestorationDruidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 {
     DruidStrategy::InitNonCombatTriggers(triggers);
 
-    triggers.push_back(new TriggerNode(
+        triggers.push_back(new TriggerNode(
         "low health",
         NextAction::array(0, new NextAction("regrowth", ACTION_MEDIUM_HEAL), NULL)));
 

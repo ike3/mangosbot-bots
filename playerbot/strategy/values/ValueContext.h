@@ -97,6 +97,7 @@
 #include "TalentSpecValue.h"
 #include "MountValues.h"
 #include "DeadValues.h"
+#include "../druid/DruidValues.h"
 
 namespace ai
 {
@@ -378,6 +379,8 @@ namespace ai
             creators["action possible"] = &ValueContext::action_possible;
             creators["action useful"] = &ValueContext::action_useful;
             creators["trigger active"] = &ValueContext::trigger_active;
+
+            creators["party tank without lifebloom"] = &ValueContext::party_tank_without_lifebloom;
         }
 
     private:
@@ -649,5 +652,7 @@ namespace ai
         static UntypedValue* action_possible(PlayerbotAI* ai) { return new ActionPossibleValue(ai); }
         static UntypedValue* action_useful(PlayerbotAI* ai) { return new ActionUsefulValue(ai); }
         static UntypedValue* trigger_active(PlayerbotAI* ai) { return new TriggerActiveValue(ai); }
+
+        static UntypedValue* party_tank_without_lifebloom(PlayerbotAI* ai) { return new PartyTankWithoutLifebloomValue(ai); }
     };
 };
