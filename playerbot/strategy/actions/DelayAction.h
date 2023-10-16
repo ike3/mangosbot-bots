@@ -21,6 +21,9 @@ namespace ai
             if (sServerFacade.IsInCombat(bot))
                 return true;
 
+            if ((double)urand(0, 100) > sPlayerbotAIConfig.randomBotPassiveChance * 100.0)
+                return false;
+
             if (sServerFacade.isMoving(bot))
                 bot->StopMoving();
             else
@@ -29,6 +32,7 @@ namespace ai
             ai->SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay + sPlayerbotAIConfig.globalCoolDown);
             return true;
         }
+
     };
 
 }

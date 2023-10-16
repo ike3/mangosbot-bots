@@ -52,6 +52,7 @@ public:
     float randomBotMaxLevelChance;
     float randomBotRpgChance;
     float randomBotAttackChance;
+    float randomBotPassiveChance;
     uint32 minRandomBots, maxRandomBots;
     uint32 randomBotUpdateInterval, randomBotCountChangeMinInterval, randomBotCountChangeMaxInterval;
     uint32 minRandomBotInWorldTime, maxRandomBotInWorldTime;
