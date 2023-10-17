@@ -189,7 +189,7 @@ void RandomPlayerbotMgr::ScheduleRandomize(uint32 bot, uint32 time)
 void RandomPlayerbotMgr::ScheduleTeleport(uint32 bot, uint32 time)
 {
     if (!time)
-        time = 60 + urand(sPlayerbotAIConfig.randomBotUpdateInterval, sPlayerbotAIConfig.randomBotUpdateInterval * 3);
+        time = urand(sPlayerbotAIConfig.minRandomBotTeleportTime, sPlayerbotAIConfig.maxRandomBotTeleportTime);
     SetEventValue(bot, "teleport", 1, time);
 }
 
@@ -304,7 +304,6 @@ bool RandomPlayerbotMgr::ProcessBot(Player* player)
     {
         sLog.outDetail("Random teleporting bot %d", bot);
         RandomTeleportForLevel(player);
-        SetEventValue(bot, "teleport", 1, sPlayerbotAIConfig.maxRandomBotInWorldTime);
         return true;
     }
 
@@ -350,18 +349,52 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
 
     PerformanceMonitorOperation *pmo = sPerformanceMonitor.start(PERF_MON_RNDBOT, "RandomTeleportByLocations");
 
-    Player *player = GetRandomPlayer(bot);
     vector<WorldLocation> priority;
-    if (player && usePriorityList)
+    if (usePriorityList && sPlayerbotAIConfig.forceRandomBotTeleportToPlayer)
     {
+        map<Player*,int> playerMap;
+        for (vector<Player*>::iterator j = players.begin(); j != players.end(); ++j)
+        {
+            Player* player = *j;
+
+            int count = 0;
+            for (PlayerBotMap::const_iterator it = GetPlayerBotsBegin(); it != GetPlayerBotsEnd(); ++it)
+            {
+                float dist = sServerFacade.GetDistance2d(player, it->second);
+                if (sServerFacade.IsDistanceLessThan(dist, sPlayerbotAIConfig.reactDistance))
+                {
+                    count++;
+                }
+            }
+            playerMap[player] = count;
+        }
+
         for (vector<WorldLocation>::iterator i = locs.begin(); i != locs.end(); ++i)
         {
             WorldLocation loc = *i;
-            if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(player, loc.coord_x, loc.coord_y), sPlayerbotAIConfig.reactDistance))
+            bool playerNearby = false;
+            for (map<Player*,int>::iterator j = playerMap.begin(); j != playerMap.end(); ++j)
             {
-                priority.push_back(loc);
+                Player* player = j->first;
+                int count = j->second;
+
+                if (count >= sPlayerbotAIConfig.forceRandomBotTeleportToPlayer) continue;
+
+                if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(player, bot), sPlayerbotAIConfig.sightDistance))
+                {
+                    sLog.outDebug("Bot %s is near player %s, no teleport necessary", bot->GetName(), player->GetName());
+                    return;
+                }
+                float dist = sServerFacade.GetDistance2d(player, loc.coord_x, loc.coord_y);
+                if (sServerFacade.IsDistanceLessThan(dist, sPlayerbotAIConfig.reactDistance) && sServerFacade.IsDistanceGreaterThan(dist, sPlayerbotAIConfig.sightDistance))
+                {
+                    playerNearby = true;
+                    break;
+                }
             }
+            if (playerNearby) priority.push_back(loc);
         }
+        sLog.outDetail("Priority list for bot %s: %u items", bot->GetName(), priority.size());
     }
 
     vector<WorldLocation>* chooseFrom = !priority.empty() ? &priority : &locs;
@@ -417,8 +450,8 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             continue;
 
         z = 0.05f + ground;
-        sLog.outDetail("Random teleporting bot %s to %s %f,%f,%f (%u/%u locations)",
-                bot->GetName(), area->area_name[0], x, y, z, attemtps, (*chooseFrom).size());
+        sLog.outDetail("Random teleporting bot %s (lvl=%u) to %s %f,%f,%f (%u/%u locations)",
+                bot->GetName(), bot->getLevel(), area->area_name[0], x, y, z, attemtps, (*chooseFrom).size());
 
         bot->InterruptMoving(true);
         bot->TeleportTo(loc.mapid, x, y, z, 0);
@@ -461,30 +494,13 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
         for (uint8 level = 1; level <= maxLevel; level++)
         {
             QueryResult* results = WorldDatabase.PQuery("select map, position_x, position_y, position_z "
-                "from (select map, position_x, position_y, position_z, avg(t.maxlevel), avg(t.minlevel), "
-                "%u - (avg(t.maxlevel) + avg(t.minlevel)) / 2 delta "
-                "from creature c inner join creature_template t on c.id = t.entry where t.NpcFlags = 0 group by t.entry) q "
-                "where delta >= 0 and delta <= %u and map in (%s) and not exists ( "
-                "select map, position_x, position_y, position_z from "
-                "("
-                "select map, c.position_x, c.position_y, c.position_z, avg(t.maxlevel), avg(t.minlevel), "
-                "%u - (avg(t.maxlevel) + avg(t.minlevel)) / 2 delta "
-                "from creature c "
-                "inner join creature_template t on c.id = t.entry group by t.entry "
-                ") q1 "
-                "where delta > %u and q1.map = q.map "
-                "and sqrt("
-                "(q1.position_x - q.position_x)*(q1.position_x - q.position_x) +"
-                "(q1.position_y - q.position_y)*(q1.position_y - q.position_y) +"
-                "(q1.position_z - q.position_z)*(q1.position_z - q.position_z)"
-                ") < %u)",
+                "from (select map, position_x, position_y, position_z, t.maxlevel, t.minlevel, "
+                "%u - (t.maxlevel + t.minlevel) / 2 delta "
+                "from creature c inner join creature_template t on c.id = t.entry where t.NpcFlags = 0 and t.Rank = 0) q "
+                "where delta >= 0 and delta <= %u and map in (%s)",
                 level,
                 sPlayerbotAIConfig.randomBotTeleLevel,
-                sPlayerbotAIConfig.randomBotMapsAsString.c_str(),
-                level,
-                sPlayerbotAIConfig.randomBotTeleLevel,
-                (uint32)sPlayerbotAIConfig.sightDistance
-                );
+                sPlayerbotAIConfig.randomBotMapsAsString.c_str());
             if (results)
             {
                 do
@@ -571,7 +587,8 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 void RandomPlayerbotMgr::RandomTeleportForLevel(Player* bot)
 {
     sLog.outDetail("Preparing location to random teleporting bot %s for level %u", bot->GetName(), bot->getLevel());
-    RandomTeleport(bot, locsPerLevelCache[bot->getLevel()], false, false);
+    RandomTeleport(bot, locsPerLevelCache[bot->getLevel()], true, true);
+    ScheduleTeleport(bot->GetObjectGuid());
 }
 
 void RandomPlayerbotMgr::RandomTeleport(Player* bot)
@@ -597,6 +614,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
     if (pmo) pmo->finish();
 
     RandomTeleport(bot, locs, true, true);
+    ScheduleTeleport(bot->GetObjectGuid());
 
     Refresh(bot);
 }
@@ -955,6 +973,7 @@ void RandomPlayerbotMgr::OnPlayerLogout(Player* player)
 void RandomPlayerbotMgr::OnBotLoginInternal(Player * const bot)
 {
     sLog.outDetail("%d/%d Bot %s logged in", playerBots.size(), sRandomPlayerbotMgr.GetMaxAllowedBotCount(), bot->GetName());
+    Refresh(bot);
     bot->GetPlayerbotAI()->ResetStrategies(false);
     ChangeStrategy(bot);
     if (loginProgressBar) loginProgressBar->step();
@@ -1026,6 +1045,7 @@ Player* RandomPlayerbotMgr::GetRandomPlayer(Player* bot)
 void RandomPlayerbotMgr::PrintStats()
 {
     sLog.outString("%d Random Bots online", playerBots.size());
+    sLog.outString("%d Non-Random Players/Bots online", players.size());
 
     map<uint32, int> alliance, horde;
     for (uint32 i = 0; i < 10; ++i)
@@ -1270,7 +1290,7 @@ void RandomPlayerbotMgr::ChangeStrategy(Player* player)
     sRandomRaidMgr.RemoveBot(player);
     sLog.outDetail("Changing strategy for bot %s to GRIND", player->GetName());
     player->GetPlayerbotAI()->ChangeStrategy("-rpg,+grind,+patrol", BOT_STATE_NON_COMBAT);
-    ScheduleTeleport(bot, 30);
+    RandomTeleportForLevel(player);
     ScheduleChangeStrategy(bot);
 }
 
@@ -1306,9 +1326,9 @@ void RandomPlayerbotMgr::RandomTeleportForAttack(vector<Player*> bots)
     for(vector<Player*>::iterator i = bots.begin(); i != bots.end(); ++i)
     {
         Player* bot = *i;
-        sLog.outString("Random teleporting bot %s for ATTACK (race = %d}", bot->GetName(), race);
+        sLog.outDetail("Random teleporting bot %s for ATTACK (race = %d}", bot->GetName(), race);
         Refresh(bot);
-        RandomTeleport(bot, singleLocs, true, true);
+        RandomTeleport(bot, singleLocs, false, false);
     }
 }
 

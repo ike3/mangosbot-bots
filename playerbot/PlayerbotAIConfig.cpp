@@ -128,6 +128,7 @@ bool PlayerbotAIConfig::Initialize()
     randomBotImmersive = config.GetBoolDefault("AiPlayerbot.RandomBotImmersive", true);
     minRandomBots = config.GetIntDefault("AiPlayerbot.MinRandomBots", 50);
     maxRandomBots = config.GetIntDefault("AiPlayerbot.MaxRandomBots", 200);
+    forceRandomBotTeleportToPlayer = config.GetIntDefault("AiPlayerbot.ForceRandomBotTeleportToPlayer", 0);
     randomBotUpdateInterval = config.GetIntDefault("AiPlayerbot.RandomBotUpdateInterval", 60);
     randomBotCountChangeMinInterval = config.GetIntDefault("AiPlayerbot.RandomBotCountChangeMinInterval", 24 * 3600);
     randomBotCountChangeMaxInterval = config.GetIntDefault("AiPlayerbot.RandomBotCountChangeMaxInterval", 3 * 24 * 3600);
@@ -137,6 +138,8 @@ bool PlayerbotAIConfig::Initialize()
     maxRandomBotRandomizeTime = config.GetIntDefault("AiPlayerbot.MaxRandomRandomizeTime", 14 * 24 * 3600);
     minRandomBotChangeStrategyTime = config.GetIntDefault("AiPlayerbot.MinRandomBotChangeStrategyTime", 900);
     maxRandomBotChangeStrategyTime = config.GetIntDefault("AiPlayerbot.MaxRandomBotChangeStrategyTime", 1800);
+    minRandomBotTeleportTime = config.GetIntDefault("AiPlayerbot.MinRandomBotTeleportTime", 300);
+    maxRandomBotTeleportTime = config.GetIntDefault("AiPlayerbot.MaxRandomBotTeleportTime", 900);
     minRandomBotAttackTime = config.GetIntDefault("AiPlayerbot.MinRandomBotAttackTime", 900);
     maxRandomBotAttackTime = config.GetIntDefault("AiPlayerbot.MaxRandomBotAttackTime", 1800);
     minRandomBotReviveTime = config.GetIntDefault("AiPlayerbot.MinRandomBotReviveTime", 60);
