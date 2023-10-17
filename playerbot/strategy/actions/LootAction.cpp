@@ -107,6 +107,13 @@ bool OpenLootAction::DoLoot(LootObject& lootObject)
     if (go && bot->GetDistance(go) > INTERACTION_DISTANCE)
         return false;
 
+    if (go && !sServerFacade.IsInFront(bot, go, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) && !sServerFacade.isMoving(bot))
+    {
+        sServerFacade.SetFacingTo(bot, go);
+        ai->SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        return false;
+    }
+
     if (go && (
 #ifdef CMANGOS
         go->IsInUse() ||
