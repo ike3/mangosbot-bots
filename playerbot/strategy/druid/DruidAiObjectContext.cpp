@@ -349,6 +349,7 @@ namespace ai
                 creators["rebirth on party"] = &TriggerFactoryInternal::rebirth_on_party;
                 creators["innervate self"] = &TriggerFactoryInternal::innervate_self;
                 creators["lifebloom"] = &TriggerFactoryInternal::lifebloom;
+                creators["clearcasting"] = &TriggerFactoryInternal::clearcasting;
             }
 
         private:
@@ -395,6 +396,7 @@ namespace ai
             static Trigger* rebirth_on_party(PlayerbotAI* ai) { return new RebirthOnPartyTrigger(ai); }
             static Trigger* innervate_self(PlayerbotAI* ai) { return new InnervateSelfTrigger(ai); }
             static Trigger* lifebloom(PlayerbotAI* ai) { return new LifebloomTankTrigger(ai); }
+            static Trigger* clearcasting(PlayerbotAI* ai) { return new ClearcastingTrigger(ai); }
         };
 
         class AiObjectContextInternal : public NamedObjectContext<Action>

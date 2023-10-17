@@ -407,4 +407,10 @@ namespace ai
                 && !target->getAttackers().empty();                                     //target have attackers
         }
     };
+
+    class ClearcastingTrigger : public HasAuraTrigger
+    {
+    public:
+        ClearcastingTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "clearcasting") {}
+    };
 }
