@@ -40,6 +40,8 @@ void PlayerbotDbStore::Load(PlayerbotAI *ai)
 
         ai->GetAiObjectContext()->Load(values);
         delete results;
+        ai->ChangeStrategy("-passive", BOT_STATE_COMBAT);
+        ai->ChangeStrategy("-passive", BOT_STATE_NON_COMBAT);
     }
 }
 
