@@ -16,15 +16,6 @@ void GenericPriestStrategy::InitTriggers(std::list<TriggerNode*> &triggers)
     CombatStrategy::InitTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
-        "medium health",
-        NextAction::array(0, new NextAction("flash heal", 25.0f), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "party member medium health",
-        NextAction::array(0, new NextAction("flash heal on party", 20.0f), NULL)));
-
-
-    triggers.push_back(new TriggerNode(
         "critical health",
         NextAction::array(0, new NextAction("power word: shield", 70.0f), new NextAction("flash heal", 70.0f), NULL)));
 
