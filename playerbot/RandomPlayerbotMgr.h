@@ -54,7 +54,7 @@ class RandomPlayerbotMgr : public PlayerbotHolder
         void OnPlayerLogout(Player* player);
         void OnPlayerLogin(Player* player);
         void OnPlayerLoginError(uint32 bot);
-        Player* GetRandomPlayer(Player* bot);
+        Player* GetRandomPlayer(Player* bot, float distance = 0.0);
         void PrintStats();
         double GetBuyMultiplier(Player* bot);
         double GetSellMultiplier(Player* bot);

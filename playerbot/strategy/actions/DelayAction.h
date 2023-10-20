@@ -19,7 +19,7 @@ namespace ai
                 return false;
 
             if (sServerFacade.IsInCombat(bot))
-                return true;
+                return false;
 
             if ((double)urand(0, 100) > sPlayerbotAIConfig.randomBotPassiveChance * 100.0)
                 return false;

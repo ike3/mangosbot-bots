@@ -394,7 +394,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             }
             if (playerNearby) priority.push_back(loc);
         }
-        sLog.outDetail("Priority list for bot %s: %u items", bot->GetName(), priority.size());
+        if (!priority.empty()) sLog.outString("Bot %s will teleport to active players: %u items", bot->GetName(), priority.size());
     }
 
     vector<WorldLocation>* chooseFrom = !priority.empty() ? &priority : &locs;
@@ -404,26 +404,29 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
         int index = urand(0, chooseFrom->size() - 1);
         WorldLocation loc = (*chooseFrom)[index];
 
+        float x = loc.coord_x, y = loc.coord_y, z = loc.coord_z;
         if (useFleeManager)
         {
             float ox = bot->GetPositionX();
             float oy = bot->GetPositionY();
             float oz = bot->GetPositionZ();
             bot->SetPosition(loc.coord_x, loc.coord_y, loc.coord_z, 0);
-            FleeManager manager(bot, sPlayerbotAIConfig.sightDistance, 0, true);
+            FleeManager manager(bot, sPlayerbotAIConfig.aggroDistance, 0, true);
             float rx, ry, rz;
             if (manager.CalculateDestination(&rx, &ry, &rz))
             {
-                loc.coord_x = rx;
-                loc.coord_y = ry;
-                loc.coord_z = rz;
+                x = rx;
+                y = ry;
+                z = rz;
             }
             bot->SetPosition(ox, oy, oz, 0);
         }
-
-        float x = loc.coord_x + urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2;
-        float y = loc.coord_y + urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2;
-        float z = loc.coord_z;
+        else
+        {
+            x = loc.coord_x + urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2;
+            y = loc.coord_y + urand(0, sPlayerbotAIConfig.grindDistance) - sPlayerbotAIConfig.grindDistance / 2;
+            z = loc.coord_z;
+        }
 
         Map* map = sMapMgr.FindMap(loc.mapid, 0);
         if (!map)
@@ -1023,7 +1026,7 @@ void RandomPlayerbotMgr::OnPlayerLoginError(uint32 bot)
     currentBots.remove(bot);
 }
 
-Player* RandomPlayerbotMgr::GetRandomPlayer(Player* bot)
+Player* RandomPlayerbotMgr::GetRandomPlayer(Player* bot, float distance)
 {
     if (players.empty())
         return NULL;
@@ -1032,6 +1035,13 @@ Player* RandomPlayerbotMgr::GetRandomPlayer(Player* bot)
     for (vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
     {
         Player* player = *i;
+        if (bot == player) continue;
+        if (distance >= 0.01)
+        {
+            if (player->GetMapId() != bot->GetMapId()) continue;
+            float dist = sServerFacade.GetDistance2d(bot, player);
+            if (sServerFacade.IsDistanceGreaterThan(dist, distance)) continue;
+        }
         if (IsAlliance(player->getRace()) == IsAlliance(bot->getRace())) chooseFrom.push_back(player);
     }
 
