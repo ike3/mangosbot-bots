@@ -43,7 +43,8 @@ namespace ai
     {
         ACTION_THREAT_NONE = 0,
         ACTION_THREAT_SINGLE= 1,
-        ACTION_THREAT_AOE = 2
+        ACTION_THREAT_AOE = 2,
+        ACTION_THREAT_HEAL = 3
     };
 
     class Action : public AiNamedObject

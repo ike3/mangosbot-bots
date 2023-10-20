@@ -146,7 +146,7 @@ namespace ai
         }
 		virtual string GetTargetName() { return "self target"; }
         virtual bool isUseful();
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_AOE; }
+        virtual ActionThreatType getThreatType() { return ACTION_THREAT_HEAL; }
 
     protected:
         uint8 estAmount;
@@ -237,7 +237,7 @@ namespace ai
     {
     public:
         CastShootAction(PlayerbotAI* ai) : CastSpellAction(ai, "shoot") {}
-        virtual ActionThreatType getThreatType() { return ACTION_THREAT_NONE; }
+        virtual ActionThreatType getThreatType() { return ACTION_THREAT_SINGLE; }
     };
 
 	class CastLifeBloodAction : public CastHealingSpellAction

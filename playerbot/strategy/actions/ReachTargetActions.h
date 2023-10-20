@@ -15,6 +15,7 @@ namespace ai
             this->distance = distance;
         }
         virtual bool Execute(Event event);
+        virtual ActionThreatType getThreatType() { return ACTION_THREAT_SINGLE; }
         virtual bool isUseful()
 		{
             return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", GetTargetName()), (distance + sPlayerbotAIConfig.contactDistance));
