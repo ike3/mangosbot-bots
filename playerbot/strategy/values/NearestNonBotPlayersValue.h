@@ -8,7 +8,7 @@ namespace ai
     class NearestNonBotPlayersValue : public NearestUnitsValue
 	{
 	public:
-        NearestNonBotPlayersValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.grindDistance) :
+        NearestNonBotPlayersValue(PlayerbotAI* ai, float range = sPlayerbotAIConfig.reactDistance) :
           NearestUnitsValue(ai, "nearest non bot players", range, true) {}
 
     protected:

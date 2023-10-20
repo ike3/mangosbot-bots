@@ -1309,6 +1309,7 @@ void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot)
     uint32 race = bot->getRace();
     sLog.outDetail("Random teleporting bot %s for RPG (%d locations available)", bot->GetName(), rpgLocsCache[race].size());
     RandomTeleport(bot, rpgLocsCache[race], false, false);
+    ScheduleTeleport(bot->GetObjectGuid(), sPlayerbotAIConfig.maxRandomBotInWorldTime);
 }
 
 void RandomPlayerbotMgr::RandomTeleportForAttack(vector<Player*> bots)
@@ -1339,6 +1340,7 @@ void RandomPlayerbotMgr::RandomTeleportForAttack(vector<Player*> bots)
         sLog.outDetail("Random teleporting bot %s for ATTACK (race = %d}", bot->GetName(), race);
         Refresh(bot);
         RandomTeleport(bot, singleLocs, false, false);
+        ScheduleTeleport(bot->GetObjectGuid(), sPlayerbotAIConfig.maxRandomBotInWorldTime);
     }
 }
 
