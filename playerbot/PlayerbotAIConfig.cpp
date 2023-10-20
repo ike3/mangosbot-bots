@@ -63,10 +63,10 @@ bool PlayerbotAIConfig::Initialize()
     globalCoolDown = (uint32) config.GetIntDefault("AiPlayerbot.GlobalCooldown", 500);
     maxWaitForMove = config.GetIntDefault("AiPlayerbot.MaxWaitForMove", 3000);
     expireActionTime = config.GetIntDefault("AiPlayerbot.ExpireActionTime", 5000);
-    dispelAuraDuration = config.GetIntDefault("AiPlayerbot.DispelAuraDuration", 7000);
+    dispelAuraDuration = config.GetIntDefault("AiPlayerbot.DispelAuraDuration", 5000);
     reactDelay = (uint32) config.GetIntDefault("AiPlayerbot.ReactDelay", 100);
     passiveDelay = (uint32) config.GetIntDefault("AiPlayerbot.PassiveDelay", 4000);
-    repeatDelay = (uint32) config.GetIntDefault("AiPlayerbot.RepeatDelay", 1500);
+    repeatDelay = (uint32) config.GetIntDefault("AiPlayerbot.RepeatDelay", 1000);
     soundRepeatDelay = (uint32) config.GetIntDefault("AiPlayerbot.SoundRepeatDelay", 5000);
     errorDelay = (uint32) config.GetIntDefault("AiPlayerbot.ErrorDelay", 5000);
     rpgDelay = (uint32) config.GetIntDefault("AiPlayerbot.RpgDelay", 3000);
@@ -117,10 +117,10 @@ bool PlayerbotAIConfig::Initialize()
     LoadList<vector<uint32> >(randomBotMapsAsString, randomBotMaps);
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomBotQuestItems", "6948,5175,5176,5177,5178"), randomBotQuestItems);
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomBotSpellIds", "54197"), randomBotSpellIds);
-    LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.PvpProhibitedZoneIds", "2255,656,2361,2362,2363,976,35,2268"), pvpProhibitedZoneIds);
+    LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.PvpProhibitedZoneIds", "2255,656,2361,2362,2363,976,35,2268,3425"), pvpProhibitedZoneIds);
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomBotQuestIds", "7848"), randomBotQuestIds);
     LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.RandomBotKeepItemIds", "2901,7005,5956,6219,6948,16207"), randomBotKeepItemIds);
-    LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.IgnoreLockSkillsGoIds", "13891,19535,182127"), ignoreLockSkillsGoIds);
+    LoadList<list<uint32> >(config.GetStringDefault("AiPlayerbot.IgnoreLockSkillsGoIds", "152094,152095,13891,19535,182127,181644,176753,171938,175566,1723,126049,128293"), ignoreLockSkillsGoIds);
     LoadStringList<list<string> >(config.GetStringDefault("AiPlayerbot.IgnoredChatCommands", "Crb,Qui"), ignoredChatCommands);
 
     botAutologin = config.GetBoolDefault("AiPlayerbot.BotAutologin", false);
@@ -167,7 +167,7 @@ bool PlayerbotAIConfig::Initialize()
     randomChangeMultiplier = config.GetFloatDefault("AiPlayerbot.RandomChangeMultiplier", 1.0);
 
     randomBotCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotCombatStrategies", "+dps,+dps assist,-threat,-ranged");
-    randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+custom::say,+collision,-ranged");
+    randomBotNonCombatStrategies = config.GetStringDefault("AiPlayerbot.RandomBotNonCombatStrategies", "+custom::say,+return,+collision,-ranged,+pvp,+patrol");
     combatStrategies = config.GetStringDefault("AiPlayerbot.CombatStrategies", "+custom::say");
     nonCombatStrategies = config.GetStringDefault("AiPlayerbot.NonCombatStrategies", "+custom::say,+return");
 
@@ -187,7 +187,7 @@ bool PlayerbotAIConfig::Initialize()
     }
 
     randomBotAccountPrefix = config.GetStringDefault("AiPlayerbot.RandomBotAccountPrefix", "rndbot");
-    randomBotAccountCount = config.GetIntDefault("AiPlayerbot.RandomBotAccountCount", 50);
+    randomBotAccountCount = config.GetIntDefault("AiPlayerbot.RandomBotAccountCount", 200);
     deleteRandomBotAccounts = config.GetBoolDefault("AiPlayerbot.DeleteRandomBotAccounts", false);
     randomBotGuildCount = config.GetIntDefault("AiPlayerbot.RandomBotGuildCount", 50);
     deleteRandomBotGuilds = config.GetBoolDefault("AiPlayerbot.DeleteRandomBotGuilds", false);
@@ -203,7 +203,7 @@ bool PlayerbotAIConfig::Initialize()
     guildTaskKillTaskDistance = config.GetIntDefault("AiPlayerbot.GuildTaskKillTaskDistance", 2000);
 
     targetPosRecalcDistance = config.GetFloatDefault("AiPlayerbot.TargetPosRecalcDistance", 0.1f);
-    BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", false));
+    BarGoLink::SetOutputState(config.GetBoolDefault("AiPlayerbot.ShowProgressBars", true));
 
     RandomPlayerbotFactory::CreateRandomBots();
     PlayerbotFactory::Init();
