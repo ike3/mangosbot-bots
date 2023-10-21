@@ -16,11 +16,14 @@ bool DropTargetAction::Execute(Event event)
     {
         context->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid());
     }
+
     context->GetValue<Unit*>("current target")->Set(NULL);
     bot->SetSelectionGuid(ObjectGuid());
     ai->ChangeEngine(BOT_STATE_NON_COMBAT);
     ai->InterruptSpell();
     bot->AttackStop();
+    bot->StopMoving();
+
     Pet* pet = bot->GetPet();
     if (pet)
     {
@@ -41,6 +44,7 @@ bool DropTargetAction::Execute(Event event)
             pet->GetCharmInfo()->SetCommandState(COMMAND_FOLLOW);
 #endif
             pet->AttackStop();
+            pet->StopMoving();
         }
     }
     if (!urand(0, 25))
@@ -66,5 +70,30 @@ bool AttackAnythingAction::Execute(Event event)
 {
     bool result = AttackAction::Execute(event);
     if (result && GetTarget()) context->GetValue<ObjectGuid>("pull target")->Set(GetTarget()->GetObjectGuid());
+
+    if (result && sRandomPlayerbotMgr.IsRandomBot(bot) && !bot->GetGroup())
+    {
+        if (urand(0, 100) > 100.0 * sPlayerbotAIConfig.randomBotGrindChance) return false;
+
+        Pet* pet = bot->GetPet();
+        if (pet)
+        {
+            list<string> autoSpells;
+            autoSpells.push_back("growl");
+            autoSpells.push_back("bite");
+            autoSpells.push_back("claw");
+            autoSpells.push_back("suffering");
+            autoSpells.push_back("torment");
+            autoSpells.push_back("blood pact");
+            autoSpells.push_back("firebolt");
+            autoSpells.push_back("lash of pain");
+            for (list<string>::iterator i = autoSpells.begin(); i != autoSpells.end(); ++i)
+            {
+                uint32 spellId = AI_VALUE2(uint32, "spell id", *i);
+                if (spellId && pet->HasSpell(spellId)) pet->ToggleAutocast(spellId, true);
+            }
+        }
+    }
+
     return result;
 }

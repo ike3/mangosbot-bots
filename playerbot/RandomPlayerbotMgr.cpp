@@ -379,6 +379,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
                 int count = j->second;
 
                 if (count >= sPlayerbotAIConfig.forceRandomBotTeleportToPlayer) continue;
+                if (IsAlliance(player->getRace()) ^ IsAlliance(bot->getRace())) continue;
 
                 if (sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(player, bot), sPlayerbotAIConfig.sightDistance))
                 {

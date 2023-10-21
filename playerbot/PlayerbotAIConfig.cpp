@@ -108,6 +108,7 @@ bool PlayerbotAIConfig::Initialize()
     randomBotRpgChance = config.GetFloatDefault("AiPlayerbot.RandomBotRpgChance", 0.4);
     randomBotAttackChance = config.GetFloatDefault("AiPlayerbot.RandomBotAttackChance", 0.01);
     randomBotPassiveChance = config.GetFloatDefault("AiPlayerbot.RandomBotPassiveChance", 1.0);
+    randomBotGrindChance = config.GetFloatDefault("AiPlayerbot.RandomBotGrindChance", 0.1);
 
     iterationsPerTick = config.GetIntDefault("AiPlayerbot.IterationsPerTick", 100);
 
@@ -128,7 +129,7 @@ bool PlayerbotAIConfig::Initialize()
     randomBotImmersive = config.GetBoolDefault("AiPlayerbot.RandomBotImmersive", true);
     minRandomBots = config.GetIntDefault("AiPlayerbot.MinRandomBots", 1500);
     maxRandomBots = config.GetIntDefault("AiPlayerbot.MaxRandomBots", 1500);
-    forceRandomBotTeleportToPlayer = config.GetIntDefault("AiPlayerbot.ForceRandomBotTeleportToPlayer", 5);
+    forceRandomBotTeleportToPlayer = config.GetIntDefault("AiPlayerbot.ForceRandomBotTeleportToPlayer", 2);
     randomBotUpdateInterval = config.GetIntDefault("AiPlayerbot.RandomBotUpdateInterval", 60);
     randomBotCountChangeMinInterval = config.GetIntDefault("AiPlayerbot.RandomBotCountChangeMinInterval", 24 * 3600);
     randomBotCountChangeMaxInterval = config.GetIntDefault("AiPlayerbot.RandomBotCountChangeMaxInterval", 3 * 24 * 3600);

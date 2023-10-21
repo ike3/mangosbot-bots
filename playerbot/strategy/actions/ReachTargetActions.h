@@ -18,7 +18,8 @@ namespace ai
         virtual ActionThreatType getThreatType() { return ACTION_THREAT_SINGLE; }
         virtual bool isUseful()
 		{
-            return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", GetTargetName()), (distance + sPlayerbotAIConfig.contactDistance));
+            return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", GetTargetName()), (distance + sPlayerbotAIConfig.contactDistance)) &&
+                    !AI_VALUE2(bool, "invalid target", "current target");
         }
         virtual string GetTargetName() { return "current target"; }
 
