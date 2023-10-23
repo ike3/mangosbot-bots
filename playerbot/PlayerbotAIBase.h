@@ -22,4 +22,5 @@ public:
 
 protected:
 	uint32 nextAICheckDelay;
+	uint32 aiUpdateDiff;
 };

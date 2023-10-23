@@ -5,7 +5,7 @@
 using namespace ai;
 using namespace std;
 
-PlayerbotAIBase::PlayerbotAIBase() : nextAICheckDelay(0)
+PlayerbotAIBase::PlayerbotAIBase() : nextAICheckDelay(0), aiUpdateDiff(0)
 {
 }
 
@@ -16,11 +16,14 @@ void PlayerbotAIBase::UpdateAI(uint32 elapsed)
     else
         nextAICheckDelay = 0;
 
+    aiUpdateDiff += elapsed;
+
     if (!CanUpdateAI())
         return;
 
-    UpdateAIInternal(elapsed);
+    UpdateAIInternal(aiUpdateDiff);
     YieldThread();
+    aiUpdateDiff = 0;
 }
 
 void PlayerbotAIBase::SetNextCheckDelay(const uint32 delay)
