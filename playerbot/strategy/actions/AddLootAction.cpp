@@ -41,12 +41,12 @@ bool AddAllLootAction::Execute(Event event)
 
 bool AddLootAction::isUseful()
 {
-    return AI_VALUE(uint8, "bag space") < 80;
+    return AI_VALUE(uint8, "bag space");
 }
 
 bool AddAllLootAction::isUseful()
 {
-    return AI_VALUE(uint8, "bag space") < 80;
+    return AI_VALUE(uint8, "bag space");
 }
 
 bool AddAllLootAction::AddLoot(ObjectGuid guid)

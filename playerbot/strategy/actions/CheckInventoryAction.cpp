@@ -70,7 +70,7 @@ void CheckInventoryAction::HandleDisenchant(Item* item, bool randomBot)
         return;
     }
 
-    if (ai->GetAiObjectContext()->GetValue<uint8>("bag space")->Get() < 80)
+    if (ai->GetAiObjectContext()->GetValue<uint8>("bag space")->Get())
     {
         ai->CastSpell("disenchant", NULL, item);
     }

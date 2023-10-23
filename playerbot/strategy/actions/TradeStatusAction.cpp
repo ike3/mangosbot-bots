@@ -142,6 +142,20 @@ bool TradeStatusAction::CheckTrade()
     if (!bot->GetTradeData() || !master->GetTradeData())
         return false;
 
+    int32 receivedItems = 0;
+    for (uint32 slot = 0; slot < TRADE_SLOT_TRADED_COUNT; ++slot)
+    {
+        Item* item = master->GetTradeData()->GetItem((TradeSlots)slot);
+        if (item) receivedItems++;
+    }
+
+    if (receivedItems && receivedItems > AI_VALUE(uint8, "bag space"))
+    {
+        ai->TellMaster("My inventory is full");
+        ai->PlaySound(TEXTEMOTE_NO);
+        return false;
+    }
+
     if (!sRandomPlayerbotMgr.IsRandomBot(bot))
     {
         int32 botItemsMoney = CalculateCost(bot, true);

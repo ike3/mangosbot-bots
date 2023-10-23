@@ -23,7 +23,7 @@ bool IsDeadValue::Calculate()
 
 bool PetIsDeadValue::Calculate()
 {
-#ifdef MANGOS 
+#ifdef MANGOS
 #ifdef MANGOSBOT_ZERO
     PetDatabaseStatus status = Pet::GetStatusFromDB(bot);
     if (status == PET_DB_DEAD)
@@ -167,7 +167,7 @@ uint8 BagSpaceValue::Calculate()
 
     }
 
-    return (static_cast<float> (totalused) / total) * 100;
+    return totalfree;
 }
 
 uint8 SpeedValue::Calculate()
