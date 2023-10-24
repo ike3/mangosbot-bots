@@ -137,6 +137,7 @@ public:
         void CheckPlayers();
         void SaveCurTime();
         void SyncEventTimers();
+        void AddOfflineGroupBots();
         static Item* CreateTempItem(uint32 item, uint32 count, Player const* player, uint32 randomPropertyId = 0);
 
         bool AddRandomBot(uint32 bot);
@@ -171,6 +172,7 @@ public:
         time_t LfgCheckTimer;
         time_t PlayersCheckTimer;
         time_t EventTimeSyncTimer;
+        time_t OfflineGroupBotsTimer;
         uint32 AddRandomBots();
         bool ProcessBot(uint32 bot);
         void ScheduleRandomize(uint32 bot, uint32 time);
