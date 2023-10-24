@@ -70,4 +70,23 @@ namespace ai
         virtual uint8 Calculate();
     };
 
+    class IncomingDamageValue : public Uint32CalculatedValue, public Qualified
+    {
+    public:
+        IncomingDamageValue(PlayerbotAI* ai) : Uint32CalculatedValue(ai), Qualified() {}
+
+        virtual uint32 Calculate()
+        {
+            Unit* target = AI_VALUE(Unit*, qualifier);
+            if (!target)
+                return 0;
+
+            uint32 damage = 0;
+            for (auto const& pAttacker : target->getAttackers())
+                if (pAttacker->CanReachWithMeleeAttack(target))
+                    damage += uint32((pAttacker->GetFloatValue(UNIT_FIELD_MINDAMAGE) + pAttacker->GetFloatValue(UNIT_FIELD_MAXDAMAGE)) / 2);
+
+            return damage;
+        }
+    };
 }

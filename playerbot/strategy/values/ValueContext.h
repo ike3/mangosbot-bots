@@ -224,6 +224,7 @@ namespace ai
             creators["tank threat"] = &ValueContext::tank_threat;
             creators["threat"] = &ValueContext::threat;
 
+            creators["incoming damage"] = &ValueContext::incoming_damage;
             creators["balance"] = &ValueContext::balance;
             creators["possible attack targets"] = &ValueContext::possible_attack_targets;
             creators["attackers"] = &ValueContext::attackers;
@@ -410,6 +411,7 @@ namespace ai
         static UntypedValue* mana_save_level(PlayerbotAI* ai) { return new ManaSaveLevelValue(ai); }
         static UntypedValue* invalid_target(PlayerbotAI* ai) { return new InvalidTargetValue(ai); }
         static UntypedValue* balance(PlayerbotAI* ai) { return new BalancePercentValue(ai); }
+        static UntypedValue* incoming_damage(PlayerbotAI* ai) { return new IncomingDamageValue(ai); }
         static UntypedValue* possible_attack_targets(PlayerbotAI* ai) { return new PossibleAttackTargetsValue(ai); }
         static UntypedValue* attackers(PlayerbotAI* ai) { return new AttackersValue(ai); }
         static UntypedValue* add_hazard(PlayerbotAI* ai) { return new AddHazardValue(ai); }
