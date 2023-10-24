@@ -29,7 +29,6 @@ namespace ai
             creators["activate taxi"] = &WorldPacketTriggerContext::taxi;
             creators["trade status"] = &WorldPacketTriggerContext::trade_status;
             creators["loot response"] = &WorldPacketTriggerContext::loot_response;
-            creators["out of react range"] = &WorldPacketTriggerContext::out_of_react_range;
             creators["quest objective completed"] = &WorldPacketTriggerContext::quest_objective_completed;
             creators["item push result"] = &WorldPacketTriggerContext::item_push_result;
             creators["party command"] = &WorldPacketTriggerContext::party_command;
@@ -80,7 +79,6 @@ namespace ai
         static Trigger* party_command(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "party command"); }
         static Trigger* item_push_result(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "item push result"); }
         static Trigger* quest_objective_completed(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "quest objective completed"); }
-        static Trigger* out_of_react_range(PlayerbotAI* ai) { return new OutOfReactRangeTrigger(ai); }
         static Trigger* loot_response(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "loot response"); }
         static Trigger* trade_status(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "trade status"); }
         static Trigger* cannot_equip(PlayerbotAI* ai) { return new WorldPacketTrigger(ai, "cannot equip"); }
