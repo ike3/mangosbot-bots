@@ -189,6 +189,7 @@ void PlayerbotFactory::Randomize(bool incremental, bool syncWithMaster)
     if (isRealRandomBot)
     {
         InitQuests(specialQuestIds);
+        InitQuests(classQuestIds);
         bot->learnQuestRewardedSpells();
     }
     if (pmo) pmo->finish();
