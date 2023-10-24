@@ -82,6 +82,20 @@ void EmoteActionBase::InitEmotes()
     textEmotes["charge"] = 305;
     textEmotes["help"] = 307;
     textEmotes["train"] = 264;
+    textEmotes["joke"] = TEXTEMOTE_JOKE;
+    textEmotes["silly"] = TEXTEMOTE_JOKE;
+    textEmotes["anecdote"] = TEXTEMOTE_JOKE;
+    textEmotes["cry"] = TEXTEMOTE_CRY;
+    textEmotes["jk"] = TEXTEMOTE_JK;
+    textEmotes["introduce"] = TEXTEMOTE_INTRODUCE;
+    textEmotes["hug"] = TEXTEMOTE_HUG;
+    textEmotes["kneel"] = TEXTEMOTE_KNEEL;
+    textEmotes["kiss"] = TEXTEMOTE_KISS;
+    textEmotes["point"] = TEXTEMOTE_POINT;
+    textEmotes["roar"] = TEXTEMOTE_ROAR;
+    textEmotes["rude"] = TEXTEMOTE_RUDE;
+    textEmotes["chicken"] = TEXTEMOTE_CHICKEN;
+    textEmotes["flirt"] = TEXTEMOTE_FLIRT;
 }
 
 bool EmoteActionBase::Emote(Unit* target, uint32 type, bool textEmote)
@@ -102,7 +116,7 @@ bool EmoteActionBase::Emote(Unit* target, uint32 type, bool textEmote)
     {
         WorldPacket data(SMSG_TEXT_EMOTE);
         data << type;
-        data << GetNumberOfEmoteVariants((TextEmotes)type, bot->getRace(), bot->getGender());
+        data << urand(0, GetNumberOfEmoteVariants((TextEmotes)type, bot->getRace(), bot->getGender()) - 1);
         data << ((bot->GetSelectionGuid() && urand(0, 1)) ? bot->GetSelectionGuid() : ObjectGuid());
         bot->GetSession()->HandleTextEmoteOpcode(data);
     }
@@ -623,7 +637,7 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote, bool verbal)
     {
         WorldPacket data(SMSG_TEXT_EMOTE);
         data << textEmote;
-        data << GetNumberOfEmoteVariants((TextEmotes)textEmote, bot->getRace(), bot->getGender());
+        data << urand(0, GetNumberOfEmoteVariants((TextEmotes)textEmote, bot->getRace(), bot->getGender()) - 1);
         data << ((source && urand(0, 1)) ? source->GetObjectGuid() : ObjectGuid());
         bot->GetSession()->HandleTextEmoteOpcode(data);
     }
@@ -778,9 +792,13 @@ bool EmoteAction::Execute(Event& event)
     {
         WorldPacket data(SMSG_TEXT_EMOTE);
         data << textEmotes[param];
-        data << GetNumberOfEmoteVariants((TextEmotes)textEmotes[param], bot->getRace(), bot->getGender());
+        data << urand(0, GetNumberOfEmoteVariants((TextEmotes)textEmotes[param], bot->getRace(), bot->getGender()) - 1);
         data << ((bot->GetSelectionGuid() && urand(0, 1)) ? bot->GetSelectionGuid() : ObjectGuid());
         bot->GetSession()->HandleTextEmoteOpcode(data);
+
+        if (emotes.find(param) != emotes.end())
+            bot->HandleEmoteCommand(emotes[param]);
+
         return true;
     }
 
@@ -837,7 +855,7 @@ bool TalkAction::Execute(Event& event)
         uint32 emote = GetRandomEmote(target, true);
         WorldPacket data(SMSG_TEXT_EMOTE);
         data << emote;
-        data << GetNumberOfEmoteVariants((TextEmotes)emote, bot->getRace(), bot->getGender());
+        data << urand(0, GetNumberOfEmoteVariants((TextEmotes)emote, bot->getRace(), bot->getGender()) - 1);
         data << ((target && urand(0, 1)) ? target->GetObjectGuid() : ObjectGuid());
         bot->GetSession()->HandleTextEmoteOpcode(data);
         return true;
@@ -904,7 +922,7 @@ uint32 TalkAction::GetRandomEmote(Unit* unit, bool textEmote)
 
 uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, uint8 Gender)
 {
-    if (emote == 304)
+    if (emote == 304) // Incoming
     {
         switch (Race)
         {
@@ -914,14 +932,10 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_UNDEAD:
         case RACE_TROLL:
         {
-            if (Gender == GENDER_MALE)
-                return 2;
             return 2;
         }
         case RACE_GNOME:
         {
-            if (Gender == GENDER_MALE)
-                return 1;
             return 1;
         }
         case RACE_ORC:
@@ -938,7 +952,7 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         }
         }
     }
-    else if (emote == 305)
+    else if (emote == 305) // Charge
     {
         switch (Race)
         {
@@ -947,8 +961,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_UNDEAD:
         case RACE_TROLL:
         {
-            if (Gender == GENDER_MALE)
-                return 2;
             return 2;
         }
         case RACE_NIGHTELF:
@@ -966,13 +978,11 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         }
         case RACE_ORC:
         {
-            if (Gender == GENDER_MALE)
-                return 3;
             return 3;
         }
         }
     }
-    else if (emote == 306)
+    else if (emote == 306) // Flee
     {
         switch (Race)
         {
@@ -983,8 +993,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_TAUREN:
         case RACE_TROLL:
         {
-            if (Gender == GENDER_MALE)
-                return 2;
             return 2;
         }
         case RACE_DWARF:
@@ -995,8 +1003,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         }
         case RACE_GNOME:
         {
-            if (Gender == GENDER_MALE)
-                return 3;
             return 3;
         }
         }
@@ -1024,17 +1030,15 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_TAUREN:
         case RACE_TROLL:
         {
-            if (Gender == GENDER_MALE)
-                return 3;
             return 3;
         }
         }
     }
-    else if (emote == 323)
+    else if (emote == 323) // OOM
     {
         return 2;
     }
-    else if (emote == 324)
+    else if (emote == 324) // Follow
     {
         switch (Race)
         {
@@ -1045,8 +1049,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_TAUREN:
         case RACE_TROLL:
         {
-            if (Gender == GENDER_MALE)
-                return 2;
             return 2;
         }
         case RACE_DWARF:
@@ -1063,15 +1065,13 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         }
         }
     }
-    else if (emote == 325)
+    else if (emote == 325) // Wait
     {
         switch (Race)
         {
         case RACE_HUMAN:
         case RACE_TROLL:
         {
-            if (Gender == GENDER_MALE)
-                return 3;
             return 3;
         }
         case RACE_DWARF:
@@ -1086,13 +1086,11 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_ORC:
         case RACE_UNDEAD:
         {
-            if (Gender == GENDER_MALE)
-                return 2;
             return 2;
         }
         }
     }
-    else if (emote == 326)
+    else if (emote == 326) // Heal me
     {
         switch (Race)
         {
@@ -1103,15 +1101,11 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_UNDEAD:
         case RACE_TAUREN:
         {
-            if (Gender == GENDER_MALE)
-                return 2;
             return 2;
         }
         case RACE_DWARF:
         case RACE_TROLL:
         {
-            if (Gender == GENDER_MALE)
-                return 3;
             return 3;
         }
         }
@@ -1127,8 +1121,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_UNDEAD:
         case RACE_TAUREN:
         {
-            if (Gender == GENDER_MALE)
-                return 2;
             return 2;
         }
         case RACE_DWARF:
@@ -1174,14 +1166,10 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_TAUREN:
         case RACE_TROLL:
         {
-            if (Gender == GENDER_MALE)
-                return 3;
             return 3;
         }
         case RACE_GNOME:
         {
-            if (Gender == GENDER_MALE)
-                return 4;
             return 4;
         }
         }
@@ -1196,8 +1184,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_UNDEAD:
         case RACE_TAUREN:
         {
-            if (Gender == GENDER_MALE)
-                return 3;
             return 3;
         }
         case RACE_DWARF:
@@ -1209,8 +1195,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         }
         case RACE_ORC:
         {
-            if (Gender == GENDER_MALE)
-                return 4;
             return 4;
         }
         }
@@ -1233,8 +1217,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_UNDEAD:
         case RACE_TAUREN:
         {
-            if (Gender == GENDER_MALE)
-                return 3;
             return 3;
         }
         }
@@ -1250,14 +1232,10 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_UNDEAD:
         case RACE_TROLL:
         {
-            if (Gender == GENDER_MALE)
-                return 3;
             return 3;
         }
         case RACE_DWARF:
         {
-            if (Gender == GENDER_MALE)
-                return 4;
             return 4;
         }
         case RACE_TAUREN:
@@ -1280,8 +1258,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_TAUREN:
         case RACE_TROLL:
         {
-            if (Gender == GENDER_MALE)
-                return 3;
             return 3;
         }
         case RACE_UNDEAD:
@@ -1302,8 +1278,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_TAUREN:
         case RACE_TROLL:
         {
-            if (Gender == GENDER_MALE)
-                return 3;
             return 3;
         }
         case RACE_DWARF:
@@ -1354,8 +1328,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         case RACE_ORC:
         case RACE_UNDEAD:
         {
-            if (Gender == GENDER_MALE)
-                return 6;
             return 6;
         }
         }
@@ -1390,8 +1362,6 @@ uint32 EmoteActionBase::GetNumberOfEmoteVariants(TextEmotes emote, uint8 Race, u
         }
         case RACE_ORC:
         {
-            if (Gender == GENDER_MALE)
-                return 5;
             return 5;
         }
         case RACE_TAUREN:

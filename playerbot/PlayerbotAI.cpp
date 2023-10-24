@@ -2006,7 +2006,7 @@ bool PlayerbotAI::PlayEmote(uint32 emote)
 {
     WorldPacket data(SMSG_TEXT_EMOTE);
     data << (TextEmotes)emote;
-    data << EmoteAction::GetNumberOfEmoteVariants((TextEmotes)emote, bot->getRace(), bot->getGender());
+    data << urand(0, EmoteAction::GetNumberOfEmoteVariants((TextEmotes)emote, bot->getRace(), bot->getGender()) - 1);
     data << ((master && (sServerFacade.GetDistance2d(bot, master) < 30.0f) && urand(0, 1)) ? master->GetObjectGuid() : (bot->GetSelectionGuid() && urand(0, 1)) ? bot->GetSelectionGuid() : ObjectGuid());
     bot->GetSession()->HandleTextEmoteOpcode(data);
 
