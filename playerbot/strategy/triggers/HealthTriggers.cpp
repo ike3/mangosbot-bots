@@ -32,7 +32,7 @@ bool HealthInRangeTrigger::IsActive()
                 if (healthCheck && ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
                 {
                     string msg = GetTargetName() + " hp: " + std::to_string(healthPercent) + ", predicted: " + std::to_string(healthPredict);
-                    ai->TellPlayer(GetMaster(), msg);
+                    ai->TellPlayerNoFacing(GetMaster(), msg);
                 }
             }
             else
@@ -90,7 +90,7 @@ bool HealTargetFullHealthTrigger::IsActive()
                     if (ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
                     {
                         string msg = "target " + status + ", can save " + std::to_string(manaCost) + " mana, cast left : " + std::to_string(currentSpell->GetCastedTime()) + "ms";
-                        ai->TellPlayer(GetMaster(), msg);
+                        ai->TellPlayerNoFacing(GetMaster(), msg);
                     }
                     return true;
                 }
