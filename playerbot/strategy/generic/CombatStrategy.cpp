@@ -156,3 +156,15 @@ float WaitForAttackMultiplier::GetValue(Action* action)
 
     return 1.0f;
 }
+
+void HealInterruptStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "heal target full health",
+        NextAction::array(0, new NextAction("interrupt current spell", ACTION_EMERGENCY), NULL)));
+}
+
+void HealInterruptStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitCombatTriggers(triggers);
+}

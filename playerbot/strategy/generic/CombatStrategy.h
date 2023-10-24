@@ -72,4 +72,38 @@ namespace ai
         WaitForAttackMultiplier(PlayerbotAI* ai) : Multiplier(ai, "wait for for attack") {}
         float GetValue(Action* action) override;
     };
+
+    class HealInterruptStrategy : public Strategy
+    {
+    public:
+        HealInterruptStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "heal interrupt"; }
+
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "heal interrupt"; } //Must equal iternal name
+        virtual string GetHelpDescription()
+        {
+            return "This strategy will make the bot interrupt the heal it currently casts if target is at full health";
+        }
+#endif
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitReactionTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class PreHealStrategy : public Strategy
+    {
+    public:
+        PreHealStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "preheal"; }
+
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "preheal"; } //Must equal iternal name
+        virtual string GetHelpDescription()
+        {
+            return "This strategy will make the bot calculate melee damage of attacker when deciding how to heal target";
+        }
+#endif
+    };
 }

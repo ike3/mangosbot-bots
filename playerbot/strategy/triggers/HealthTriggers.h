@@ -34,14 +34,8 @@ namespace ai
             this->isTankRequired = isTankRequired;
         }
 
-		virtual bool IsActive()
-		{
-		    return ValueInRangeTrigger::IsActive() 
-                && !AI_VALUE2(bool, "dead", GetTargetName()) 
-                && (!isTankRequired || (GetTarget()->IsPlayer() && ai->IsTank((Player*)GetTarget(), false)));
-		}
-
-		virtual float GetValue();
+        bool IsActive() override;
+		float GetValue() override;
 
     protected:
         bool isTankRequired;
@@ -148,5 +142,12 @@ namespace ai
     protected:
         int count;
         string type;
+    };
+
+    class HealTargetFullHealthTrigger : public Trigger
+    {
+    public:
+        HealTargetFullHealthTrigger(PlayerbotAI* ai, std::string name = "heal target full health") : Trigger(ai, name) {}
+        bool IsActive() override;
     };
 }

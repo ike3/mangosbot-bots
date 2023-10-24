@@ -3874,6 +3874,40 @@ bool PlayerbotAI::canDispel(const SpellEntry* entry, uint32 dispelType)
         strcmpi((const char*)entry->SpellName[0], "ice armor"));
 }
 
+bool PlayerbotAI::IsHealSpell(const SpellEntry* spell)
+{
+    // Holy Light/Flash of Light
+    if (spell->SpellFamilyName == SPELLFAMILY_PALADIN)
+    {
+        if (spell->SpellIconID == 70 ||
+            spell->SpellIconID == 242)
+            return true;
+    }
+
+    for (uint8 i = 0; i < MAX_EFFECT_INDEX; ++i)
+    {
+        switch (spell->Effect[i])
+        {
+            case SPELL_EFFECT_HEAL:
+            case SPELL_EFFECT_HEAL_MAX_HEALTH:
+                return true;
+            case SPELL_EFFECT_APPLY_AURA:
+            case SPELL_EFFECT_APPLY_AREA_AURA_FRIEND:
+            case SPELL_EFFECT_APPLY_AREA_AURA_PARTY:
+            case SPELL_EFFECT_APPLY_AREA_AURA_PET:
+            {
+                switch (spell->EffectApplyAuraName[i])
+                {
+                    case SPELL_AURA_PERIODIC_HEAL:
+                        return true;
+                }
+                break;
+            }
+        }
+    }
+    return false;
+}
+
 bool IsAlliance(uint8 race)
 {
     return race == RACE_HUMAN || race == RACE_DWARF || race == RACE_NIGHTELF ||
