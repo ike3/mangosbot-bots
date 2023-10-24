@@ -12,6 +12,7 @@ namespace ai
 
     public:
         virtual bool Execute(Event event);
+        virtual ActionThreatType getThreatType() { return ACTION_THREAT_SINGLE; }
 
     protected:
         bool Attack(Unit* target);
