@@ -282,6 +282,9 @@ namespace ai
             Unit* master = AI_VALUE(Unit*, "master target");
             if (master && sServerFacade.IsFriendlyTo(bot, master))
             {
+                if (master->GetTransport() == bot->GetTransport())
+                    return false;
+
                 return sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "master target"), distance);
             }
 
@@ -376,7 +379,7 @@ namespace ai
             if (!followTarget)
                 return true;
 
-            if (bot->GetTransport())
+            if (bot->GetTransport() != followTarget->GetTransport())
                 return true;
 
             //We need to land or liftoff.
