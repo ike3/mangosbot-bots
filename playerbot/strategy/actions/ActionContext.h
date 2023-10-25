@@ -191,6 +191,7 @@ namespace ai
             creators["guild manage nearby"] = &ActionContext::guild_manage_nearby;
             creators["use trinket"] = &ActionContext::use_trinket;
             creators["reset"] = &ActionContext::reset;
+            creators["interrupt current spell"] = &ActionContext::interrupt_current_spell;
 
             // item helpers
             creators["goblin sapper"] = &ActionContext::goblin_sapper;
@@ -462,6 +463,7 @@ namespace ai
         static Action* guild_manage_nearby(PlayerbotAI* ai) { return new GuildManageNearbyAction(ai); }
         static Action* use_trinket(PlayerbotAI* ai) { return new UseTrinketAction(ai); }
         static Action* reset(PlayerbotAI* ai) { return new ResetAction(ai); }
+        static Action* interrupt_current_spell(PlayerbotAI* ai) { return new InterruptCurrentSpellAction(ai); }
 
         // item helpers
         static Action* goblin_sapper(PlayerbotAI* ai) { return new UseGoblinSapperChargeAction(ai); }

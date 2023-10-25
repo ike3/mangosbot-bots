@@ -379,6 +379,7 @@ public:
     virtual bool IsInterruptableSpellCasting(Unit* player, string spell, uint8 effectMask);
     virtual bool HasAuraToDispel(Unit* player, uint32 dispelType);
     bool canDispel(const SpellEntry* entry, uint32 dispelType);
+    static bool IsHealSpell(const SpellEntry* entry);
 
     bool HasSpell(string name) const;
     bool HasSpell(uint32 spellid) const;

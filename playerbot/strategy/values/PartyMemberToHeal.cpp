@@ -11,27 +11,30 @@ class IsTargetOfHealingSpell : public SpellEntryPredicate
 public:
     virtual bool Check(SpellEntry const* spell) 
     {
-        for (int i=0; i<3; i++) 
-        {
-            if (spell->Effect[i] == SPELL_EFFECT_HEAL ||
-                spell->Effect[i] == SPELL_EFFECT_HEAL_MAX_HEALTH ||
-                spell->Effect[i] == SPELL_EFFECT_HEAL_MECHANICAL)
-                return true;
-        }
-        return false;
+        return PlayerbotAI::IsHealSpell(spell);
     }
 };
+
+uint32 getIncomingdamage(Unit const* pTarget)
+{
+    uint32 damage = 0;
+    for (auto const& pAttacker : pTarget->getAttackers())
+        if (pAttacker->CanReachWithMeleeAttack(pTarget))
+            damage += uint32((pAttacker->GetFloatValue(UNIT_FIELD_MINDAMAGE) + pAttacker->GetFloatValue(UNIT_FIELD_MAXDAMAGE)) / 2);
+
+    return damage;
+}
 
 bool compareByHealth(const Unit *u1, const Unit *u2)
 {
     return u1->GetHealthPercent() < u2->GetHealthPercent();
 }
 
-bool compareByMissingHealth(const Unit* u1, const Unit* u2)
+bool compareByMissingHealth(const Unit* u1, const Unit* u2, bool incomingDamage = false)
 {
-    uint32 hp1 = u1->GetHealth();
+    uint32 hp1 = u1->GetHealth() - (incomingDamage ? getIncomingdamage(u1) : 0);
     uint32 hpmax1 = u1->GetMaxHealth();
-    uint32 hp2 = u2->GetHealth();
+    uint32 hp2 = u2->GetHealth() - (incomingDamage ? getIncomingdamage(u2) : 0);
     uint32 hpmax2 = u2->GetMaxHealth();
     return (hpmax1 - hp1) > (hpmax2 - hp2);
 }
@@ -86,8 +89,12 @@ Unit* PartyMemberToHeal::Calculate()
                 continue;
             }
 
-            uint8 health = player->GetHealthPercent();
-            if ((isTank || health < sPlayerbotAIConfig.almostFullHealth) && health < sPlayerbotAIConfig.almostFullHealth || (!isTank && !IsTargetOfSpellCast(player, predicate)))
+            uint32 incomingDamage = 0;
+            if (ai->HasStrategy("preheal", BotState::BOT_STATE_COMBAT))
+                incomingDamage = getIncomingdamage(player);
+
+            uint8 health = (((player->GetHealth() - incomingDamage) * 100.0f) / player->GetMaxHealth());
+            if (isTank || (health < sPlayerbotAIConfig.almostFullHealth && !IsTargetOfSpellCast(player, predicate)))
             { 
                 needHeals.push_back(player);
             }
@@ -119,7 +126,8 @@ Unit* PartyMemberToHeal::Calculate()
         needHeals = tankTargets;
     }
 
-    sort(needHeals.begin(), needHeals.end(), compareByMissingHealth);
+    bool preHealing = ai->HasStrategy("preheal", BotState::BOT_STATE_COMBAT);
+    sort(needHeals.begin(), needHeals.end(), [preHealing](const Unit* u1, const Unit* u2) { return compareByMissingHealth(u1, u2, preHealing); });
 
     int healerIndex = 0;
     if (!partyMembers.empty())

@@ -384,7 +384,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             MANGOS_ASSERT(botPos.fDist(bot) < 500.0f);
         }
     }
-    else if (!bot->IsBeingTeleported() && bot->GetTransport() && bot->GetMapId() == bot->GetTransport()->GetMapId() && !WorldPosition(bot).isOnTransport(bot->GetTransport()) && !isMovingToTransport)
+    else if (!HasRealPlayerMaster() && !bot->IsBeingTeleported() && bot->GetTransport() && bot->GetMapId() == bot->GetTransport()->GetMapId() && !WorldPosition(bot).isOnTransport(bot->GetTransport()) && !isMovingToTransport)
     {
         if (HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
         {
@@ -2006,7 +2006,7 @@ bool PlayerbotAI::PlayEmote(uint32 emote)
 {
     WorldPacket data(SMSG_TEXT_EMOTE);
     data << (TextEmotes)emote;
-    data << EmoteAction::GetNumberOfEmoteVariants((TextEmotes)emote, bot->getRace(), bot->getGender());
+    data << urand(0, EmoteAction::GetNumberOfEmoteVariants((TextEmotes)emote, bot->getRace(), bot->getGender()) - 1);
     data << ((master && (sServerFacade.GetDistance2d(bot, master) < 30.0f) && urand(0, 1)) ? master->GetObjectGuid() : (bot->GetSelectionGuid() && urand(0, 1)) ? bot->GetSelectionGuid() : ObjectGuid());
     bot->GetSession()->HandleTextEmoteOpcode(data);
 
@@ -2477,7 +2477,7 @@ bool PlayerbotAI::HasAura(string name, Unit* unit, bool maxStack, bool checkIsOw
                 if (minDuration > 0)
                 {
                     int32 auraDuration = aura->GetHolder()->GetAuraDuration();
-                    minDurationPassed = minDuration >= auraDuration;
+                    minDurationPassed = minDuration <= auraDuration;
                 }
 
                 if (maxAuraAmount < 0 && minDurationPassed)
@@ -3872,6 +3872,40 @@ bool PlayerbotAI::canDispel(const SpellEntry* entry, uint32 dispelType)
         strcmpi((const char*)entry->SpellName[0], "chilled") &&
         strcmpi((const char*)entry->SpellName[0], "mana tap") &&
         strcmpi((const char*)entry->SpellName[0], "ice armor"));
+}
+
+bool PlayerbotAI::IsHealSpell(const SpellEntry* spell)
+{
+    // Holy Light/Flash of Light
+    if (spell->SpellFamilyName == SPELLFAMILY_PALADIN)
+    {
+        if (spell->SpellIconID == 70 ||
+            spell->SpellIconID == 242)
+            return true;
+    }
+
+    for (uint8 i = 0; i < MAX_EFFECT_INDEX; ++i)
+    {
+        switch (spell->Effect[i])
+        {
+            case SPELL_EFFECT_HEAL:
+            case SPELL_EFFECT_HEAL_MAX_HEALTH:
+                return true;
+            case SPELL_EFFECT_APPLY_AURA:
+            case SPELL_EFFECT_APPLY_AREA_AURA_FRIEND:
+            case SPELL_EFFECT_APPLY_AREA_AURA_PARTY:
+            case SPELL_EFFECT_APPLY_AREA_AURA_PET:
+            {
+                switch (spell->EffectApplyAuraName[i])
+                {
+                    case SPELL_AURA_PERIODIC_HEAL:
+                        return true;
+                }
+                break;
+            }
+        }
+    }
+    return false;
 }
 
 bool IsAlliance(uint8 race)

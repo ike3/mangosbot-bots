@@ -288,6 +288,7 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
         LfgCheckTimer = 0;
         PlayersCheckTimer = 0;
         EventTimeSyncTimer = 0;
+        OfflineGroupBotsTimer = 0;
         guildsDeleted = false;
         arenaTeamsDeleted = false;
 
@@ -586,6 +587,9 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
         if (time(nullptr) > (BgCheckTimer + 30))
             CheckBgQueue();
     }
+
+    if (time(nullptr) > (OfflineGroupBotsTimer + 5) && players.size())
+        AddOfflineGroupBots();
 
     uint32 updateBots = sPlayerbotAIConfig.randomBotsPerInterval;
     uint32 maxNewBots = sPlayerbotAIConfig.randomBotsMaxLoginsPerInterval;
@@ -1547,6 +1551,79 @@ void RandomPlayerbotMgr::CheckLfgQueue()
     else
         sLog.outBasic("LFG Queue check finished. No real players in queue.");
     return;
+}
+
+void RandomPlayerbotMgr::AddOfflineGroupBots()
+{
+    if (!OfflineGroupBotsTimer || time(NULL) > (OfflineGroupBotsTimer + 5))
+        OfflineGroupBotsTimer = time(NULL);
+
+    uint32 totalCounter = 0;
+    for (const auto& i : players)
+    {
+        Player* player = i.second;
+
+        if (!player || !player->IsInWorld() || !player->GetGroup())
+            continue;
+
+        Group* group = player->GetGroup();
+        if (group && group->IsLeader(player->GetObjectGuid()))
+        {
+            vector<uint32> botsToAdd;
+            Group::MemberSlotList const& slots = group->GetMemberSlots();
+            for (Group::MemberSlotList::const_iterator i = slots.begin(); i != slots.end(); ++i)
+            {
+                ObjectGuid member = i->guid;
+                if (member == player->GetObjectGuid())
+                    continue;
+
+                if (!IsFreeBot(member.GetCounter()))
+                    continue;
+
+                if (sObjectMgr.GetPlayer(member))
+                    continue;
+
+                if (GetPlayerBot(member))
+                    continue;
+
+                botsToAdd.push_back(member.GetCounter());
+            }
+
+            if (botsToAdd.empty())
+                return;
+
+            uint32 maxToAdd = urand(1, 5);
+            uint32 counter = 0;
+            for (auto& guid : botsToAdd)
+            {
+                if (counter >= maxToAdd)
+                    break;
+
+                if (sPlayerbotAIConfig.IsFreeAltBot(guid))
+                {
+                    for (auto& bot : sPlayerbotAIConfig.freeAltBots)
+                    {
+                        if (bot.second == guid)
+                        {
+                            Player* player = GetPlayerBot(bot.second);
+                            if (!player)
+                            {
+                                AddPlayerBot(bot.second, bot.first);
+                            }
+                        }
+                    }
+                }
+                else
+                    AddRandomBot(guid);
+
+                counter++;
+                totalCounter++;
+            }
+        }
+    }
+
+    if (totalCounter)
+        sLog.outBasic("Added %u offline bots from groups", totalCounter);
 }
 
 Item* RandomPlayerbotMgr::CreateTempItem(uint32 item, uint32 count, Player const* player, uint32 randomPropertyId)

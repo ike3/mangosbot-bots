@@ -26,6 +26,7 @@ namespace ai
         bool Follow(Unit* target, float distance = 0);
         bool Follow(Unit* target, float distance, float angle);
         float MoveDelay(float distance);
+        bool FollowOnTransport(Unit* target);
 
         void WaitForReach(float distance);
         void WaitForReach(const Movement::PointsArray& path);

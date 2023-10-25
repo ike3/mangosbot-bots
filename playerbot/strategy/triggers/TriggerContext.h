@@ -131,6 +131,7 @@ namespace ai
             creators["not facing target"] = &TriggerContext::not_facing_target;
             creators["far from master"] = &TriggerContext::far_from_master;
             creators["not near master"] = &TriggerContext::not_near_master;
+            creators["out of react range"] = &TriggerContext::out_of_react_range;
             creators["update follow"] = &TriggerContext::update_follow;
             creators["stop follow"] = &TriggerContext::stop_follow;
             creators["far from loot target"] = &TriggerContext::far_from_loot_target;
@@ -175,6 +176,7 @@ namespace ai
             creators["has blessing of salvation"] = &TriggerContext::has_blessing_of_salvation;
             creators["has greater blessing of salvation"] = &TriggerContext::has_greater_blessing_of_salvation;
             creators["target of fear cast"] = &TriggerContext::target_of_fear_cast;
+            creators["heal target full health"] = &TriggerContext::heal_target_full_health;
 
             creators["mounted"] = &TriggerContext::mounted;
             creators["rooted"] = &TriggerContext::rooted;
@@ -348,6 +350,7 @@ namespace ai
         static Trigger* far_from_loot_target(PlayerbotAI* ai) { return new FarFromCurrentLootTrigger(ai); }
         static Trigger* far_from_master(PlayerbotAI* ai) { return new FarFromMasterTrigger(ai); }
         static Trigger* not_near_master(PlayerbotAI* ai) { return new NotNearMasterTrigger(ai); }
+        static Trigger* out_of_react_range(PlayerbotAI* ai) { return new OutOfReactRangeTrigger(ai); }
         static Trigger* update_follow(PlayerbotAI* ai) { return new UpdateFollowTrigger(ai); }
         static Trigger* stop_follow(PlayerbotAI* ai) { return new StopFollowTrigger(ai); }
         static Trigger* behind_target(PlayerbotAI* ai) { return new IsBehindTargetTrigger(ai); }
@@ -450,6 +453,7 @@ namespace ai
         static Trigger* has_blessing_of_salvation(PlayerbotAI* ai) { return new HasBlessingOfSalvationTrigger(ai); }
         static Trigger* has_greater_blessing_of_salvation(PlayerbotAI* ai) { return new HasGreaterBlessingOfSalvationTrigger(ai); }
         static Trigger* target_of_fear_cast(PlayerbotAI* ai) { return new TargetOfFearCastTrigger(ai); }
+        static Trigger* heal_target_full_health(PlayerbotAI* ai) { return new HealTargetFullHealthTrigger(ai); }
 
         static Trigger* petition_signed(PlayerbotAI* ai) { return new PetitionTurnInTrigger(ai); }
         static Trigger* buy_tabard(PlayerbotAI* ai) { return new BuyTabardTrigger(ai); }        

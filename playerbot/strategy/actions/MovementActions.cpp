@@ -1322,7 +1322,7 @@ void MovementAction::UpdateMovementState()
 
     if ((bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE ||
         bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE ) &&
-        !bot->GetMotionMaster()->GetCurrent()->IsReachable() && !bot->InBattleGround())
+        !bot->GetMotionMaster()->GetCurrent()->IsReachable() && !bot->InBattleGround() && !bot->GetTransport())
     {
         if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
         {
@@ -1361,6 +1361,9 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     UpdateMovementState();
 
+    if (FollowOnTransport(target))
+        return true;
+
     if (!target)
         return false;
 
@@ -1382,7 +1385,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         }
     }
 
-    if (sServerFacade.IsDistanceGreaterOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance) || (target->IsFlying() && !bot->IsFreeFlying()) || target->IsTaxiFlying() || bot->GetTransport())
+    if (sServerFacade.IsDistanceGreaterOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance) || (target->IsFlying() && !bot->IsFreeFlying()) || target->IsTaxiFlying()/* || bot->GetTransport()*/)
     {
         if (target->GetObjectGuid().IsPlayer())
         {
@@ -1419,7 +1422,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             }
         }
 
-        if (!target->IsTaxiFlying() || bot->GetTransport())
+        if (!target->IsTaxiFlying()/* || bot->GetTransport()*/)
            return MoveTo(target, ai->GetRange("follow"));
     }
 
@@ -1649,6 +1652,38 @@ float MovementAction::MoveDelay(float distance)
 {
     return distance / bot->GetSpeed(MOVE_RUN);
 }
+
+bool MovementAction::FollowOnTransport(Unit* target)
+{
+    bool const onDifferentTransports = bot->m_movementInfo.t_guid != target->m_movementInfo.t_guid;
+    if (onDifferentTransports && sServerFacade.IsDistanceLessOrEqualThan(sServerFacade.GetDistance2d(bot, target), sPlayerbotAIConfig.sightDistance))
+    {
+        ai->StopMoving();
+        bool sendHeartbeat = false;
+
+        if (GenericTransport* pMyTransport = bot->GetTransport())
+        {
+            sendHeartbeat = true;
+            pMyTransport->RemovePassenger(bot);
+            bot->Relocate(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
+        }
+
+        if (GenericTransport* pHisTransport = target->GetTransport())
+        {
+            sendHeartbeat = true;
+            bot->Relocate(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
+            pHisTransport->AddPassenger(bot);
+        }
+
+        if (sendHeartbeat)
+            bot->SendHeartBeat();
+
+        return true;
+    }
+
+    return false;
+}
+
 
 void MovementAction::WaitForReach(float distance)
 {

@@ -189,6 +189,7 @@ void PlayerbotFactory::Randomize(bool incremental, bool syncWithMaster)
     if (isRealRandomBot)
     {
         InitQuests(specialQuestIds);
+        InitQuests(classQuestIds);
         bot->learnQuestRewardedSpells();
     }
     if (pmo) pmo->finish();
@@ -1726,6 +1727,59 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool syncWithMaster)
                     uint32 newStatValue = sRandomItemMgr.GetLiveStatWeight(bot, newItemId, specId);
                     if (newStatValue <= 0)
                         continue;
+
+                    // skip off hand if main hand is worse
+#ifdef MANGOSBOT_ZERO
+                    if (proto->IsWeapon() && slot == EQUIPMENT_SLOT_OFFHAND && (bot->getClass() == CLASS_ROGUE || specId == 2))
+#endif
+#ifdef MANGOSBOT_ONE
+                    if (proto->IsWeapon() && slot == EQUIPMENT_SLOT_OFFHAND && (bot->getClass() == CLASS_ROGUE || specId == 2 || specId == 21))
+#endif
+#ifdef MANGOSBOT_TWO
+                    if (proto->IsWeapon() && slot == EQUIPMENT_SLOT_OFFHAND && (bot->getClass() == CLASS_ROGUE || specId == 2 || specId == 21 || bot->getClass() == CLASS_DEATH_KNIGHT))
+#endif
+                        {
+                            bool betterValue = false;
+                            bool betterDamage = false;
+                            bool betterDps = false;
+                            Item* mhItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+                            if (mhItem && mhItem->GetProto())
+                            {
+                                ItemPrototype const* mhProto = mhItem->GetProto();
+                                uint32 mhStatValue = sRandomItemMgr.GetLiveStatWeight(bot, mhProto->ItemId, specId);
+                                if (newStatValue > mhStatValue)
+                                    betterValue = true;
+
+                                uint32 mhDps = 0;
+                                uint32 ohDps = 0;
+                                uint32 mhDamage = 0;
+                                uint32 ohDamage = 0;
+                                for (int i = 0; i < MAX_ITEM_PROTO_DAMAGES; i++)
+                                {
+                                    if (mhProto->Damage[i].DamageMax == 0)
+                                        break;
+
+                                    mhDamage = mhProto->Damage[i].DamageMax;
+
+                                    mhDps = (mhProto->Damage[i].DamageMin + mhProto->Damage[i].DamageMax) / (float)(mhProto->Delay / 1000.0f) / 2;
+                                }
+                                for (int i = 0; i < MAX_ITEM_PROTO_DAMAGES; i++)
+                                {
+                                    if (proto->Damage[i].DamageMax == 0)
+                                        break;
+
+                                    ohDamage = proto->Damage[i].DamageMax;
+
+                                    ohDps = (proto->Damage[i].DamageMin + proto->Damage[i].DamageMax) / (float)(proto->Delay / 1000.0f) / 2;
+                                }
+                                if (ohDps > mhDps)
+                                    betterDps = true;
+                                if (ohDamage > mhDamage)
+                                    betterDamage = true;
+                            }
+                            if (betterDps || (betterDamage && betterValue))
+                                continue;
+                        }
 
                     if (incremental && oldItem && oldStatValue >= newStatValue && oldStatValue > 1)
                         continue;

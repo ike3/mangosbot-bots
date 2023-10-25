@@ -404,6 +404,14 @@ namespace ai
         virtual ActionThreatType getThreatType() override { return ActionThreatType::ACTION_THREAT_NONE; }
     };
 
+    class InterruptCurrentSpellAction : public Action
+    {
+    public:
+        InterruptCurrentSpellAction(PlayerbotAI* ai) : Action(ai, "interrunt current spell") {}
+        virtual bool isUseful() override;
+        virtual bool Execute(Event& event) override;
+    };
+
     //--------------------//
     //   Vehicle Actions  //
     //--------------------//

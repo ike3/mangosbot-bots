@@ -145,9 +145,12 @@ bool PartyMemberValue::IsTargetOfSpellCast(Player* target, SpellEntryPredicate &
                     if (unitTarget == targetGuid)
                         return true;
 
-                    ObjectGuid corpseTarget = spell->m_targets.getCorpseTargetGuid();
-                    if (corpseTarget == corpseGuid)
-                        return true;
+                    if (corpseGuid)
+                    {
+                        ObjectGuid corpseTarget = spell->m_targets.getCorpseTargetGuid();
+                        if (corpseTarget == corpseGuid)
+                            return true;
+                    }
                 }
             }
         }

@@ -19,6 +19,7 @@ public:
         creators["flash of light on party"] = &flash_of_light_on_party;
         creators["holy wrath"] = &holy_wrath;
         creators["lay on hands"] = &lay_on_hands;
+        creators["lay on hands on party"] = &lay_on_hands_on_party;
         creators["greater blessing of might"] = &greater_blessing_of_might;
         creators["greater blessing of kings"] = &greater_blessing_of_kings;
         creators["greater blessing of wisdom"] = &greater_blessing_of_wisdom;
@@ -49,6 +50,8 @@ private:
             /*A*/ NextAction::array(0, new NextAction("divine shield"), new NextAction("flash of light"), NULL),
             /*C*/ NULL);
     }
+
+    ACTION_NODE_A(lay_on_hands_on_party, "lay on hands on party", "holy light on party");
 
     ACTION_NODE_A(cleanse_poison, "cleanse poison", "purify poison");
 

@@ -425,3 +425,30 @@ bool RemoveBuffAction::Execute(Event& event)
     ai->RemoveAura(name);
     return !ai->HasAura(name, bot);
 }
+
+bool InterruptCurrentSpellAction::isUseful()
+{
+    for (int type = CURRENT_MELEE_SPELL; type < CURRENT_CHANNELED_SPELL; type++)
+    {
+        Spell* currentSpell = bot->GetCurrentSpell((CurrentSpellTypes)type);
+        if (currentSpell && currentSpell->CanBeInterrupted())
+            return true;
+    }
+    return false;
+}
+
+bool InterruptCurrentSpellAction::Execute(Event& event)
+{
+    bool interrupted = false;
+    for (int type = CURRENT_MELEE_SPELL; type < CURRENT_CHANNELED_SPELL; type++)
+    {
+        Spell* currentSpell = bot->GetCurrentSpell((CurrentSpellTypes)type);
+        if (currentSpell && currentSpell->CanBeInterrupted())
+        {
+            bot->InterruptSpell((CurrentSpellTypes)type);
+            ai->SpellInterrupted(currentSpell->m_spellInfo->Id);
+            interrupted = true;
+        }
+    }
+    return interrupted;
+}
