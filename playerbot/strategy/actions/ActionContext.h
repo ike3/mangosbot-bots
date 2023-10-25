@@ -60,6 +60,7 @@
 #include "PullActions.h"
 #include "ResetAiAction.h"
 #include "ShareQuestAction.h"
+#include "UpdateGearAction.h"
 
 #include "OnyxiasLairDungeonActions.h"
 #include "MoltenCoreDungeonActions.h"
@@ -181,6 +182,7 @@ namespace ai
             creators["enchant random item"] = &ActionContext::enchant_random_item;
             creators["reset instances"] = &ActionContext::reset_instances;
             creators["reset raids"] = &ActionContext::reset_raids;
+            creators["update gear"] = &ActionContext::update_gear;
             creators["buy petition"] = &ActionContext::buy_petition;
             creators["offer petition"] = &ActionContext::offer_petition;
             creators["offer petition nearby"] = &ActionContext::offer_petition_nearby;
@@ -451,6 +453,7 @@ namespace ai
         static Action* enchant_random_item(PlayerbotAI* ai) { return new EnchantRandomItemAction(ai); }
         static Action* reset_instances(PlayerbotAI* ai) { return new ResetInstancesAction(ai); }
         static Action* reset_raids(PlayerbotAI* ai) { return new ResetRaidsAction(ai); }
+        static Action* update_gear(PlayerbotAI* ai) { return new UpdateGearAction(ai); }
         static Action* buy_petition(PlayerbotAI* ai) { return new BuyPetitionAction(ai); }
         static Action* offer_petition(PlayerbotAI* ai) { return new PetitionOfferAction(ai); }
         static Action* offer_petition_nearby(PlayerbotAI* ai) { return new PetitionOfferNearbyAction(ai); }

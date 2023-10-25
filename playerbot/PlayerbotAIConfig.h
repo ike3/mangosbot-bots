@@ -27,6 +27,8 @@ enum class BotCheatMask : uint32
     maxMask = 1 << 11
 };
 
+#define MAX_GEAR_PROGRESSION_LEVEL 6
+
 class ConfigAccess
 {
 private:
@@ -120,6 +122,9 @@ public:
     uint32 classRaceProbabilityTotal;
     uint32 classRaceProbability[MAX_CLASSES][MAX_RACES];
     ClassSpecs classSpecs[MAX_CLASSES];
+    bool gearProgressionSystemEnabled;
+    uint32 gearProgressionSystemItemLevels[MAX_GEAR_PROGRESSION_LEVEL][2];
+    uint32 gearProgressionSystemItems[MAX_GEAR_PROGRESSION_LEVEL][MAX_CLASSES][4][SLOT_EMPTY];
     std::string commandPrefix, commandSeparator;
     std::string randomBotAccountPrefix;
     uint32 randomBotAccountCount;

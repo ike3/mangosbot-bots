@@ -1,0 +1,200 @@
+#include "botpch.h"
+#include "../../playerbot.h"
+#include "UpdateGearAction.h"
+#include "../../RandomPlayerbotMgr.h"
+#include "AiFactory.h"
+
+using namespace ai;
+
+UpdateGearAction::UpdateGearAction(PlayerbotAI* ai): Action(ai, "update gear")
+{
+    enchants.clear();
+}
+
+bool UpdateGearAction::Execute(Event& event)
+{
+    Player* master = GetMaster();
+
+    // Get bot class and spec
+    const uint8 cls = bot->getClass();
+    uint8 spec = AiFactory::GetPlayerSpecTab(bot);
+
+    // Check for possible tank spec
+    if (cls == CLASS_DRUID && spec == 1 && ai->IsTank(bot))
+    {
+        spec = 3;
+    }
+
+    const uint8 avgProgressionLevel = GetMasterAverageProgressionLevel();
+
+    // Get gear for the progression level
+    for (uint8 slot = 0; slot < SLOT_EMPTY; slot++)
+    {
+        // Get the master item phase for this slot
+        const uint8 itemProgressionLevel = GetMasterItemProgressionLevel(slot, avgProgressionLevel);
+
+        // Retrieve the desired item from the progression levels
+        const uint32 itemId = sPlayerbotAIConfig.gearProgressionSystemItems[itemProgressionLevel][cls][spec][slot];
+
+        Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        if (oldItem)
+        {
+            // Ignore this item as it is already equipped
+            if (oldItem->GetEntry() == itemId)
+            {
+                continue;
+            }
+
+            // Destroy the old item
+            bot->DestroyItem(oldItem->GetBagSlot(), oldItem->GetSlot(), true);
+        }
+        
+        if (itemId)
+        {
+            // Try to equip and enchant the item
+            uint16 eDest;
+            if (CanEquipUnseenItem(slot, eDest, itemId))
+            {
+                Item* pItem = bot->EquipNewItem(eDest, itemId, true);
+                if (pItem)
+                {
+                    pItem->SetOwnerGuid(bot->GetObjectGuid());
+                    EnchantItem(pItem);
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool UpdateGearAction::isUseful()
+{
+    // Only for max level random bots that are playing with a real player
+    Player* master = GetMaster();
+    if (master && master->isRealPlayer() && bot->IsInGroup(master) && sRandomPlayerbotMgr.IsRandomBot(bot))
+    {
+#ifdef MANGOSBOT_ZERO
+        const uint32 maxLevel = 60;
+#elif MANGOSBOT_ONE
+        const uint32 maxLevel = 70;
+#else
+        const uint32 maxLevel = 80;
+#endif
+        return bot->GetLevel() == maxLevel;
+    }
+
+    return false;
+}
+
+uint8 UpdateGearAction::GetProgressionLevel(uint32 itemLevel)
+{
+    uint8 progressionLevel = 0;
+    for (uint8 progressionLevel = 1; progressionLevel < MAX_GEAR_PROGRESSION_LEVEL; progressionLevel++)
+    {
+        const uint32 minIlvl = sPlayerbotAIConfig.gearProgressionSystemItemLevels[progressionLevel][0];
+        const uint32 maxIlvl = sPlayerbotAIConfig.gearProgressionSystemItemLevels[progressionLevel][1];
+        if (itemLevel >= minIlvl && itemLevel < maxIlvl)
+        {
+            progressionLevel = progressionLevel;
+            break;
+        }
+    }
+
+    return progressionLevel;
+}
+
+uint8 UpdateGearAction::GetMasterAverageProgressionLevel()
+{
+    return GetProgressionLevel(ai->GetEquipGearScore(ai->GetMaster(), false, false));
+}
+
+uint8 UpdateGearAction::GetMasterItemProgressionLevel(uint8 slot, uint8 avgProgressionLevel)
+{
+    // If checking weapons or ranged weapons use the average item lvl
+    if (slot == EQUIPMENT_SLOT_MAINHAND ||
+        slot == EQUIPMENT_SLOT_OFFHAND || 
+        slot == EQUIPMENT_SLOT_RANGED || 
+        slot == EQUIPMENT_SLOT_TRINKET1 ||
+        slot == EQUIPMENT_SLOT_TRINKET2)
+    {
+        return avgProgressionLevel;
+    }
+    else
+    {
+        uint32 itemLevel = 0;
+        const Item* item = GetMaster()->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        if (item)
+        {
+            itemLevel = item->GetProto()->ItemLevel;
+        }
+
+        uint8 itemProgressionLevel = GetProgressionLevel(itemLevel);
+
+        /*
+        // TO DO: Check if a player has a item with low item lvl in purpose even if he is on a different progression level
+        // Use average progression level if the item progression level is lower than the average progression level
+        if (itemProgressionLevel < averageProgressionLevel)
+        {
+            itemProgressionLevel = averageProgressionLevel;
+        }
+        */
+
+        return itemProgressionLevel;
+    }
+}
+
+bool UpdateGearAction::CanEquipUnseenItem(uint8 slot, uint16& dest, uint32 itemId)
+{
+    dest = 0;
+    Item* pItem = RandomPlayerbotMgr::CreateTempItem(itemId, 1, bot);
+    if (pItem)
+    {
+        InventoryResult result = bot->CanEquipItem(slot, dest, pItem, true, false);
+        pItem->RemoveFromUpdateQueueOf(bot);
+        delete pItem;
+        return result == EQUIP_ERR_OK;
+    }
+
+    return false;
+}
+
+void UpdateGearAction::EnchantItem(Item* item)
+{
+    if (item)
+    {
+        int tab = AiFactory::GetPlayerSpecTab(bot);
+        uint32 tempId = uint32((uint32)bot->getClass() * (uint32)10);
+        uint8 spec = tempId += (uint32)tab;
+
+        if (enchants.empty())
+        {
+            QueryResult* result = PlayerbotDatabase.PQuery("SELECT class, spec, spellid, slotid FROM ai_playerbot_enchants");
+            if (result)
+            {
+                do
+                {
+                    Field* fields = result->Fetch();
+
+                    EnchantTemplate pEnchant;
+                    pEnchant.ClassId = fields[0].GetUInt8();
+                    pEnchant.SpecId = fields[1].GetUInt8();
+                    pEnchant.SpellId = fields[2].GetUInt32();
+                    pEnchant.SlotId = fields[3].GetUInt8();
+                    enchants.push_back(pEnchant);
+                } 
+                while (result->NextRow());
+
+                delete result;
+            }
+        }
+
+        for (const auto& enchant : enchants)
+        {
+            if (enchant.ClassId == bot->getClass() && enchant.SpecId == spec)
+            {
+                ai->EnchantItemT(enchant.SpellId, enchant.SlotId, item);
+            }
+        }
+    }
+}

@@ -466,6 +466,33 @@ bool PlayerbotAIConfig::Initialize()
     respawnModForPlayerBots = config.GetBoolDefault("AiPlayerbot.RespawnModForPlayerBots", false);
     respawnModForInstances = config.GetBoolDefault("AiPlayerbot.RespawnModForInstances", false);
 
+    // Gear progression system
+    gearProgressionSystemEnabled = config.GetBoolDefault("AiPlayerbot.GearProgressionSystem.Enable", false);
+
+    // Gear progression phase
+    for (uint8 phase = 0; phase < MAX_GEAR_PROGRESSION_LEVEL; phase++)
+    {
+        ostringstream os; os << "AiPlayerbot.GearProgressionSystem." << std::to_string(phase) << ".MinItemLevel";
+        gearProgressionSystemItemLevels[phase][0] = config.GetIntDefault(os.str().c_str(), 9999999);
+        os.str(""); os << "AiPlayerbot.GearProgressionSystem." << std::to_string(phase) << ".MaxItemLevel";
+        gearProgressionSystemItemLevels[phase][1] = config.GetIntDefault(os.str().c_str(), 9999999);
+
+        // Gear progression class
+        for (uint8 cls = 1; cls < MAX_CLASSES; cls++)
+        {
+            // Gear progression spec
+            for (uint8 spec = 0; spec < 4; spec++)
+            {
+                // Gear progression slot
+                for (uint8 slot = 0; slot < SLOT_EMPTY; slot++)
+                {
+                    ostringstream os; os << "AiPlayerbot.GearProgressionSystem." << std::to_string(phase) << "." << std::to_string(cls) << "." << std::to_string(spec) << "." << std::to_string(slot);
+                    gearProgressionSystemItems[phase][cls][spec][slot] = config.GetIntDefault(os.str().c_str(), 0);
+                }
+            }
+        }
+    }
+
     sLog.outString("Loading free bots.");
     selfBotLevel = config.GetIntDefault("AiPlayerbot.SelfBotLevel", 1);
     LoadListString<list<string>>(config.GetStringDefault("AiPlayerbot.ToggleAlwaysOnlineAccounts", ""), toggleAlwaysOnlineAccounts);

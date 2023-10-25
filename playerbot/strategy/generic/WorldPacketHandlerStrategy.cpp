@@ -28,7 +28,7 @@ void WorldPacketHandlerStrategy::InitNonCombatTriggers(std::list<TriggerNode*> &
 
     triggers.push_back(new TriggerNode(
         "group invite",
-        NextAction::array(0, new NextAction("accept invitation", relevance), new NextAction("reset raids", relevance), NULL)));
+        NextAction::array(0, new NextAction("accept invitation", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
         "uninvite",

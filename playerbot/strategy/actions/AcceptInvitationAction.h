@@ -76,6 +76,9 @@ namespace ai
 
             ai->TellPlayer(GetMaster(), BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
+            ai->DoSpecificAction("reset raids", event, true);
+            ai->DoSpecificAction("update gear", event, true);
+
             return true;
         }
 
