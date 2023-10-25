@@ -365,6 +365,7 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
                 ActionNode* actionNode = CreateActionNode(nextAction->getName());
                 InitializeAction(actionNode);
 
+                bool shouldPush = false;
                 float k = nextAction->getRelevance();
                 if (forceRelevance > 0.0f)
                 {
@@ -373,9 +374,20 @@ bool Engine::MultiplyAndPush(NextAction** actions, float forceRelevance, bool sk
                 else if (strcmp(pushType, "default") == 0)
                 {
                     k -= 200.0f;
+                    shouldPush = true;
+                }
+                else if (strcmp(pushType, "prereq") == 0 || strcmp(pushType, "alt") == 0 || strcmp(pushType, "again") == 0)
+                {
+                    k = forceRelevance;
+                    shouldPush = true;
                 }
 
-                if (k > 0 || strcmp(pushType, "default") == 0)
+                if (!shouldPush)
+                {
+                    shouldPush = k > 0.0f;
+                }
+
+                if (shouldPush)
                 {
                     LogAction("PUSH:%s - %f (%s)", actionNode->getName().c_str(), k, pushType);
                     queue.Push(new ActionBasket(actionNode, k, skipPrerequisites, event));
