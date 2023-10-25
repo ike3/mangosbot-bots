@@ -9,6 +9,7 @@
 
 #include "../../modules/Bots/ahbot/AhBotConfig.h"
 #include "MotionGenerators/TargetedMovementGenerator.h"
+#include "strategy/values/Formations.h"
 
 ServerFacade::ServerFacade() {}
 ServerFacade::~ServerFacade() {}
@@ -59,7 +60,18 @@ bool ServerFacade::IsDistanceLessOrEqualThan(float dist1, float dist2)
 
 void ServerFacade::SetFacingTo(Player* bot, WorldObject* wo, bool force)
 {
-    bot->SetFacingTo(bot->GetAngle(wo));
+    float angle = bot->GetAngle(wo);
+    MotionMaster &mm = *bot->GetMotionMaster();
+    if (!force && isMoving(bot)) bot->SetFacingTo(bot->GetAngle(wo));
+    else
+    {
+    	float x = bot->GetPositionX();
+    	float y = bot->GetPositionY();
+    	float z = bot->GetPositionZ();
+    	Formation::UpdateAllowedPositionZ(bot, x, y, z);
+    	bot->SetPosition(x, y, z, angle);
+        bot->SendHeartBeat();
+    }
 }
 
 bool ServerFacade::IsFriendlyTo(Unit* bot, Unit* to)
