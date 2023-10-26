@@ -70,18 +70,21 @@ bool UpdateGearAction::Execute(Event& event)
 
 bool UpdateGearAction::isUseful()
 {
-    // Only for max level random bots that are playing with a real player
-    Player* master = GetMaster();
-    if (master && master->isRealPlayer() && bot->IsInGroup(master) && sRandomPlayerbotMgr.IsRandomBot(bot))
+    if (sPlayerbotAIConfig.gearProgressionSystemEnabled)
     {
+        // Only for max level random bots that are playing with a real player
+        Player* master = GetMaster();
+        if (master && master->isRealPlayer() && bot->IsInGroup(master) && sRandomPlayerbotMgr.IsRandomBot(bot))
+        {
 #ifdef MANGOSBOT_ZERO
-        const uint32 maxLevel = 60;
+            const uint32 maxLevel = 60;
 #elif MANGOSBOT_ONE
-        const uint32 maxLevel = 70;
+            const uint32 maxLevel = 70;
 #else
-        const uint32 maxLevel = 80;
+            const uint32 maxLevel = 80;
 #endif
-        return bot->GetLevel() == maxLevel;
+            return bot->GetLevel() == maxLevel;
+        }
     }
 
     return false;
