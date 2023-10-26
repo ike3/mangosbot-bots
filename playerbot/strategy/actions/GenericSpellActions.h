@@ -407,7 +407,7 @@ namespace ai
     class InterruptCurrentSpellAction : public Action
     {
     public:
-        InterruptCurrentSpellAction(PlayerbotAI* ai) : Action(ai, "interrunt current spell") {}
+        InterruptCurrentSpellAction(PlayerbotAI* ai) : Action(ai, "interrupt current spell") {}
         virtual bool isUseful() override;
         virtual bool Execute(Event& event) override;
     };
