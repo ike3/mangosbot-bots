@@ -19,10 +19,49 @@ bool UpdateGearAction::Execute(Event& event)
     const uint8 cls = bot->getClass();
     uint8 spec = AiFactory::GetPlayerSpecTab(bot);
 
-    // Check for possible tank spec
-    if (cls == CLASS_DRUID && spec == 1 && ai->IsTank(bot))
+    // Spec is overridden by bot role
+    if (cls == CLASS_WARRIOR)
     {
-        spec = 3;
+        if (ai->IsTank(bot))
+        {
+            spec = 2;
+        }
+    }
+    else if (cls == CLASS_PALADIN)
+    {
+        if (ai->IsHeal(bot))
+        {
+            spec = 0;
+        }
+        else if (ai->IsTank(bot))
+        {
+            spec = 1;
+        }
+    }
+    else if (cls == CLASS_PRIEST)
+    {
+        if (ai->IsHeal(bot))
+        {
+            spec = 1;
+        }
+    }
+    else if (cls == CLASS_SHAMAN)
+    {
+        if (ai->IsHeal(bot))
+        {
+            spec = 2;
+        }
+    }
+    else if (cls == CLASS_DRUID)
+    {
+        if (ai->IsHeal(bot))
+        {
+            spec = 2;
+        }
+        else if (ai->IsTank(bot))
+        {
+            spec = 3;
+        }
     }
 
     const uint8 avgProgressionLevel = GetMasterAverageProgressionLevel();
@@ -34,35 +73,51 @@ bool UpdateGearAction::Execute(Event& event)
         const uint8 itemProgressionLevel = GetMasterItemProgressionLevel(slot, avgProgressionLevel);
 
         // Retrieve the desired item from the progression levels
-        const uint32 itemId = sPlayerbotAIConfig.gearProgressionSystemItems[itemProgressionLevel][cls][spec][slot];
-
-        Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
-        if (oldItem)
+        const int32 itemId = sPlayerbotAIConfig.gearProgressionSystemItems[itemProgressionLevel][cls][spec][slot];
+        if (itemId >= 0)
         {
-            // Ignore this item as it is already equipped
-            if (oldItem->GetEntry() == itemId)
+            const uint32 pItemId = (uint32)itemId;
+            Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+            if (oldItem)
             {
-                continue;
+                // Ignore this item as it is already equipped
+                if (oldItem->GetEntry() == pItemId)
+                {
+                    continue;
+                }
+
+                // Destroy the old item
+                bot->DestroyItem(oldItem->GetBagSlot(), oldItem->GetSlot(), true);
             }
 
-            // Destroy the old item
-            bot->DestroyItem(oldItem->GetBagSlot(), oldItem->GetSlot(), true);
-        }
-        
-        if (itemId)
-        {
-            // Try to equip and enchant the item
-            uint16 eDest;
-            if (CanEquipUnseenItem(slot, eDest, itemId))
+            if (pItemId > 0)
             {
-                Item* pItem = bot->EquipNewItem(eDest, itemId, true);
-                if (pItem)
+                // Try to equip and enchant the item
+                uint16 eDest;
+                if (CanEquipUnseenItem(slot, eDest, pItemId))
                 {
-                    pItem->SetOwnerGuid(bot->GetObjectGuid());
-                    EnchantItem(pItem);
+                    Item* pItem = bot->EquipNewItem(eDest, pItemId, true);
+                    if (pItem)
+                    {
+                        pItem->SetOwnerGuid(bot->GetObjectGuid());
+                        EnchantItem(pItem);
+                    }
+                }
+                else
+                {
+                    std::ostringstream ss;
+                    ss << "Failed to equip item " << std::to_string(pItemId) << " specified in AiPlayerbot.GearProgressionSystem." << std::to_string(itemProgressionLevel) << "." << std::to_string(cls) << "." << std::to_string(spec) << "." << std::to_string(slot);
+                    ai->TellError(ss.str());
                 }
             }
         }
+        else
+        {
+            std::ostringstream ss;
+            ss << "Missing configuration for AiPlayerbot.GearProgressionSystem." << std::to_string(itemProgressionLevel) << "." << std::to_string(cls) << "." << std::to_string(spec) << "." << std::to_string(slot);
+            ai->TellError(ss.str());
+        }
+
     }
 
     return true;

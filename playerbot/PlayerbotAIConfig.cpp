@@ -487,7 +487,7 @@ bool PlayerbotAIConfig::Initialize()
                 for (uint8 slot = 0; slot < SLOT_EMPTY; slot++)
                 {
                     ostringstream os; os << "AiPlayerbot.GearProgressionSystem." << std::to_string(phase) << "." << std::to_string(cls) << "." << std::to_string(spec) << "." << std::to_string(slot);
-                    gearProgressionSystemItems[phase][cls][spec][slot] = config.GetIntDefault(os.str().c_str(), 0);
+                    gearProgressionSystemItems[phase][cls][spec][slot] = config.GetIntDefault(os.str().c_str(), -1);
                 }
             }
         }
