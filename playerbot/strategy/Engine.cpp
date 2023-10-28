@@ -203,7 +203,8 @@ bool Engine::DoNextAction(Unit* unit, int depth, bool minimal, bool isStunned)
                         }
                     }
 
-                    if (queue.Size() && relevance < oldRelevance && queue.Peek()->getRelevance() > relevance) //Relevance changed. Try again.
+                    ActionBasket* peekAction = queue.Peek();
+                    if (relevance < oldRelevance && peekAction && peekAction->getRelevance() > relevance) //Relevance changed. Try again.
                     {
                         PushAgain(actionNode, relevance, event);
                         if (pmo1) pmo1->finish();
