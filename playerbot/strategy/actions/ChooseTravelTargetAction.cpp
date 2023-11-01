@@ -193,7 +193,7 @@ void ChooseTravelTargetAction::getNewTarget(TravelTarget* newTarget, TravelTarge
 
 void ChooseTravelTargetAction::setNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget)
 {
-    if (oldTarget->isForced() && oldTarget->getStatus() == TravelStatus::TRAVEL_STATUS_COOLDOWN && ai->HasStrategy("travel once", BotState::BOT_STATE_NON_COMBAT))
+    if (oldTarget->isForced() && (oldTarget->getStatus() == TravelStatus::TRAVEL_STATUS_COOLDOWN || oldTarget->getStatus() == TravelStatus::TRAVEL_STATUS_EXPIRED) && ai->HasStrategy("travel once", BotState::BOT_STATE_NON_COMBAT))
     {
         ai->ChangeStrategy("-travel once", BotState::BOT_STATE_NON_COMBAT);
         ai->TellPlayerNoFacing(GetMaster(), "Arrived at " + oldTarget->getDestination()->getTitle());
