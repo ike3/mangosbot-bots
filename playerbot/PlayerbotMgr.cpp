@@ -419,7 +419,7 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
 string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGuid masterguid, bool admin, uint32 masterAccountId, uint32 masterGuildId)
 {
     if (!sPlayerbotAIConfig.enabled || guid.IsEmpty())
-        return "bot system is disabled";
+        return "Bot system is disabled";
 
     uint32 botAccount = sObjectMgr.GetPlayerAccountIdByGUID(guid);
     bool isRandomBot = sRandomPlayerbotMgr.IsRandomBot(guid);
@@ -430,7 +430,7 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
     {
         Player* master = sObjectMgr.GetPlayer(masterguid);
         if (master && (!sPlayerbotAIConfig.allowGuildBots || !masterGuildId || (masterGuildId && master->GetGuildIdFromDB(guid) != masterGuildId)))
-            return "not in your guild or account";
+            return "Not in your guild or account";
     }
 
     if (!isRandomAccount && this == &sRandomPlayerbotMgr)
@@ -441,12 +441,12 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
     if (cmd == "add" || cmd == "login")
     {
         if (sObjectMgr.GetPlayer(guid))
-            return "player already logged in";
+            return "Player already logged in";
 
         // Only allow bots that are on the same account or same guild (if enabled)
         Player* master = sObjectMgr.GetPlayer(masterguid);
         uint32 guildId = Player::GetGuildIdFromDB(guid);
-        if (master && (isMasterAccount || sPlayerbotAIConfig.allowGuildBots && masterGuildId && guildId == masterGuildId))
+        if (master && (isMasterAccount || (sPlayerbotAIConfig.allowGuildBots && masterGuildId && guildId == masterGuildId) || admin))
         {
             if (isRandomAccount)
                 sRandomPlayerbotMgr.AddRandomBot(guid.GetCounter());
