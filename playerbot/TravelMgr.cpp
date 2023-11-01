@@ -1797,6 +1797,97 @@ void TravelMgr::LoadQuestTravelTable()
             out << std::fixed;
 
             sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+
+            mapId = 530;
+
+            static float const ShattrathAreaSouthLimit[] = {
+            -2493.8823f,  5761.6894f,
+            -2593.7438f,  4768.7978f,
+            -1831.5280f,  3383.5705f
+            };
+
+            pos.clear();
+
+            size = my_sizeof(ShattrathAreaSouthLimit) / my_sizeof(ShattrathAreaSouthLimit[0]);
+
+            for (int32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (ShattrathAreaSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, ShattrathAreaSouthLimit[i], ShattrathAreaSouthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "ShattrathAreaSouthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+
+            static float const HellfireZangarSouthLimit[] = {
+
+            -531.47265f,  8697.5830f,
+            -514.56945f,  7291.2763f,
+            -404.92804f,  6976.7958f,
+            -593.56475f,  6646.0634f,
+            -856.75695f,  6318.5507f,
+            -1166.2729f,  5799.7817f,
+            -1007.9321f,  4761.1352f,
+            -1831.5280f,  3383.5705f,
+            -2135.1586f,  2335.4426f,
+            -2179.3974f,  896.0285f,
+            };
+
+            pos.clear();
+
+            size = my_sizeof(HellfireZangarSouthLimit) / my_sizeof(HellfireZangarSouthLimit[0]);
+
+            for (int32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (HellfireZangarSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, HellfireZangarSouthLimit[i], HellfireZangarSouthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "HellfireZangarSouthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
+
+            static float const BladeEdgeNetherSouthLimit[] = {
+            2074.6831f,  8216.6113f,
+            1248.3884f,  7472.7592f,
+            1118.4877f,  6972.6821f,
+            1212.2004f,  6106.2861f,
+            1175.4729f,  5633.375f,
+            1543.8314f,  3961.8886f,
+            };
+
+            pos.clear();
+
+            size = my_sizeof(BladeEdgeNetherSouthLimit) / my_sizeof(BladeEdgeNetherSouthLimit[0]);
+
+            for (int32 i = 0; i < size - 1; i = i + 2)
+            {
+                if (BladeEdgeNetherSouthLimit[i] == 0)
+                    break;
+                pos.push_back(WorldPosition(mapId, BladeEdgeNetherSouthLimit[i], BladeEdgeNetherSouthLimit[i + 1], 0));
+            }
+
+            out.str("");
+            out.clear();
+
+            out << "BladeEdgeNetherSouthLimit" << ",";
+            WorldPosition().printWKT(pos, out, 1);
+            out << std::fixed;
+
+            sPlayerbotAIConfig.log("vmangoslines.csv", out.str().c_str());
     }
 
     if (sPlayerbotAIConfig.hasLog("gos.csv"))
