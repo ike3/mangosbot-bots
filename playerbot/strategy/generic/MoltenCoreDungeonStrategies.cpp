@@ -54,13 +54,6 @@ void MagmadarFightStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers
     triggers.push_back(new TriggerNode(
         "fire protection potion ready",
         NextAction::array(0, new NextAction("fire protection potion", 100.0f), NULL)));
-
-    if (bot->getClass() == CLASS_HUNTER)
-    {
-        triggers.push_back(new TriggerNode(
-            "magmadar enraged",
-            NextAction::array(0, new NextAction("tranquilizing shot", 100.0f), NULL)));
-    }
 }
 
 void MagmadarFightStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

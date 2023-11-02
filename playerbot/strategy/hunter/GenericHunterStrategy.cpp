@@ -88,6 +88,10 @@ void GenericHunterStrategy::InitCombatTriggers(std::list<TriggerNode*> &triggers
         NextAction::array(0, new NextAction("switch to melee", ACTION_HIGH + 1), new NextAction("say::no ammo", ACTION_HIGH), NULL)));
     */
 
+    triggers.push_back(new TriggerNode(
+        "dispel enrage",
+        NextAction::array(0, new NextAction("tranquilizing shot", ACTION_INTERRUPT + 4), NULL)));
+
     // MOVE THIS TO AOE
     // Traps must be on ACTION_INTERRUPT or higher due to its movements and chained actions
     triggers.push_back(new TriggerNode(

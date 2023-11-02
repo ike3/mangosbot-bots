@@ -168,20 +168,4 @@ namespace ai
     private:
         uint32 buffID;
     };
-
-    class BuffOnTargetTrigger : public Trigger
-    {
-    public:
-        BuffOnTargetTrigger(PlayerbotAI* ai, string name, uint32 buffID)
-        : Trigger(ai, name, 1)
-        , buffID(buffID) {}
-
-        virtual bool IsActive() override;
-
-    protected:
-        virtual string GetTargetName() override { return "current target"; }
-
-    protected:
-        uint32 buffID;
-    };
 }

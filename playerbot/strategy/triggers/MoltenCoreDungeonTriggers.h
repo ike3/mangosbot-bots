@@ -40,12 +40,6 @@ namespace ai
         MagmadarTooCloseTrigger(PlayerbotAI* ai) : CloseToCreatureTrigger(ai, "magmadar too close", 11982, 30.0f) {}
     };
 
-    class MagmadarEnragedTrigger : public BuffOnTargetTrigger
-    {
-    public:
-        MagmadarEnragedTrigger(PlayerbotAI* ai) : BuffOnTargetTrigger(ai, "magmadar enraged", 19451) {}
-    };
-
     class FireProtectionPotionReadyTrigger : public ItemBuffReadyTrigger
     {
     public:

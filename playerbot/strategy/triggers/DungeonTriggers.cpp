@@ -294,9 +294,3 @@ bool ItemBuffReadyTrigger::IsActive()
 
     return false;
 }
-
-bool BuffOnTargetTrigger::IsActive()
-{
-    const Unit* target = GetTarget();
-    return target && target->HasAura(buffID);
-}

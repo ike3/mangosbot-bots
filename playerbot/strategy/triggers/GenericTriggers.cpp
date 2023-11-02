@@ -890,3 +890,29 @@ bool TargetOfCastedAuraTypeTrigger::IsActive()
 
     return false;
 }
+
+bool BuffOnTargetTrigger::IsActive()
+{
+    const Unit* target = GetTarget();
+    return target && target->HasAura(buffID);
+}
+
+bool DispelOnTargetTrigger::IsActive()
+{
+    Unit* target = GetTarget();
+    if (target)
+    {
+        const uint32 dispelMask = GetDispellMask(dispelType);
+        const std::vector<Aura*> auras = ai->GetAuras(target);
+        for (const Aura* aura : auras)
+        {
+            const SpellEntry* spellInfo = aura->GetSpellProto();
+            if (spellInfo && ((1 << spellInfo->Dispel) & dispelMask))
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}

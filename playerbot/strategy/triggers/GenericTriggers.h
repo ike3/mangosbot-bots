@@ -1164,6 +1164,44 @@ namespace ai
     public:
         HasGreaterBlessingOfSalvationTrigger(PlayerbotAI* ai) : HasAuraTrigger(ai, "greater blessing of salvation") {}
     };
+
+    class BuffOnTargetTrigger : public Trigger
+    {
+    public:
+        BuffOnTargetTrigger(PlayerbotAI* ai, string name, uint32 buffID)
+        : Trigger(ai, name, 1)
+        , buffID(buffID) {}
+
+        virtual bool IsActive() override;
+
+    protected:
+        virtual string GetTargetName() override { return "current target"; }
+
+    protected:
+        uint32 buffID;
+    };
+
+    class DispelOnTargetTrigger : public Trigger
+    {
+    public:
+        DispelOnTargetTrigger(PlayerbotAI* ai, string name, DispelType dispelType, int checkInterval = 1)
+        : Trigger(ai, name, checkInterval)
+        , dispelType(dispelType) {}
+
+        virtual bool IsActive() override;
+
+    protected:
+        virtual string GetTargetName() override { return "current target"; }
+
+    private:
+        DispelType dispelType;
+    };
+
+    class DispelEnrageOnTargetTrigger : public DispelOnTargetTrigger
+    {
+    public:
+        DispelEnrageOnTargetTrigger(PlayerbotAI* ai, string name = "dispel enrage") : DispelOnTargetTrigger(ai, name, DISPEL_ENRAGE) {}
+    };
 }
 
 #include "RangeTriggers.h"

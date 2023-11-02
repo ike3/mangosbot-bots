@@ -177,6 +177,7 @@ namespace ai
             creators["has greater blessing of salvation"] = &TriggerContext::has_greater_blessing_of_salvation;
             creators["target of fear cast"] = &TriggerContext::target_of_fear_cast;
             creators["heal target full health"] = &TriggerContext::heal_target_full_health;
+            creators["dispel enrage"] = &TriggerContext::dispel_enrage;
 
             creators["mounted"] = &TriggerContext::mounted;
             creators["rooted"] = &TriggerContext::rooted;
@@ -266,7 +267,6 @@ namespace ai
             creators["end magmadar fight"] = &TriggerContext::magmadar_end_fight;
             creators["magmadar lava bomb"] = &TriggerContext::magmadar_lava_bomb;
             creators["magmadar too close"] = &TriggerContext::magmadar_too_close;
-            creators["magmadar enraged"] = &TriggerContext::magmadar_enraged;
 
             creators["fire protection potion ready"] = &TriggerContext::fire_protection_potion_ready;
 
@@ -454,6 +454,7 @@ namespace ai
         static Trigger* has_greater_blessing_of_salvation(PlayerbotAI* ai) { return new HasGreaterBlessingOfSalvationTrigger(ai); }
         static Trigger* target_of_fear_cast(PlayerbotAI* ai) { return new TargetOfFearCastTrigger(ai); }
         static Trigger* heal_target_full_health(PlayerbotAI* ai) { return new HealTargetFullHealthTrigger(ai); }
+        static Trigger* dispel_enrage(PlayerbotAI* ai) { return new DispelEnrageOnTargetTrigger(ai); }
 
         static Trigger* petition_signed(PlayerbotAI* ai) { return new PetitionTurnInTrigger(ai); }
         static Trigger* buy_tabard(PlayerbotAI* ai) { return new BuyTabardTrigger(ai); }        
@@ -504,7 +505,6 @@ namespace ai
         static Trigger* magmadar_end_fight(PlayerbotAI* ai) { return new MagmadarEndFightTrigger(ai); }
         static Trigger* magmadar_lava_bomb(PlayerbotAI* ai) { return new MagmadarLavaBombTrigger(ai); }
         static Trigger* magmadar_too_close(PlayerbotAI* ai) { return new MagmadarTooCloseTrigger(ai); }
-        static Trigger* magmadar_enraged(PlayerbotAI* ai) { return new MagmadarEnragedTrigger(ai); }
 
         static Trigger* fire_protection_potion_ready(PlayerbotAI* ai) { return new FireProtectionPotionReadyTrigger(ai); }
 
