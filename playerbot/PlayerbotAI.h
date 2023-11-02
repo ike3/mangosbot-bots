@@ -511,6 +511,10 @@ public:
 
     bool IsImmuneToSpell(uint32 spellId) const;
 
+    bool IsInPve();
+    bool IsInPvp();
+    bool IsInRaid();
+
     void SetMoveToTransport(bool flag = true) { isMovingToTransport = flag; }
     bool GetMoveToTransport() { return isMovingToTransport; }
 

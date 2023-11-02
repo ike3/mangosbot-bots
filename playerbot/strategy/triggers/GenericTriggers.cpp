@@ -709,119 +709,17 @@ bool NoBuffAndComboPointsAvailableTrigger::IsActive()
 
 bool InPvpTrigger::IsActive()
 {
-    if (ai->IsSafe(bot))
-    {
-        const bool inDuel = bot->duel && bot->duel->opponent;
-        if (!inDuel)
-        {
-            const bool inBattleground = bot->InBattleGround();
-            bool inArena = false;
-#ifndef MANGOSBOT_ZERO
-            inArena = bot->InArena();
-#endif
-            if (!inBattleground && !inArena)
-            {
-                const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
-                if (!isPlayerNear)
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-bool InRaidFight(PlayerbotAI* ai)
-{
-    bool inRaidFight = false;
-    const Map* map = ai->GetBot()->GetMap();
-    if (map && (map->IsDungeon()|| map->IsRaid()))
-    {
-        inRaidFight = true;
-    }
-    else if (ai->GetState() == BotState::BOT_STATE_COMBAT)
-    {
-        AiObjectContext* context = ai->GetAiObjectContext();
-        const std::list<ObjectGuid>& attackers = AI_VALUE(std::list<ObjectGuid>, "attackers");
-        for (const ObjectGuid& attackerGuid : attackers)
-        {
-            Creature* creature = ai->GetCreature(attackerGuid);
-            if (creature)
-            {
-                const CreatureInfo* creatureInfo = creature->GetCreatureInfo();
-                if (creatureInfo)
-                {
-                    if (creatureInfo->Rank == CREATURE_ELITE_WORLDBOSS)
-                    {
-                        inRaidFight = true;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    return inRaidFight;
+    return ai->IsInPvp();
 }
 
 bool InPveTrigger::IsActive()
 {
-    if (ai->IsSafe(bot))
-    {
-        const bool inDuel = bot->duel && bot->duel->opponent;
-        if (!inDuel)
-        {
-            const bool inBattleground = bot->InBattleGround();
-            bool inArena = false;
-#ifndef MANGOSBOT_ZERO
-            inArena = bot->InArena();
-#endif
-            if (!inBattleground && !inArena)
-            {
-                const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
-                if (!isPlayerNear)
-                {
-                    return !InRaidFight(ai);
-                }
-            }
-        }
-
-        return false;
-    }
-
-    return false;
+    return ai->IsInPve();
 }
 
 bool InRaidFightTrigger::IsActive()
 {
-    if (ai->IsSafe(bot))
-    {
-        const bool inDuel = bot->duel && bot->duel->opponent;
-        if (!inDuel)
-        {
-            const bool inBattleground = bot->InBattleGround();
-            bool inArena = false;
-#ifndef MANGOSBOT_ZERO
-            inArena = bot->InArena();
-#endif
-            if (!inBattleground && !inArena)
-            {
-                const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
-                if (!isPlayerNear)
-                {
-                    return InRaidFight(ai);
-                }
-            }
-        }
-
-        return false;
-    }
-
-    return false;
+    return ai->IsInRaid();
 }
 
 bool GreaterBuffOnPartyTrigger::IsActive()

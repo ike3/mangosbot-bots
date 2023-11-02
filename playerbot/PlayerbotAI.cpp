@@ -557,6 +557,76 @@ bool PlayerbotAI::IsImmuneToSpell(uint32 spellId) const
     return false;
 }
 
+bool PlayerbotAI::IsInPve()
+{
+    return !IsInPvp() && !IsInRaid();
+}
+
+bool PlayerbotAI::IsInPvp()
+{
+    if (IsSafe(bot))
+    {
+        const bool inDuel = bot->duel && bot->duel->opponent;
+        if (!inDuel)
+        {
+            const bool inBattleground = bot->InBattleGround();
+            bool inArena = false;
+#ifndef MANGOSBOT_ZERO
+            inArena = bot->InArena();
+#endif
+            if (!inBattleground && !inArena)
+            {
+                AiObjectContext* context = aiObjectContext;
+                const bool isPlayerNear = AI_VALUE(bool, "has enemy player targets");
+                if (!isPlayerNear)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool PlayerbotAI::IsInRaid()
+{
+    bool inRaidFight = false;
+    if (IsSafe(bot))
+    {
+        const Map* map = bot->GetMap();
+        if (map && (map->IsDungeon() || map->IsRaid()))
+        {
+            inRaidFight = true;
+        }
+        else if (!IsInPvp() && GetState() == BotState::BOT_STATE_COMBAT)
+        {
+            AiObjectContext* context = GetAiObjectContext();
+            const std::list<ObjectGuid>& attackers = AI_VALUE(std::list<ObjectGuid>, "attackers");
+            for (const ObjectGuid& attackerGuid : attackers)
+            {
+                Creature* creature = GetCreature(attackerGuid);
+                if (creature)
+                {
+                    const CreatureInfo* creatureInfo = creature->GetCreatureInfo();
+                    if (creatureInfo)
+                    {
+                        if (creatureInfo->Rank == CREATURE_ELITE_WORLDBOSS)
+                        {
+                            inRaidFight = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return inRaidFight;
+}
+
 PlayerTalentSpec PlayerbotAI::GetTalentSpec()
 {
     return aiObjectContext->GetValue<PlayerTalentSpec>("talent spec")->Get();
