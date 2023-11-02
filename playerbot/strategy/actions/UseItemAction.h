@@ -216,6 +216,16 @@ namespace ai
         }
     };
 
+    class UseWhipperRootTuberAction : public UseItemIdAction
+    {
+    public:
+        UseWhipperRootTuberAction(PlayerbotAI* ai) : UseItemIdAction(ai, "whipper root tuber") {}
+
+        bool isUseful() override { return UseItemIdAction::isUseful() && AI_VALUE2(bool, "combat", "self target"); }
+
+        uint32 GetItemId() override { return 11951; }
+    };
+
     class UseRandomRecipeAction : public UseItemAction
     {
     public:

@@ -97,6 +97,7 @@ namespace ai
             creators["flee with pet"] = &ActionContext::flee_with_pet;
             creators["wait for attack keep safe distance"] = &ActionContext::wait_for_attack_keep_safe_distance;
             creators["shoot"] = &ActionContext::shoot;
+            creators["whipper root tuber"] = &ActionContext::whipper_root_tuber;
             creators["healthstone"] = &ActionContext::healthstone;
             creators["healing potion"] = &ActionContext::healing_potion;
             creators["mana potion"] = &ActionContext::mana_potion;
@@ -423,6 +424,7 @@ namespace ai
         static Action* mana_potion(PlayerbotAI* ai) { return new UseManaPotionAction(ai); }
         static Action* healing_potion(PlayerbotAI* ai) { return new UseHealingPotionAction(ai); }
         static Action* healthstone(PlayerbotAI* ai) { return new UseHealthstoneAction(ai); }
+        static Action* whipper_root_tuber(PlayerbotAI* ai) { return new UseWhipperRootTuberAction(ai); }
         static Action* move_out_of_enemy_contact(PlayerbotAI* ai) { return new MoveOutOfEnemyContactAction(ai); }
         static Action* set_facing(PlayerbotAI* ai) { return new SetFacingTargetAction(ai); }
         static Action* set_behind(PlayerbotAI* ai) { return new SetBehindTargetAction(ai); }
