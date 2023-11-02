@@ -94,8 +94,7 @@ namespace ai
         bool Execute(Event& event) override
         {
             // Check the chance of using a potion
-            const bool shouldUsePotion = frand(0.0f, 1.0f) < sPlayerbotAIConfig.usePotionChance;
-
+            const bool shouldUsePotion = ai->IsInPvp() || frand(0.0f, 1.0f) < sPlayerbotAIConfig.usePotionChance;
             if (shouldUsePotion)
             {
                 return UseItemIdAction::Execute(event);
@@ -213,6 +212,50 @@ namespace ai
             }
 
             return items.front()->GetProto()->ItemId;
+        }
+
+        bool Execute(Event& event) override
+        {
+            // Check the chance of using a healthstone
+            const bool shouldUsePotion = ai->IsInPvp() || frand(0.0f, 1.0f) < sPlayerbotAIConfig.usePotionChance;
+            if (shouldUsePotion)
+            {
+                return UseItemIdAction::Execute(event);
+            }
+            else
+            {
+                // Force potion cooldown to prevent spamming this action
+                const ItemPrototype* proto = sObjectMgr.GetItemPrototype(GetItemId());
+                if (proto)
+                {
+                    for (int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+                    {
+                        _Spell const& spellData = proto->Spells[i];
+                        if (spellData.SpellId)
+                        {
+                            // wrong triggering type
+#ifdef MANGOSBOT_ZERO
+                            if (spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_USE && spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_NO_DELAY_USE)
+#else
+                            if (spellData.SpellTrigger != ITEM_SPELLTRIGGER_ON_USE)
+#endif
+                            {
+                                continue;
+                            }
+
+                            const SpellEntry* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellData.SpellId);
+                            if (spellInfo)
+                            {
+                                bot->RemoveSpellCooldown(*spellInfo, false);
+                                bot->AddCooldown(*spellInfo, proto, false);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
     };
 
