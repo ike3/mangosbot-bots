@@ -9,37 +9,46 @@
 PlayerbotSecurity::PlayerbotSecurity(Player* const bot) : bot(bot), account(0)
 {
     if (bot)
+    {
         account = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
+    }
 }
 
 PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* reason, bool ignoreGroup)
 {
-    if (from->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
-        return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL;
-
-    if (bot->GetPlayerbotAI()->IsOpposing(from))
+    if(bot->isRealPlayer())
     {
-        if (reason) *reason = DenyReason::PLAYERBOT_DENY_OPPOSING;
         return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_DENY_ALL;
     }
 
-    if ((sPlayerbotAIConfig.IsInRandomAccountList(account) || sPlayerbotAIConfig.IsFreeAltBot(bot)) && !bot->GetPlayerbotAI()->IsRealPlayer())
+    // Allow everything if request is from gm account
+    if (from->GetSession()->GetSecurity() >= SEC_GAMEMASTER)
     {
-        if (bot->GetPlayerbotAI()->IsOpposing(from))
-        {
-            if (reason) *reason = DenyReason::PLAYERBOT_DENY_OPPOSING;
-            return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_DENY_ALL;
-        }
-
+        return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL;
+    }
+    // Check if the bot is an alt bot of the requester
+    else if ( from->GetSession()->GetAccountId() == account)
+    {
+        return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL;
+    }
+    // If a bot is a random bot
+    else
+    {
         Group* group = from->GetGroup();
-        if (group)
+        if (group && !ignoreGroup)
         {
             for (GroupReference *gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* player = gref->getSource();
-                if (player == bot && !ignoreGroup)
+                if (player == bot)
                     return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL;
             }
+        }
+
+        if (bot->GetPlayerbotAI()->IsOpposing(from))
+        {
+            if (reason) *reason = DenyReason::PLAYERBOT_DENY_OPPOSING;
+            return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_DENY_ALL;
         }
 
         if ((int)bot->GetLevel() - (int)from->GetLevel() > 30)
@@ -51,10 +60,10 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
             }
         }
 
-        uint32 botGS = bot->GetPlayerbotAI()->GetEquipGearScore(bot, false, false);
-        uint32 fromGS = bot->GetPlayerbotAI()->GetEquipGearScore(from, false, false);
         if (sPlayerbotAIConfig.gearscorecheck)
         {
+            uint32 botGS = bot->GetPlayerbotAI()->GetEquipGearScore(bot, false, false);
+            uint32 fromGS = bot->GetPlayerbotAI()->GetEquipGearScore(from, false, false);
             if (botGS && bot->GetLevel() > 15 && botGS > fromGS && (100 * (botGS - fromGS) / botGS) >= 12 * sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL) / from->GetLevel())
             {
                 if (reason) *reason = DenyReason::PLAYERBOT_DENY_GEARSCORE;
@@ -142,7 +151,7 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
         return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE;
     }
 
-    return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL;
+    return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_DENY_ALL;
 }
 
 bool PlayerbotSecurity::CheckLevelFor(PlayerbotSecurityLevel level, bool silent, Player* from, bool ignoreGroup)
