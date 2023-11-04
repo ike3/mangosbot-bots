@@ -390,7 +390,7 @@ namespace ai
     class NoAttackersTrigger : public Trigger
     {
     public:
-        NoAttackersTrigger(PlayerbotAI* ai) : Trigger(ai, "no attackers") {}
+        NoAttackersTrigger(PlayerbotAI* ai, string name = "no attackers") : Trigger(ai, name) {}
         virtual bool IsActive();
     };
 
@@ -642,7 +642,7 @@ namespace ai
 	class TankAssistTrigger : public NoAttackersTrigger
 	{
 	public:
-        TankAssistTrigger(PlayerbotAI* ai) : NoAttackersTrigger(ai) {}
+        TankAssistTrigger(PlayerbotAI* ai) : NoAttackersTrigger(ai, "tank assist") {}
 		virtual bool IsActive();
 	};
 
