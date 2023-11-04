@@ -264,7 +264,7 @@ namespace ai
     public:
         UseWhipperRootTuberAction(PlayerbotAI* ai) : UseItemIdAction(ai, "whipper root tuber") {}
 
-        bool isUseful() override { return UseItemIdAction::isUseful() && AI_VALUE2(bool, "combat", "self target"); }
+        bool isUseful() override { return bot->GetLevel() >= 45 && UseItemIdAction::isUseful() && AI_VALUE2(bool, "combat", "self target"); }
 
         uint32 GetItemId() override { return 11951; }
     };
