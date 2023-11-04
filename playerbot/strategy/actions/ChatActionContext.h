@@ -178,6 +178,7 @@ namespace ai
             creators["ah bid"] = &ChatActionContext::ah_bid;
             creators["wait for attack time"] = &ChatActionContext::wait_for_attack_time;
             creators["focus heal target"] = &ChatActionContext::focus_heal_target;
+            creators["follow target"] = &ChatActionContext::follow_target;
             creators["self resurrect"] = &ChatActionContext::self_resurrect;
 
             creators["guild invite"] = &ChatActionContext::guild_invite;
@@ -290,6 +291,7 @@ namespace ai
         static Action* ah_bid(PlayerbotAI* ai) { return new AhBidAction(ai); }
         static Action* wait_for_attack_time(PlayerbotAI* ai) { return new SetWaitForAttackTimeAction(ai); }
         static Action* focus_heal_target(PlayerbotAI* ai) { return new SetFocusHealTargetAction(ai); }
+        static Action* follow_target(PlayerbotAI* ai) { return new SetFollowTargetAction(ai); }
         static Action* self_resurrect(PlayerbotAI* ai) { return new SelfResurrectAction(ai); }
 
         static Action* guild_invite(PlayerbotAI* ai) { return new GuildInviteAction(ai); }

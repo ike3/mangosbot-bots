@@ -1326,7 +1326,7 @@ void MovementAction::UpdateMovementState()
     {
         if (Unit* pTarget = bot->GetMotionMaster()->GetCurrent()->GetCurrentTarget())
         {
-            if (pTarget != ai->GetGroupMaster())
+            if (pTarget != AI_VALUE(Unit*, "follow target"))
                 return;
 
             if (!bot->CanReachWithMeleeAttack(pTarget))

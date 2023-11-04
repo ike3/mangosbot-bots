@@ -132,12 +132,19 @@ Unit* PullTargetValue::Get()
 
 Unit* FollowTargetValue::Calculate()
 {
-    Formation* formation = AI_VALUE(Formation*, "formation");
-    string targetName = formation->GetTargetName();
+    Unit* followTarget = AI_VALUE(Unit*, "manual follow target");
+    if (followTarget == nullptr)
+    {
+        Formation* formation = AI_VALUE(Formation*, "formation");
+        if (formation && !formation->GetTargetName().empty())
+        {
+            followTarget = AI_VALUE(Unit*, formation->GetTargetName());
+        }
+        else
+        {
+            followTarget = AI_VALUE(Unit*, "master target");
+        }
+    }
 
-    Unit* fTarget = NULL;
-    if (!targetName.empty())
-        return AI_VALUE(Unit*, targetName);
-    else
-        return AI_VALUE(Unit*, "master target");
+    return followTarget;
 }

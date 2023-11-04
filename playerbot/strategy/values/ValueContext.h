@@ -267,6 +267,7 @@ namespace ai
             creators["attack target"] = &ValueContext::attack_target;
             creators["pull target"] = &ValueContext::pull_target;
             creators["follow target"] = &ValueContext::follow_target;
+            creators["manual follow target"] = &ValueContext::manual_follow_target;
             creators["group"] = &ValueContext::group;
             creators["range"] = &ValueContext::range;
             creators["inside target"] = &ValueContext::inside_target;
@@ -555,6 +556,7 @@ namespace ai
         static UntypedValue* attack_target(PlayerbotAI* ai) { return new AttackTargetValue(ai); }
         static UntypedValue* pull_target(PlayerbotAI* ai) { return new PullTargetValue(ai); }
         static UntypedValue* follow_target(PlayerbotAI* ai) { return new FollowTargetValue(ai); }
+        static UntypedValue* manual_follow_target(PlayerbotAI* ai) { return new ManualFollowTargetValue(ai); }
         static UntypedValue* death_count(PlayerbotAI* ai) { return new DeathCountValue(ai); }
 
         static UntypedValue* last_long_move(PlayerbotAI* ai) { return new LastLongMoveValue(ai); }

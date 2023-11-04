@@ -75,6 +75,7 @@ namespace ai
             creators["free"] = &ChatTriggerContext::free;
             creators["wait for attack time"] = &ChatTriggerContext::wait_for_attack_time;
             creators["focus heal"] = &ChatTriggerContext::focus_heal_target;
+            creators["follow target"] = &ChatTriggerContext::follow_target;
             creators["self res"] = &ChatTriggerContext::self_resurrect;
             creators["flee"] = &ChatTriggerContext::flee;
             creators["grind"] = &ChatTriggerContext::grind;
@@ -169,6 +170,7 @@ namespace ai
         static Trigger* free(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "free"); }
         static Trigger* wait_for_attack_time(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "wait for attack time"); }
         static Trigger* focus_heal_target(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "focus heal"); }
+        static Trigger* follow_target(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "follow target"); }
         static Trigger* self_resurrect(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "self res"); }
         static Trigger* follow(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "follow"); }
         static Trigger* gb(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "gb"); }

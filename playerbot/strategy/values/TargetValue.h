@@ -131,4 +131,10 @@ namespace ai
         FollowTargetValue(PlayerbotAI* ai, string name = "follow target") : UnitCalculatedValue(ai, name) {}
         Unit* Calculate() override;
     };
+
+    class ManualFollowTargetValue : public UnitManualSetValue
+    {
+    public:
+        ManualFollowTargetValue(PlayerbotAI* ai, string name = "manual follow target") : UnitManualSetValue(ai, nullptr, name) {}
+    };
 }

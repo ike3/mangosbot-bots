@@ -31,9 +31,9 @@ float Formation::GetAngle()
     if (Formation::IsNullLocation(loc) || loc.mapid == -1)
         return 0.0f;
 
-    Player* master = ai->GetGroupMaster();
+    Unit* followTarget = AI_VALUE(Unit*, "follow target");
 
-    float angle = WorldPosition(master).getAngleTo(loc) - master->GetOrientation();
+    float angle = WorldPosition(followTarget).getAngleTo(loc) - followTarget->GetOrientation();
     if (angle < 0) angle += 2 * M_PI_F;
 
     return angle;
@@ -45,9 +45,9 @@ float Formation::GetOffset()
     if (Formation::IsNullLocation(loc) || loc.mapid == -1)
         return 0.0f;
 
-    Player* master = ai->GetGroupMaster();
+    Unit* followTarget = AI_VALUE(Unit*, "follow target");
 
-    float distance = sqrt(WorldPosition(master).sqDistance2d(loc));
+    float distance = sqrt(WorldPosition(followTarget).sqDistance2d(loc));
 
     return distance;
 }
@@ -56,26 +56,22 @@ WorldLocation FollowFormation::GetLocation()
 {
     float range = ai->GetRange("follow");
 
-    Unit* target = AI_VALUE(Unit*, GetTargetName());
-    Player* master = ai->GetGroupMaster();
-    if (!target && target != bot)
-        target = master;
-
-    if (!target)
+    Unit* followTarget = AI_VALUE(Unit*, "follow target");
+    if (!followTarget)
         return Formation::NullLocation;
 
     float angle = GetFollowAngle();
-    float x = target->GetPositionX() + cos(angle) * range;
-    float y = target->GetPositionY() + sin(angle) * range;
-    float z = target->GetPositionZ();
+    float x = followTarget->GetPositionX() + cos(angle) * range;
+    float y = followTarget->GetPositionY() + sin(angle) * range;
+    float z = followTarget->GetPositionZ();
 
     return WorldLocation(bot->GetMapId(), x, y, z);
 }
 
 WorldLocation MoveAheadFormation::GetLocation()
 {
-    Player* master = ai->GetGroupMaster();
-    if (!master || master == bot)
+    Unit* followTarget = AI_VALUE(Unit*, "follow target");
+    if (!followTarget)
         return WorldLocation();
 
     WorldLocation loc = GetLocationInternal();
@@ -148,30 +144,30 @@ namespace ai
         NearFormation(PlayerbotAI* ai) : MoveAheadFormation(ai, "near") {}
         virtual WorldLocation GetLocationInternal()
         {
-            Player* master = ai->GetGroupMaster();
-            if (!ai->IsSafe(master))
+            Unit* followTarget = AI_VALUE(Unit*, "follow target");
+            if (!ai->IsSafe(followTarget))
                 return WorldLocation();
 
-            float range = ai->GetRange("follow") + master->GetObjectBoundingRadius();
+            float range = ai->GetRange("follow") + followTarget->GetObjectBoundingRadius();
             float angle = GetFollowAngle();
-            float x = master->GetPositionX() + cos(angle) * range;
-            float y = master->GetPositionY() + sin(angle) * range;
-            float z = master->GetPositionZ();
+            float x = followTarget->GetPositionX() + cos(angle) * range;
+            float y = followTarget->GetPositionY() + sin(angle) * range;
+            float z = followTarget->GetPositionZ();
 #ifdef MANGOSBOT_TWO
-            float ground = master->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
+            float ground = followTarget->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
 #else
-            float ground = master->GetMap()->GetHeight(x, y, z);
+            float ground = followTarget->GetMap()->GetHeight(x, y, z);
 #endif
             //if (ground <= INVALID_HEIGHT)
             //    return Formation::NullLocation;
 
             // prevent going into terrain
             float ox, oy, oz;
-            master->GetPosition(ox, oy, oz);
+            followTarget->GetPosition(ox, oy, oz);
 #ifdef MANGOSBOT_TWO
-            master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, bot->GetPhaseMask(), -0.5f);
+            followTarget->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, bot->GetPhaseMask(), -0.5f);
 #else
-            master->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
+            followTarget->GetMap()->GetHitPosition(ox, oy, oz + bot->GetCollisionHeight(), x, y, z, -0.5f);
 #endif
 
             if (!bot->IsFlying() && !bot->IsFreeFlying() && !bot->IsSwimming())
@@ -179,7 +175,8 @@ namespace ai
                 z += CONTACT_DISTANCE;
                 bot->UpdateAllowedPositionZ(x, y, z);
             }
-            return WorldLocation(master->GetMapId(), x, y, z);
+
+            return WorldLocation(followTarget->GetMapId(), x, y, z);
         }
 
         virtual float GetMaxDistance() { return ai->GetRange("follow"); }
@@ -192,28 +189,29 @@ namespace ai
         ChaosFormation(PlayerbotAI* ai) : MoveAheadFormation(ai, "chaos"), lastChangeTime(0) {}
         virtual WorldLocation GetLocationInternal()
         {
-            Player* master = ai->GetGroupMaster();
-            if (!ai->IsSafe(master))
+            Unit* followTarget = AI_VALUE(Unit*, "follow target");
+            if (!ai->IsSafe(followTarget))
                 return WorldLocation();
 
             float range = ai->GetRange("follow");
 			float angle = GetFollowAngle();
 
             time_t now = time(0);
-            if (!lastChangeTime || now - lastChangeTime >= 3) {
+            if (!lastChangeTime || now - lastChangeTime >= 3) 
+            {
                 lastChangeTime = now;
                 dx = (urand(0, 10) / 10.0 - 0.5) * sPlayerbotAIConfig.tooCloseDistance;
                 dy = (urand(0, 10) / 10.0 - 0.5) * sPlayerbotAIConfig.tooCloseDistance;
                 dr = sqrt(dx*dx + dy*dy);
             }
 
-            float x = master->GetPositionX() + cos(angle) * range + dx;
-            float y = master->GetPositionY() + sin(angle) * range + dy;
-            float z = master->GetPositionZ();
+            float x = followTarget->GetPositionX() + cos(angle) * range + dx;
+            float y = followTarget->GetPositionY() + sin(angle) * range + dy;
+            float z = followTarget->GetPositionZ();
 #ifdef MANGOSBOT_TWO
-            float ground = master->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
+            float ground = followTarget->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
 #else
-            float ground = master->GetMap()->GetHeight(x, y, z);
+            float ground = followTarget->GetMap()->GetHeight(x, y, z);
 #endif
             //if (ground <= INVALID_HEIGHT)
             //    return Formation::NullLocation;
@@ -223,7 +221,8 @@ namespace ai
                 z += CONTACT_DISTANCE;
                 bot->UpdateAllowedPositionZ(x, y, z);
             }
-            return WorldLocation(master->GetMapId(), x, y, z);
+
+            return WorldLocation(followTarget->GetMapId(), x, y, z);
         }
 
         virtual float GetMaxDistance() { return ai->GetRange("follow") + dr; }
@@ -242,9 +241,9 @@ namespace ai
             float range = ai->GetRange("follow");
 
             Unit* target = AI_VALUE(Unit*, "current target");
-            Player* master = ai->GetGroupMaster();
+            Unit* followTarget = AI_VALUE(Unit*, "follow target");
             if (!target && target != bot)
-                target = master;
+                target = followTarget;
 
             if (!target || !ai->IsSafe(target))
 				return Formation::NullLocation;
@@ -282,25 +281,25 @@ namespace ai
 
             float range = ai->GetRange("follow");
 
-            Player* master = ai->GetGroupMaster();
-            if (!master)
+            Player* followTarget = (Player*)AI_VALUE(Unit*, "follow target");
+            if (!followTarget)
                 return Formation::NullLocation;
 
-            float x = master->GetPositionX();
-            float y = master->GetPositionY();
-            float z = master->GetPositionZ();
-            float orientation = master->GetOrientation();
+            float x = followTarget->GetPositionX();
+            float y = followTarget->GetPositionY();
+            float z = followTarget->GetPositionZ();
+            float orientation = followTarget->GetOrientation();
 
             vector<Player*> players;
             for (GroupReference* gref = group->GetFirstMember(); gref; gref = gref->next())
             {
                 Player* member = gref->getSource();
                 if (!ai->IsSafe(member)) continue;
-                if (member != master)
+                if (member != followTarget)
                     players.push_back(member);
             }
 
-            players.insert(players.begin() + players.size() / 2, master);
+            players.insert(players.begin() + players.size() / 2, followTarget);
 
             return MoveLine(players, 0.0f, x, y, z, orientation, range);
         }
@@ -318,14 +317,14 @@ namespace ai
 
             float range = ai->GetRange("follow");
 
-            Player* master = ai->GetGroupMaster();
-            if (!master)
+            Player* followTarget = (Player*)AI_VALUE(Unit*, "follow target");
+            if (!followTarget)
                 return Formation::NullLocation;
 
-            float x = master->GetPositionX();
-            float y = master->GetPositionY();
-            float z = master->GetPositionZ();
-            float orientation = master->GetOrientation();
+            float x = followTarget->GetPositionX();
+            float y = followTarget->GetPositionY();
+            float z = followTarget->GetPositionZ();
+            float orientation = followTarget->GetOrientation();
 
             vector<Player*> tanks;
             vector<Player*> dps;
@@ -333,7 +332,7 @@ namespace ai
             {
                 Player* member = gref->getSource();
                 if (!ai->IsSafe(member)) continue;
-                if (member != master)
+                if (member != followTarget)
                 {
                     if (ai->IsTank(member))
                         tanks.push_back(member);
@@ -342,25 +341,25 @@ namespace ai
                 }
             }
 
-            if (ai->IsTank(master))
-                tanks.insert(tanks.begin() + (tanks.size() + 1) / 2, master);
+            if (ai->IsTank(followTarget))
+                tanks.insert(tanks.begin() + (tanks.size() + 1) / 2, followTarget);
             else
-                dps.insert(dps.begin() + (dps.size() + 1) / 2, master);
+                dps.insert(dps.begin() + (dps.size() + 1) / 2, followTarget);
 
-            if (ai->IsTank(bot) && ai->IsTank(master))
+            if (ai->IsTank(bot) && ai->IsTank(followTarget))
             {
                 return MoveLine(tanks, 0.0f, x, y, z, orientation, range);
             }
-            if (!ai->IsTank(bot) && !ai->IsTank(master))
+            if (!ai->IsTank(bot) && !ai->IsTank(followTarget))
             {
                 return MoveLine(dps, 0.0f, x, y, z, orientation, range);
             }
-            if (ai->IsTank(bot) && !ai->IsTank(master))
+            if (ai->IsTank(bot) && !ai->IsTank(followTarget))
             {
                 float diff = tanks.size() % 2 == 0 ? -sPlayerbotAIConfig.tooCloseDistance / 2.0f : 0.0f;
                 return MoveLine(tanks, diff, x + cos(orientation) * range, y + sin(orientation) * range, z, orientation, range);
             }
-            if (!ai->IsTank(bot) && ai->IsTank(master))
+            if (!ai->IsTank(bot) && ai->IsTank(followTarget))
             {
                 float diff = dps.size() % 2 == 0 ? -sPlayerbotAIConfig.tooCloseDistance / 2.0f : 0.0f;
                 return MoveLine(dps, diff, x - cos(orientation) * range, y - sin(orientation) * range, z, orientation, range);
@@ -376,9 +375,9 @@ namespace ai
         virtual string GetTargetName() { return "master target"; }
         virtual float GetAngle() override 
         {             
-            Player* master = ai->GetGroupMaster();
+            Unit* followTarget = AI_VALUE(Unit*, "follow target");
 
-            float currentAngle = WorldPosition(master).getAngleTo(bot) - master->GetOrientation();
+            float currentAngle = WorldPosition(followTarget).getAngleTo(bot) - followTarget->GetOrientation();
             float followAngle = currentAngle;
             
             if(bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
@@ -416,9 +415,9 @@ namespace ai
             if (followPosition.isSet())
                 return;
 
-            Player* master = ai->GetMaster();
+            Unit* followTarget = AI_VALUE(Unit*, "follow target");
 
-            if (!ai->IsSafe(master) || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.reactDistance)
+            if (!ai->IsSafe(followTarget) || sServerFacade.GetDistance2d(bot, followTarget) > sPlayerbotAIConfig.reactDistance)
             {
                 WorldPosition pos(bot->GetMapId(), cos(GetFollowAngle()) * ai->GetRange("follow"), sin(GetFollowAngle()) * ai->GetRange("follow"), 0);
                 followPosition.Set(pos);
@@ -431,13 +430,15 @@ namespace ai
 
                 followPosition.Set(relPos.getX(), relPos.getY(), relPos.getZ(), relPos.getMapId());
             }
+
             posMap["follow"] = followPosition;
         }
+
         virtual WorldLocation GetLocationInternal()
         {
-            Unit* target = AI_VALUE(Unit*, "follow target");
+            Unit* followTarget = AI_VALUE(Unit*, "follow target");
 
-            if (!ai->IsSafe(target))
+            if (!ai->IsSafe(followTarget))
                 return Formation::NullLocation;
 
             PositionMap& posMap = AI_VALUE(PositionMap&, "position");
@@ -448,22 +449,24 @@ namespace ai
 
             WorldPosition relPos(followPosition.mapId, followPosition.x, followPosition.y, followPosition.z);
 
-            relPos.rotateXY(target->GetOrientation());
+            relPos.rotateXY(followTarget->GetOrientation());
 
-            return WorldPosition(target) + relPos;
+            return WorldPosition(followTarget) + relPos;
         }
     };
 };
 
 float Formation::GetFollowAngle()
 {
-    Player* master = ai->GetGroupMaster();
+    Player* followTarget = (Player*)AI_VALUE(Unit*, "follow target");
+
     Group* group = bot->GetGroup();
     PlayerbotAI* ai = bot->GetPlayerbotAI();
     int index = 1, total = 1;
-    if (!group && master && !master->GetPlayerbotAI() && master->GetPlayerbotMgr())
+
+    if (!group && followTarget && !followTarget->GetPlayerbotAI() && followTarget->GetPlayerbotMgr())
     {
-        for (PlayerBotMap::const_iterator i = master->GetPlayerbotMgr()->GetPlayerBotsBegin(); i != master->GetPlayerbotMgr()->GetPlayerBotsEnd(); ++i)
+        for (PlayerBotMap::const_iterator i = followTarget->GetPlayerbotMgr()->GetPlayerBotsBegin(); i != followTarget->GetPlayerbotMgr()->GetPlayerBotsEnd(); ++i)
         {
             if (i->second == bot) index = total;
             total++;
@@ -476,7 +479,7 @@ float Formation::GetFollowAngle()
         {
             Player* member = ref->getSource();
             if (!ai->IsSafe(member) || !sServerFacade.IsAlive(member)) continue;
-            if (member && member != master && !ai->IsTank(member) && !ai->IsHeal(member))
+            if (member && member != followTarget && !ai->IsTank(member) && !ai->IsHeal(member))
             {
                 roster.insert(roster.begin() + roster.size() / 2, member);
             }
@@ -485,7 +488,7 @@ float Formation::GetFollowAngle()
         {
             Player* member = ref->getSource();
             if (!ai->IsSafe(member) || !sServerFacade.IsAlive(member)) continue;
-            if (member && member != master && ai->IsHeal(member))
+            if (member && member != followTarget && ai->IsHeal(member))
             {
                 roster.insert(roster.begin() + roster.size() / 2, member);
             }
@@ -495,7 +498,7 @@ float Formation::GetFollowAngle()
         {
             Player* member = ref->getSource();
             if (!ai->IsSafe(member) || !sServerFacade.IsAlive(member)) continue;
-            if (member && member != master && ai->IsTank(member))
+            if (member && member != followTarget && ai->IsTank(member))
             {
                 if (left) roster.push_back(member); else roster.insert(roster.begin(), member);
                 left = !left;
@@ -509,7 +512,8 @@ float Formation::GetFollowAngle()
         }
         total = roster.size() + 1;
     }
-    float start = (master ? master->GetOrientation() : 0.0f);
+
+    float start = (followTarget ? followTarget->GetOrientation() : 0.0f);
     return start + (0.125f + 1.75f * index / total + (total == 2 ? 0.125f : 0.0f)) * M_PI;
 }
 
@@ -588,12 +592,13 @@ bool FormationValue::Load(string formation)
 bool SetFormationAction::Execute(Event& event)
 {
     string formation = event.getParam();
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
 
     FormationValue* value = (FormationValue*)context->GetValue<Formation*>("formation");
     if (formation == "?" || formation.empty())
     {
         ostringstream str; str << "Formation: |cff00ff00" << value->Get()->getName();
-        ai->TellPlayer(GetMaster(), str);
+        ai->TellPlayer(requester, str);
         return true;
     }
 
@@ -609,13 +614,13 @@ bool SetFormationAction::Execute(Event& event)
     if (!value->Load(formation))
     {
         ostringstream str; str << "Invalid formation: |cffff0000" << formation;
-        ai->TellPlayer(GetMaster(), str);
-        ai->TellPlayer(GetMaster(), "Please set to any of:|cffffffff near (default), queue, chaos, circle, line, shield, arrow, melee, far");
+        ai->TellPlayer(requester, str);
+        ai->TellPlayer(requester, "Please set to any of:|cffffffff near (default), queue, chaos, circle, line, shield, arrow, melee, far");
         return false;
     }
 
     ostringstream str; str << "Formation set to: " << formation;
-    ai->TellPlayer(GetMaster(), str);
+    ai->TellPlayer(requester, str);
     return true;
 }
 
