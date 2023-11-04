@@ -70,9 +70,8 @@
 #include "CheatAction.h"
 #include "GuildManagementActions.h"
 #include "RtscAction.h"
-#include "WaitForAttackAction.h"
 #include "BattleGroundJoinAction.h"
-#include "FocusTargetAction.h"
+#include "ValueActions.h"
 
 namespace ai
 {
@@ -289,8 +288,8 @@ namespace ai
         static Action* rtsc(PlayerbotAI* ai) { return new RTSCAction(ai); }
         static Action* ah(PlayerbotAI* ai) { return new AhAction(ai); }
         static Action* ah_bid(PlayerbotAI* ai) { return new AhBidAction(ai); }
-        static Action* wait_for_attack_time(PlayerbotAI* ai) { return new WaitForAttackSetTimeAction(ai); }
-        static Action* focus_heal_target(PlayerbotAI* ai) { return new FocusHealSetTargetAction(ai); }
+        static Action* wait_for_attack_time(PlayerbotAI* ai) { return new SetWaitForAttackTimeAction(ai); }
+        static Action* focus_heal_target(PlayerbotAI* ai) { return new SetFocusHealTargetAction(ai); }
         static Action* self_resurrect(PlayerbotAI* ai) { return new SelfResurrectAction(ai); }
 
         static Action* guild_invite(PlayerbotAI* ai) { return new GuildInviteAction(ai); }

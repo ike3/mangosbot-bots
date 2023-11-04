@@ -4,13 +4,6 @@
 
 namespace ai
 {
-   class WaitForAttackSetTimeAction : public ChatCommandAction
-   {
-   public:
-       WaitForAttackSetTimeAction(PlayerbotAI* ai, string name = "wait for attack time") : ChatCommandAction(ai, name) {}
-      virtual bool Execute(Event& event) override;
-   };
-
    class WaitForAttackKeepSafeDistanceAction : public MovementAction
    {
    public:

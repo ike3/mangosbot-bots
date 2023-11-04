@@ -5,41 +5,6 @@
 
 using namespace ai;
 
-bool WaitForAttackSetTimeAction::Execute(Event& event)
-{
-    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
-    string newTimeStr = event.getParam();
-    if (!newTimeStr.empty())
-    {
-        // Check if the param is a number
-        if (newTimeStr.find_first_not_of("0123456789") == std::string::npos)
-        {
-            const int newTime = stoi(newTimeStr.c_str());
-            if (newTime <= 99)
-            {
-                ai->GetAiObjectContext()->GetValue<uint8>("wait for attack time")->Set(newTime);
-                ostringstream out; out << "Wait for attack time set to " << newTime << " seconds";
-                ai->TellPlayerNoFacing(requester, out);
-                return true;
-            }
-            else
-            {
-                ai->TellPlayerNoFacing(requester, "Please provide valid time to set (in seconds) between 1 and 99");
-            }
-        }
-        else
-        {
-            ai->TellPlayerNoFacing(requester, "Please provide valid time to set (in seconds) between 1 and 99");
-        }
-    }
-    else
-    {
-        ai->TellPlayerNoFacing(requester, "Please provide a time to set (in seconds)");
-    }
-
-    return false;   
-}
-
 bool WaitForAttackKeepSafeDistanceAction::Execute(Event& event)
 {
     Unit* target = AI_VALUE(Unit*, "current target");
