@@ -174,7 +174,9 @@ uint8 UpdateGearAction::GetMasterItemProgressionLevel(uint8 slot, uint8 avgProgr
         slot == EQUIPMENT_SLOT_OFFHAND || 
         slot == EQUIPMENT_SLOT_RANGED || 
         slot == EQUIPMENT_SLOT_TRINKET1 ||
-        slot == EQUIPMENT_SLOT_TRINKET2)
+        slot == EQUIPMENT_SLOT_TRINKET2 ||
+        slot == EQUIPMENT_SLOT_BODY ||
+        slot == EQUIPMENT_SLOT_TABARD)
     {
         return avgProgressionLevel;
     }
