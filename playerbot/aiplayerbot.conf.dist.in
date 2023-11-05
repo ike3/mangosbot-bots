@@ -89,6 +89,10 @@ AiPlayerbot.RandomGearLoweringChance = 0.15
 # Max iLVL Phase 1 = 71(MC, ONY, ZG) | Phase 2(BWL) = 77 | Phase 2.5(AQ) = 88 | Phase 3(NAXX) = 100 (NOT RECOMMENDED SINCE ILVL OVERLAPS BETWEEN TIERS)
 AiPlayerbot.RandomGearMaxLevel = 500
 
+# Max difference between bot level and item's required level to be used in randomisation
+# Default = 11, means bots level 60 can use items that require (themselves or via quests) level 49 and above
+AiPlayerbot.RandomGearMaxDiff = 11
+
 # List of item IDs to exclude from random gear, separated by comma
 AiPlayerbot.RandomGearBlacklist = 0
 
