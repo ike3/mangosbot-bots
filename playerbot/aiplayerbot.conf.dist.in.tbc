@@ -93,6 +93,10 @@ AiPlayerbot.RandomGearLoweringChance = 0.15
 
 AiPlayerbot.RandomGearMaxLevel = 500
 
+# Max difference between bot level and item's required level to be used in randomisation
+# Default = 11, means bots level 70 can use items that require (themselves or via quests) level 59 and above
+AiPlayerbot.RandomGearMaxDiff = 11
+
 # List of item IDs to exclude from random gear, separated by comma
 AiPlayerbot.RandomGearBlacklist = 0
 

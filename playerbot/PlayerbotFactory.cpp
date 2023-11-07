@@ -1650,6 +1650,11 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool syncWithMaster)
                     if (proto->ItemLevel > maxItemLevel)
                         continue;
 
+                    // do not use items that required level is too low compared to bot's level
+                    uint32 reqLevel = sRandomItemMgr.GetMinLevelFromCache(newItemId);
+                    if (reqLevel && proto->Quality < ITEM_QUALITY_LEGENDARY && abs((int)bot->GetLevel() - (int)reqLevel) > sPlayerbotAIConfig.randomGearMaxDiff)
+                        continue;
+
                     // filter tank weapons
                     if (slot == EQUIPMENT_SLOT_OFFHAND && (specId == 3 || specId == 5) && !(proto->Class == ITEM_CLASS_ARMOR && proto->SubClass == ITEM_SUBCLASS_ARMOR_SHIELD))
                         continue;
@@ -1702,11 +1707,6 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool syncWithMaster)
                                 continue;
                         }
                     }
-
-                    // check req level difference from config
-                    int delta = sPlayerbotAIConfig.randomGearMaxDiff + (80 - bot->GetLevel()) / 10;
-                    if (proto->Quality < ITEM_QUALITY_LEGENDARY && ((int)bot->GetLevel() - (int)sRandomItemMgr.GetMinLevelFromCache(newItemId) > delta))
-                        continue;
 
                     Item* oldItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
                     ItemPrototype const* oldProto = oldItem ? oldItem->GetProto() : nullptr;
@@ -1911,9 +1911,9 @@ void PlayerbotFactory::InitSecondEquipmentSet()
             if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
                 continue;
 
-            // check req level difference from config
-            int delta = sPlayerbotAIConfig.randomGearMaxDiff + (80 - bot->GetLevel()) / 10;
-            if ((int)bot->GetLevel() - (int)sRandomItemMgr.GetMinLevelFromCache(itemId) > delta)
+            // do not use items that required level is too low compared to bot's level
+            uint32 reqLevel = sRandomItemMgr.GetMinLevelFromCache(itemId);
+            if (reqLevel && proto->Quality < ITEM_QUALITY_LEGENDARY && abs((int)bot->GetLevel() - (int)reqLevel) > sPlayerbotAIConfig.randomGearMaxDiff)
                 continue;
 
             if (!CanEquipItem(proto, desiredQuality))
@@ -3263,9 +3263,9 @@ void PlayerbotFactory::InitInventoryEquip()
         if (proto->ItemLevel > sPlayerbotAIConfig.randomGearMaxLevel)
             continue;
 
-        // check req level difference from config
-        int delta = sPlayerbotAIConfig.randomGearMaxDiff + (80 - bot->GetLevel()) / 10;
-        if ((int)bot->GetLevel() - (int)sRandomItemMgr.GetMinLevelFromCache(itemId) > delta)
+        // do not use items that required level is too low compared to bot's level
+        uint32 reqLevel = sRandomItemMgr.GetMinLevelFromCache(itemId);
+        if (reqLevel && proto->Quality < ITEM_QUALITY_LEGENDARY && abs((int)bot->GetLevel() - (int)reqLevel) > sPlayerbotAIConfig.randomGearMaxDiff)
             continue;
 
         if ((proto->Class != ITEM_CLASS_ARMOR && proto->Class != ITEM_CLASS_WEAPON) || (proto->Bonding == BIND_WHEN_PICKED_UP ||

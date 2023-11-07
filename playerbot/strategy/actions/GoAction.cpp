@@ -37,27 +37,54 @@ bool GoAction::Execute(Event& event)
     {
         return TellWhereToGo(param);
     }
-    if (param.find("to") != string::npos && param.size() > 3)
+    if (param.find("how") != string::npos && param.size() > 4)
     {
-        string destination = param.substr(3);
-
+        string destination = param.substr(4);
         TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot, destination);
-
         if (!dest)
         {
             ai->TellPlayerNoFacing(GetMaster(), "I don't know how to travel to " + destination);
             return false;
         }
+        return TellHowToGo(dest);
+    }
+    map<string, int> goTos;
+    goTos.emplace(std::pair("zone", 5));
+    goTos.emplace(std::pair("quest", 6));
+    goTos.emplace(std::pair("npc", 4));
+    goTos.emplace(std::pair("mob", 4));
+    goTos.emplace(std::pair("boss", 5));
+    goTos.emplace(std::pair("to", 3));
+    for (const auto& option : goTos)
+    {
+        if (param.find(option.first) != string::npos && param.size() > option.second)
+        {
+            string destination = param.substr(option.second);
+            TravelDestination* dest = nullptr;
+            if (option.first == "to")
+            {
+                dest = ChooseTravelTargetAction::FindDestination(bot, destination);
+            }
+            else
+            {
+                dest = ChooseTravelTargetAction::FindDestination(bot, destination, option.first == "zone", option.first == "npc", option.first == "quest", option.first == "mob", option.first == "boss");
+            }
 
-        if (LeaderAlreadyTraveling(dest))
-            return false;
+            if (!dest)
+            {
+                ai->TellPlayerNoFacing(GetMaster(), "I don't know how to travel to " + destination);
+                return false;
+            }
 
-        if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT) || (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && ai->GetMaster() && !ai->IsSelfMaster()))
-            return TellHowToGo(dest);
+            if (LeaderAlreadyTraveling(dest))
+                return false;
 
+            if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT) || (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && ai->GetMaster() && !ai->IsSelfMaster()))
+                return TellHowToGo(dest);
 
-        return TravelTo(dest);
+            return TravelTo(dest);
 
+        }
     }
     if (param.find("travel") != string::npos && param.size()> 7)
     {
@@ -214,7 +241,7 @@ bool GoAction::TellHowToGo(TravelDestination* dest) const
     ai->TellPlayer(ai->GetMaster(), "it is " + to_string(uint32(round(poi.distance(botPos)))) + " yards to the " + ChatHelper::formatAngle(pointAngle));
     sServerFacade.SetFacingTo(bot, pointAngle, true);
     bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-    ai->Poi(poi.getX(), poi.getY(), "this way");
+    ai->Poi(poi.getX(), poi.getY());
 
     return true;
 }

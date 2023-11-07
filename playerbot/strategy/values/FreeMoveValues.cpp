@@ -78,7 +78,7 @@ float FreeMoveRangeValue::Calculate()
     bool hasFree = !hasFollow && !hasGuard && !hasStay;
 
     //When far away from master stop trying to limit the bot.
-    if (!hasFollow && WorldPosition(followTarget).fDist(bot) > (hasFree ? sPlayerbotAIConfig.sightDistance : sPlayerbotAIConfig.reactDistance))
+    if (!hasFollow && (ai->HasStrategy("travel once", BotState::BOT_STATE_NON_COMBAT) || (WorldPosition(followTarget).fDist(bot) > (hasFree ? sPlayerbotAIConfig.sightDistance : sPlayerbotAIConfig.reactDistance))))
         return 0;
 
     if (hasFree || hasGuard)//Free and guard start with a base 20y range.

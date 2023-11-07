@@ -962,7 +962,7 @@ vector<string> split(const string& s, char delim);
 char* strstri(const char* haystack, const char* needle);
 
 //Find a destination based on (part of) it's name. Includes zones, ncps and mobs. Picks the closest one that matches.
-TravelDestination* ChooseTravelTargetAction::FindDestination(Player* bot, string name)
+TravelDestination* ChooseTravelTargetAction::FindDestination(Player* bot, string name, bool zones, bool npcs, bool quests, bool mobs, bool bosses)
 {
     PlayerbotAI* ai = bot->GetPlayerbotAI();
 
@@ -971,38 +971,53 @@ TravelDestination* ChooseTravelTargetAction::FindDestination(Player* bot, string
     vector<TravelDestination*> dests;
 
     //Quests
-    for (auto& d : sTravelMgr.getQuestTravelDestinations(bot, 0, true, true))
+    if (quests)
     {
-        if (strstri(d->getTitle().c_str(), name.c_str()))
-            dests.push_back(d);
+        for (auto& d : sTravelMgr.getQuestTravelDestinations(bot, 0, true, true))
+        {
+            if (strstri(d->getTitle().c_str(), name.c_str()))
+                dests.push_back(d);
+        }
     }
 
     //Zones
-    for (auto& d : sTravelMgr.getExploreTravelDestinations(bot, true, true))
+    if (zones)
     {
-        if (strstri(d->getTitle().c_str(), name.c_str()))
-            dests.push_back(d);
+        for (auto& d : sTravelMgr.getExploreTravelDestinations(bot, true, true))
+        {
+            if (strstri(d->getTitle().c_str(), name.c_str()))
+                dests.push_back(d);
+        }
     }
 
     //Npcs
-    for (auto& d : sTravelMgr.getRpgTravelDestinations(bot, true, true))
+    if (npcs)
     {
-        if (strstri(d->getTitle().c_str(), name.c_str()))
-            dests.push_back(d);
+        for (auto& d : sTravelMgr.getRpgTravelDestinations(bot, true, true))
+        {
+            if (strstri(d->getTitle().c_str(), name.c_str()))
+                dests.push_back(d);
+        }
     }
 
     //Mobs
-    for (auto& d : sTravelMgr.getGrindTravelDestinations(bot, true, true,5000.0f,0))
+    if (mobs)
     {
-        if (strstri(d->getTitle().c_str(), name.c_str()))
-            dests.push_back(d);
+        for (auto& d : sTravelMgr.getGrindTravelDestinations(bot, true, true, 5000.0f, 0))
+        {
+            if (strstri(d->getTitle().c_str(), name.c_str()))
+                dests.push_back(d);
+        }
     }
 
     //Bosses
-    for (auto& d : sTravelMgr.getBossTravelDestinations(bot, true, true))
+    if (bosses)
     {
-        if (strstri(d->getTitle().c_str(), name.c_str()))
-            dests.push_back(d);
+        for (auto& d : sTravelMgr.getBossTravelDestinations(bot, true, true))
+        {
+            if (strstri(d->getTitle().c_str(), name.c_str()))
+                dests.push_back(d);
+        }
     }
 
     WorldPosition botPos(bot);
