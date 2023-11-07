@@ -3,73 +3,190 @@
 #include "HunterActions.h"
 #include "HunterTriggers.h"
 #include "HunterAiObjectContext.h"
-#include "DpsHunterStrategy.h"
-#include "GenericHunterNonCombatStrategy.h"
-#include "HunterReactionStrategy.h"
-#include "HunterBuffStrategies.h"
+#include "BeastMasteryHunterStrategy.h"
+#include "MarksmanshipHunterStrategy.h"
+#include "SurvivalHunterStrategy.h"
 #include "../NamedObjectContext.h"
-
-using namespace ai;
 
 namespace ai
 {
     namespace hunter
     {
-        using namespace ai;
-
         class StrategyFactoryInternal : public NamedObjectContext<Strategy>
         {
         public:
             StrategyFactoryInternal()
             {
-                creators["dps"] = &hunter::StrategyFactoryInternal::dps;
-                creators["nc"] = &hunter::StrategyFactoryInternal::nc;
-                creators["react"] = &hunter::StrategyFactoryInternal::react;
-                creators["pull"] = &hunter::StrategyFactoryInternal::pull;
                 creators["aoe"] = &hunter::StrategyFactoryInternal::aoe;
-                creators["dps debuff"] = &hunter::StrategyFactoryInternal::dps_debuff;
-                creators["boost"] = &hunter::StrategyFactoryInternal::boost;
-                creators["pet"] = &hunter::StrategyFactoryInternal::pet;
+                creators["buff"] = &hunter::StrategyFactoryInternal::buff;
+                creators["pull"] = &hunter::StrategyFactoryInternal::pull;
                 creators["cc"] = &hunter::StrategyFactoryInternal::cc;
+                creators["boost"] = &hunter::StrategyFactoryInternal::boost;
             }
 
         private:
-            static Strategy* aoe(PlayerbotAI* ai) { return new DpsAoeHunterStrategy(ai); }
-            static Strategy* dps(PlayerbotAI* ai) { return new DpsHunterStrategy(ai); }
-            static Strategy* nc(PlayerbotAI* ai) { return new GenericHunterNonCombatStrategy(ai); }
-            static Strategy* react(PlayerbotAI* ai) { return new HunterReactionStrategy(ai); }
+            static Strategy* aoe(PlayerbotAI* ai) { return new AoePlaceholderStrategy(ai); }
+            static Strategy* buff(PlayerbotAI* ai) { return new BuffPlaceholderStrategy(ai); }
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "serpent sting"); }
-            static Strategy* dps_debuff(PlayerbotAI* ai) { return new DpsHunterDebuffStrategy(ai); }
-            static Strategy* boost(PlayerbotAI* ai) { return new HunterBoostStrategy(ai); }
-            static Strategy* pet(PlayerbotAI* ai) { return new HunterPetStrategy(ai); }
-            static Strategy* cc(PlayerbotAI* ai) { return new HunterCcStrategy(ai); }
+            static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
+            static Strategy* boost(PlayerbotAI* ai) { return new BoostPlaceholderStrategy(ai); }
         };
 
-        class BuffStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        class AoeSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
         {
         public:
-            BuffStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            AoeSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
             {
-                creators["bspeed"] = &hunter::BuffStrategyFactoryInternal::bspeed;
-                creators["bdps"] = &hunter::BuffStrategyFactoryInternal::bdps;
-                creators["bmana"] = &hunter::BuffStrategyFactoryInternal::bmana;
-                creators["rnature"] = &hunter::BuffStrategyFactoryInternal::rnature;
+                creators["aoe beast mastery pve"] = &hunter::AoeSituationStrategyFactoryInternal::aoe_beast_mastery_pve;
+                creators["aoe beast mastery pvp"] = &hunter::AoeSituationStrategyFactoryInternal::aoe_beast_mastery_pvp;
+                creators["aoe beast mastery raid"] = &hunter::AoeSituationStrategyFactoryInternal::aoe_beast_mastery_raid;
+                creators["aoe marksmanship pve"] = &hunter::AoeSituationStrategyFactoryInternal::aoe_marksmanship_pve;
+                creators["aoe marksmanship pvp"] = &hunter::AoeSituationStrategyFactoryInternal::aoe_marksmanship_pvp;
+                creators["aoe marksmanship raid"] = &hunter::AoeSituationStrategyFactoryInternal::aoe_marksmanship_raid;
+                creators["aoe survival pve"] = &hunter::AoeSituationStrategyFactoryInternal::aoe_survival_pve;
+                creators["aoe survival pvp"] = &hunter::AoeSituationStrategyFactoryInternal::aoe_survival_pvp;
+                creators["aoe survival raid"] = &hunter::AoeSituationStrategyFactoryInternal::aoe_survival_raid;
             }
 
         private:
-            static Strategy* bspeed(PlayerbotAI* ai) { return new HunterBuffSpeedStrategy(ai); }
-            static Strategy* bdps(PlayerbotAI* ai) { return new HunterBuffDpsStrategy(ai); }
-            static Strategy* bmana(PlayerbotAI* ai) { return new HunterBuffManaStrategy(ai); }
-            static Strategy* rnature(PlayerbotAI* ai) { return new HunterNatureResistanceStrategy(ai); }
+            static Strategy* aoe_beast_mastery_pve(PlayerbotAI* ai) { return new BeastMasteryHunterAoePveStrategy(ai); }
+            static Strategy* aoe_beast_mastery_pvp(PlayerbotAI* ai) { return new BeastMasteryHunterAoePvpStrategy(ai); }
+            static Strategy* aoe_beast_mastery_raid(PlayerbotAI* ai) { return new BeastMasteryHunterAoeRaidStrategy(ai); }
+            static Strategy* aoe_marksmanship_pve(PlayerbotAI* ai) { return new MarksmanshipHunterAoePveStrategy(ai); }
+            static Strategy* aoe_marksmanship_pvp(PlayerbotAI* ai) { return new MarksmanshipHunterAoePvpStrategy(ai); }
+            static Strategy* aoe_marksmanship_raid(PlayerbotAI* ai) { return new MarksmanshipHunterAoeRaidStrategy(ai); }
+            static Strategy* aoe_survival_pve(PlayerbotAI* ai) { return new SurvivalHunterAoePveStrategy(ai); }
+            static Strategy* aoe_survival_pvp(PlayerbotAI* ai) { return new SurvivalHunterAoePvpStrategy(ai); }
+            static Strategy* aoe_survival_raid(PlayerbotAI* ai) { return new SurvivalHunterAoeRaidStrategy(ai); }
         };
-    };
-};
 
-namespace ai
-{
-    namespace hunter
-    {
-        using namespace ai;
+        class BuffSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            BuffSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["buff beast mastery pve"] = &hunter::BuffSituationStrategyFactoryInternal::buff_beast_mastery_pve;
+                creators["buff beast mastery pvp"] = &hunter::BuffSituationStrategyFactoryInternal::buff_beast_mastery_pvp;
+                creators["buff beast mastery raid"] = &hunter::BuffSituationStrategyFactoryInternal::buff_beast_mastery_raid;
+                creators["buff marksmanship pve"] = &hunter::BuffSituationStrategyFactoryInternal::buff_marksmanship_pve;
+                creators["buff marksmanship pvp"] = &hunter::BuffSituationStrategyFactoryInternal::buff_marksmanship_pvp;
+                creators["buff marksmanship raid"] = &hunter::BuffSituationStrategyFactoryInternal::buff_marksmanship_raid;
+                creators["buff survival pve"] = &hunter::BuffSituationStrategyFactoryInternal::buff_survival_pve;
+                creators["buff survival pvp"] = &hunter::BuffSituationStrategyFactoryInternal::buff_survival_pvp;
+                creators["buff survival raid"] = &hunter::BuffSituationStrategyFactoryInternal::buff_survival_raid;
+            }
+
+        private:
+            static Strategy* buff_beast_mastery_pve(PlayerbotAI* ai) { return new BeastMasteryHunterBuffPveStrategy(ai); }
+            static Strategy* buff_beast_mastery_pvp(PlayerbotAI* ai) { return new BeastMasteryHunterBuffPvpStrategy(ai); }
+            static Strategy* buff_beast_mastery_raid(PlayerbotAI* ai) { return new BeastMasteryHunterBuffRaidStrategy(ai); }
+            static Strategy* buff_marksmanship_pve(PlayerbotAI* ai) { return new MarksmanshipHunterBuffPveStrategy(ai); }
+            static Strategy* buff_marksmanship_pvp(PlayerbotAI* ai) { return new MarksmanshipHunterBuffPvpStrategy(ai); }
+            static Strategy* buff_marksmanship_raid(PlayerbotAI* ai) { return new MarksmanshipHunterBuffRaidStrategy(ai); }
+            static Strategy* buff_survival_pve(PlayerbotAI* ai) { return new SurvivalHunterBuffPveStrategy(ai); }
+            static Strategy* buff_survival_pvp(PlayerbotAI* ai) { return new SurvivalHunterBuffPvpStrategy(ai); }
+            static Strategy* buff_survival_raid(PlayerbotAI* ai) { return new SurvivalHunterBuffRaidStrategy(ai); }
+        };
+
+        class BoostSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            BoostSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["boost beast mastery pve"] = &hunter::BoostSituationStrategyFactoryInternal::boost_beast_mastery_pve;
+                creators["boost beast mastery pvp"] = &hunter::BoostSituationStrategyFactoryInternal::boost_beast_mastery_pvp;
+                creators["boost beast mastery raid"] = &hunter::BoostSituationStrategyFactoryInternal::boost_beast_mastery_raid;
+                creators["boost marksmanship pve"] = &hunter::BoostSituationStrategyFactoryInternal::boost_marksmanship_pve;
+                creators["boost marksmanship pvp"] = &hunter::BoostSituationStrategyFactoryInternal::boost_marksmanship_pvp;
+                creators["boost marksmanship raid"] = &hunter::BoostSituationStrategyFactoryInternal::boost_marksmanship_raid;
+                creators["boost survival pve"] = &hunter::BoostSituationStrategyFactoryInternal::boost_survival_pve;
+                creators["boost survival pvp"] = &hunter::BoostSituationStrategyFactoryInternal::boost_survival_pvp;
+                creators["boost survival raid"] = &hunter::BoostSituationStrategyFactoryInternal::boost_survival_raid;
+            }
+
+        private:
+            static Strategy* boost_beast_mastery_pve(PlayerbotAI* ai) { return new BeastMasteryHunterBoostPveStrategy(ai); }
+            static Strategy* boost_beast_mastery_pvp(PlayerbotAI* ai) { return new BeastMasteryHunterBoostPvpStrategy(ai); }
+            static Strategy* boost_beast_mastery_raid(PlayerbotAI* ai) { return new BeastMasteryHunterBoostRaidStrategy(ai); }
+            static Strategy* boost_marksmanship_pve(PlayerbotAI* ai) { return new MarksmanshipHunterBoostPveStrategy(ai); }
+            static Strategy* boost_marksmanship_pvp(PlayerbotAI* ai) { return new MarksmanshipHunterBoostPvpStrategy(ai); }
+            static Strategy* boost_marksmanship_raid(PlayerbotAI* ai) { return new MarksmanshipHunterBoostRaidStrategy(ai); }
+            static Strategy* boost_survival_pve(PlayerbotAI* ai) { return new SurvivalHunterBoostPveStrategy(ai); }
+            static Strategy* boost_survival_pvp(PlayerbotAI* ai) { return new SurvivalHunterBoostPvpStrategy(ai); }
+            static Strategy* boost_survival_raid(PlayerbotAI* ai) { return new SurvivalHunterBoostRaidStrategy(ai); }
+        };
+
+        class CcSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            CcSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["cc marksmanship pve"] = &hunter::CcSituationStrategyFactoryInternal::cc_marksmanship_pve;
+                creators["cc marksmanship pvp"] = &hunter::CcSituationStrategyFactoryInternal::cc_marksmanship_pvp;
+                creators["cc marksmanship raid"] = &hunter::CcSituationStrategyFactoryInternal::cc_marksmanship_raid;
+                creators["cc survival pve"] = &hunter::CcSituationStrategyFactoryInternal::cc_survival_pve;
+                creators["cc survival pvp"] = &hunter::CcSituationStrategyFactoryInternal::cc_survival_pvp;
+                creators["cc survival raid"] = &hunter::CcSituationStrategyFactoryInternal::cc_survival_raid;
+                creators["cc beast mastery pve"] = &hunter::CcSituationStrategyFactoryInternal::cc_beast_mastery_pve;
+                creators["cc beast mastery pvp"] = &hunter::CcSituationStrategyFactoryInternal::cc_beast_mastery_pvp;
+                creators["cc beast mastery raid"] = &hunter::CcSituationStrategyFactoryInternal::cc_beast_mastery_raid;
+            }
+
+        private:
+            static Strategy* cc_marksmanship_pve(PlayerbotAI* ai) { return new MarksmanshipHunterCcPveStrategy(ai); }
+            static Strategy* cc_marksmanship_pvp(PlayerbotAI* ai) { return new MarksmanshipHunterCcPvpStrategy(ai); }
+            static Strategy* cc_marksmanship_raid(PlayerbotAI* ai) { return new MarksmanshipHunterCcRaidStrategy(ai); }
+            static Strategy* cc_survival_pve(PlayerbotAI* ai) { return new SurvivalHunterCcPveStrategy(ai); }
+            static Strategy* cc_survival_pvp(PlayerbotAI* ai) { return new SurvivalHunterCcPvpStrategy(ai); }
+            static Strategy* cc_survival_raid(PlayerbotAI* ai) { return new SurvivalHunterCcRaidStrategy(ai); }
+            static Strategy* cc_beast_mastery_pve(PlayerbotAI* ai) { return new BeastMasteryHunterCcPveStrategy(ai); }
+            static Strategy* cc_beast_mastery_pvp(PlayerbotAI* ai) { return new BeastMasteryHunterCcPvpStrategy(ai); }
+            static Strategy* cc_beast_mastery_raid(PlayerbotAI* ai) { return new BeastMasteryHunterCcRaidStrategy(ai); }
+        };
+
+        class ClassStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            ClassStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["marksmanship"] = &hunter::ClassStrategyFactoryInternal::marksmanship;
+                creators["survival"] = &hunter::ClassStrategyFactoryInternal::survival;
+                creators["beast mastery"] = &hunter::ClassStrategyFactoryInternal::beast_mastery;
+            }
+
+        private:
+            static Strategy* marksmanship(PlayerbotAI* ai) { return new MarksmanshipHunterPlaceholderStrategy(ai); }
+            static Strategy* survival(PlayerbotAI* ai) { return new SurvivalHunterPlaceholderStrategy(ai); }
+            static Strategy* beast_mastery(PlayerbotAI* ai) { return new BeastMasteryHunterPlaceholderStrategy(ai); }
+        };
+
+        class ClassSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            ClassSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["beast mastery pvp"] = &hunter::ClassSituationStrategyFactoryInternal::beast_mastery_pvp;
+                creators["beast mastery pve"] = &hunter::ClassSituationStrategyFactoryInternal::beast_mastery_pve;
+                creators["beast mastery raid"] = &hunter::ClassSituationStrategyFactoryInternal::beast_mastery_raid;
+                creators["marksmanship pvp"] = &hunter::ClassSituationStrategyFactoryInternal::marksmanship_pvp;
+                creators["marksmanship pve"] = &hunter::ClassSituationStrategyFactoryInternal::marksmanship_pve;
+                creators["marksmanship raid"] = &hunter::ClassSituationStrategyFactoryInternal::marksmanship_raid;
+                creators["survival pvp"] = &hunter::ClassSituationStrategyFactoryInternal::survival_pvp;
+                creators["survival pve"] = &hunter::ClassSituationStrategyFactoryInternal::survival_pve;
+                creators["survival raid"] = &hunter::ClassSituationStrategyFactoryInternal::survival_raid;
+            }
+
+        private:
+            static Strategy* beast_mastery_pvp(PlayerbotAI* ai) { return new BeastMasteryHunterPvpStrategy(ai); }
+            static Strategy* beast_mastery_pve(PlayerbotAI* ai) { return new BeastMasteryHunterPveStrategy(ai); }
+            static Strategy* beast_mastery_raid(PlayerbotAI* ai) { return new BeastMasteryHunterRaidStrategy(ai); }
+            static Strategy* marksmanship_pvp(PlayerbotAI* ai) { return new MarksmanshipHunterPvpStrategy(ai); }
+            static Strategy* marksmanship_pve(PlayerbotAI* ai) { return new MarksmanshipHunterPveStrategy(ai); }
+            static Strategy* marksmanship_raid(PlayerbotAI* ai) { return new MarksmanshipHunterRaidStrategy(ai); }
+            static Strategy* survival_pvp(PlayerbotAI* ai) { return new SurvivalHunterPvpStrategy(ai); }
+            static Strategy* survival_pve(PlayerbotAI* ai) { return new SurvivalHunterPveStrategy(ai); }
+            static Strategy* survival_raid(PlayerbotAI* ai) { return new SurvivalHunterRaidStrategy(ai); }
+        };
 
         class TriggerFactoryInternal : public NamedObjectContext<Trigger>
         {
@@ -104,6 +221,8 @@ namespace ai
                 creators["switch to ranged"] = &TriggerFactoryInternal::switch_to_ranged;
                 creators["feign death"] = &TriggerFactoryInternal::feign_death;
                 creators["scatter shot on snare target"] = &TriggerFactoryInternal::scatter_shot;
+                creators["chimera shot"] = &TriggerFactoryInternal::chimera_shot;
+                creators["explosive shot"] = &TriggerFactoryInternal::explosive_shot;
                 creators["multi shot"] = &TriggerFactoryInternal::multi_shot;
                 creators["intimidation on snare target"] = &TriggerFactoryInternal::intimidation;
                 creators["counterattack"] = &TriggerFactoryInternal::counterattack;
@@ -129,6 +248,8 @@ namespace ai
             static Trigger* wyvern_sting(PlayerbotAI* ai) { return new WybernStingSnareTrigger(ai); }
             static Trigger* counterattack(PlayerbotAI* ai) { return new CounterattackCanCastTrigger(ai); }
             static Trigger* intimidation(PlayerbotAI* ai) { return new IntimidationSnareTrigger(ai); }
+            static Trigger* chimera_shot(PlayerbotAI* ai) { return new ChimeraShotCanCastTrigger(ai); }
+            static Trigger* explosive_shot(PlayerbotAI* ai) { return new ExplosiveShotCanCastTrigger(ai); }
             static Trigger* multi_shot(PlayerbotAI* ai) { return new MultishotCanCastTrigger(ai); }
             static Trigger* scatter_shot(PlayerbotAI* ai) { return new ScatterShotSnareTrigger(ai); }
             static Trigger* scare_beast(PlayerbotAI* ai) { return new ScareBeastTrigger(ai); }
@@ -239,6 +360,9 @@ namespace ai
                 creators["frost trap in place"] = &AiObjectContextInternal::frost_trap_in_place;
                 creators["explosive trap in place"] = &AiObjectContextInternal::explosive_trap_in_place;
                 creators["freezing trap in place"] = &AiObjectContextInternal::freezing_trap_in_place;
+                creators["update pve strats"] = &AiObjectContextInternal::update_pve_strats;
+                creators["update pvp strats"] = &AiObjectContextInternal::update_pvp_strats;
+                creators["update raid strats"] = &AiObjectContextInternal::update_raid_strats;
             }
 
         private:
@@ -305,6 +429,9 @@ namespace ai
             static Action* explosive_trap_in_place(PlayerbotAI* ai) { return new CastExplosiveTrapInPlaceAction(ai); }
             static Action* frost_trap_in_place(PlayerbotAI* ai) { return new CastFrostTrapInPlaceAction(ai); }
             static Action* freezing_trap_in_place(PlayerbotAI* ai) { return new CastFreezingTrapInPlaceAction(ai); }
+            static Action* update_pve_strats(PlayerbotAI* ai) { return new UpdateHunterPveStrategiesAction(ai); }
+            static Action* update_pvp_strats(PlayerbotAI* ai) { return new UpdateHunterPvpStrategiesAction(ai); }
+            static Action* update_raid_strats(PlayerbotAI* ai) { return new UpdateHunterRaidStrategiesAction(ai); }
         };
     };
 };
@@ -312,7 +439,12 @@ namespace ai
 HunterAiObjectContext::HunterAiObjectContext(PlayerbotAI* ai) : AiObjectContext(ai)
 {
     strategyContexts.Add(new ai::hunter::StrategyFactoryInternal());
-    strategyContexts.Add(new ai::hunter::BuffStrategyFactoryInternal());
+    strategyContexts.Add(new ai::hunter::AoeSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::hunter::ClassStrategyFactoryInternal());
+    strategyContexts.Add(new ai::hunter::ClassSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::hunter::BuffSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::hunter::BoostSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::hunter::CcSituationStrategyFactoryInternal());
     actionContexts.Add(new ai::hunter::AiObjectContextInternal());
     triggerContexts.Add(new ai::hunter::TriggerFactoryInternal());
 }

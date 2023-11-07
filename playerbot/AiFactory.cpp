@@ -363,15 +363,15 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
         {
             if (tab == 0)
             {
-                combatEngine->addStrategies("elemental", "aoe", "cc", "bmana", "threat", "flee", "ranged", NULL);
+                combatEngine->addStrategies("elemental", "aoe", "cc", "threat", "flee", "ranged", NULL);
             }
             else if (tab == 2)
             {
-                combatEngine->addStrategies("restoration", "bmana", "flee", "ranged", NULL);
+                combatEngine->addStrategies("restoration", "flee", "ranged", NULL);
             }
             else
             {
-                combatEngine->addStrategies("enhancement", "aoe", "cc", "bdps", "threat", "close", NULL);
+                combatEngine->addStrategies("enhancement", "aoe", "cc", "threat", "close", NULL);
             }
 
             combatEngine->addStrategies("dps assist", "cure", "totems", "buff", "boost", NULL);
@@ -418,7 +418,20 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
         case CLASS_HUNTER:
         {
-            combatEngine->addStrategies("dps", "bdps", "threat", "dps assist", "ranged", "cc", "aoe", "dps debuff", NULL);
+            if (tab == 0)
+            {
+                combatEngine->addStrategy("beast mastery");
+            }
+            else if (tab == 2)
+            {
+                combatEngine->addStrategy("survival");
+            }
+            else
+            {
+                combatEngine->addStrategy("marksmanship");
+            }
+
+            combatEngine->addStrategies("threat", "dps assist", "ranged", "cc", "aoe", "buff", "boost", NULL);
             break;
         }
 
@@ -646,7 +659,20 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
 
         case CLASS_HUNTER:
         {
-            nonCombatEngine->addStrategies("bdps", "dps assist", "pet", NULL);
+            if (tab == 0)
+            {
+                nonCombatEngine->addStrategy("beast mastery");
+            }
+            else if (tab == 2)
+            {
+                nonCombatEngine->addStrategy("survival");
+            }
+            else
+            {
+                nonCombatEngine->addStrategy("marksmanship");
+            }
+
+            nonCombatEngine->addStrategies("dps assist", "cc", "aoe", "buff", "boost", NULL);
             break;
         }
 
@@ -654,15 +680,15 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         {
             if (tab == 0)
             {
-                nonCombatEngine->addStrategies("elemental", "bmana", "aoe", "cc", NULL);
+                nonCombatEngine->addStrategies("elemental", "aoe", "cc", NULL);
             }
             else if (tab == 2)
             {
-                nonCombatEngine->addStrategies("restoration", "bmana", NULL);
+                nonCombatEngine->addStrategies("restoration", NULL);
             }
             else
             {
-                nonCombatEngine->addStrategies("enhancement", "bdps", "aoe", "cc", NULL);
+                nonCombatEngine->addStrategies("enhancement", "aoe", "cc", NULL);
             }
 
             nonCombatEngine->addStrategies("dps assist", "cure", "totems", "buff", "boost", NULL);
@@ -1112,6 +1138,24 @@ void AiFactory::AddDefaultDeadStrategies(Player* player, PlayerbotAI* const faca
 
             break;
         }
+        
+        case CLASS_HUNTER:
+        {
+            if (tab == 0)
+            {
+                deadEngine->addStrategy("beast mastery");
+            }
+            else if (tab == 2)
+            {
+                deadEngine->addStrategy("survival");
+            }
+            else
+            {
+                deadEngine->addStrategy("marksmanship");
+            }
+
+            break;
+        }
     }
 
     if (facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player))
@@ -1259,6 +1303,24 @@ void AiFactory::AddDefaultReactionStrategies(Player* player, PlayerbotAI* const 
             else
             {
                 reactionEngine->addStrategy("balance");
+            }
+
+            break;
+        }
+
+        case CLASS_HUNTER:
+        {
+            if (tab == 0)
+            {
+                reactionEngine->addStrategy("beast mastery");
+            }
+            else if (tab == 2)
+            {
+                reactionEngine->addStrategy("survival");
+            }
+            else
+            {
+                reactionEngine->addStrategy("marksmanship");
             }
 
             break;

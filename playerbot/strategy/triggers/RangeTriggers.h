@@ -170,39 +170,46 @@ namespace ai
         }
     };
 
-    class EnemyIsCloseTrigger : public Trigger 
-    {
-    public:
-        EnemyIsCloseTrigger(PlayerbotAI* ai) : Trigger(ai, "enemy is close") {}
-        
-        virtual bool IsActive()
-        {
-            Unit* target = AI_VALUE(Unit*, "current target");
-            return target &&
-                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), sPlayerbotAIConfig.tooCloseDistance);
-        }
-    };
-
     class EnemyInRangeTrigger : public Trigger 
     {
     public:
-        EnemyInRangeTrigger(PlayerbotAI* ai, string name, float distance, bool enemyMustBePlayer = false) : Trigger(ai, name)
-        {
-            this->distance = distance;
-            this->enemyMustBePlayer = enemyMustBePlayer;
-        }
+        EnemyInRangeTrigger(PlayerbotAI* ai, string name, float distance, bool enemyMustBePlayer = false, bool enemyTargetsBot = false)
+        : Trigger(ai, name)
+        , distance(distance)
+        , enemyMustBePlayer(enemyMustBePlayer)
+        , enemyTargetsBot(enemyTargetsBot) {}
         
-        virtual bool IsActive()
+        virtual bool IsActive() override
         {
             Unit* target = AI_VALUE(Unit*, "current target");
-            return target &&
-                (!enemyMustBePlayer || target->IsPlayer()) &&
-                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), distance);
+            if (target)
+            {
+                if (enemyMustBePlayer && !target->IsPlayer())
+                {
+                    return false;
+                }
+
+                if (enemyTargetsBot && target->GetTarget() != bot)
+                {
+                    return false;
+                }
+
+                return sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), distance);
+            }
+
+            return false;
         }
 
     protected:
         float distance;
         bool enemyMustBePlayer;
+        bool enemyTargetsBot;
+    };
+
+    class EnemyIsCloseTrigger : public EnemyInRangeTrigger
+    {
+    public:
+        EnemyIsCloseTrigger(PlayerbotAI* ai) : EnemyInRangeTrigger(ai, "enemy is close", sPlayerbotAIConfig.tooCloseDistance) {}
     };
 
     class OutOfRangeTrigger : public Trigger 

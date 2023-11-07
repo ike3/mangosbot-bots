@@ -390,4 +390,223 @@ private:
     public:
         CastExplosiveTrapInPlaceAction(PlayerbotAI* ai) : TrapInPlace(ai, "explosive trap") {}
     };
+
+    class UpdateHunterPveStrategiesAction : public UpdateStrategyDependenciesAction
+    {
+    public:
+        UpdateHunterPveStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update pve strats")
+        {
+            std::vector<std::string> strategiesRequired = { "beast mastery" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "beast mastery pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "beast mastery pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "beast mastery pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "beast mastery pve", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe beast mastery pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe beast mastery pve", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff beast mastery pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff beast mastery pve", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost beast mastery pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost beast mastery pve", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc beast mastery pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc beast mastery pve", strategiesRequired);
+
+            strategiesRequired = { "marksmanship" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "marksmanship pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "marksmanship pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "marksmanship pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "marksmanship pve", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe marksmanship pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe marksmanship pve", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff marksmanship pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff marksmanship pve", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost marksmanship pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost marksmanship pve", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc marksmanship pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc marksmanship pve", strategiesRequired);
+
+            strategiesRequired = { "survival" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "survival pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "survival pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "survival pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "survival pve", strategiesRequired);
+
+            strategiesRequired = { "survival", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe survival pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe survival pve", strategiesRequired);
+
+            strategiesRequired = { "survival", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff survival pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff survival pve", strategiesRequired);
+
+            strategiesRequired = { "survival", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost survival pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost survival pve", strategiesRequired);
+
+            strategiesRequired = { "survival", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc survival pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc survival pve", strategiesRequired);
+        }
+    };
+
+    class UpdateHunterPvpStrategiesAction : public UpdateStrategyDependenciesAction
+    {
+    public:
+        UpdateHunterPvpStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update pvp strats")
+        {
+            std::vector<std::string> strategiesRequired = { "beast mastery" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "beast mastery pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "beast mastery pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "beast mastery pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "beast mastery pvp", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe beast mastery pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe beast mastery pvp", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff beast mastery pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff beast mastery pvp", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost beast mastery pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost beast mastery pvp", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc beast mastery pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc beast mastery pvp", strategiesRequired);
+
+            strategiesRequired = { "marksmanship" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "marksmanship pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "marksmanship pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "marksmanship pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "marksmanship pvp", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe marksmanship pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe marksmanship pvp", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff marksmanship pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff marksmanship pvp", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost marksmanship pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost marksmanship pvp", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc marksmanship pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc marksmanship pvp", strategiesRequired);
+
+            strategiesRequired = { "survival" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "survival pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "survival pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "survival pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "survival pvp", strategiesRequired);
+
+            strategiesRequired = { "survival", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe survival pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe survival pvp", strategiesRequired);
+
+            strategiesRequired = { "survival", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff survival pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff survival pvp", strategiesRequired);
+
+            strategiesRequired = { "survival", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost survival pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost survival pvp", strategiesRequired);
+
+            strategiesRequired = { "survival", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc survival pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc survival pvp", strategiesRequired);
+        }
+    };
+
+    class UpdateHunterRaidStrategiesAction : public UpdateStrategyDependenciesAction
+    {
+    public:
+        UpdateHunterRaidStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update raid strats")
+        {
+            std::vector<std::string> strategiesRequired = { "beast mastery" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "beast mastery raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "beast mastery raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "beast mastery raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "beast mastery raid", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe beast mastery raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe beast mastery raid", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff beast mastery raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff beast mastery raid", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost beast mastery raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost beast mastery raid", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc beast mastery raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc beast mastery raid", strategiesRequired);
+
+            strategiesRequired = { "marksmanship" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "marksmanship raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "marksmanship raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "marksmanship raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "marksmanship raid", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe marksmanship raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe marksmanship raid", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff marksmanship raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff marksmanship raid", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost marksmanship raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost marksmanship raid", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc marksmanship raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc marksmanship raid", strategiesRequired);
+
+            strategiesRequired = { "survival" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "survival raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "survival raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "survival raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "survival raid", strategiesRequired);
+
+            strategiesRequired = { "survival", "aoe" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe survival raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe survival raid", strategiesRequired);
+
+            strategiesRequired = { "survival", "buff" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff survival raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff survival raid", strategiesRequired);
+
+            strategiesRequired = { "survival", "boost" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost survival raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost survival raid", strategiesRequired);
+
+            strategiesRequired = { "survival", "cc" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc survival raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc survival raid", strategiesRequired);
+        }
+    };
 }

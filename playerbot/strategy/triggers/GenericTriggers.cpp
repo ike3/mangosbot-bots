@@ -728,6 +728,42 @@ bool GreaterBuffOnPartyTrigger::IsActive()
     return target && bot->IsInGroup(target) && BuffOnPartyTrigger::IsActive() && !ai->HasAura(lowerSpell, target, false, checkIsOwner);
 }
 
+bool TargetOfAttacker::IsActive()
+{
+    return !GetAttackers().empty();
+}
+
+std::list<Unit*> TargetOfAttacker::GetAttackers()
+{
+    std::list<Unit*> result;
+    const list<ObjectGuid>& attackers = AI_VALUE(list<ObjectGuid>, "attackers");
+    for (const ObjectGuid& attackerGuid : attackers)
+    {
+        // Check against the given creature id
+        Unit* attacker = ai->GetUnit(attackerGuid);
+        if (attacker && (attacker->GetTarget() == bot || attacker->GetVictim() == bot))
+        {
+            result.push_back(attacker);
+        }
+    }
+
+    return result;
+}
+
+bool TargetOfAttackerInRange::IsActive()
+{
+    std::list<Unit*> attackers = GetAttackers();
+    for (Unit* attacker : attackers)
+    {
+        if (bot->GetDistance(attacker, true, DIST_CALC_COMBAT_REACH) <= (distance - sPlayerbotAIConfig.contactDistance))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool TargetOfCastedAuraTypeTrigger::IsActive()
 {
     const list<ObjectGuid>& attackers = AI_VALUE(list<ObjectGuid>, "attackers");

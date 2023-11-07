@@ -174,9 +174,9 @@ namespace ai
     };
 
     BEGIN_TRIGGER(HunterPetNotHappy, Trigger)
-        END_TRIGGER()
+    END_TRIGGER()
 
-        class ConsussiveShotSnareTrigger : public SnareTargetTrigger
+    class ConsussiveShotSnareTrigger : public SnareTargetTrigger
     {
     public:
         ConsussiveShotSnareTrigger(PlayerbotAI* ai) : SnareTargetTrigger(ai, "concussive shot") {}
@@ -236,6 +236,8 @@ namespace ai
         }
     };
 
+    CAN_CAST_TRIGGER(ChimeraShotCanCastTrigger, "chimera shot");
+    CAN_CAST_TRIGGER(ExplosiveShotCanCastTrigger, "explosive shot");
     CAN_CAST_TRIGGER(MultishotCanCastTrigger, "multi shot");
     SNARE_TRIGGER(IntimidationSnareTrigger, "intimidation");
     CAN_CAST_TRIGGER(CounterattackCanCastTrigger, "counterattack");

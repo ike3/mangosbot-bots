@@ -139,6 +139,32 @@ namespace ai
         virtual bool IsActive();
     };
 
+    class TargetOfAttacker : public Trigger
+    {
+    public:
+        TargetOfAttacker(PlayerbotAI* ai, string name = "target of attacker", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
+        virtual bool IsActive() override;
+
+    protected:
+        std::list<Unit*> GetAttackers();
+    };
+
+    class TargetOfAttackerInRange : public TargetOfAttacker
+    {
+    public:
+        TargetOfAttackerInRange(PlayerbotAI* ai, string name, float distance, int checkInterval = 1) : TargetOfAttacker(ai, name, checkInterval), distance(distance) {}
+        virtual bool IsActive() override;
+
+    private:
+        float distance;
+    };
+
+    class TargetOfAttackerClose : public TargetOfAttackerInRange
+    {
+    public:
+        TargetOfAttackerClose(PlayerbotAI* ai) : TargetOfAttackerInRange(ai, "target of attacker close", sPlayerbotAIConfig.tooCloseDistance) {}
+    };
+
     class TargetOfCastedAuraTypeTrigger : public Trigger
     {
     public:
