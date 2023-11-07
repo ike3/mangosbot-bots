@@ -281,11 +281,11 @@ void HunterBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "target of attacker close",
-        NextAction::array(0, new NextAction("deterrence", ACTION_HIGH + 7), NULL)));
+        NextAction::array(0, new NextAction("deterrence", ACTION_EMERGENCY + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "target of attacker close",
-        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_HIGH + 6), NULL)));
+        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "aspect of the hawk",
@@ -694,11 +694,11 @@ void HunterBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "target of attacker close",
-        NextAction::array(0, new NextAction("deterrence", ACTION_HIGH + 7), NULL)));
+        NextAction::array(0, new NextAction("deterrence", ACTION_EMERGENCY + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "target of attacker close",
-        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_HIGH + 6), NULL)));
+        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "aspect of the hawk",
