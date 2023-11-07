@@ -82,6 +82,10 @@ void HunterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("hunter's mark", ACTION_NORMAL + 6), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "no stings",
+        NextAction::array(0, new NextAction("viper sting", ACTION_NORMAL + 5), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "aimed shot",
         NextAction::array(0, new NextAction("aimed shot", ACTION_NORMAL + 2), NULL)));
 
@@ -135,10 +139,6 @@ void HunterPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "no stings",
-        NextAction::array(0, new NextAction("viper sting", ACTION_NORMAL + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "no stings",
         NextAction::array(0, new NextAction("serpent sting", ACTION_NORMAL + 4), NULL)));
 }
 
@@ -165,10 +165,6 @@ void HunterPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "often",
         NextAction::array(0, new NextAction("immolation trap on target", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "no stings",
-        NextAction::array(0, new NextAction("viper sting", ACTION_NORMAL + 5), NULL)));
 
     triggers.push_back(new TriggerNode(
         "no stings",
