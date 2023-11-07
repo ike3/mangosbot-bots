@@ -1473,6 +1473,7 @@ AiPlayerbot.GearProgressionSystem.1.9.2.17 = 13396	# Ranged
 AiPlayerbot.GearProgressionSystem.1.9.2.18 = 5976	# Tabard
 
 # Level 1 (1) Druid (11) Restoration (2)
+# https://www.wowhead.com/classic/gear-planner/druid/night-elf/AjwAATMuAkkjAzrVBTQiBjjZB0fSCFbnCUhdCjEKCzN6DD66DUgmDi4rD0hOEC6TEUtwEld-
 AiPlayerbot.GearProgressionSystem.1.11.2.0 = 13102	# Head
 AiPlayerbot.GearProgressionSystem.1.11.2.1 = 18723	# Neck
 AiPlayerbot.GearProgressionSystem.1.11.2.2 = 15061	# Shoulder
@@ -1630,6 +1631,7 @@ AiPlayerbot.GearProgressionSystem.2.9.2.17 = 13396	# Ranged
 AiPlayerbot.GearProgressionSystem.2.9.2.18 = 5976	# Tabard
 
 # Level 2 (2) Druid (11) Restoration (2)
+# https://www.wowhead.com/classic/gear-planner/druid/night-elf/AjwAAUIEAkl-A0l6BUrJBkraB0IFCEG9CUdXCjEKC0rEDDN6DUKoDkgmD0hOEELREUtwEld-
 AiPlayerbot.GearProgressionSystem.2.11.2.0 = 16900	# Head
 AiPlayerbot.GearProgressionSystem.2.11.2.1 = 18814	# Neck
 AiPlayerbot.GearProgressionSystem.2.11.2.2 = 18810	# Shoulder
@@ -1787,6 +1789,7 @@ AiPlayerbot.GearProgressionSystem.3.9.2.17 = 13396	# Ranged
 AiPlayerbot.GearProgressionSystem.3.9.2.18 = 5976	# Tabard
 
 # Level 3 (3) Druid (11) Restoration (2)
+# https://www.wowhead.com/classic/gear-planner/druid/night-elf/AjwAAUIEAkl-A0IGBUIBBkIHB0IFCEICCUIICkIDC0rEDEu2DUvDDkKoD0vmEEugEUtwEld-
 AiPlayerbot.GearProgressionSystem.3.11.2.0 = 16900	# Head
 AiPlayerbot.GearProgressionSystem.3.11.2.1 = 18814	# Neck
 AiPlayerbot.GearProgressionSystem.3.11.2.2 = 16902	# Shoulder
@@ -1944,6 +1947,7 @@ AiPlayerbot.GearProgressionSystem.4.9.2.17 = 21603	# Ranged
 AiPlayerbot.GearProgressionSystem.4.9.2.18 = 5976	# Tabard
 
 # Level 4 (4) Druid (11) Restoration (2)
+# https://www.wowhead.com/classic/gear-planner/druid/night-elf/AjwAAUIEAlTQA0IGBUIBBkIHB0IFCEICCUIICkIDC1R0DEu2DUvDDkKoD1RPEFVPEVSiEld_
 AiPlayerbot.GearProgressionSystem.4.11.2.0 = 16900	# Head
 AiPlayerbot.GearProgressionSystem.4.11.2.1 = 21712	# Neck
 AiPlayerbot.GearProgressionSystem.4.11.2.2 = 16902	# Shoulder
@@ -2101,6 +2105,7 @@ AiPlayerbot.GearProgressionSystem.5.9.2.17 = 22820	# Ranged
 AiPlayerbot.GearProgressionSystem.5.9.2.18 = 5976	# Tabard
 
 # Level 5 (5) Druid (11) Restoration (2)
+# https://www.wowhead.com/classic/gear-planner/druid/night-elf/AjwAAUq8AlTQA1fbBVfYBlfeB0u5CFfcCVffClfdC1mbDEu2DUvDDloHD1mwEFoQEVoIEld_
 AiPlayerbot.GearProgressionSystem.5.11.2.0 = 19132	# Head
 AiPlayerbot.GearProgressionSystem.5.11.2.1 = 21712	# Neck
 AiPlayerbot.GearProgressionSystem.5.11.2.2 = 22491	# Shoulder
