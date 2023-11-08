@@ -123,7 +123,7 @@ void HunterStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassStrategy::InitReactionTriggers(triggers);
 
-        triggers.push_back(new TriggerNode(
+    triggers.push_back(new TriggerNode(
         "dispel enrage",
         NextAction::array(0, new NextAction("tranquilizing shot", ACTION_INTERRUPT), NULL)));
 }
