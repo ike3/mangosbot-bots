@@ -62,10 +62,6 @@ void HunterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     */
 
     triggers.push_back(new TriggerNode(
-        "dispel enrage",
-        NextAction::array(0, new NextAction("tranquilizing shot", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "counterattack",
         NextAction::array(0, new NextAction("counterattack", ACTION_HIGH + 2), NULL)));
 
@@ -126,6 +122,10 @@ void HunterStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 void HunterStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassStrategy::InitReactionTriggers(triggers);
+
+        triggers.push_back(new TriggerNode(
+        "dispel enrage",
+        NextAction::array(0, new NextAction("tranquilizing shot", ACTION_INTERRUPT), NULL)));
 }
 
 void HunterStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
@@ -489,10 +489,6 @@ void HunterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     */
 
     triggers.push_back(new TriggerNode(
-        "dispel enrage",
-        NextAction::array(0, new NextAction("tranquilizing shot", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "counterattack",
         NextAction::array(0, new NextAction("counterattack", ACTION_HIGH + 2), NULL)));
 
@@ -557,6 +553,10 @@ void HunterStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 void HunterStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassStrategy::InitReactionTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "dispel enrage",
+        NextAction::array(0, new NextAction("tranquilizing shot", ACTION_INTERRUPT), NULL)));
 }
 
 void HunterStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
@@ -902,10 +902,6 @@ void HunterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     */
 
     triggers.push_back(new TriggerNode(
-        "dispel enrage",
-        NextAction::array(0, new NextAction("tranquilizing shot", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "counterattack",
         NextAction::array(0, new NextAction("counterattack", ACTION_HIGH + 2), NULL)));
 
@@ -970,6 +966,10 @@ void HunterStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 void HunterStrategy::InitReactionTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassStrategy::InitReactionTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "dispel enrage",
+        NextAction::array(0, new NextAction("tranquilizing shot", ACTION_INTERRUPT), NULL)));
 }
 
 void HunterStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
