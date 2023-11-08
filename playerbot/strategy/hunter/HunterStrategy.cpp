@@ -395,15 +395,12 @@ void HunterCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CcStrategy::InitCombatTriggers(triggers);
 
-    triggers.push_back(new TriggerNode(
-        "target of attacker close",
-        NextAction::array(0, new NextAction("scatter shot", ACTION_INTERRUPT + 2), NULL)));
-
     // Traps must be on ACTION_INTERRUPT or higher due to its movements and chained actions
     triggers.push_back(new TriggerNode(
         "freezing trap",
         NextAction::array(0, new NextAction("freezing trap on cc", ACTION_INTERRUPT + 1), NULL)));
 
+    // Traps must be on ACTION_INTERRUPT or higher due to its movements and chained actions
     triggers.push_back(new TriggerNode(
         "frost trap",
         NextAction::array(0, new NextAction("frost trap on target", ACTION_INTERRUPT), NULL)));
@@ -411,10 +408,6 @@ void HunterCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "scare beast",
         NextAction::array(0, new NextAction("scare beast on cc", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "enemy fifteen yards",
-        NextAction::array(0, new NextAction("concussive shot", ACTION_HIGH + 1), NULL)));
 }
 
 void HunterCcStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -426,9 +419,18 @@ void HunterCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CcPvpStrategy::InitCombatTriggers(triggers);
 
+    // Traps must be on ACTION_INTERRUPT or higher due to its movements and chained actions
     triggers.push_back(new TriggerNode(
         "target of attacker close",
         NextAction::array(0, new NextAction("freezing trap in place", ACTION_INTERRUPT + 3), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "target of attacker close",
+        NextAction::array(0, new NextAction("scatter shot", ACTION_INTERRUPT + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy fifteen yards",
+        NextAction::array(0, new NextAction("concussive shot", ACTION_HIGH + 1), NULL)));
 }
 
 void HunterCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -439,6 +441,14 @@ void HunterCcPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigger
 void HunterCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CcPveStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "target of attacker close",
+        NextAction::array(0, new NextAction("scatter shot", ACTION_INTERRUPT + 2), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "enemy fifteen yards",
+        NextAction::array(0, new NextAction("concussive shot", ACTION_HIGH + 1), NULL)));
 }
 
 void HunterCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
