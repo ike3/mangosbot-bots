@@ -93,6 +93,9 @@ AiPlayerbot.RandomGearMaxLevel = 500
 # Default = 11, means bots level 60 can use items that require (themselves or via quests) level 49 and above
 AiPlayerbot.RandomGearMaxDiff = 11
 
+# Regularly upgrade bots equipment for their level
+AiPlayerbot.RandomGearUpgradeEnabled = 1
+
 # List of item IDs to exclude from random gear, separated by comma
 AiPlayerbot.RandomGearBlacklist = 0
 

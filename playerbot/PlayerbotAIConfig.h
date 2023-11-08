@@ -86,6 +86,7 @@ public:
     bool randomBotTeleportNearPlayer;
     uint32 randomGearMaxLevel;
     uint32 randomGearMaxDiff;
+    bool randomGearUpgradeEnabled;
     std::list<uint32> randomGearBlacklist;
     std::list<uint32> randomGearWhitelist;
     bool randomGearProgression;

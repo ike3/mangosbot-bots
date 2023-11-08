@@ -2456,10 +2456,16 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
         RandomizeFirst(bot);
         sLog.outBasic("Bot #%d %s:%d <%s>: gear/level randomised", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
     }
-    else
+    else if (sPlayerbotAIConfig.randomGearUpgradeEnabled)
     {
         UpdateGearSpells(bot);
         sLog.outBasic("Bot #%d %s:%d <%s>: gear upgraded", bot->GetGUIDLow(), bot->GetTeam() == ALLIANCE ? "A" : "H", bot->GetLevel(), bot->GetName());
+    }
+    else
+    {
+        // schedule randomise
+        uint32 randomTime = urand(sPlayerbotAIConfig.minRandomBotRandomizeTime, sPlayerbotAIConfig.maxRandomBotRandomizeTime);
+        SetEventValue(bot->GetGUIDLow(), "randomize", 1, randomTime);
     }
 
     //SetValue(bot, "version", MANGOSBOT_VERSION);
