@@ -147,19 +147,19 @@ bool UpdateGearAction::isUseful()
 
 uint8 UpdateGearAction::GetProgressionLevel(uint32 itemLevel)
 {
-    uint8 progressionLevel = 0;
+    uint8 itemProgressionLevel = 0;
     for (uint8 progressionLevel = 1; progressionLevel < MAX_GEAR_PROGRESSION_LEVEL; progressionLevel++)
     {
         const uint32 minIlvl = sPlayerbotAIConfig.gearProgressionSystemItemLevels[progressionLevel][0];
         const uint32 maxIlvl = sPlayerbotAIConfig.gearProgressionSystemItemLevels[progressionLevel][1];
         if (itemLevel >= minIlvl && itemLevel < maxIlvl)
         {
-            progressionLevel = progressionLevel;
+            itemProgressionLevel = progressionLevel;
             break;
         }
     }
 
-    return progressionLevel;
+    return itemProgressionLevel;
 }
 
 uint8 UpdateGearAction::GetMasterAverageProgressionLevel()
