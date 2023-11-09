@@ -154,7 +154,7 @@ namespace ai
             float y = followTarget->GetPositionY() + sin(angle) * range;
             float z = followTarget->GetPositionZ();
 #ifdef MANGOSBOT_TWO
-            float ground = followTarget->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
+            float ground = followTarget->GetMap()->GetHeight(followTarget->GetPhaseMask(), x, y, z);
 #else
             float ground = followTarget->GetMap()->GetHeight(x, y, z);
 #endif
@@ -209,7 +209,7 @@ namespace ai
             float y = followTarget->GetPositionY() + sin(angle) * range + dy;
             float z = followTarget->GetPositionZ();
 #ifdef MANGOSBOT_TWO
-            float ground = followTarget->GetMap()->GetHeight(master->GetPhaseMask(), x, y, z);
+            float ground = followTarget->GetMap()->GetHeight(followTarget->GetPhaseMask(), x, y, z);
 #else
             float ground = followTarget->GetMap()->GetHeight(x, y, z);
 #endif
