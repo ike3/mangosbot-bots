@@ -13,10 +13,6 @@ void FleeStrategy::InitCombatTriggers(list<TriggerNode*> &triggers)
     triggers.push_back(new TriggerNode(
         "outnumbered",
         NextAction::array(0, new NextAction("flee", ACTION_EMERGENCY + 9), NULL)));
-
-    triggers.push_back(new TriggerNode(
-       "critical health",
-       NextAction::array(0, new NextAction("flee", ACTION_MEDIUM_HEAL), NULL)));
 }
 
 void FleeFromAddsStrategy::InitCombatTriggers(list<TriggerNode*> &triggers)

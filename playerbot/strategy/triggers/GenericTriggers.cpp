@@ -80,8 +80,10 @@ bool HasAggroTrigger::IsActive()
 
 bool PanicTrigger::IsActive()
 {
-    return AI_VALUE2(uint8, "health", "self target") < sPlayerbotAIConfig.criticalHealth &&
-		(!AI_VALUE2(bool, "has mana", "self target") || AI_VALUE2(uint8, "mana", "self target") < sPlayerbotAIConfig.lowMana);
+    return !ai->IsInPvp() &&
+           AI_VALUE2(uint8, "health", "self target") < sPlayerbotAIConfig.criticalHealth &&
+		   (!AI_VALUE2(bool, "has mana", "self target") || 
+            AI_VALUE2(uint8, "mana", "self target") < sPlayerbotAIConfig.lowMana);
 }
 
 bool OutNumberedTrigger::IsActive()
