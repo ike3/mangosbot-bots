@@ -232,8 +232,8 @@ void HunterAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("viper sting on attacker", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "multi shot",
-        NextAction::array(0, new NextAction("multi shot", ACTION_HIGH), NULL)));
+        "multi-shot",
+        NextAction::array(0, new NextAction("multi-shot", ACTION_HIGH), NULL)));
 }
 
 void HunterAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -655,8 +655,8 @@ void HunterAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("viper sting on attacker", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "multi shot",
-        NextAction::array(0, new NextAction("multi shot", ACTION_HIGH), NULL)));
+        "multi-shot",
+        NextAction::array(0, new NextAction("multi-shot", ACTION_HIGH), NULL)));
 }
 
 void HunterAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1068,8 +1068,8 @@ void HunterAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("viper sting on attacker", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "multi shot",
-        NextAction::array(0, new NextAction("multi shot", ACTION_HIGH), NULL)));
+        "multi-shot",
+        NextAction::array(0, new NextAction("multi-shot", ACTION_HIGH), NULL)));
 }
 
 void HunterAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

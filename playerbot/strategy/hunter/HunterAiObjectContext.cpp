@@ -223,7 +223,7 @@ namespace ai
                 creators["scatter shot on snare target"] = &TriggerFactoryInternal::scatter_shot;
                 creators["chimera shot"] = &TriggerFactoryInternal::chimera_shot;
                 creators["explosive shot"] = &TriggerFactoryInternal::explosive_shot;
-                creators["multi shot"] = &TriggerFactoryInternal::multi_shot;
+                creators["multi-shot"] = &TriggerFactoryInternal::multi_shot;
                 creators["intimidation on snare target"] = &TriggerFactoryInternal::intimidation;
                 creators["counterattack"] = &TriggerFactoryInternal::counterattack;
                 creators["wyvern sting"] = &TriggerFactoryInternal::wyvern_sting;
@@ -302,7 +302,7 @@ namespace ai
                 creators["tranquilizing shot"] = &AiObjectContextInternal::tranquilizing_shot;
                 creators["concussive shot"] = &AiObjectContextInternal::concussive_shot;
                 creators["distracting shot"] = &AiObjectContextInternal::distracting_shot;
-                creators["multi shot"] = &AiObjectContextInternal::multi_shot;
+                creators["multi-shot"] = &AiObjectContextInternal::multi_shot;
                 creators["volley"] = &AiObjectContextInternal::volley;
                 creators["serpent sting"] = &AiObjectContextInternal::serpent_sting;
                 creators["serpent sting on attacker"] = &AiObjectContextInternal::serpent_sting_on_attacker;

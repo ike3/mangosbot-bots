@@ -238,7 +238,7 @@ namespace ai
 
     CAN_CAST_TRIGGER(ChimeraShotCanCastTrigger, "chimera shot");
     CAN_CAST_TRIGGER(ExplosiveShotCanCastTrigger, "explosive shot");
-    CAN_CAST_TRIGGER(MultishotCanCastTrigger, "multi shot");
+    CAN_CAST_TRIGGER(MultishotCanCastTrigger, "multi-shot");
     SNARE_TRIGGER(IntimidationSnareTrigger, "intimidation");
     CAN_CAST_TRIGGER(CounterattackCanCastTrigger, "counterattack");
     SNARE_TRIGGER(WybernStingSnareTrigger, "wyvern sting");
