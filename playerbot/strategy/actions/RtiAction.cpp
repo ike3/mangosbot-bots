@@ -84,6 +84,13 @@ bool MarkRtiAction::Execute(Event& event)
     if (!target) return false;
 
     string rti = AI_VALUE(string, "rti");
+
+    // Add the default rti if the bot is setup to ignore rti targets
+    if (rti == "none")
+    {
+        rti = "skull";
+    }
+
     int index = RtiTargetValue::GetRtiIndex(rti);
 #ifndef MANGOSBOT_TWO
     group->SetTargetIcon(index, target->GetObjectGuid());
