@@ -56,7 +56,7 @@ public:
     static list<uint32> classQuestIds;
     static list<uint32> specialQuestIds;
     void InitSkills();
-    static void EnchantEquipment(Player* bot);
+    void EnchantEquipment();
     void EquipGear() { return InitEquipment(false, false); }
     void UpgradeGear(bool syncWithMaster) { return InitEquipment(!syncWithMaster, syncWithMaster); }
     void AddReagents() { return InitReagents(); }
@@ -64,6 +64,7 @@ public:
     void AddConsumes() { return AddConsumables(); }
     void AddFood() { return InitFood(); }
     void InitAmmo();
+
 private:
     void Prepare();
     void InitSecondEquipmentSet();

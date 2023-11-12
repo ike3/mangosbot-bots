@@ -585,6 +585,18 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
                 factory.Randomize(false, true);
                 return "ok";
             }
+            else if (cmd == "enchants")
+            {
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_LEGENDARY);
+                factory.EnchantEquipment();
+                return "ok";
+            }
+            else if (cmd == "ammo")
+            {
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_LEGENDARY);
+                factory.InitAmmo();
+                return "ok";
+            }
         }
 
         if (cmd == "levelup" || cmd == "level")

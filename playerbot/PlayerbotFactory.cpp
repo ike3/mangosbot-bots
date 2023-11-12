@@ -3446,17 +3446,16 @@ void PlayerbotFactory::InitArenaTeam()
 }
 #endif
 
-void PlayerbotFactory::EnchantEquipment(Player* bot)
+void PlayerbotFactory::EnchantEquipment()
 {
-    return;
-
-    PlayerbotFactory factory(bot, bot->GetLevel());
-    factory.ApplyEnchantTemplate();
-#ifndef MANGOSBOT_ZERO
-    factory.InitGems();
-#endif
-    if (sRandomPlayerbotMgr.GetDatabaseDelay("CharacterDatabase") < 10 * IN_MILLISECONDS)
-        bot->SaveToDB();
+    for (uint8 slot = 0; slot < SLOT_EMPTY; slot++)
+    {
+        Item* item = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+        if (item)
+        {
+            EnchantItem(item);
+        }
+    }
 }
 
 void PlayerbotFactory::ApplyEnchantTemplate()
