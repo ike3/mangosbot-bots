@@ -37,15 +37,6 @@ bool ChangeNonCombatStrategyAction::Execute(Event& event)
 {
     string text = event.getParam();
     text = text.empty() ? getName() : text;
-    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
-    if (sPlayerbotAIConfig.IsInRandomAccountList(account) && ai->GetMaster() && ai->GetMaster()->GetSession()->GetSecurity() < SEC_GAMEMASTER)
-    {
-        if (text.find("loot") != string::npos || text.find("gather") != string::npos)
-        {
-            ai->TellError("You can change any strategy except loot and gather");
-            return false;
-        }
-    }
 
     ai->ChangeStrategy(text, BotState::BOT_STATE_NON_COMBAT);
     if (event.getSource() == "nc")
