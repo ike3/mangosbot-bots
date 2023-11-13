@@ -3448,12 +3448,20 @@ void PlayerbotFactory::InitArenaTeam()
 
 void PlayerbotFactory::EnchantEquipment()
 {
-    for (uint8 slot = 0; slot < SLOT_EMPTY; slot++)
+    if (bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
     {
-        Item* item = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
-        if (item)
+        if (m_EnchantContainer.empty())
         {
-            EnchantItem(item);
+            LoadEnchantContainer();
+        }
+
+        for (uint8 slot = 0; slot < SLOT_EMPTY; slot++)
+        {
+            Item* item = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
+            if (item)
+            {
+                EnchantItem(item);
+            }
         }
     }
 }
