@@ -189,7 +189,6 @@ void PlayerbotFactory::Randomize(bool incremental, bool syncWithMaster)
     if (isRealRandomBot)
     {
         InitQuests(specialQuestIds);
-        InitQuests(classQuestIds);
         bot->learnQuestRewardedSpells();
     }
     if (pmo) pmo->finish();
@@ -2523,7 +2522,7 @@ void PlayerbotFactory::SetRandomSkill(uint16 id)
 void PlayerbotFactory::InitAvailableSpells()
 {
     bot->learnDefaultSpells();
-    bot->learnClassLevelSpells();
+    bot->learnClassLevelSpells(true);
 
 #ifndef MANGOSBOT_TWO
     if (bot->getClass() == CLASS_PALADIN)
