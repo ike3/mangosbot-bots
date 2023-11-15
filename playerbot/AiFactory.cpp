@@ -775,7 +775,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
             {
                 nonCombatEngine->addStrategies("protection", "tank assist", NULL);
             }
-            else if(tab == 0)
+            else if(player->GetLevel() < 30 || tab == 0)
             {
                 nonCombatEngine->addStrategies("arms", "dps assist", NULL);
             }
