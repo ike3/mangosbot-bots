@@ -2444,12 +2444,20 @@ void RandomPlayerbotMgr::Randomize(Player* bot)
         return;
 
     bool initialRandom = false;
-    if (bot->GetLevel() < sPlayerbotAIConfig.randombotStartingLevel)
+    if (bot->GetLevel() <= sPlayerbotAIConfig.randombotStartingLevel)
         initialRandom = true;
 #ifdef MANGOSBOT_TWO
     else if (bot->GetLevel() < 60 && bot->getClass() == CLASS_DEATH_KNIGHT)
         initialRandom = true;
 #endif
+
+    // give bot random level if is above or below level sync
+    if (!initialRandom && players.size() && sPlayerbotAIConfig.syncLevelWithPlayers)
+    {
+        uint32 maxLevel = max(sPlayerbotAIConfig.randomBotMinLevel, min(playersLevel + sPlayerbotAIConfig.syncLevelMaxAbove, sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)));
+        if (bot->GetLevel() > maxLevel || (bot->GetLevel() + sPlayerbotAIConfig.syncLevelMaxAbove) < playersLevel)
+            initialRandom = true;
+    }
 
     if (initialRandom)
     {
