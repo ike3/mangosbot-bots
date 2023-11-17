@@ -51,6 +51,11 @@ namespace ai
                     chaseDist = (chaseDist - sPlayerbotAIConfig.contactDistance);
                 }
 
+                if (sServerFacade.isMoving(target) &&
+                        sServerFacade.IsInFront(target, bot, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) &&
+                        sServerFacade.IsDistanceGreaterThan(distanceToTarget, sPlayerbotAIConfig.tooCloseDistance))
+                    return true;
+
                 if (inLos && isFriend && (range <= ai->GetRange("follow")))
                 {
                     return MoveNear(target, chaseDist);

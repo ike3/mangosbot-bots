@@ -168,10 +168,5 @@ float ServerFacade::GetChaseOffset(Unit* target)
 
 bool ServerFacade::isMoving(Unit *unit)
 {
-#ifdef MANGOS
     return unit->m_movementInfo.HasMovementFlag(movementFlagsMask);
-#endif
-#ifdef CMANGOS
-    return !unit->IsStopped() || (!unit->GetMotionMaster()->empty() && unit->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE);
-#endif
 }
