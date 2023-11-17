@@ -40,6 +40,9 @@ void PlayerbotDbStore::Load(PlayerbotAI *ai)
         } while (results->NextRow());
 
         ai->GetAiObjectContext()->Load(values);
+        
+        ai->ChangeStrategy("-passive,-follow,+stay", BotState::BOT_STATE_COMBAT);
+        ai->ChangeStrategy("-passive,-follow,+stay", BotState::BOT_STATE_NON_COMBAT);        
     }
 }
 
