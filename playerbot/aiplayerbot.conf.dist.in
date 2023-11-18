@@ -1435,6 +1435,72 @@ AiPlayerbot.GearProgressionSystem.1.1.2.16 = 19321	# Off Hand
 AiPlayerbot.GearProgressionSystem.1.1.2.17 = 12651	# Ranged
 AiPlayerbot.GearProgressionSystem.1.1.2.18 = 5976	# Tabard
 
+# Level 1 (1) Paladin (2) Holy (0)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAExWQJJIwM41AVHiAZJDgdH0ghGtgk2kQpIXwtGtww-ug1Hww4uKw9H1RAukxFIWxJaoQ
+AiPlayerbot.GearProgressionSystem.1.2.0.0 = 12633	# Head
+AiPlayerbot.GearProgressionSystem.1.2.0.1 = 18723	# Neck
+AiPlayerbot.GearProgressionSystem.1.2.0.2 = 14548	# Shoulder
+AiPlayerbot.GearProgressionSystem.1.2.0.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.1.2.0.4 = 18312	# Chest
+AiPlayerbot.GearProgressionSystem.1.2.0.5 = 18702	# Waist
+AiPlayerbot.GearProgressionSystem.1.2.0.6 = 18386	# Legs
+AiPlayerbot.GearProgressionSystem.1.2.0.7 = 18102	# Feet
+AiPlayerbot.GearProgressionSystem.1.2.0.8 = 13969	# Wrists
+AiPlayerbot.GearProgressionSystem.1.2.0.9 = 18527	# Hands
+AiPlayerbot.GearProgressionSystem.1.2.0.10 = 18103	# Finger 1
+AiPlayerbot.GearProgressionSystem.1.2.0.11 = 16058	# Finger 2
+AiPlayerbot.GearProgressionSystem.1.2.0.12 = 18371	# Trinket 1
+AiPlayerbot.GearProgressionSystem.1.2.0.13 = 11819	# Trinket 2
+AiPlayerbot.GearProgressionSystem.1.2.0.14 = 18389	# Back
+AiPlayerbot.GearProgressionSystem.1.2.0.15 = 11923	# Main Hand
+AiPlayerbot.GearProgressionSystem.1.2.0.16 = 18523	# Off Hand
+AiPlayerbot.GearProgressionSystem.1.2.0.17 = 23201	# Ranged
+AiPlayerbot.GearProgressionSystem.1.2.0.18 = 5976	# Tabard
+
+# Level 1 (1) Paladin (2) Protection (1)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAEEymAUoAjMjAzjYBTkgBjkcBy6XCDkdCTEGCjMQCy2VDFc7DS4iDiobD0ftED2-ETE6EleA
+AiPlayerbot.GearProgressionSystem.1.2.1.0 = 12952	# Head
+AiPlayerbot.GearProgressionSystem.1.2.1.1 = 13091	# Neck
+AiPlayerbot.GearProgressionSystem.1.2.1.2 = 14552	# Shoulder
+AiPlayerbot.GearProgressionSystem.1.2.1.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.1.2.1.4 = 14624	# Chest
+AiPlayerbot.GearProgressionSystem.1.2.1.5 = 14620	# Waist
+AiPlayerbot.GearProgressionSystem.1.2.1.6 = 11927	# Legs
+AiPlayerbot.GearProgressionSystem.1.2.1.7 = 14621	# Feet
+AiPlayerbot.GearProgressionSystem.1.2.1.8 = 12550	# Wrists
+AiPlayerbot.GearProgressionSystem.1.2.1.9 = 13072	# Hands
+AiPlayerbot.GearProgressionSystem.1.2.1.10 = 11669	# Finger 1
+AiPlayerbot.GearProgressionSystem.1.2.1.11 = 22331	# Finger 2
+AiPlayerbot.GearProgressionSystem.1.2.1.12 = 11810	# Trinket 1
+AiPlayerbot.GearProgressionSystem.1.2.1.13 = 10779	# Trinket 2
+AiPlayerbot.GearProgressionSystem.1.2.1.14 = 18413	# Back
+AiPlayerbot.GearProgressionSystem.1.2.1.15 = 15806	# Main Hand
+AiPlayerbot.GearProgressionSystem.1.2.1.16 = 12602	# Off Hand
+AiPlayerbot.GearProgressionSystem.1.2.1.17 = 22400	# Ranged
+AiPlayerbot.GearProgressionSystem.1.2.1.18 = 5976	# Tabard
+
+# Level 1 (1) Paladin (2) Retribution (2)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAE0XAI8MwMyfwUtzgY2hwc42gg5GAkyiAo2hQszKgwxBA02jQ4uJw80HBAx8BJXgQ
+AiPlayerbot.GearProgressionSystem.1.2.2.0 = 13404	# Head
+AiPlayerbot.GearProgressionSystem.1.2.2.1 = 15411	# Neck
+AiPlayerbot.GearProgressionSystem.1.2.2.2 = 12927	# Shoulder
+AiPlayerbot.GearProgressionSystem.1.2.2.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.1.2.2.4 = 11726	# Chest
+AiPlayerbot.GearProgressionSystem.1.2.2.5 = 13959	# Waist
+AiPlayerbot.GearProgressionSystem.1.2.2.6 = 14554	# Legs
+AiPlayerbot.GearProgressionSystem.1.2.2.7 = 14616	# Feet
+AiPlayerbot.GearProgressionSystem.1.2.2.8 = 12936	# Wrists
+AiPlayerbot.GearProgressionSystem.1.2.2.9 = 13957	# Hands
+AiPlayerbot.GearProgressionSystem.1.2.2.10 = 13098	# Finger 1
+AiPlayerbot.GearProgressionSystem.1.2.2.11 = 12548	# Finger 2
+AiPlayerbot.GearProgressionSystem.1.2.2.12 = 13965	# Trinket 1
+AiPlayerbot.GearProgressionSystem.1.2.2.13 = 11815	# Trinket 2
+AiPlayerbot.GearProgressionSystem.1.2.2.14 = 13340	# Back
+AiPlayerbot.GearProgressionSystem.1.2.2.15 = 12784	# Main Hand
+AiPlayerbot.GearProgressionSystem.1.2.2.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.1.2.2.17 = 22401	# Ranged
+AiPlayerbot.GearProgressionSystem.1.2.2.18 = 5976	# Tabard
+
 # Level 1 (1) Rogue (4) Assassination (0)
 # https://www.wowhead.com/classic/gear-planner/rogue/orc/AjwAAVX1AlaGA1X4BVX5BlXyBzrWCFXzCVX0CjrXC0hEDDMqDS4nDjaNDzQcEDKMETKLEgg0
 AiPlayerbot.GearProgressionSystem.1.4.0.0 = 22005	# Head
@@ -1680,6 +1746,72 @@ AiPlayerbot.GearProgressionSystem.2.1.2.15 = 18348	# Main Hand
 AiPlayerbot.GearProgressionSystem.2.1.2.16 = 17066	# Off Hand
 AiPlayerbot.GearProgressionSystem.2.1.2.17 = 17069	# Ranged
 AiPlayerbot.GearProgressionSystem.2.1.2.18 = 5976	# Tabard
+
+# Level (2) Paladin (2) Holy (0)
+#https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAFCOwJJIwNJegU0IgZK2gdJuwhB2wk2kQpIXwtKxAw-ug1CqA5IKA9IThBC0RFIWxJaoQ
+AiPlayerbot.GearProgressionSystem.2.2.0.0 = 16955	#Head
+AiPlayerbot.GearProgressionSystem.2.2.0.1 = 18723	# Neck
+AiPlayerbot.GearProgressionSystem.2.2.0.2 = 18810	# Shoulder
+AiPlayerbot.GearProgressionSystem.2.2.0.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.2.2.0.4 = 13346	# Chest
+AiPlayerbot.GearProgressionSystem.2.2.0.5 = 19136	# Waist
+AiPlayerbot.GearProgressionSystem.2.2.0.6 = 18875	# Legs
+AiPlayerbot.GearProgressionSystem.2.2.0.7 = 16859	# Feet
+AiPlayerbot.GearProgressionSystem.2.2.0.8 = 13969	# Wrists
+AiPlayerbot.GearProgressionSystem.2.2.0.9 = 18527	# Hands
+AiPlayerbot.GearProgressionSystem.2.2.0.10 = 19140	# Finger 1
+AiPlayerbot.GearProgressionSystem.2.2.0.11 = 16058	# Finger 2
+AiPlayerbot.GearProgressionSystem.2.2.0.12 = 17064	# Trinket 1
+AiPlayerbot.GearProgressionSystem.2.2.0.13 = 18472	# Trinket 2
+AiPlayerbot.GearProgressionSystem.2.2.0.14 = 18510	# Back
+AiPlayerbot.GearProgressionSystem.2.2.0.15 = 17105	# Main Hand
+AiPlayerbot.GearProgressionSystem.2.2.0.16 = 18523	# Off Hand
+AiPlayerbot.GearProgressionSystem.2.2.0.17 = 23201	# Ranged
+AiPlayerbot.GearProgressionSystem.2.2.0.18 = 5976	# Tabard
+
+# Level 2 (2) Paladin (2) Protection (1)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAExTAJLtwM42AUxSgY5HAcxSwhJdglJQgozEEsqKwS0DEm_DUvnDkfmD0g_EEuHEUuVEleB
+AiPlayerbot.GearProgressionSystem.2.2.1.0 = 12620	# Head
+AiPlayerbot.GearProgressionSystem.2.2.1.1 = 19383	# Neck
+AiPlayerbot.GearProgressionSystem.2.2.1.2 = 14552	# Shoulder
+AiPlayerbot.GearProgressionSystem.2.2.1.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.2.2.1.4 = 12618	# Chest
+AiPlayerbot.GearProgressionSystem.2.2.1.5 = 14620	# Waist
+AiPlayerbot.GearProgressionSystem.2.2.1.6 = 12619	# Legs
+AiPlayerbot.GearProgressionSystem.2.2.1.7 = 18806	# Feet
+AiPlayerbot.GearProgressionSystem.2.2.1.8 = 18754	# Wrists
+AiPlayerbot.GearProgressionSystem.2.2.1.9 = 13072	# Hands
+AiPlayerbot.GearProgressionSystem.2.2.1.10 = 10795	# Finger 1
+AiPlayerbot.GearProgressionSystem.2.2.1.11 = 18879	# Finger 2
+AiPlayerbot.GearProgressionSystem.2.2.1.12 = 19431	# Trinket 1
+AiPlayerbot.GearProgressionSystem.2.2.1.13 = 18406	# Trinket 2
+AiPlayerbot.GearProgressionSystem.2.2.1.14 = 18495	# Back
+AiPlayerbot.GearProgressionSystem.2.2.1.15 = 19335	# Main Hand
+AiPlayerbot.GearProgressionSystem.2.2.1.16 = 19349	# Off Hand
+AiPlayerbot.GearProgressionSystem.2.2.1.17 = 22401	# Ranged
+AiPlayerbot.GearProgressionSystem.2.2.1.18 = 5976	# Tabard
+
+# Level 2 (2) Paladin (2) Retribution (2)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAE0XAJH5ANLwgUtzgZLtAdLyghLuwlKygpKxwtL6AxLuA02jQ4uJw9L7BBLhhJXgQ
+AiPlayerbot.GearProgressionSystem.2.2.2.0 = 13404	# Head
+AiPlayerbot.GearProgressionSystem.2.2.2.1 = 18404	# Neck
+AiPlayerbot.GearProgressionSystem.2.2.2.2 = 19394	# Shoulder
+AiPlayerbot.GearProgressionSystem.2.2.2.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.2.2.2.4 = 11726	# Chest
+AiPlayerbot.GearProgressionSystem.2.2.2.5 = 19380	# Waist
+AiPlayerbot.GearProgressionSystem.2.2.2.6 = 19402	# Legs
+AiPlayerbot.GearProgressionSystem.2.2.2.7 = 19387	# Feet
+AiPlayerbot.GearProgressionSystem.2.2.2.8 = 19146	# Wrists
+AiPlayerbot.GearProgressionSystem.2.2.2.9 = 19143	# Hands
+AiPlayerbot.GearProgressionSystem.2.2.2.10 = 19432	# Finger 1
+AiPlayerbot.GearProgressionSystem.2.2.2.11 = 19384	# Finger 2
+AiPlayerbot.GearProgressionSystem.2.2.2.12 = 13965	# Trinket 1
+AiPlayerbot.GearProgressionSystem.2.2.2.13 = 11815	# Trinket 2
+AiPlayerbot.GearProgressionSystem.2.2.2.14 = 19436	# Back
+AiPlayerbot.GearProgressionSystem.2.2.2.15 = 19334	# Main Hand
+AiPlayerbot.GearProgressionSystem.2.2.2.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.2.2.2.17 = 22401	# Ranged
+AiPlayerbot.GearProgressionSystem.2.2.2.18 = 5976	# Tabard
 
 # Level 2 (2) Rogue (4) Assassination (0)
 # https://www.wowhead.com/classic/gear-planner/rogue/orc/AjwAAVX1AkfkA0G3BVX5BkG7BzrWCFXzCVX0CjrXC0KnDEmFDS4nDjaND0htEEKzEUmQEkKt
@@ -1927,6 +2059,72 @@ AiPlayerbot.GearProgressionSystem.3.1.2.16 = 19349	# Off Hand
 AiPlayerbot.GearProgressionSystem.3.1.2.17 = 17072	# Ranged
 AiPlayerbot.GearProgressionSystem.3.1.2.18 = 5976	# Tabard
 
+# Level 3 (3) Paladin (2) Holy (0)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAFQlAJNrQNJegVKyQZKwAdLuQhL7Qk2kQpPKAtKxAxKxA1CqA5Lww9IThBNshFLlBJaoQ
+AiPlayerbot.GearProgressionSystem.3.2.0.0 = 20628	# Head
+AiPlayerbot.GearProgressionSystem.3.2.0.1 = 19885	# Neck
+AiPlayerbot.GearProgressionSystem.3.2.0.2 = 18810	# Shoulder
+AiPlayerbot.GearProgressionSystem.3.2.0.4 = 19145	# Chest
+AiPlayerbot.GearProgressionSystem.3.2.0.5 = 19136	# Waist
+AiPlayerbot.GearProgressionSystem.3.2.0.6 = 19385	# Legs
+AiPlayerbot.GearProgressionSystem.3.2.0.7 = 19437	# Feet
+AiPlayerbot.GearProgressionSystem.3.2.0.8 = 13969	# Wrists
+AiPlayerbot.GearProgressionSystem.3.2.0.9 = 20264	# Hands
+AiPlayerbot.GearProgressionSystem.3.2.0.10 = 19140	# Finger 1
+AiPlayerbot.GearProgressionSystem.3.2.0.11 = 19140	# Finger 2
+AiPlayerbot.GearProgressionSystem.3.2.0.12 = 17064	# Trinket 1
+AiPlayerbot.GearProgressionSystem.3.2.0.13 = 19395	# Trinket 2
+AiPlayerbot.GearProgressionSystem.3.2.0.14 = 18510	# Back
+AiPlayerbot.GearProgressionSystem.3.2.0.15 = 19890	# Main Hand
+AiPlayerbot.GearProgressionSystem.3.2.0.16 = 19348	# Off Hand
+AiPlayerbot.GearProgressionSystem.3.2.0.17 = 23201	# Ranged
+AiPlayerbot.GearProgressionSystem.3.2.0.18 = 5976	# Tabard
+AiPlayerbot.GearProgressionSystem.3.2.0.3 = 0		# Shirt
+
+# Level 3 (3) Paladin (2) Retribution (2)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAExYAJH5ANLwgUtzgZLtAdLyghLuwlKygpKxwtL6AxLuA02jQ4uJw9L7BBLhhJXgQ
+AiPlayerbot.GearProgressionSystem.3.2.2.0 = 12640	# Head
+AiPlayerbot.GearProgressionSystem.3.2.2.1 = 18404	# Neck
+AiPlayerbot.GearProgressionSystem.3.2.2.2 = 19394	# Shoulder
+AiPlayerbot.GearProgressionSystem.3.2.2.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.3.2.2.4 = 11726	# Chest
+AiPlayerbot.GearProgressionSystem.3.2.2.5 = 19380	# Waist
+AiPlayerbot.GearProgressionSystem.3.2.2.6 = 19402	# Legs
+AiPlayerbot.GearProgressionSystem.3.2.2.7 = 19387	# Feet
+AiPlayerbot.GearProgressionSystem.3.2.2.8 = 19146	# Wrists
+AiPlayerbot.GearProgressionSystem.3.2.2.9 = 19143	# Hands
+AiPlayerbot.GearProgressionSystem.3.2.2.10 = 19432	# Finger 1
+AiPlayerbot.GearProgressionSystem.3.2.2.11 = 19384	# Finger 2
+AiPlayerbot.GearProgressionSystem.3.2.2.12 = 13965	# Trinket 1
+AiPlayerbot.GearProgressionSystem.3.2.2.13 = 11815	# Trinket 2
+AiPlayerbot.GearProgressionSystem.3.2.2.14 = 19436	# Back
+AiPlayerbot.GearProgressionSystem.3.2.2.15 = 19334	# Main Hand
+AiPlayerbot.GearProgressionSystem.3.2.2.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.3.2.2.17 = 22401	# Ranged
+AiPlayerbot.GearProgressionSystem.3.2.2.18 = 5976	# Tabard
+
+# Level 3 (3) Paladin (2) Protection (1)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAFCOwJLtwM42AUxSgY5HAdNjwhCPQlCNwozEAtNyAxJvw1L5w5H5g9NsBBLhxFLlRJXgQ
+AiPlayerbot.GearProgressionSystem.3.2.1.0 = 16955	# Head
+AiPlayerbot.GearProgressionSystem.3.2.1.1 = 19383	# Neck
+AiPlayerbot.GearProgressionSystem.3.2.1.2 = 14552	# Shoulder
+AiPlayerbot.GearProgressionSystem.3.2.1.4 = 12618	# Chest
+AiPlayerbot.GearProgressionSystem.3.2.1.5 = 14620	# Waist
+AiPlayerbot.GearProgressionSystem.3.2.1.6 = 19855	# Legs
+AiPlayerbot.GearProgressionSystem.3.2.1.7 = 16957	# Feet
+AiPlayerbot.GearProgressionSystem.3.2.1.8 = 16951	# Wrists
+AiPlayerbot.GearProgressionSystem.3.2.1.9 = 13072	# Hands
+AiPlayerbot.GearProgressionSystem.3.2.1.10 = 19912	# Finger 1
+AiPlayerbot.GearProgressionSystem.3.2.1.11 = 18879	# Finger 2
+AiPlayerbot.GearProgressionSystem.3.2.1.12 = 19431	# Trinket 1
+AiPlayerbot.GearProgressionSystem.3.2.1.13 = 18406	# Trinket 2
+AiPlayerbot.GearProgressionSystem.3.2.1.14 = 19888	# Back
+AiPlayerbot.GearProgressionSystem.3.2.1.15 = 19335	# Main Hand
+AiPlayerbot.GearProgressionSystem.3.2.1.16 = 19349	# Off Hand
+AiPlayerbot.GearProgressionSystem.3.2.1.17 = 22401	# Ranged
+AiPlayerbot.GearProgressionSystem.3.2.1.18 = 5976	# Tabard
+AiPlayerbot.GearProgressionSystem.3.2.1.3 = 0		# Shirt
+
 # Level 3 (3) Rogue (4) Assassination (0)
 # https://www.wowhead.com/classic/gear-planner/rogue/orc/AjwAAVX1AkuxA1X4BUIJBkIOB0INCFXzCUIPClX2C0KnDEu4DUvODjaND0vGEEuYEUuXEkKt
 AiPlayerbot.GearProgressionSystem.3.4.0.0 = 22005	# Head
@@ -2173,6 +2371,72 @@ AiPlayerbot.GearProgressionSystem.4.1.2.16 = 21269	# Off Hand
 AiPlayerbot.GearProgressionSystem.4.1.2.17 = 21459	# Ranged
 AiPlayerbot.GearProgressionSystem.4.1.2.18 = 5976	# Tabard
 
+# Level 4 (4) Paladin (2) Holy (0)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAFUbwJUAwNUvgVUnwZUaQdUowhL7QlUZApPKAtUdAxLtg1CqA5Lww9L5hBVTxFUahJaoQ
+AiPlayerbot.GearProgressionSystem.4.2.0.0 = 21615	# Head
+AiPlayerbot.GearProgressionSystem.4.2.0.1 = 21507	# Neck
+AiPlayerbot.GearProgressionSystem.4.2.0.2 = 21694	# Shoulder
+AiPlayerbot.GearProgressionSystem.4.2.0.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.4.2.0.5 = 21609	# Waist
+AiPlayerbot.GearProgressionSystem.4.2.0.6 = 21667	# Legs
+AiPlayerbot.GearProgressionSystem.4.2.0.7 = 19437	# Feet
+AiPlayerbot.GearProgressionSystem.4.2.0.4 = 21663	# Chest
+AiPlayerbot.GearProgressionSystem.4.2.0.8 = 21604	# Wrists
+AiPlayerbot.GearProgressionSystem.4.2.0.9 = 20264	# Hands
+AiPlayerbot.GearProgressionSystem.4.2.0.10 = 21620	# Finger 1
+AiPlayerbot.GearProgressionSystem.4.2.0.11 = 19382	# Finger 2
+AiPlayerbot.GearProgressionSystem.4.2.0.12 = 17064	# Trinket 1
+AiPlayerbot.GearProgressionSystem.4.2.0.13 = 19395	# Trinket 2
+AiPlayerbot.GearProgressionSystem.4.2.0.14 = 19430	# Back
+AiPlayerbot.GearProgressionSystem.4.2.0.15 = 21839	# Main Hand
+AiPlayerbot.GearProgressionSystem.4.2.0.16 = 21610	# Off Hand
+AiPlayerbot.GearProgressionSystem.4.2.0.17 = 23201	# Ranged
+AiPlayerbot.GearProgressionSystem.4.2.0.18 = 5976	# Tabard
+
+# Level 4 (2) Paladin (2) Protection (1)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAFTiwJYzANUhwVTjQZUXgdNjwhUyglCNwpUqgtS0AxUYQ1L5w5H5g9NsBBLhxFTFRJXgQ
+AiPlayerbot.GearProgressionSystem.4.2.1.0 = 21387	# Head
+AiPlayerbot.GearProgressionSystem.4.2.1.1 = 22732	# Neck
+AiPlayerbot.GearProgressionSystem.4.2.1.2 = 21639	# Shoulder
+AiPlayerbot.GearProgressionSystem.4.2.1.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.4.2.1.4 = 21389	# Chest
+AiPlayerbot.GearProgressionSystem.4.2.1.5 = 21598	# Waist
+AiPlayerbot.GearProgressionSystem.4.2.1.6 = 19855	# Legs
+AiPlayerbot.GearProgressionSystem.4.2.1.7 = 21706	# Feet
+AiPlayerbot.GearProgressionSystem.4.2.1.8 = 16951	# Wrists
+AiPlayerbot.GearProgressionSystem.4.2.1.9 = 21674	# Hands
+AiPlayerbot.GearProgressionSystem.4.2.1.10 = 21200	# Finger 1
+AiPlayerbot.GearProgressionSystem.4.2.1.11 = 21601	# Finger 2
+AiPlayerbot.GearProgressionSystem.4.2.1.12 = 19431	# Trinket 1
+AiPlayerbot.GearProgressionSystem.4.2.1.13 = 18406	# Trinket 2
+AiPlayerbot.GearProgressionSystem.4.2.1.14 = 19888	# Back
+AiPlayerbot.GearProgressionSystem.4.2.1.15 = 19335	# Main Hand
+AiPlayerbot.GearProgressionSystem.4.2.1.16 = 21269	# Off Hand
+AiPlayerbot.GearProgressionSystem.4.2.1.17 = 22401	# Ranged
+AiPlayerbot.GearProgressionSystem.4.2.1.18 = 5976	# Tabard
+
+# Level 4 (4) Paladin (2) Retribution (2)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAFTiwJH5ANTjwVTjQZT1wdTjghTjAlUcgpUdwtCpwxS1Q1XMQ5LWQ9UxRBSjhJXgQ
+AiPlayerbot.GearProgressionSystem.4.2.2.0 = 21387	# Head
+AiPlayerbot.GearProgressionSystem.4.2.2.1 = 18404	# Neck
+AiPlayerbot.GearProgressionSystem.4.2.2.2 = 21391	# Shoulder
+AiPlayerbot.GearProgressionSystem.4.2.2.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.4.2.2.4 = 21389	# Chest
+AiPlayerbot.GearProgressionSystem.4.2.2.5 = 21463	# Waist
+AiPlayerbot.GearProgressionSystem.4.2.2.6 = 21390	# Legs
+AiPlayerbot.GearProgressionSystem.4.2.2.7 = 21388	# Feet
+AiPlayerbot.GearProgressionSystem.4.2.2.8 = 21618	# Wrists
+AiPlayerbot.GearProgressionSystem.4.2.2.9 = 21623	# Hands
+AiPlayerbot.GearProgressionSystem.4.2.2.10 = 17063	# Finger 1
+AiPlayerbot.GearProgressionSystem.4.2.2.11 = 21205	# Finger 2
+AiPlayerbot.GearProgressionSystem.4.2.2.12 = 22321	# Trinket 1
+AiPlayerbot.GearProgressionSystem.4.2.2.13 = 19289	# Trinket 2
+AiPlayerbot.GearProgressionSystem.4.2.2.14 = 21701	# Back
+AiPlayerbot.GearProgressionSystem.4.2.2.15 = 21134	# Main Hand
+AiPlayerbot.GearProgressionSystem.4.2.2.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.4.2.2.17 = 22401	# Ranged
+AiPlayerbot.GearProgressionSystem.4.2.2.18 = 5976	# Tabard
+
 # Level 4 (4) Rogue (4) Assassination (0)
 # https://www.wowhead.com/classic/gear-planner/rogue/orc/AjwAAVNwAkuxA1NxBVN0BlRSB1NyCFNvCVRiClSoC0KnDEu4DUvODlwSD1TFEFSSEUuYElPT
 AiPlayerbot.GearProgressionSystem.4.4.0.0 = 21360	# Head
@@ -2418,6 +2682,72 @@ AiPlayerbot.GearProgressionSystem.5.1.2.15 = 19019	# Main Hand
 AiPlayerbot.GearProgressionSystem.5.1.2.16 = 23043	# Off Hand
 AiPlayerbot.GearProgressionSystem.5.1.2.17 = 17069	# Ranged
 AiPlayerbot.GearProgressionSystem.5.1.2.18 = 5976	# Tabard
+
+# Level 5 (5) Paladin (2) Holy (0)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAFXnAJU0ANXnQVXmQZXnwdXmwhXnglXmApXmgtaGgxZmw1Ljw5Lww9ZsBBaEBFZIxJZ3g
+AiPlayerbot.GearProgressionSystem.5.2.0.0 = 22428	# Head
+AiPlayerbot.GearProgressionSystem.5.2.0.1 = 21712	# Neck
+AiPlayerbot.GearProgressionSystem.5.2.0.2 = 22429	# Shoulder
+AiPlayerbot.GearProgressionSystem.5.2.0.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.5.2.0.4 = 22425	# Chest
+AiPlayerbot.GearProgressionSystem.5.2.0.5 = 22431	# Waist
+AiPlayerbot.GearProgressionSystem.5.2.0.6 = 22427	# Legs
+AiPlayerbot.GearProgressionSystem.5.2.0.7 = 22430	# Feet
+AiPlayerbot.GearProgressionSystem.5.2.0.8 = 22424	# Wrists
+AiPlayerbot.GearProgressionSystem.5.2.0.9 = 22426	# Hands
+AiPlayerbot.GearProgressionSystem.5.2.0.10 = 23066	# Finger 1
+AiPlayerbot.GearProgressionSystem.5.2.0.11 = 22939	# Finger 2
+AiPlayerbot.GearProgressionSystem.5.2.0.12 = 19343	# Trinket 1
+AiPlayerbot.GearProgressionSystem.5.2.0.13 = 19395	# Trinket 2
+AiPlayerbot.GearProgressionSystem.5.2.0.14 = 22960	# Back
+AiPlayerbot.GearProgressionSystem.5.2.0.15 = 23056	# Main Hand
+AiPlayerbot.GearProgressionSystem.5.2.0.16 = 22819	# Off Hand
+AiPlayerbot.GearProgressionSystem.5.2.0.17 = 23006	# Ranged
+AiPlayerbot.GearProgressionSystem.5.2.0.18 = 5976	# Tabard
+
+# Level 5 (2) Paladin (2) Protection (1)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAFTiwJYzANUhwVTjQZUXgdNjwhUyglJQgpUqgtS0AxUYQ1L5w5H5g9ZmhBcGRFZIhJXgQ
+AiPlayerbot.GearProgressionSystem.5.2.1.0 = 21387	# Head
+AiPlayerbot.GearProgressionSystem.5.2.1.1 = 22732	# Neck
+AiPlayerbot.GearProgressionSystem.5.2.1.2 = 21639	# Shoulder
+AiPlayerbot.GearProgressionSystem.5.2.1.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.5.2.1.4 = 21389	# Chest
+AiPlayerbot.GearProgressionSystem.5.2.1.5 = 21598	# Waist
+AiPlayerbot.GearProgressionSystem.5.2.1.6 = 19855	# Legs
+AiPlayerbot.GearProgressionSystem.5.2.1.7 = 21706	# Feet
+AiPlayerbot.GearProgressionSystem.5.2.1.8 = 18754	# Wrists
+AiPlayerbot.GearProgressionSystem.5.2.1.9 = 21674	# Hands
+AiPlayerbot.GearProgressionSystem.5.2.1.10 = 21200	# Finger 1
+AiPlayerbot.GearProgressionSystem.5.2.1.11 = 21601	# Finger 2
+AiPlayerbot.GearProgressionSystem.5.2.1.12 = 19431	# Trinket 1
+AiPlayerbot.GearProgressionSystem.5.2.1.13 = 18406	# Trinket 2
+AiPlayerbot.GearProgressionSystem.5.2.1.14 = 22938	# Back
+AiPlayerbot.GearProgressionSystem.5.2.1.15 = 23577	# Main Hand
+AiPlayerbot.GearProgressionSystem.5.2.1.16 = 22818	# Off Hand
+AiPlayerbot.GearProgressionSystem.5.2.1.17 = 22401	# Ranged
+AiPlayerbot.GearProgressionSystem.5.2.1.18 = 5976	# Tabard
+
+# Level 5 (5) Paladin (2) Retribution (2)
+# https://www.wowhead.com/classic/gear-planner/paladin/human/AzwJ8FAFAAXwUAPwAAFTiwJH5ANTjwVTjQZaswdTjghTjAlZmApUdwtZ_gxS1Q1XMQ5LWQ9aBRBYoxJXgQ
+AiPlayerbot.GearProgressionSystem.5.2.2.0 = 21387	# Head
+AiPlayerbot.GearProgressionSystem.5.2.2.1 = 18404	# Neck
+AiPlayerbot.GearProgressionSystem.5.2.2.2 = 21391	# Shoulder
+AiPlayerbot.GearProgressionSystem.5.2.2.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.5.2.2.4 = 21389	# Chest
+AiPlayerbot.GearProgressionSystem.5.2.2.5 = 23219	# Waist
+AiPlayerbot.GearProgressionSystem.5.2.2.6 = 21390	# Legs
+AiPlayerbot.GearProgressionSystem.5.2.2.7 = 21388	# Feet
+AiPlayerbot.GearProgressionSystem.5.2.2.8 = 22936	# Wrists
+AiPlayerbot.GearProgressionSystem.5.2.2.9 = 21623	# Hands
+AiPlayerbot.GearProgressionSystem.5.2.2.10 = 23038	# Finger 1
+AiPlayerbot.GearProgressionSystem.5.2.2.11 = 21205	# Finger 2
+AiPlayerbot.GearProgressionSystem.5.2.2.12 = 22321	# Trinket 1
+AiPlayerbot.GearProgressionSystem.5.2.2.13 = 19289	# Trinket 2
+AiPlayerbot.GearProgressionSystem.5.2.2.14 = 23045	# Back
+AiPlayerbot.GearProgressionSystem.5.2.2.15 = 22691	# Main Hand
+AiPlayerbot.GearProgressionSystem.5.2.2.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.5.2.2.17 = 22401	# Ranged
+AiPlayerbot.GearProgressionSystem.5.2.2.18 = 5976	# Tabard
 
 # Level 5 (5) Rogue (4) Assassination (0)
 # https://www.wowhead.com/classic/gear-planner/rogue/orc/AjwAAVfOAkuxA1fPBVfMBlRSB1fNCFfQCVfTClfRC1n-DFoUDVoBDlmqD1oFEFoOEVwZElPT
