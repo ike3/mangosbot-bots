@@ -51,7 +51,7 @@ PlayerbotSecurityLevel PlayerbotSecurity::LevelFor(Player* from, DenyReason* rea
             return PlayerbotSecurityLevel::PLAYERBOT_SECURITY_DENY_ALL;
         }
 
-        if ((int)bot->GetLevel() - (int)from->GetLevel() > 30)
+        if ((int)bot->GetLevel() - (int)from->GetLevel() > sPlayerbotAIConfig.levelCheck)
         {
             if (!bot->GetGuildId() || bot->GetGuildId() != from->GetGuildId())
             {
