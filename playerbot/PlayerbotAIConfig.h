@@ -148,7 +148,7 @@ public:
     bool disableRandomLevels;
     bool instantRandomize;
     bool gearscorecheck;
-    int levelCheck;
+    int32 levelCheck;
 	bool randomBotPreQuests;
     float playerbotsXPrate;
     uint32 botActiveAlone;
