@@ -59,81 +59,132 @@ bool SetFocusHealTargetAction::Execute(Event& event)
         const std::string param = LowercaseString(event.getParam());
         if (!param.empty())
         {
-            bool removeTargets = false;
-            std::vector<std::string> targetNames;
+            std::list<ObjectGuid> focusHealTargets = AI_VALUE(std::list<ObjectGuid>, "focus heal target");
 
-            // Multiple focus heal targets
-            if (param.find(',') != std::string::npos)
+            // Query current focus targets
+            if (param.find('?') != std::string::npos)
             {
-                std::string targetName;
-                std::stringstream ss(param);
-
-                while (std::getline(ss, targetName, ','))
+                std::stringstream ss;
+                if (focusHealTargets.empty())
                 {
-                    targetNames.push_back(targetName);
+                    ss << "I don't have any focus heal targets";
                 }
-            }
-            else
-            {
-                removeTargets = param == "none" || param == "unset";
-                if (!removeTargets)
+                else
                 {
-                    targetNames.push_back(param);
-                }
-            }
-
-            std::list<ObjectGuid> focusHealTargets;
-            if (removeTargets)
-            {
-                ai->TellPlayerNoFacing(requester, "Removed focus heal target");
-            }
-            else
-            {
-                if (bot->GetGroup())
-                {
-                    for (const std::string& targetName : targetNames)
+                    ss << "My focus heal targets are ";
+                    for (const ObjectGuid& focusTargetGuid : focusHealTargets)
                     {
-                        Player* target = FindGroupPlayerByName(bot, targetName);
-                        if (target)
+                        Unit* focusHealTarget = ai->GetUnit(focusTargetGuid);
+                        if (focusHealTarget)
                         {
-                            focusHealTargets.push_back(target->GetObjectGuid());
-                            std::stringstream message; message << "Added " << targetName << " to focus heal targets";
-                            ai->TellPlayerNoFacing(requester, message.str());
+                            if (focusTargetGuid == focusHealTargets.back())
+                            {
+                                ss << focusHealTarget->GetName();
+                            }
+                            else
+                            {
+                                ss << focusHealTarget->GetName() << ", ";
+                            }
                         }
-                        else
-                        {
-                            std::stringstream message; message << "I'm not in a group with " << targetName;
-                            ai->TellPlayerNoFacing(requester, message.str());
-                        }
+                    }
+                }
+
+                ai->TellPlayerNoFacing(requester, ss.str());
+                return true;
+            }
+            else if (param == "none" || param == "unset" || param == "clear")
+            {   
+                focusHealTargets.clear();
+                SET_AI_VALUE(std::list<ObjectGuid>, "focus heal target", focusHealTargets);
+                ai->ChangeStrategy("-focus heal target", BotState::BOT_STATE_COMBAT);
+                ai->TellPlayerNoFacing(requester, "Removed focus heal targets");
+                return true;
+            }
+            else
+            {
+                // Multiple focus heal targets
+                std::vector<std::string> targetNames;
+                if (param.find(',') != std::string::npos)
+                {
+                    std::string targetName;
+                    std::stringstream ss(param);
+                    while (std::getline(ss, targetName, ','))
+                    {
+                        targetNames.push_back(targetName);
                     }
                 }
                 else
                 {
-                    ai->TellPlayerNoFacing(requester, "I'm not in a group");
+                    targetNames.push_back(param);
                 }
-            }
 
-            SET_AI_VALUE(std::list<ObjectGuid>, "focus heal target", focusHealTargets);
-
-            if (focusHealTargets.empty())
-            {
-                // Remove the focus heal target strategy if not set
-                if (ai->HasStrategy("focus heal target", BotState::BOT_STATE_COMBAT))
+                if (!targetNames.empty())
                 {
-                    ai->ChangeStrategy("-focus heal target", BotState::BOT_STATE_COMBAT);
-                }
+                    if (bot->GetGroup())
+                    {
+                        for (const std::string& targetName : targetNames)
+                        {
+                            const bool add = targetName.find("+") != std::string::npos;
+                            const bool remove = targetName.find("-") != std::string::npos;
+                            if (add || remove)
+                            {
+                                const std::string playerName = targetName.substr(1);
+                                const Player* target = FindGroupPlayerByName(bot, playerName);
+                                if (target)
+                                {
+                                    const ObjectGuid& targetGuid = target->GetObjectGuid();
+                                    if (add)
+                                    {
+                                        // Check if the target exists already on the list
+                                        if (std::find(focusHealTargets.begin(), focusHealTargets.end(), targetGuid) == focusHealTargets.end())
+                                        {
+                                            focusHealTargets.push_back(targetGuid);
+                                        }
 
-                return removeTargets;
-            }
-            else
-            {
-                // Set the focus heal target strategy if not set
-                if (!ai->HasStrategy("focus heal target", BotState::BOT_STATE_COMBAT))
+                                        std::stringstream message; message << "Added " << playerName << " to focus heal targets";
+                                        ai->TellPlayerNoFacing(requester, message.str());
+                                    }
+                                    else
+                                    {
+                                        focusHealTargets.remove(targetGuid);
+                                        std::stringstream message; message << "Removed " << playerName << " from focus heal targets";
+                                        ai->TellPlayerNoFacing(requester, message.str());
+                                    }
+                                }
+                                else
+                                {
+                                    std::stringstream message; message << "I'm not in a group with " << playerName;
+                                    ai->TellPlayerNoFacing(requester, message.str());
+                                }
+                            }
+                            else
+                            {
+                                ai->TellPlayerNoFacing(requester, "Please specify a + for add or - to remove a target");
+                            }
+                        }
+
+                        SET_AI_VALUE(std::list<ObjectGuid>, "focus heal target", focusHealTargets);
+
+                        if (focusHealTargets.empty())
+                        {
+                            ai->ChangeStrategy("-focus heal target", BotState::BOT_STATE_COMBAT);
+                        }
+                        else
+                        {
+                            ai->ChangeStrategy("+focus heal target", BotState::BOT_STATE_COMBAT);
+                        }
+
+                        return true;
+                    }
+                    else
+                    {
+                        ai->TellPlayerNoFacing(requester, "I'm not in a group");
+                    }
+                }
+                else
                 {
-                    ai->ChangeStrategy("+focus heal target", BotState::BOT_STATE_COMBAT);
+                    ai->TellPlayerNoFacing(requester, "Please provide one or more player names");
                 }
-
-                return true;
             }
         }
         else
