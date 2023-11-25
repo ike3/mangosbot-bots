@@ -21,12 +21,17 @@ bool TradeStatusAction::Execute(Event& event)
     if (!trader)
         return false;
 
-    if (trader != master && !trader->GetPlayerbotAI())
+    bool shouldTrade = true;
+    if (!trader->GetPlayerbotAI())
     {
-		bot->Whisper("I'm kind of busy now", LANG_UNIVERSAL, trader->GetObjectGuid());
+        shouldTrade = false;
+        if (trader == master || bot->IsInGroup(trader))
+        {
+            shouldTrade = ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false, trader);
+        }
     }
 
-    if ((trader != master || !ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, master)) && !trader->GetPlayerbotAI())
+    if (!shouldTrade)
     {
         WorldPacket p;
         uint32 status = 0;
@@ -119,14 +124,15 @@ void TradeStatusAction::BeginTrade()
     WorldPacket p;
     bot->GetSession()->HandleBeginTradeOpcode(p);
 
-    if (bot->GetTrader()->GetPlayerbotAI())
+    Player* trader = bot->GetTrader();
+    if (trader->GetPlayerbotAI())
         return;
 
     ListItemsVisitor visitor;
     ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
 
-    ai->TellPlayer(GetMaster(), "=== Inventory ===");
-    ai->InventoryTellItems(GetMaster(), visitor.items, visitor.soulbound);
+    ai->TellPlayer(trader, "=== Inventory ===");
+    ai->InventoryTellItems(trader, visitor.items, visitor.soulbound);
 
     if (sRandomPlayerbotMgr.IsRandomBot(bot))
     {
@@ -134,7 +140,7 @@ void TradeStatusAction::BeginTrade()
         if (discount)
         {
             ostringstream out; out << "Discount up to: " << chat->formatMoney(discount);
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(trader, out);
         }
     }
 }
@@ -173,9 +179,13 @@ bool TradeStatusAction::CheckTrade()
         {
             string name = trader->GetName();
             if (bot->GetGroup() && bot->GetGroup()->IsMember(bot->GetTrader()->GetObjectGuid()) && ai->HasRealPlayerMaster())
-                ai->TellPlayerNoFacing(GetMaster(), "Thank you " + name + ".", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            {
+                ai->TellPlayerNoFacing(trader, "Thank you " + name + ".", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            }
             else
+            {
                 bot->Say("Thank you " + name + ".", (bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+            }
         }
         return isGettingItem;
     }
@@ -187,7 +197,10 @@ bool TradeStatusAction::CheckTrade()
         int32 playerItemsMoney = CalculateCost(trader, false);
         int32 playerMoney = trader->GetTradeData()->GetMoney() + playerItemsMoney;
         if (playerMoney || botMoney)
+        {
             ai->PlaySound(playerMoney < botMoney ? TEXTEMOTE_SIGH : TEXTEMOTE_THANK);
+        }
+
         return true;
     }
 
@@ -203,7 +216,7 @@ bool TradeStatusAction::CheckTrade()
         {
             ostringstream out;
             out << chat->formatItem(item) << " - This is not for sale";
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(trader, out);
             ai->PlaySound(TEXTEMOTE_NO);
             return false;
         }
@@ -216,7 +229,7 @@ bool TradeStatusAction::CheckTrade()
             {
                 ostringstream out;
                 out << chat->formatItem(item) << " - I don't need this";
-                ai->TellPlayer(GetMaster(), out);
+                ai->TellPlayer(trader, out);
                 ai->PlaySound(TEXTEMOTE_NO);
                 return false;
             }
@@ -242,7 +255,7 @@ bool TradeStatusAction::CheckTrade()
         {
             if (moneyDelta < 0)
             {
-                ai->TellError("You can use discount to buy items only");
+                ai->TellPlayer(trader, "You can use discount to buy items only");
                 ai->PlaySound(TEXTEMOTE_NO);
                 return false;
             }
@@ -259,16 +272,16 @@ bool TradeStatusAction::CheckTrade()
         sRandomPlayerbotMgr.AddTradeDiscount(bot, trader, delta);
         switch (urand(0, 4)) {
         case 0:
-            ai->TellPlayer(GetMaster(), "A pleasure doing business with you");
+            ai->TellPlayer(trader, "A pleasure doing business with you");
             break;
         case 1:
-            ai->TellPlayer(GetMaster(), "Fair trade");
+            ai->TellPlayer(trader, "Fair trade");
             break;
         case 2:
-            ai->TellPlayer(GetMaster(), "Thanks");
+            ai->TellPlayer(trader, "Thanks");
             break;
         case 3:
-            ai->TellPlayer(GetMaster(), "Off with you");
+            ai->TellPlayer(trader, "Off with you");
             break;
         }
         ai->PlaySound(TEXTEMOTE_THANK);
@@ -277,7 +290,7 @@ bool TradeStatusAction::CheckTrade()
 
     ostringstream out;
     out << "I want " << chat->formatMoney(-(delta + discount)) << " for this";
-    ai->TellPlayer(GetMaster(), out);
+    ai->TellPlayer(trader, out);
     ai->PlaySound(TEXTEMOTE_NO);
     return false;
 }
