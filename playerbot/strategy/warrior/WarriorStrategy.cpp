@@ -183,10 +183,6 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "thunder clap on snare target",
         NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "melee light aoe",
-        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 1), NULL)));
 }
 
 void WarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -486,10 +482,6 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "thunder clap on snare target",
         NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "melee light aoe",
-        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH), NULL)));
 }
 
 void WarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -777,10 +769,6 @@ void WarriorAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "thunder clap on snare target",
         NextAction::array(0, new NextAction("thunder clap on snare target", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "melee light aoe",
-        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH ), NULL)));
 }
 
 void WarriorAoeStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)

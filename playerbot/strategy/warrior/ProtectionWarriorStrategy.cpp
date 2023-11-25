@@ -93,6 +93,10 @@ void ProtectionWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
         NextAction::array(0, new NextAction("heroic throw on snare target", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "demoralizing shout",
+        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "shield block",
         NextAction::array(0, new NextAction("shield block", ACTION_HIGH + 3), NULL)));
 
@@ -493,6 +497,10 @@ void ProtectionWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
         NextAction::array(0, new NextAction("heroic throw on snare target", ACTION_MOVE), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "demoralizing shout",
+        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 4), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "shield block",
         NextAction::array(0, new NextAction("shield block", ACTION_HIGH + 3), NULL)));
 
@@ -887,6 +895,10 @@ void ProtectionWarriorStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
     triggers.push_back(new TriggerNode(
         "taunt on snare target",
         NextAction::array(0, new NextAction("heroic throw on snare target", ACTION_MOVE), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "demoralizing shout",
+        NextAction::array(0, new NextAction("demoralizing shout", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
         "sword and board",
