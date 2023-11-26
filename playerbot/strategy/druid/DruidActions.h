@@ -536,7 +536,11 @@ namespace ai
     class CastSwipeBearAction : public CastMeleeSpellAction
     {
     public:
+#ifdef MANGOSBOT_TWO
         CastSwipeBearAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "swipe (bear)") {}
+#else
+        CastSwipeBearAction(PlayerbotAI* ai) : CastMeleeSpellAction(ai, "swipe") {}
+#endif
     };
 
     class CastLacerateAction : public CastMeleeSpellAction
