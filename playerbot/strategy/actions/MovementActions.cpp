@@ -132,7 +132,7 @@ bool MovementAction::MoveToLOS(WorldObject* target, bool ranged)
     if (dest.isSet())
         return MoveTo(dest.mapId, dest.x, dest.y, dest.z);
     else
-        ai->TellError("All paths not in LOS");
+        ai->TellError(GetMaster(), "All paths not in LOS");
 
     return false;
 }
@@ -1733,7 +1733,7 @@ bool MovementAction::Flee(Unit *target)
 
     if (!IsMovingAllowed())
     {
-        ai->TellError("I am stuck while fleeing");
+        ai->TellError(GetMaster(), "I am stuck while fleeing");
         return false;
     }
 
@@ -1930,7 +1930,7 @@ bool MovementAction::Flee(Unit *target)
         float rx, ry, rz;
         if (!manager.CalculateDestination(&rx, &ry, &rz))
         {
-            ai->TellError("Nowhere to flee");
+            ai->TellError(GetMaster(), "Nowhere to flee");
             return false;
         }
 

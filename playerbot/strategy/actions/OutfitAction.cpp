@@ -8,14 +8,15 @@ using namespace ai;
 
 bool OutfitAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string param = event.getParam();
 
     if (param == "?")
     {
-        List();
-        ai->TellPlayer(GetMaster(), "outfit <name> +[item] to add items");
-        ai->TellPlayer(GetMaster(), "outfit <name> -[item] to remove items");
-        ai->TellPlayer(GetMaster(), "outfit <name> equip/replace to equip items");
+        List(requester);
+        ai->TellPlayer(requester, "outfit <name> +[item] to add items");
+        ai->TellPlayer(requester, "outfit <name> -[item] to remove items");
+        ai->TellPlayer(requester, "outfit <name> equip/replace to equip items");
     }
     else
     {
@@ -26,7 +27,7 @@ bool OutfitAction::Execute(Event& event)
             Save(name, items);
             ostringstream out;
             out << "Setting outfit " << name << " as " << param;
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(requester, out);
             return true;
         }
 
@@ -43,15 +44,15 @@ bool OutfitAction::Execute(Event& event)
         {
             ostringstream out;
             out << "Equipping outfit " << name;
-            ai->TellPlayer(GetMaster(), out);
-            EquipItems(GetMaster(), outfit);
+            ai->TellPlayer(requester, out);
+            EquipItems(requester, outfit);
             return true;
         }
         else if (command == "replace")
         {
             ostringstream out;
             out << "Replacing current equip with outfit " << name;
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(requester, out);
             for (uint8 slot = EQUIPMENT_SLOT_START; slot < EQUIPMENT_SLOT_END; slot++)
             {
                 Item* const pItem = bot->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
@@ -65,14 +66,14 @@ bool OutfitAction::Execute(Event& event)
                 packet << bagIndex << slot << dstBag;
                 bot->GetSession()->HandleAutoStoreBagItemOpcode(packet);
             }
-            EquipItems(GetMaster(), outfit);
+            EquipItems(requester, outfit);
             return true;
         }
         else if (command == "reset")
         {
             ostringstream out;
             out << "Resetting outfit " << name;
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(requester, out);
             Save(name, ItemIds());
             return true;
         }
@@ -80,7 +81,7 @@ bool OutfitAction::Execute(Event& event)
         {
             ostringstream out;
             out << "Updating with current items outfit " << name;
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(requester, out);
             Update(name);
             return true;
         }
@@ -106,7 +107,7 @@ bool OutfitAction::Execute(Event& event)
                 out << " added to ";
             }
             out << name;
-            ai->TellPlayer(GetMaster(), out.str());
+            ai->TellPlayer(requester, out.str());
         }
         Save(name, outfit);
     }
@@ -140,8 +141,7 @@ void OutfitAction::Save(string name, ItemIds items)
     outfits.push_back(out.str());
 }
 
-
-void OutfitAction::List()
+void OutfitAction::List(Player* requester)
 {
     list<string>& outfits = AI_VALUE(list<string>&, "outfit list");
     for (list<string>::iterator i = outfits.begin(); i != outfits.end(); ++i)
@@ -160,7 +160,7 @@ void OutfitAction::List()
                 out << chat->formatItem(proto) << " ";
             }
         }
-        ai->TellPlayer(GetMaster(), out);
+        ai->TellPlayer(requester, out);
     }
 }
 

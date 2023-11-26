@@ -15,12 +15,14 @@ namespace ai
         virtual bool Execute(Event& event) override;
         virtual bool isPossible() { return true; }
         virtual bool isUseful();
+
     private:
         virtual bool CanFly() const;
         bool CanMountInBg() const;
         float GetAttackDistance() const;
+
     private:
-        bool Mount();
+        bool Mount(Player* requester);
         bool UnMount() const;
     };
 }

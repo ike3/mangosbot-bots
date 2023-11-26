@@ -11,7 +11,7 @@ namespace ai
     private:
         static BotCheatMask GetCheatMask(string cheat);
         static string GetCheatName(BotCheatMask cheatMask);
-        void ListCheats();
+        void ListCheats(Player* requester);
         void AddCheat(BotCheatMask cheatMask);
         void RemCheat(BotCheatMask cheatMask);
     };

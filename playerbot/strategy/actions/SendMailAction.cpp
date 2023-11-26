@@ -11,12 +11,13 @@ using namespace ai;
 
 bool SendMailAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
     bool randomBot = sPlayerbotAIConfig.IsInRandomAccountList(account);
 
     string text = event.getParam();
-    Player* receiver = GetMaster();
-    Player* tellTo = receiver;
+    Player* receiver = requester;
+    Player* tellTo = requester;
     vector<string> ss = split(text, ' ');
     if (ss.size() > 1)
     {
@@ -54,7 +55,7 @@ bool SendMailAction::Execute(Event& event)
 
         if (bot->GetMoney() < money)
         {
-            ai->TellError("I don't have enough money");
+            ai->TellError(requester, "I don't have enough money");
             return false;
         }
 
@@ -73,7 +74,7 @@ bool SendMailAction::Execute(Event& event)
         draft.SendMailTo(MailReceiver(receiver), MailSender(bot));
 
         ostringstream out; out << "Sending mail to " << receiver->GetName();
-        ai->TellPlayer(GetMaster(), out.str());
+        ai->TellPlayer(requester, out.str());
         return true;
     }
 

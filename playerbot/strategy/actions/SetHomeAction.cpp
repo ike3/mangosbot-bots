@@ -3,21 +3,19 @@
 #include "SetHomeAction.h"
 #include "../../PlayerbotAIConfig.h"
 
-
 using namespace ai;
 
 bool SetHomeAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     ObjectGuid selection = bot->GetSelectionGuid();
     bool isRpgAction = AI_VALUE(GuidPosition, "rpg target") == selection;
 
     if (!isRpgAction)
     {
-        if (master)
+        if (requester)
         {
-            selection = master->GetSelectionGuid();
+            selection = requester->GetSelectionGuid();
         }
         else
         {
@@ -34,7 +32,7 @@ bool SetHomeAction::Execute(Event& event)
             {
                 Creature* creature = ai->GetCreature(selection);                   
                 bot->GetSession()->SendBindPoint(creature);
-                ai->TellPlayer(GetMaster(), "This inn is my new home", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayer(requester, "This inn is my new home", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 RESET_AI_VALUE(WorldPosition, "home bind");
                 return true;
             }
@@ -42,7 +40,7 @@ bool SetHomeAction::Execute(Event& event)
             {
                 Creature* creature = ai->GetCreature(selection);
                 bot->GetSession()->SendBindPoint(creature);
-                ai->TellPlayer(GetMaster(), "This inn is my new home", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayer(requester, "This inn is my new home", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 RESET_AI_VALUE(WorldPosition, "home bind");
                 return true;
             }
@@ -57,11 +55,11 @@ bool SetHomeAction::Execute(Event& event)
             continue;
 
         bot->GetSession()->SendBindPoint(unit);
-        ai->TellPlayer(GetMaster(), "This inn is my new home", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(requester, "This inn is my new home", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         RESET_AI_VALUE(WorldPosition, "home bind");
         return true;
     }
 
-    ai->TellError("Can't find any innkeeper around");
+    ai->TellPlayer(requester, "Can't find any innkeeper around");
     return false;
 }

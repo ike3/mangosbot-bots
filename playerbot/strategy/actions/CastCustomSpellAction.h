@@ -51,7 +51,7 @@ namespace ai
         virtual uint32 GetSpellPriority(const SpellEntry* pSpellInfo) { return 1; }
         virtual bool Execute(Event& event) override;
 
-        virtual bool castSpell(uint32 spellId, WorldObject* wo);
+        virtual bool castSpell(uint32 spellId, WorldObject* wo, Player* requester);
     };
        
     class CraftRandomItemAction : public CastRandomSpellAction

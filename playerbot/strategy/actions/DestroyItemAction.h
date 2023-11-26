@@ -21,7 +21,7 @@ namespace ai
 #endif
 
     protected:
-        void DestroyItem(FindItemVisitor* visitor);
+        void DestroyItem(FindItemVisitor* visitor, Player* requester);
     };
 
     class SmartDestroyItemAction : public DestroyItemAction 

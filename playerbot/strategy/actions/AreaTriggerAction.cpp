@@ -3,11 +3,11 @@
 #include "AreaTriggerAction.h"
 #include "../../PlayerbotAIConfig.h"
 
-
 using namespace ai;
 
 bool ReachAreaTriggerAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     uint32 triggerId;
 
     if (ai->IsRealPlayer()) //Do not trigger own area trigger.
@@ -34,7 +34,7 @@ bool ReachAreaTriggerAction::Execute(Event& event)
 
     if (bot->GetMapId() != atEntry->mapid || sqrt(bot->GetDistance(atEntry->x, atEntry->y, atEntry->z)) > sPlayerbotAIConfig.sightDistance)
     {
-        ai->TellError("I won't follow: too far away");
+        ai->TellError(requester, "I won't follow: too far away");
         return true;
     }
 
@@ -42,7 +42,7 @@ bool ReachAreaTriggerAction::Execute(Event& event)
 	mm.MovePoint(atEntry->mapid, atEntry->x, atEntry->y, atEntry->z, FORCED_MOVEMENT_RUN);
     const float distance = sqrt(bot->GetDistance(atEntry->x, atEntry->y, atEntry->z));
     const float duration = 1000.0f * distance / bot->GetSpeed(MOVE_RUN) + sPlayerbotAIConfig.reactDelay;
-    ai->TellError("Wait for me");
+    ai->TellError(requester, "Wait for me");
     SetDuration(duration);
     context->GetValue<LastMovement&>("last area trigger")->Get().lastAreaTrigger = triggerId;
 

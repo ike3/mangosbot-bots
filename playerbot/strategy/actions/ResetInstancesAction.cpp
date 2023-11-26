@@ -6,10 +6,11 @@ using namespace ai;
 
 bool ResetInstancesAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     WorldPacket packet(CMSG_RESET_INSTANCES, 0);
     bot->GetSession()->HandleResetInstancesOpcode(packet);
 
-    ai->TellPlayer(GetMaster(), "Resetting all instances", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(requester, "Resetting all instances", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return true;
 }
 

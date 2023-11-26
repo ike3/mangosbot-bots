@@ -83,11 +83,11 @@ bool AcceptQuestAction::Execute(Event& event)
 
 bool AcceptQuestShareAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    Player *bot = ai->GetBot();
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    Player* bot = ai->GetBot();
 
-    if (!ai->IsSafe(master))
-        master = bot;
+    if (!ai->IsSafe(requester))
+        requester = bot;
 
     WorldPacket& p = event.getPacket();
     p.rpos(0);
@@ -103,7 +103,7 @@ bool AcceptQuestShareAction::Execute(Event& event)
     {
         // can't take quest
         bot->SetDividerGuid( ObjectGuid() );
-        ai->TellError(BOT_TEXT("quest_cant_take"));
+        ai->TellError(requester, BOT_TEXT("quest_cant_take"));
 
         return false;
     }
@@ -111,13 +111,13 @@ bool AcceptQuestShareAction::Execute(Event& event)
     if( !bot->GetDividerGuid().IsEmpty() )
     {
         // send msg to quest giving player
-        master->SendPushToPartyResponse( bot, QUEST_PARTY_MSG_ACCEPT_QUEST );
+        requester->SendPushToPartyResponse( bot, QUEST_PARTY_MSG_ACCEPT_QUEST );
         bot->SetDividerGuid( ObjectGuid() );
     }
 
     if( bot->CanAddQuest( qInfo, false ) )
     {
-        bot->AddQuest( qInfo, master );
+        bot->AddQuest( qInfo, requester);
 
         sPlayerbotAIConfig.logEvent(ai, "AcceptQuestShareAction", qInfo->GetTitle(), to_string(qInfo->GetQuestId()));
 
@@ -140,7 +140,7 @@ bool AcceptQuestShareAction::Execute(Event& event)
             );
         }
 
-        ai->TellPlayer(master, BOT_TEXT("quest_accept"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(requester, BOT_TEXT("quest_accept"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         return true;
     }
 

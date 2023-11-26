@@ -6,18 +6,16 @@
 
 using namespace ai;
 
-bool FlagAction::TellUsage()
-{
-    ai->TellError("Usage: flag cloak/helm/pvp on/set/off/clear/toggle/?");
-    return false;
-}
-
 bool FlagAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string cmd = event.getParam();
     vector<string> ss = split(cmd, ' ');
     if (ss.size() != 2)
-        return TellUsage();
+    {
+        ai->TellError(requester, "Usage: flag cloak/helm/pvp on/set/off/clear/toggle/?");
+        return false;
+    }
 
     bool setFlag = (ss[1] == "set" || ss[1] == "on");
     bool clearFlag = (ss[1] == "clear" || ss[1] == "off");
@@ -28,7 +26,7 @@ bool FlagAction::Execute(Event& event)
         else if (clearFlag) bot->SetPvP(false);
         else if (toggleFlag) bot->SetPvP(!bot->IsPvP());
         ostringstream out; out << ss[0] << " flag is " << chat->formatBoolean(bot->IsPvP());
-        ai->TellPlayer(GetMaster(), out.str());
+        ai->TellPlayer(requester, out.str());
         return true;
     }
 
@@ -41,7 +39,7 @@ bool FlagAction::Execute(Event& event)
     else if (toggleFlag && bot->HasFlag(PLAYER_FLAGS, playerFlags)) bot->RemoveFlag(PLAYER_FLAGS, playerFlags);
     else if (toggleFlag && !bot->HasFlag(PLAYER_FLAGS, playerFlags)) bot->SetFlag(PLAYER_FLAGS, playerFlags);
     ostringstream out; out << ss[0] << " flag is " << chat->formatBoolean(!bot->HasFlag(PLAYER_FLAGS, playerFlags));
-    ai->TellPlayer(GetMaster(), out.str());
+    ai->TellPlayer(requester, out.str());
     return true;
 }
 

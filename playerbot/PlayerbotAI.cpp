@@ -1907,7 +1907,7 @@ void PlayerbotAI::ChangeStrategy(const string& names, BotState type)
             Engine* engine = engines[i];
             if (engine)
             {
-                engine->ChangeStrategy(names, BotStateToString(BotState(i)));
+                engine->ChangeStrategy(names);
             }
         }
     }
@@ -1916,7 +1916,30 @@ void PlayerbotAI::ChangeStrategy(const string& names, BotState type)
         Engine* engine = engines[(uint8)type];
         if (engine)
         {
-            engine->ChangeStrategy(names, BotStateToString(type));
+            engine->ChangeStrategy(names);
+        }
+    }
+}
+
+void PlayerbotAI::PrintStrategies(Player* requester, BotState type)
+{
+    if (type == BotState::BOT_STATE_ALL)
+    {
+        for (uint8 i = 0; i < (uint8)BotState::BOT_STATE_ALL; i++)
+        {
+            Engine* engine = engines[i];
+            if (engine)
+            {
+                engine->PrintStrategies(requester, BotStateToString(BotState(i)));
+            }
+        }
+    }
+    else
+    {
+        Engine* engine = engines[(uint8)type];
+        if (engine)
+        {
+            engine->PrintStrategies(requester, BotStateToString(type));
         }
     }
 }
@@ -1978,6 +2001,7 @@ bool PlayerbotAI::CanDoSpecificAction(const string& name, bool isUseful, bool is
 
 bool PlayerbotAI::DoSpecificAction(const string& name, Event event, bool silent)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_ALL; i++)
     {
         Engine* engine = engines[i];
@@ -2002,7 +2026,7 @@ bool PlayerbotAI::DoSpecificAction(const string& name, Event event, bool silent)
                     {
                         ostringstream out;
                         out << name << ": impossible";
-                        TellError(out.str());
+                        TellError(requester, out.str());
                         PlaySound(TEXTEMOTE_NO);
                     }
 
@@ -2015,7 +2039,7 @@ bool PlayerbotAI::DoSpecificAction(const string& name, Event event, bool silent)
                     {
                         ostringstream out;
                         out << name << ": useless";
-                        TellError(out.str());
+                        TellError(requester, out.str());
                         PlaySound(TEXTEMOTE_NO);
                     }
 
@@ -2028,7 +2052,7 @@ bool PlayerbotAI::DoSpecificAction(const string& name, Event event, bool silent)
                     {
                         ostringstream out;
                         out << name << ": failed";
-                        TellError(out.str());
+                        TellError(requester, out.str());
                     }
 
                     return false;
@@ -2040,7 +2064,7 @@ bool PlayerbotAI::DoSpecificAction(const string& name, Event event, bool silent)
                     {
                         ostringstream out;
                         out << name << ": unknown action";
-                        TellError(out.str());
+                        TellError(requester, out.str());
                     }
 
                     return false;
@@ -2053,7 +2077,7 @@ bool PlayerbotAI::DoSpecificAction(const string& name, Event event, bool silent)
             {
                 ostringstream out;
                 out << name << ": engine not ready";
-                TellError(out.str());
+                TellError(requester, out.str());
             }
         }
     }
@@ -2379,7 +2403,7 @@ bool PlayerbotAI::TellPlayerNoFacing(Player* player, string text, PlayerbotSecur
 
             return true;
         case CHAT_MSG_WHISPER:
-            if (!IsTellAllowed(securityLevel))
+            if (!IsTellAllowed(player, securityLevel))
                 return false;
 
             if (!HasRealPlayerMaster())
@@ -2401,30 +2425,28 @@ bool PlayerbotAI::TellPlayerNoFacing(Player* player, string text, PlayerbotSecur
     return true;
 }
 
-bool PlayerbotAI::TellError(string text, PlayerbotSecurityLevel securityLevel)
+bool PlayerbotAI::TellError(Player* player, string text, PlayerbotSecurityLevel securityLevel)
 {
-    Player* master = GetMaster();
-    if (!IsTellAllowed(securityLevel) || !IsSafe(master) || master->GetPlayerbotAI())
+    if (!IsTellAllowed(player, securityLevel) || !IsSafe(player) || player->GetPlayerbotAI())
         return false;
 
-    PlayerbotMgr* mgr = master->GetPlayerbotMgr();
+    PlayerbotMgr* mgr = player->GetPlayerbotMgr();
     if (mgr) mgr->TellError(bot->GetName(), text);
 
     return false;
 }
 
-bool PlayerbotAI::IsTellAllowed(PlayerbotSecurityLevel securityLevel)
+bool PlayerbotAI::IsTellAllowed(Player* player, PlayerbotSecurityLevel securityLevel)
 {
-    Player* master = GetMaster();
-    if (!master || master->IsBeingTeleported())
+    if (!player || player->IsBeingTeleported())
         return false;
 
-    if (!GetSecurity()->CheckLevelFor(securityLevel, true, master))
+    if (!GetSecurity()->CheckLevelFor(securityLevel, true, player))
         return false;
 
     if (sPlayerbotAIConfig.whisperDistance && !bot->GetGroup() && sRandomPlayerbotMgr.IsFreeBot(bot) &&
-            master->GetSession()->GetSecurity() < SEC_GAMEMASTER &&
-            (bot->GetMapId() != master->GetMapId() || sServerFacade.GetDistance2d(bot, master) > sPlayerbotAIConfig.whisperDistance))
+            player->GetSession()->GetSecurity() < SEC_GAMEMASTER &&
+            (bot->GetMapId() != player->GetMapId() || sServerFacade.GetDistance2d(bot, player) > sPlayerbotAIConfig.whisperDistance))
         return false;
 
     return true;

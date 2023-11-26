@@ -15,24 +15,24 @@ namespace ai
         virtual bool Execute(Event& event);
         virtual bool isUseful();
 
-        void getNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
+        void getNewTarget(Player* requester, TravelTarget* newTarget, TravelTarget* oldTarget);
 
     protected:
-        void setNewTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
-        void ReportTravelTarget(TravelTarget* newTarget, TravelTarget* oldTarget);
+        void setNewTarget(Player* requester, TravelTarget* newTarget, TravelTarget* oldTarget);
+        void ReportTravelTarget(Player* requester, TravelTarget* newTarget, TravelTarget* oldTarget);
 
-        vector<WorldPosition*> getLogicalPoints(vector<WorldPosition*>& travelPoints);
-        bool SetBestTarget(TravelTarget* target, vector<TravelDestination*>& activeDestinations);
+        vector<WorldPosition*> getLogicalPoints(Player* requester, vector<WorldPosition*>& travelPoints);
+        bool SetBestTarget(Player* requester, TravelTarget* target, vector<TravelDestination*>& activeDestinations);
 
-        bool SetGroupTarget(TravelTarget* target);
-        bool SetCurrentTarget(TravelTarget* target, TravelTarget* oldTarget);
-        bool SetQuestTarget(TravelTarget* target, bool newQuests = true, bool activeQuests = true, bool completedQuests = true);
-        bool SetRpgTarget(TravelTarget* target);
-        bool SetGrindTarget(TravelTarget* target);
-        bool SetBossTarget(TravelTarget* target);
-        bool SetExploreTarget(TravelTarget* target);
-        bool SetNpcFlagTarget(TravelTarget* target, vector<NPCFlags> flags, string name = "", vector<uint32> items = {}, bool force = true);
-        bool SetGOTypeTarget(TravelTarget* target, GameobjectTypes type, string name = "", bool force = true);
+        bool SetGroupTarget(Player* requester, TravelTarget* target);
+        bool SetCurrentTarget(Player* requester, TravelTarget* target, TravelTarget* oldTarget);
+        bool SetQuestTarget(Player* requester, TravelTarget* target, bool newQuests = true, bool activeQuests = true, bool completedQuests = true);
+        bool SetRpgTarget(Player* requester, TravelTarget* target);
+        bool SetGrindTarget(Player* requester, TravelTarget* target);
+        bool SetBossTarget(Player* requester, TravelTarget* target);
+        bool SetExploreTarget(Player* requester, TravelTarget* target);
+        bool SetNpcFlagTarget(Player* requester, TravelTarget* target, vector<NPCFlags> flags, string name = "", vector<uint32> items = {}, bool force = true);
+        bool SetGOTypeTarget(Player* requester, TravelTarget* target, GameobjectTypes type, string name = "", bool force = true);
         bool SetNullTarget(TravelTarget* target);
 
     public:

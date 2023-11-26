@@ -241,7 +241,7 @@ bool TradeStatusAction::CheckTrade()
 
     if (!botItemsMoney && !playerItemsMoney)
     {
-        ai->TellError("There are no items to trade");
+        ai->TellError(trader, "There are no items to trade");
         return false;
     }
 

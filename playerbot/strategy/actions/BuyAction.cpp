@@ -150,7 +150,7 @@ bool BuyAction::Execute(Event& event)
 
     if (!vendored)
     {
-        ai->TellError("There are no vendors nearby");
+        ai->TellError(requester, "There are no vendors nearby");
         return false;
     }
 
@@ -213,7 +213,7 @@ bool BuyBackAction::Execute(Event& event)
 
     if (found.empty())
     {
-        ai->TellError("No buyback items found");
+        ai->TellError(requester, "No buyback items found");
         return false;
     }
 
@@ -236,7 +236,7 @@ bool BuyBackAction::Execute(Event& event)
 
     if (!hasVendor)
     {
-        ai->TellError("There are no vendors nearby");
+        ai->TellError(requester, "There are no vendors nearby");
         return false;
     }
 

@@ -11,9 +11,10 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
     private:
-        void TellChatCommands();
-        void TellStrategies();
+        void TellChatCommands(Player* requester);
+        void TellStrategies(Player* requester);
         string CombineSupported(set<string> commands);
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "help"; } //Must equal iternal name
         virtual string GetHelpDescription()

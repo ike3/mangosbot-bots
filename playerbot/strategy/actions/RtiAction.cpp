@@ -8,6 +8,7 @@ using namespace ai;
 
 bool RtiAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
     string type = "rti";
     if (text.find("cc ") == 0)
@@ -19,18 +20,18 @@ bool RtiAction::Execute(Event& event)
     {
         ostringstream outRti; outRti << "rti" << ": ";
         AppendRti(outRti, "rti");
-        ai->TellPlayer(GetMaster(), outRti);
+        ai->TellPlayer(requester, outRti);
 
         ostringstream outRtiCc; outRtiCc << "rti cc" << ": ";
         AppendRti(outRtiCc, "rti cc");
-        ai->TellPlayer(GetMaster(), outRtiCc);
+        ai->TellPlayer(requester, outRtiCc);
         return true;
     }
 
     context->GetValue<string>(type)->Set(text);
     ostringstream out; out << type << " set to: ";
     AppendRti(out, type);
-    ai->TellPlayer(GetMaster(), out);
+    ai->TellPlayer(requester, out);
     return true;
 }
 
@@ -42,7 +43,6 @@ void RtiAction::AppendRti(ostringstream & out, string type)
     Unit* target = AI_VALUE(Unit*, n.str());
     if (target)
         out << " (" << target->GetName() << ")";
-
 }
 
 bool MarkRtiAction::Execute(Event& event)

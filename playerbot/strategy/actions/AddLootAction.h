@@ -20,7 +20,7 @@ namespace ai
         virtual bool isUseful();
 
     protected:
-        virtual bool AddLoot(ObjectGuid guid);
+        virtual bool AddLoot(Player* requester, ObjectGuid guid);
         virtual bool Execute(Event& event) override;
     };
 
@@ -30,6 +30,6 @@ namespace ai
         AddGatheringLootAction(PlayerbotAI* ai) : AddAllLootAction(ai, "add gathering loot") {}
 
     private:
-        bool AddLoot(ObjectGuid guid) override;
+        bool AddLoot(Player* requester, ObjectGuid guid) override;
     };
 }

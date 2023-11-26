@@ -11,7 +11,7 @@ namespace ai
         StayActionBase(PlayerbotAI* ai, string name) : MovementAction(ai, name) {}
 
     protected:
-        bool Stay();
+        bool Stay(Player* requester);
     };
 
     class StayAction : public StayActionBase 

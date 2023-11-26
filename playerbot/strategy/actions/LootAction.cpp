@@ -243,6 +243,7 @@ bool OpenLootAction::CanOpenLock(uint32 skillId, uint32 reqSkillValue)
 
 bool StoreLootAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     WorldPacket p(event.getPacket()); // (8+1+4+1+1+4+4+4+4+4+1)
     ObjectGuid guid;
     uint8 loot_type;
@@ -328,11 +329,11 @@ bool StoreLootAction::Execute(Event& event)
         if (proto->Quality > ITEM_QUALITY_NORMAL && !urand(0, 50) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
         if (proto->Quality >= ITEM_QUALITY_RARE && !urand(0, 1) && ai->HasStrategy("emote", BotState::BOT_STATE_NON_COMBAT)) ai->PlayEmote(TEXTEMOTE_CHEER);
 
-        if (GetMaster() && (ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT) || (GetMaster()->GetMapId() != bot->GetMapId() || WorldPosition(GetMaster()).sqDistance2d(bot) > sPlayerbotAIConfig.sightDistance)))
+        if (requester && (ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT) || (requester->GetMapId() != bot->GetMapId() || WorldPosition(requester).sqDistance2d(bot) > sPlayerbotAIConfig.sightDistance)))
         {
             map<string, string> args;
             args["%item"] = chat->formatItem(itemQualifier);
-            ai->TellPlayerNoFacing(GetMaster(), BOT_TEXT2("loot_command", args), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(requester, BOT_TEXT2("loot_command", args), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
 
         if (sPlayerbotAIConfig.guildFeedbackRate && frand(0, 100) <= sPlayerbotAIConfig.guildFeedbackRate && bot->GetGuildId() && !urand(0, 10) && proto->Quality >= ITEM_QUALITY_RARE && sRandomPlayerbotMgr.IsFreeBot(bot))

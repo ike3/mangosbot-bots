@@ -262,25 +262,25 @@ list<pair<uint32, string> > ListSpellsAction::GetSpellList(string filter)
 
 bool ListSpellsAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     string filter = event.getParam();
 
     list<pair<uint32, string> > spells = GetSpellList(filter);
 
-    ai->TellPlayer(GetMaster(), "=== Spells ===");
+    ai->TellPlayer(requester, "=== Spells ===");
     spells.sort(CompareSpells);
 
     int count = 0;
     for (list<pair<uint32, string> >::iterator i = spells.begin(); i != spells.end(); ++i)
     {
-        ai->TellPlayerNoFacing(GetMaster(), i->second);
+        ai->TellPlayerNoFacing(requester, i->second);
         if (++count >= 50)
         {
             ostringstream msg; msg << (spells.size() - 50) << " more...";
-            ai->TellPlayerNoFacing(GetMaster(), msg.str());
+            ai->TellPlayerNoFacing(requester, msg.str());
             break;
         }
     }

@@ -785,7 +785,7 @@ void Engine::LogAction(const char* format, ...)
     }
 }
 
-void Engine::ChangeStrategy(const string& names, string engineType)
+void Engine::ChangeStrategy(const string& names)
 {
     vector<string> splitted = split(names, ',');
     for (vector<string>::iterator i = splitted.begin(); i != splitted.end(); i++)
@@ -808,16 +808,16 @@ void Engine::ChangeStrategy(const string& names, string engineType)
                 toggleStrategy(name+1);
                 break;
             }
-            case '?':
-            {
-                string engineStrategies = engineType;
-                engineStrategies.append(" Strategies: ");
-                engineStrategies.append(ListStrategies());
-                ai->TellPlayer(ai->GetMaster(), engineStrategies);
-                break;
-            }
         }
     }
+}
+
+void Engine::PrintStrategies(Player* requester, const string& engineType)
+{
+    string engineStrategies = engineType;
+    engineStrategies.append(" Strategies: ");
+    engineStrategies.append(ListStrategies());
+    ai->TellPlayer(requester, engineStrategies);
 }
 
 void Engine::LogValues()

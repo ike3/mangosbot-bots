@@ -7,53 +7,54 @@ using namespace ai;
 
 bool ListQuestsAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     if (event.getParam() == "completed" || event.getParam() == "co")
     {
-        ListQuests(QUEST_LIST_FILTER_COMPLETED);
+        ListQuests(requester, QUEST_LIST_FILTER_COMPLETED);
     }
     else if (event.getParam() == "incompleted" || event.getParam() == "in")
     {
-        ListQuests(QUEST_LIST_FILTER_INCOMPLETED);
+        ListQuests(requester, QUEST_LIST_FILTER_INCOMPLETED);
     }
     else if (event.getParam() == "all")
     {
-        ListQuests(QUEST_LIST_FILTER_ALL);
+        ListQuests(requester, QUEST_LIST_FILTER_ALL);
     }
     else if (event.getParam() == "travel")
     {
-        ListQuests(QUEST_LIST_FILTER_ALL, QUEST_TRAVEL_DETAIL_SUMMARY);
+        ListQuests(requester, QUEST_LIST_FILTER_ALL, QUEST_TRAVEL_DETAIL_SUMMARY);
     }
     else if (event.getParam() == "travel detail")
     {
-        ListQuests(QUEST_LIST_FILTER_ALL, QUEST_TRAVEL_DETAIL_FULL);
+        ListQuests(requester, QUEST_LIST_FILTER_ALL, QUEST_TRAVEL_DETAIL_FULL);
     }
     else
     {
-        ListQuests(QUEST_LIST_FILTER_SUMMARY);
+        ListQuests(requester, QUEST_LIST_FILTER_SUMMARY);
     }
     return true;
 }
 
-void ListQuestsAction::ListQuests(QuestListFilter filter, QuestTravelDetail travelDetail)
+void ListQuestsAction::ListQuests(Player* requester, QuestListFilter filter, QuestTravelDetail travelDetail)
 {
     bool showIncompleted = filter & QUEST_LIST_FILTER_INCOMPLETED;
     bool showCompleted = filter & QUEST_LIST_FILTER_COMPLETED;
 
     if (showIncompleted)
-        ai->TellPlayer(GetMaster(), "--- Incompleted quests ---");
-    int incompleteCount = ListQuests(false, !showIncompleted, travelDetail);
+        ai->TellPlayer(requester, "--- Incompleted quests ---");
+    int incompleteCount = ListQuests(requester, false, !showIncompleted, travelDetail);
 
     if (showCompleted)
-        ai->TellPlayer(GetMaster(), "--- Completed quests ---");
-    int completeCount = ListQuests(true, !showCompleted, travelDetail);
+        ai->TellPlayer(requester, "--- Completed quests ---");
+    int completeCount = ListQuests(requester, true, !showCompleted, travelDetail);
 
-    ai->TellPlayer(GetMaster(), "--- Summary ---");
+    ai->TellPlayer(requester, "--- Summary ---");
     std::ostringstream out;
     out << "Total: " << (completeCount + incompleteCount) << " / 25 (incompleted: " << incompleteCount << ", completed: " << completeCount << ")";
-    ai->TellPlayer(GetMaster(), out);
+    ai->TellPlayer(requester, out);
 }
 
-int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail travelDetail)
+int ListQuestsAction::ListQuests(Player* requester, bool completed, bool silent, QuestTravelDetail travelDetail)
 {
     TravelTarget* target;
     WorldPosition botPos(bot);
@@ -78,7 +79,7 @@ int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail 
         if (silent)
             continue;
 
-        ai->TellPlayer(GetMaster(), chat->formatQuest(pQuest));
+        ai->TellPlayer(requester, chat->formatQuest(pQuest));
 
         if (travelDetail != QUEST_TRAVEL_DETAIL_NONE && target->getDestination())
         {
@@ -94,7 +95,7 @@ int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail 
 
                     out << " to " << QuestDestination->getTitle();
 
-                    ai->TellPlayer(GetMaster(), out);
+                    ai->TellPlayer(requester, out);
                 }
             }
         }
@@ -126,7 +127,7 @@ int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail 
             if (desRange > 0)
                 out << desRange << " out of range.";
 
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(requester, out);
         }
         else if (travelDetail == QUEST_TRAVEL_DETAIL_FULL)
         {
@@ -157,7 +158,7 @@ int ListQuestsAction::ListQuests(bool completed, bool silent, QuestTravelDetail 
                 if (!dest->isActive(bot))
                     out << " not active";
 
-                ai->TellPlayer(GetMaster(), out);
+                ai->TellPlayer(requester, out);
 
                 limit++;
             }

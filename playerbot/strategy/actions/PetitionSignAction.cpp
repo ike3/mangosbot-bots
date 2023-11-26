@@ -15,6 +15,7 @@ using namespace ai;
 
 bool PetitionSignAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     WorldPacket p(event.getPacket());
     p.rpos(0);
     ObjectGuid petitionGuid;
@@ -46,7 +47,7 @@ bool PetitionSignAction::Execute(Event& event)
         if (bot->GetArenaTeamId(slot))
         {
             // player is already in an arena team
-            ai->TellError("Sorry, I am already in such team");
+            ai->TellError(requester, "Sorry, I am already in such team");
             accept = false;
         }
 #endif
@@ -55,13 +56,13 @@ bool PetitionSignAction::Execute(Event& event)
     {
         if (bot->GetGuildId())
         {
-            ai->TellError("Sorry, I am in a guild already");
+            ai->TellError(requester, "Sorry, I am in a guild already");
             accept = false;
         }
 
         if (bot->GetGuildIdInvited())
         {
-            ai->TellError("Sorry, I am invited to a guild already");
+            ai->TellError(requester, "Sorry, I am invited to a guild already");
             accept = false;
         }
 

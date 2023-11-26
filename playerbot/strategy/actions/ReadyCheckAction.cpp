@@ -25,7 +25,7 @@ string formatPercent(string name, uint8 value, float percent)
 class ReadyChecker
 {
 public:
-    virtual bool Check(PlayerbotAI *ai, AiObjectContext* context) = 0;
+    virtual bool Check(Player* requester, PlayerbotAI *ai, AiObjectContext* context) = 0;
     virtual string GetName() = 0;
     virtual bool PrintAlways() { return true; }
 
@@ -37,17 +37,18 @@ list<ReadyChecker*> ReadyChecker::checkers;
 class HealthChecker : public ReadyChecker
 {
 public:
-    virtual bool Check(PlayerbotAI *ai, AiObjectContext* context)
+    bool Check(Player* requester, PlayerbotAI *ai, AiObjectContext* context) override
     {
         return AI_VALUE2(uint8, "health", "self target") > sPlayerbotAIConfig.almostFullHealth;
     }
+
     virtual string GetName() { return "HP"; }
 };
 
 class ManaChecker : public ReadyChecker
 {
 public:
-    virtual bool Check(PlayerbotAI *ai, AiObjectContext* context)
+    bool Check(Player* requester, PlayerbotAI *ai, AiObjectContext* context) override
     {
         return !AI_VALUE2(bool, "has mana", "self target") || AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumHealth;
     }
@@ -57,20 +58,21 @@ public:
 class DistanceChecker : public ReadyChecker
 {
 public:
-    virtual bool Check(PlayerbotAI *ai, AiObjectContext* context)
+    bool Check(Player* requester, PlayerbotAI *ai, AiObjectContext* context) override
     {
         Player* bot = ai->GetBot();
-        Player* master = ai->GetMaster();
-        if (master)
+        if (requester)
         {
-            bool distance = sServerFacade.GetDistance2d(bot, master) <= sPlayerbotAIConfig.sightDistance;
+            bool distance = sServerFacade.GetDistance2d(bot, requester) <= sPlayerbotAIConfig.sightDistance;
             if (!distance)
             {
                 return false;
             }
         }
+
         return true;
     }
+
     virtual bool PrintAlways() { return false; }
     virtual string GetName() { return "Far away"; }
 };
@@ -78,31 +80,33 @@ public:
 class HunterChecker : public ReadyChecker
 {
 public:
-    virtual bool Check(PlayerbotAI *ai, AiObjectContext* context)
+    bool Check(Player* requester, PlayerbotAI *ai, AiObjectContext* context) override
     {
         Player* bot = ai->GetBot();
         if (bot->getClass() == CLASS_HUNTER)
         {
             if (!bot->GetUInt32Value(PLAYER_AMMO_ID))
             {
-                ai->TellError("Out of ammo!");
+                ai->TellError(requester, "Out of ammo!");
                 return false;
             }
 
             if (!bot->GetPet())
             {
-                ai->TellError("No pet!");
+                ai->TellError(requester, "No pet!");
                 return false;
             }
 
             if (bot->GetPet()->GetHappinessState() == UNHAPPY)
             {
-                ai->TellError("Pet is unhappy!");
+                ai->TellError(requester, "Pet is unhappy!");
                 return false;
             }
         }
+
         return true;
     }
+
     virtual bool PrintAlways() { return false; }
     virtual string GetName() { return "Far away"; }
 };
@@ -113,10 +117,11 @@ class ItemCountChecker : public ReadyChecker
 public:
     ItemCountChecker(string item, string name) { this->item = item; this->name = name; }
 
-    virtual bool Check(PlayerbotAI *ai, AiObjectContext* context)
+    bool Check(Player* requester, PlayerbotAI *ai, AiObjectContext* context) override
     {
         return AI_VALUE2(uint32, "item count", item) > 0;
     }
+
     virtual string GetName() { return name; }
 
 private:
@@ -128,9 +133,9 @@ class ManaPotionChecker : public ItemCountChecker
 public:
     ManaPotionChecker(string item, string name) : ItemCountChecker(item, name) {}
 
-    virtual bool Check(PlayerbotAI *ai, AiObjectContext* context)
+    bool Check(Player* requester, PlayerbotAI *ai, AiObjectContext* context) override
     {
-        return !AI_VALUE2(bool, "has mana", "self target") || ItemCountChecker::Check(ai, context);
+        return !AI_VALUE2(bool, "has mana", "self target") || ItemCountChecker::Check(requester, ai, context);
     }
 };
 
@@ -169,7 +174,7 @@ bool ReadyCheckAction::ReadyCheck(Player* requester)
     for (list<ReadyChecker*>::iterator i = ReadyChecker::checkers.begin(); i != ReadyChecker::checkers.end(); ++i)
     {
         ReadyChecker* checker = *i;
-        bool ok = checker->Check(ai, context);
+        bool ok = checker->Check(requester, ai, context);
         result = result && ok;
     }
 
@@ -206,5 +211,6 @@ bool ReadyCheckAction::ReadyCheck(Player* requester)
 
 bool FinishReadyCheckAction::Execute(Event& event)
 {
-    return ReadyCheck(GetMaster());
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    return ReadyCheck(requester);
 }

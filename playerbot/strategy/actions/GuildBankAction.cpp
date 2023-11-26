@@ -12,13 +12,14 @@ using namespace ai;
 bool GuildBankAction::Execute(Event& event)
 {
 #ifndef MANGOSBOT_ZERO
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
     if (text.empty())
         return false;
 
-    if (!bot->GetGuildId() || (GetMaster() && GetMaster()->GetGuildId() != bot->GetGuildId()))
+    if (!bot->GetGuildId() || (requester && requester->GetGuildId() != bot->GetGuildId()))
     {
-        ai->TellPlayer(GetMaster(),"I'm not in your guild!");
+        ai->TellPlayer(requester, "I'm not in your guild!");
             return false;
     }
 
@@ -29,17 +30,17 @@ bool GuildBankAction::Execute(Event& event)
         if (!go || !bot->GetGameObjectIfCanInteractWith(go->GetObjectGuid(), GAMEOBJECT_TYPE_GUILD_BANK))
             continue;
 
-        return Execute(text, go);
+        return Execute(text, go, requester);
     }
 
-    ai->TellPlayer(GetMaster(), BOT_TEXT("error_gbank_found"));
+    ai->TellPlayer(requester, BOT_TEXT("error_gbank_found"));
     return false;
 #else
     return false;
 #endif
 }
 
-bool GuildBankAction::Execute(string text, GameObject* bank)
+bool GuildBankAction::Execute(string text, GameObject* bank, Player* requester)
 {
     bool result = true;
 
@@ -53,13 +54,13 @@ bool GuildBankAction::Execute(string text, GameObject* bank)
     {
         Item* item = *i;
         if (item)
-            result &= MoveFromCharToBank(item, bank);
+            result &= MoveFromCharToBank(item, bank, requester);
     }
 
     return result;
 }
 
-bool GuildBankAction::MoveFromCharToBank(Item* item, GameObject* bank)
+bool GuildBankAction::MoveFromCharToBank(Item* item, GameObject* bank, Player* requester)
 {
 #ifndef MANGOSBOT_ZERO
     uint32 playerSlot = item->GetSlot();
@@ -78,7 +79,7 @@ bool GuildBankAction::MoveFromCharToBank(Item* item, GameObject* bank)
         guild->MoveFromCharToBank(bot, playerBag, playerSlot, 0, 255, 0);
     }
 
-    ai->TellPlayer(GetMaster(), out);
+    ai->TellPlayer(requester, out);
     return true;
 #else
     return false;

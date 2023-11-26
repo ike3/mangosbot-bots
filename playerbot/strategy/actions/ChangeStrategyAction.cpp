@@ -7,8 +7,10 @@ using namespace ai;
 
 bool ChangeCombatStrategyAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
     text = text.empty() ? getName() : text;
+
     ai->ChangeStrategy(text, BotState::BOT_STATE_COMBAT);
     if (event.getSource() == "co")
     {
@@ -18,23 +20,26 @@ bool ChangeCombatStrategyAction::Execute(Event& event)
             const char* name = i->c_str();
             switch (name[0])
             {
-            case '+':
-            case '-':
-            case '~':
-                sPlayerbotDbStore.Save(ai);
-                break;
-            case '?':
-                break;
+                case '+':
+                case '-':
+                case '~':
+                    sPlayerbotDbStore.Save(ai);
+                    break;
             }
         }
     }
 
+    if (text.find("?") != std::string::npos)
+    {
+        ai->PrintStrategies(requester, BotState::BOT_STATE_COMBAT);
+    }
     
     return true;
 }
 
 bool ChangeNonCombatStrategyAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
     text = text.empty() ? getName() : text;
 
@@ -47,37 +52,58 @@ bool ChangeNonCombatStrategyAction::Execute(Event& event)
             const char* name = i->c_str();
             switch (name[0])
             {
-            case '+':
-            case '-':
-            case '~':
-                sPlayerbotDbStore.Save(ai);
-                break;
-            case '?':
-                break;
+                case '+':
+                case '-':
+                case '~':
+                    sPlayerbotDbStore.Save(ai);
+                    break;
             }
         }
     }
+
+    if (text.find("?") != std::string::npos)
+    {
+        ai->PrintStrategies(requester, BotState::BOT_STATE_NON_COMBAT);
+    }
+
     return true;
 }
 
 bool ChangeDeadStrategyAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
     text = text.empty() ? getName() : text;
+
     ai->ChangeStrategy(text, BotState::BOT_STATE_DEAD);
+
+    if (text.find("?") != std::string::npos)
+    {
+        ai->PrintStrategies(requester, BotState::BOT_STATE_DEAD);
+    }
+
     return true;
 }
 
 bool ChangeReactionStrategyAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
     text = text.empty() ? getName() : text;
+
     ai->ChangeStrategy(text, BotState::BOT_STATE_REACTION);
+
+    if (text.find("?") != std::string::npos)
+    {
+        ai->PrintStrategies(requester, BotState::BOT_STATE_REACTION);
+    }
+
     return true;
 }
 
 bool ChangeAllStrategyAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
     string strategyName = text.empty() ? strategy : text;
 
@@ -86,7 +112,7 @@ bool ChangeAllStrategyAction::Execute(Event& event)
     {
         if (strategyName.find("loot") != string::npos || strategyName.find("gather") != string::npos)
         {
-            ai->TellError("You can change any strategy except loot and gather");
+            ai->TellError(requester, "You can change any strategy except loot and gather");
             return false;
         }
     }
@@ -101,15 +127,18 @@ bool ChangeAllStrategyAction::Execute(Event& event)
             const char* name = i->c_str();
             switch (name[0])
             {
-            case '+':
-            case '-':
-            case '~':
-                sPlayerbotDbStore.Save(ai);
-                break;
-            case '?':
-                break;
+                case '+':
+                case '-':
+                case '~':
+                    sPlayerbotDbStore.Save(ai);
+                    break;
             }
         }
+    }
+
+    if (text.find("?") != std::string::npos)
+    {
+        ai->PrintStrategies(requester, BotState::BOT_STATE_ALL);
     }
 
     return true;

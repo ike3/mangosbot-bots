@@ -16,16 +16,19 @@ using namespace ai;
 
 bool DebugAction::Execute(Event& event)
 {
-    
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     bool isMod = event.getSource() == ".bot" || (event.getOwner() && event.getOwner()->GetSession() && event.getOwner()->GetSession()->GetSecurity() >= SEC_MODERATOR);
 
-    Player* master = GetMaster();
-    if (!master)
-        master = bot;
+    if (!requester)
+    {
+        requester = bot;
+    }
 
-    Unit* masterTarget = nullptr;
-    if (master->GetSelectionGuid())
-        masterTarget = ai->GetUnit(master->GetSelectionGuid());
+    Unit* requesterTarget = nullptr;
+    if (requester->GetSelectionGuid())
+    {
+        requesterTarget = ai->GetUnit(requester->GetSelectionGuid());
+    }
 
     string text = event.getParam();
     if (text == "scan" && isMod)
@@ -92,7 +95,9 @@ bool DebugAction::Execute(Event& event)
                     WorldPosition pos(mapId, c);
 
                     if (!pos.isValid())
+                    {
                         continue;
+                    }
 
                     pos.setZ(pos.getHeight());
 
@@ -115,18 +120,20 @@ bool DebugAction::Execute(Event& event)
     {
         string param = "";
         if (text.length() > 4)
+        {
             param = text.substr(5);
+        }
 
         ai->GetAiObjectContext()->ClearExpiredValues(param, 10);
-
         return true;
     }
     else if (text.find("values") == 0)
     {
         string param = "";
         if (text.length() > 6)
+        {
             param = text.substr(7);
-
+        }
         
         set<string> names = context->GetValues();
         vector<string> values;
@@ -134,26 +141,30 @@ bool DebugAction::Execute(Event& event)
         {
             UntypedValue* value = context->GetUntypedValue(name);
             if (!value)
+            {
                 continue;
+            }
 
             if (!param.empty() && name.find(param) == string::npos)
+            {
                 continue;
+            }
 
             string text = value->Format();
             if (text == "?")
+            {
                 continue;
+            }
 
             values.push_back(name + "=" + text);
-
         }        
 
         string valuestring = sPlayerbotHelpMgr.makeList(values, "[<part>]");
 
         vector<string> lines = Qualified::getMultiQualifiers(valuestring, "\n");
-
         for (auto& line : lines)
         {
-            ai->TellPlayerNoFacing(GetMaster(), line, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+            ai->TellPlayerNoFacing(requester, line, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
         }
 
         return true;
@@ -175,7 +186,6 @@ bool DebugAction::Execute(Event& event)
         if (dest)
         {
             vector <WorldPosition*> points = dest->nextPoint(&botPos, true);
-
             if (!points.empty())
             {
                 poiPoint = *points.front();
@@ -184,11 +194,17 @@ bool DebugAction::Execute(Event& event)
         }
 
         if (args.size() == 1)
+        {
             args.push_back("99");
-        if (args.size() == 2)
+        }
+        else if (args.size() == 2)
+        {
             args.push_back("6");
-        if (args.size() == 3)
+        }
+        else if (args.size() == 3)
+        {
             args.push_back("0");
+        }
 
         ai->Poi(poiPoint.coord_x, poiPoint.coord_y, name, nullptr, stoi(args[1]), stoi(args[2]), stoi(args[3]));
 
@@ -197,22 +213,21 @@ bool DebugAction::Execute(Event& event)
     else if (text.find("motion") == 0 && isMod)
     {
         Unit* motionBot = bot;
-        Unit* motionTarget = masterTarget;
+        Unit* motionTarget = requesterTarget;
 
         if (text.find("motion") != 0)
         {
-            if (masterTarget)
+            if (requesterTarget)
             {
-                motionBot = masterTarget;
-                motionTarget = master;
+                motionBot = requesterTarget;
+                motionTarget = requester;
             }
             else
             {
-                motionBot = master;
+                motionBot = requester;
                 motionTarget = bot;
             }
         }
-
 
         MotionMaster* mm = motionBot->GetMotionMaster();
 
@@ -227,11 +242,12 @@ bool DebugAction::Execute(Event& event)
 
         string motionName = motionBot->GetName();
 
-        ai->TellPlayer(GetMaster(), motionName + " :" + sType + " (" + cTargetName + " a:" + to_string(cAngle) + " o:" + to_string(cOffset) + ")");
+        ai->TellPlayer(requester, motionName + " :" + sType + " (" + cTargetName + " a:" + to_string(cAngle) + " o:" + to_string(cOffset) + ")");
 
-
-        if (!masterTarget)
-            masterTarget = master;
+        if (!requesterTarget)
+        {
+            requesterTarget = requester;
+        }
 
         if (text.size() > 7)
         {
@@ -266,37 +282,53 @@ bool DebugAction::Execute(Event& event)
             }
 
             string sType = "TODO"; // GetMoveTypeStr(type);
-            ai->TellPlayer(GetMaster(), "new:" + sType);
+            ai->TellPlayer(requester, "new:" + sType);
         }
         return true;
     }
-    else if (text.find("transport") == 0 && isMod) {
+    else if (text.find("transport") == 0 && isMod) 
+    {
         for (auto trans : WorldPosition(bot).getTransports())
         {
             GameObjectInfo const* data = sGOStorage.LookupEntry<GameObjectInfo>(trans->GetEntry());
             if (WorldPosition(bot).isOnTransport(trans))
-                ai->TellPlayer(GetMaster(), "On transport " + string(data->name));
+            {
+                ai->TellPlayer(requester, "On transport " + string(data->name));
+            }
             else
-                ai->TellPlayer(GetMaster(), "Not on transport " + string(data->name));
+            {
+                ai->TellPlayer(requester, "Not on transport " + string(data->name));
+            }
         }
     }
-    else if (text.find("ontrans") == 0 && isMod) {
+    else if (text.find("ontrans") == 0 && isMod) 
+    {
         if (bot->GetTransport())
+        {
             return false;
+        }
 
         uint32 radius = 10;
 
         if (text.length() > string("ontrans").size())
+        {
             radius = stoi(text.substr(string("ontrans").size() + 1));
+        }
 
         WorldPosition botPos(bot);
         GenericTransport* transport = nullptr;
         for (auto trans : botPos.getTransports())
+        {
             if (!transport || botPos.distance(trans) < botPos.distance(transport))
+            {
                 transport = trans;
+            }
+        }
 
         if (!transport)
+        {
             return false;
+        }
 
         GenericTransport* trans = transport;
 
@@ -312,7 +344,7 @@ bool DebugAction::Execute(Event& event)
 
         if (path.empty())
         {
-            ai->TellPlayer(GetMaster(), "No path.");
+            ai->TellPlayer(requester, "No path.");
             bot->SetTransport(nullptr);
             return false;
         }
@@ -331,16 +363,20 @@ bool DebugAction::Execute(Event& event)
                     bot->SetTransport(trans);
                 }
                 else //Generate wp off transport so it doesn't spawn on transport.
+                {
                     bot->SetTransport(nullptr);
+                }
 
                 Creature* wpCreature = bot->SummonCreature(2334, p.getX(), p.getY(), p.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
                 ai->AddAura(wpCreature, 246);
 
                 if (p.isOnTransport(transport))
+                {
                     ai->AddAura(wpCreature, 1130);
+                }
             }
 
-            ai->TellPlayer(GetMaster(), "No path on boat.");
+            ai->TellPlayer(requester, "No path on boat.");
             bot->SetTransport(nullptr);
             return false;
         }
@@ -355,13 +391,17 @@ bool DebugAction::Execute(Event& event)
                 bot->SetTransport(trans);
             }
             else //Generate wp off transport so it doesn't spawn on transport.
+            {
                 bot->SetTransport(nullptr);
+            }
 
             Creature* wpCreature = bot->SummonCreature(2334, p.getX(), p.getY(), p.getZ(), 0, TEMPSPAWN_TIMED_DESPAWN, 10000.0f);
             ai->AddAura(wpCreature, 246);
 
             if (p.isOnTransport(transport))
+            {
                 ai->AddAura(wpCreature, 1130);
+            }
         }
 
         transport->AddPassenger(bot);
@@ -371,20 +411,27 @@ bool DebugAction::Execute(Event& event)
 
         return true;
     }
-    else if (text.find("offtrans") == 0 && isMod) {
+    else if (text.find("offtrans") == 0 && isMod) 
+    {
         uint32 radius = 10;
 
         if (text.length() > string("offtrans").size())
+        {
             radius = stoi(text.substr(string("offtrans").size() + 1));
+        }
 
         if (!bot->GetTransport())
+        {
             return false;
+        }
 
         WorldPosition botPos(bot);
         GenericTransport* transport = bot->GetTransport();
 
         if (!transport)
+        {
             return false;
+        }
 
         WorldPosition destPos = botPos + WorldPosition(0,cos(bot->GetOrientation()) * radius, sin(bot->GetOrientation()) * radius);
 
@@ -392,7 +439,7 @@ bool DebugAction::Execute(Event& event)
 
         if (path.empty())
         {
-            ai->TellPlayer(GetMaster(), "No path.");
+            ai->TellPlayer(requester, "No path.");
             return false;
         }
 
@@ -400,7 +447,7 @@ bool DebugAction::Execute(Event& event)
 
         if (exitPos.isOnTransport(transport))
         {
-            ai->TellPlayer(GetMaster(), "Path still on boat.");
+            ai->TellPlayer(requester, "Path still on boat.");
             return false;
         }
         
@@ -527,7 +574,7 @@ bool DebugAction::Execute(Event& event)
 
         if (!corpse)
         {
-            ai->TellPlayerNoFacing(GetMaster(), "no corpse");
+            ai->TellPlayerNoFacing(requester, "no corpse");
             return true;
         }
 
@@ -547,7 +594,7 @@ bool DebugAction::Execute(Event& event)
 
         out << "time: " << corpse->GetGhostTime();
 
-        ai->TellPlayerNoFacing(GetMaster(), out);
+        ai->TellPlayerNoFacing(requester, out);
 
         return true;
     }
@@ -579,7 +626,7 @@ bool DebugAction::Execute(Event& event)
     {
         ostringstream out;
 
-        GuidPosition guidP = GuidPosition(ai->GetMaster()->GetSelectionGuid(), ai->GetMaster()->GetMapId());
+        GuidPosition guidP = GuidPosition(requester->GetSelectionGuid(), requester->GetMapId());
 
         if (text.size() > 4)
         {
@@ -640,42 +687,41 @@ bool DebugAction::Execute(Event& event)
         if (topPoolId)
             out << " pool:" << topPoolId << (sGameEventMgr.GetGameEventId<Pool>(topPoolId) ? " event" : " nonevent");
 
-        ai->TellPlayerNoFacing(GetMaster(), out);
-
+        ai->TellPlayerNoFacing(requester, out);
 
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_GOSSIP))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_GOSSIP");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_GOSSIP");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_QUESTGIVER))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_QUESTGIVER");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_QUESTGIVER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_VENDOR))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_VENDOR");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_VENDOR");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_FLIGHTMASTER))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_FLIGHTMASTER");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_FLIGHTMASTER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_TRAINER))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_TRAINER");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_TRAINER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_SPIRITHEALER))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_SPIRITHEALER");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_SPIRITHEALER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_SPIRITGUIDE))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_SPIRITGUIDE");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_SPIRITGUIDE");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_INNKEEPER))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_INNKEEPER");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_INNKEEPER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_BANKER))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_BANKER");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_BANKER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_PETITIONER))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_PETITIONER");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_PETITIONER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_TABARDDESIGNER))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_TABARDDESIGNER");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_TABARDDESIGNER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_BATTLEMASTER))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_BATTLEMASTER");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_BATTLEMASTER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_AUCTIONEER))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_AUCTIONEER");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_AUCTIONEER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_STABLEMASTER))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_STABLEMASTER");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_STABLEMASTER");
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_REPAIR))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_REPAIR");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_REPAIR");
 #ifdef MANGOSBOT_ZERO
         if (guidP.HasNpcFlag(UNIT_NPC_FLAG_OUTDOORPVP))
-            ai->TellPlayerNoFacing(GetMaster(), "UNIT_NPC_FLAG_OUTDOORPVP");
+            ai->TellPlayerNoFacing(requester, "UNIT_NPC_FLAG_OUTDOORPVP");
 #endif
 
         unordered_map<ReputationRank, string> reaction;
@@ -705,7 +751,7 @@ bool DebugAction::Execute(Event& event)
             if (GuidPosition(HIGHGUID_UNIT, guidP.GetEntry()).IsFriendlyTo(bot))
                 out << "[friendly]";
 
-            ai->TellPlayerNoFacing(GetMaster(), out);
+            ai->TellPlayerNoFacing(requester, out);
         }
 
         return true;
@@ -752,7 +798,7 @@ bool DebugAction::Execute(Event& event)
 
         guidP.printWKT(out);
 
-        ai->TellPlayerNoFacing(GetMaster(), out);
+        ai->TellPlayerNoFacing(requester, out);
 
         unordered_map<uint32, string>  types;
         types[GAMEOBJECT_TYPE_DOOR] = "GAMEOBJECT_TYPE_DOOR";
@@ -798,7 +844,7 @@ bool DebugAction::Execute(Event& event)
         types[GAMEOBJECT_TYPE_TRAPDOOR] = "GAMEOBJECT_TYPE_TRAPDOOR";
 #endif
 
-        ai->TellPlayerNoFacing(GetMaster(), types[guidP.GetGameObjectInfo()->type]);
+        ai->TellPlayerNoFacing(requester, types[guidP.GetGameObjectInfo()->type]);
 
         if (guidP.GetGameObject())
         {
@@ -832,7 +878,7 @@ bool DebugAction::Execute(Event& event)
             if (lootState == GO_JUST_DEACTIVATED)
                 out << "GO_JUST_DEACTIVATED";
 
-            ai->TellPlayerNoFacing(GetMaster(), out);
+            ai->TellPlayerNoFacing(requester, out);
         }
 
         return true;
@@ -861,13 +907,13 @@ bool DebugAction::Execute(Event& event)
                 out << node->getName() << ", ";
             }
 
-            ai->TellPlayerNoFacing(GetMaster(), out.str());
+            ai->TellPlayerNoFacing(requester, out.str());
 
             return true;
         }
         else
         {
-            ai->TellPlayerNoFacing(GetMaster(), "Destination " + destination + " not found.");
+            ai->TellPlayerNoFacing(requester, "Destination " + destination + " not found.");
             return true;
         }
     }
@@ -880,7 +926,7 @@ bool DebugAction::Execute(Event& event)
 
         if (!quest || sTravelMgr.getQuests().find(questId) == sTravelMgr.getQuests().end())
         {
-            ai->TellPlayerNoFacing(GetMaster(), "Quest " + text.substr(6) + " not found.");
+            ai->TellPlayerNoFacing(requester, "Quest " + text.substr(6) + " not found.");
             return false;
         }
 
@@ -888,7 +934,7 @@ bool DebugAction::Execute(Event& event)
 
         out << quest->GetTitle() << ": ";
 
-        ai->TellPlayerNoFacing(GetMaster(), out);
+        ai->TellPlayerNoFacing(requester, out);
 
         QuestContainer* cont = sTravelMgr.getQuests()[questId];
 
@@ -910,7 +956,7 @@ bool DebugAction::Execute(Event& event)
 
             out << " (" << g->distanceTo(botPos) << "y)";
 
-            ai->TellPlayerNoFacing(GetMaster(), out);
+            ai->TellPlayerNoFacing(requester, out);
 
             if (i >= 10)
                 break;
@@ -949,7 +995,7 @@ bool DebugAction::Execute(Event& event)
 
                 out << " (" << g->distanceTo(botPos) << "y)";
 
-                ai->TellPlayerNoFacing(GetMaster(), out);
+                ai->TellPlayerNoFacing(requester, out);
 
                 if (i >= 5)
                     break;
@@ -976,7 +1022,7 @@ bool DebugAction::Execute(Event& event)
 
             out << " (" << g->distanceTo(botPos) << "y)";
 
-            ai->TellPlayerNoFacing(GetMaster(), out);
+            ai->TellPlayerNoFacing(requester, out);
 
             if (i >= 10)
                 break;
@@ -1007,7 +1053,7 @@ bool DebugAction::Execute(Event& event)
 
         out << noG << "|" << noT << "|" << noO << " bad.";
 
-        ai->TellPlayerNoFacing(GetMaster(), out);
+        ai->TellPlayerNoFacing(requester, out);
 
         return true;
     }
@@ -1040,12 +1086,12 @@ bool DebugAction::Execute(Event& event)
             if (q.second->questObjectives.empty())
                 out << " no O";
         }
-        ai->TellPlayerNoFacing(GetMaster(), out);
+        ai->TellPlayerNoFacing(requester, out);
 
     }
     else if (text.find("values ") == 0)
     {
-        ai->TellPlayerNoFacing(GetMaster(), ai->GetAiObjectContext()->FormatValues(text.substr(7)));
+        ai->TellPlayerNoFacing(requester, ai->GetAiObjectContext()->FormatValues(text.substr(7)));
 
         return true;
     }
@@ -1062,7 +1108,7 @@ bool DebugAction::Execute(Event& event)
             else
                 out << chat->formatItem(sObjectMgr.GetItemPrototype(itemId), 0, 0) << " " << to_string(entries.size()) << " sources found:";
 
-            ai->TellPlayerNoFacing(GetMaster(), out);
+            ai->TellPlayerNoFacing(requester, out);
             out.str("");
             out.clear();
 
@@ -1084,7 +1130,7 @@ bool DebugAction::Execute(Event& event)
             for (auto chance : chances)
             {
                 out << chat->formatWorldEntry(chance.first) << ": " << chance.second << "%";
-                ai->TellPlayerNoFacing(GetMaster(), out);
+                ai->TellPlayerNoFacing(requester, out);
                 out.str("");
                 out.clear();
             }
@@ -1096,9 +1142,9 @@ bool DebugAction::Execute(Event& event)
     bool doAction = ai->DoSpecificAction("add all loot", Event(), true);
 
     if (doAction)
-        ai->TellPlayerNoFacing(GetMaster(), "Added new loot");
+        ai->TellPlayerNoFacing(requester, "Added new loot");
     else
-        ai->TellPlayerNoFacing(GetMaster(), "No new loot");
+        ai->TellPlayerNoFacing(requester, "No new loot");
 
     LootObjectStack* loots = AI_VALUE(LootObjectStack*, "available loot");
 
@@ -1112,18 +1158,18 @@ bool DebugAction::Execute(Event& event)
         WorldObject* wo = ai->GetWorldObject(loot.guid);
 
         if (wo)
-            ai->TellPlayerNoFacing(GetMaster(), chat->formatWorldobject(wo) + " " + (loot.IsLootPossible(bot) ? "can loot" : "can not loot"));
+            ai->TellPlayerNoFacing(requester, chat->formatWorldobject(wo) + " " + (loot.IsLootPossible(bot) ? "can loot" : "can not loot"));
         else
-            ai->TellPlayerNoFacing(GetMaster(), to_string(loot.guid) + " " + (loot.IsLootPossible(bot) ? "can loot" : "can not loot") + " " + to_string(loot.guid.GetEntry()));
+            ai->TellPlayerNoFacing(requester, to_string(loot.guid) + " " + (loot.IsLootPossible(bot) ? "can loot" : "can not loot") + " " + to_string(loot.guid.GetEntry()));
 
         if (loot.guid.IsGameObject())
         {
             GameObject* go = ai->GetGameObject(loot.guid);
 
             if (go->ActivateToQuest(bot))
-                ai->TellPlayerNoFacing(GetMaster(), to_string(go->GetGoType()) + " for quest");
+                ai->TellPlayerNoFacing(requester, to_string(go->GetGoType()) + " for quest");
             else
-                ai->TellPlayerNoFacing(GetMaster(), to_string(go->GetGoType()));
+                ai->TellPlayerNoFacing(requester, to_string(go->GetGoType()));
         }
 
         loots->Remove(loot.guid);
@@ -1146,7 +1192,7 @@ bool DebugAction::Execute(Event& event)
         else
             out << chat->formatWorldEntry(entry) << " " << to_string(itemIds.size()) << " drops found:";
 
-        ai->TellPlayerNoFacing(GetMaster(), out);
+        ai->TellPlayerNoFacing(requester, out);
         out.str("");
         out.clear();
 
@@ -1170,7 +1216,7 @@ bool DebugAction::Execute(Event& event)
         for (auto chance : chances)
         {
             out << chat->formatItem(sObjectMgr.GetItemPrototype(chance.first), 0, 0) << ": " << chance.second << "%";
-            ai->TellPlayerNoFacing(GetMaster(), out);
+            ai->TellPlayerNoFacing(requester, out);
             out.str("");
             out.clear();
         }
@@ -1190,7 +1236,7 @@ bool DebugAction::Execute(Event& event)
 
             out << taxiNode->name[0];
 
-            ai->TellPlayerNoFacing(GetMaster(), out);
+            ai->TellPlayerNoFacing(requester, out);
         }
     return true;
     }
@@ -1207,7 +1253,7 @@ bool DebugAction::Execute(Event& event)
             endNode->setLinked(false);
         }
 
-        ai->TellPlayerNoFacing(GetMaster(), "Node " + name + " created.");
+        ai->TellPlayerNoFacing(requester, "Node " + name + " created.");
         
         sTravelNodeMap.setHasToGen();
 
@@ -1224,11 +1270,11 @@ bool DebugAction::Execute(Event& event)
 
         if (startNode->isImportant())
         {
-            ai->TellPlayerNoFacing(GetMaster(), "Node can not be removed.");
+            ai->TellPlayerNoFacing(requester, "Node can not be removed.");
         }
         sTravelNodeMap.m_nMapMtx.lock();
         sTravelNodeMap.removeNode(startNode);
-        ai->TellPlayerNoFacing(GetMaster(), "Node removed.");
+        ai->TellPlayerNoFacing(requester, "Node removed.");
         sTravelNodeMap.m_nMapMtx.unlock();
 
         sTravelNodeMap.setHasToGen();
@@ -1424,7 +1470,6 @@ bool DebugAction::Execute(Event& event)
     else if (text.find("fspell ") == 0 && isMod)
     {
         uint32 spellEffect = stoi(text.substr(7));
-
         {
             WorldPacket data(SMSG_SPELL_START, (8 + 8 + 4 + 2 + 4));
 
@@ -1435,7 +1480,7 @@ bool DebugAction::Execute(Event& event)
             data << uint16(0);
             data << uint32(0);
             data << uint16(2);
-            data << master->GetObjectGuid();
+            data << requester->GetObjectGuid();
             bot->SendMessageToSet(data, true);
         }
 
@@ -1446,10 +1491,10 @@ bool DebugAction::Execute(Event& event)
             data << uint32(spellEffect);  // spellID
             data << uint8(0) << uint8(1);   // flags
             data << uint8(1);			   // amount of targets
-            data << master->GetObjectGuid();
+            data << requester->GetObjectGuid();
             data << uint8(0);
             data << uint16(2);
-            data << master->GetObjectGuid();
+            data << requester->GetObjectGuid();
             bot->SendMessageToSet(data, true);
         }
 
@@ -1458,7 +1503,7 @@ bool DebugAction::Execute(Event& event)
     else if (text.find("spell ") == 0 && isMod)
     {
         uint32 spellEffect = stoi(text.substr(6));
-        master->GetSession()->SendPlaySpellVisual(bot->GetObjectGuid(), spellEffect);
+        requester->GetSession()->SendPlaySpellVisual(bot->GetObjectGuid(), spellEffect);
         return true;
     }
     else if (text.find("tspellmap" ) == 0 && isMod)
@@ -1485,7 +1530,7 @@ bool DebugAction::Execute(Event& event)
 
                     const std::string& Cname = out.str();
 
-                    wpCreature->MonsterSay(Cname.c_str(), 0, master);
+                    wpCreature->MonsterSay(Cname.c_str(), 0, requester);
                 }
             }
         }
@@ -1700,7 +1745,7 @@ bool DebugAction::Execute(Event& event)
             }
         }
 
-        all_targets.push_back(master->GetObjectGuid());
+        all_targets.push_back(requester->GetObjectGuid());
         all_targets.push_back(bot->GetObjectGuid());
 
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -1748,7 +1793,7 @@ bool DebugAction::Execute(Event& event)
                         caster = bot;
 
                     if (!target)
-                        target = master;
+                        target = requester;
 
                     FakeSpell(effect, realCaster, caster, target->GetObjectGuid(), hits, miss, WorldPosition(caster), WorldPosition(target));
 
@@ -1777,7 +1822,7 @@ bool DebugAction::Execute(Event& event)
         }
     }
 
-    all_targets.push_back(master->GetObjectGuid());
+    all_targets.push_back(requester->GetObjectGuid());
     all_targets.push_back(bot->GetObjectGuid());
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -1824,9 +1869,9 @@ bool DebugAction::Execute(Event& event)
                     caster = bot;
 
                 if (!target)
-                    target = master;
+                    target = requester;
 
-                master->GetSession()->SendPlaySpellVisual(caster->GetObjectGuid(), 5036);
+                requester->GetSession()->SendPlaySpellVisual(caster->GetObjectGuid(), 5036);
                 FakeSpell(effect, realCaster, caster, target->GetObjectGuid(), hits, miss, WorldPosition(caster), WorldPosition(target));
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -1886,10 +1931,9 @@ bool DebugAction::Execute(Event& event)
     }
 
     string response = ai->HandleRemoteCommand(text);
-    ai->TellPlayer(GetMaster(), response);
+    ai->TellPlayer(requester, response);
     return true;
 }
-
 
 void DebugAction::FakeSpell(uint32 spellId, Unit* truecaster, Unit* caster, ObjectGuid target, list<ObjectGuid> otherTargets, list<ObjectGuid> missTargets, WorldPosition source, WorldPosition dest, bool forceDest)
 {

@@ -16,10 +16,10 @@ namespace ai
         virtual bool isPossible() override { return true; }
         virtual bool isUseful() override;
 
-        bool SelectSpell(WorldPosition& spellPosition);
+        bool SelectSpell(Player* requester, WorldPosition& spellPosition);
 
-        virtual bool MoveToSpell(WorldPosition& spellPosition, bool inFormation = true);
-        void SetFormationOffset(WorldPosition& spellPosition);
+        virtual bool MoveToSpell(Player* requester, WorldPosition& spellPosition, bool inFormation = true);
+        void SetFormationOffset(Player* requester, WorldPosition& spellPosition);
     private:
         Creature* CreateWps(Player* wpOwner, float x, float y, float z, float o, uint32 entry, Creature* lastWp, bool important = false);
     };

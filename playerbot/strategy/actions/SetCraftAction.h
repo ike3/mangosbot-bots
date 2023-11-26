@@ -12,7 +12,7 @@ namespace ai
         static uint32 GetCraftFee(CraftData&);
 
     private:
-        void TellCraft();
+        void TellCraft(Player* requester);
 
     private:
         static map<uint32, SkillLineAbilityEntry const*> skillSpells;

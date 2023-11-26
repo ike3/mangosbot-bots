@@ -7,6 +7,7 @@ using namespace ai;
 
 bool StatsAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     ostringstream out;
 
     ListGold(out);
@@ -26,7 +27,7 @@ bool StatsAction::Execute(Event& event)
     out << ", ";
     ListPower(out);
 
-    ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return true;
 }
 

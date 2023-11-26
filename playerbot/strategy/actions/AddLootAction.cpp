@@ -26,15 +26,16 @@ bool AddLootAction::Execute(Event& event)
 
 bool AddAllLootAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     bool added = false;
 
     list<ObjectGuid> gos = context->GetValue<list<ObjectGuid> >("nearest game objects")->Get();
     for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)
-        added |= AddLoot(*i);
+        added |= AddLoot(requester, *i);
 
     list<ObjectGuid> corpses = context->GetValue<list<ObjectGuid> >("nearest corpses")->Get();
     for (list<ObjectGuid>::iterator i = corpses.begin(); i != corpses.end(); i++)
-        added |= AddLoot(*i);
+        added |= AddLoot(requester, *i);
 
     return added;
 }
@@ -49,7 +50,7 @@ bool AddAllLootAction::isUseful()
     return true;
 }
 
-bool AddAllLootAction::AddLoot(ObjectGuid guid)
+bool AddAllLootAction::AddLoot(Player* requester, ObjectGuid guid)
 {
     LootObject loot(bot, guid);
 
@@ -63,12 +64,12 @@ bool AddAllLootAction::AddLoot(ObjectGuid guid)
     if (ai->HasRealPlayerMaster())
     {
         bool inDungeon = false;
-        if (ai->GetMaster()->IsInWorld() &&
-            ai->GetMaster()->GetMap()->IsDungeon() &&
-            bot->GetMapId() == ai->GetMaster()->GetMapId())
+        if (requester->IsInWorld() &&
+            requester->GetMap()->IsDungeon() &&
+            bot->GetMapId() == requester->GetMapId())
             inDungeon = true;
 
-        if (inDungeon && sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(ai->GetMaster(), wo), sPlayerbotAIConfig.lootDistance))
+        if (inDungeon && sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(requester, wo), sPlayerbotAIConfig.lootDistance))
             return false;
 
         if (Group* group = bot->GetGroup())
@@ -81,7 +82,7 @@ bool AddAllLootAction::AddLoot(ObjectGuid guid)
     return AI_VALUE(LootObjectStack*, "available loot")->Add(guid);
 }
 
-bool AddGatheringLootAction::AddLoot(ObjectGuid guid)
+bool AddGatheringLootAction::AddLoot(Player* requester, ObjectGuid guid)
 {
     LootObject loot(bot, guid);
 
@@ -108,10 +109,10 @@ bool AddGatheringLootAction::AddLoot(ObjectGuid guid)
         {
             ostringstream out;
             out << "Kill that " << targets.front()->GetName() << " so I can loot freely";
-            ai->TellError(out.str());
+            ai->TellError(requester, out.str());
             return false;
         }
     }
 
-    return AddAllLootAction::AddLoot(guid);
+    return AddAllLootAction::AddLoot(requester, guid);
 }

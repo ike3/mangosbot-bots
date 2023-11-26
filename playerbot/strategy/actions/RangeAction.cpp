@@ -7,16 +7,17 @@ using namespace ai;
 
 bool RangeAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string param = event.getParam();
     if (param == "?")
     {
-        PrintRange("spell");
-        PrintRange("heal");
-        PrintRange("shoot");
-        PrintRange("flee");
-        PrintRange("follow");
-        PrintRange("followraid");
-        PrintRange("attack");
+        PrintRange("spell", requester);
+        PrintRange("heal", requester);
+        PrintRange("shoot", requester);
+        PrintRange("flee", requester);
+        PrintRange("follow", requester);
+        PrintRange("followraid", requester);
+        PrintRange("attack", requester);
     }
     int pos = param.find(" ");
     if (pos == string::npos) return false;
@@ -31,8 +32,8 @@ bool RangeAction::Execute(Event& event)
         out << qualifier << " range: ";
         if (abs(curVal) >= 0.1f) out << curVal;
         else out << ai->GetRange(qualifier) << " (default)";
-        ai->TellPlayer(GetMaster(), out.str());
-        PrintRange(qualifier);
+        ai->TellPlayer(requester, out.str());
+        PrintRange(qualifier, requester);
         return true;
     }
 
@@ -40,11 +41,11 @@ bool RangeAction::Execute(Event& event)
     context->GetValue<float>("range", qualifier)->Set(newVal);
     ostringstream out;
     out << qualifier << " range set to: " << newVal;
-    ai->TellPlayer(GetMaster(), out.str());
+    ai->TellPlayer(requester, out.str());
     return true;
 }
 
-void RangeAction::PrintRange(string type)
+void RangeAction::PrintRange(string type, Player* requester)
 {
     float curVal = AI_VALUE2(float, "range", type);
 
@@ -53,6 +54,6 @@ void RangeAction::PrintRange(string type)
     if (abs(curVal) >= 0.1f) out << curVal;
     else out << ai->GetRange(type) << " (default)";
 
-    ai->TellPlayer(GetMaster(), out.str());
+    ai->TellPlayer(requester, out.str());
 }
 

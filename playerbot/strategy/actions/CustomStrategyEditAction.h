@@ -10,9 +10,9 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
     private:
-        bool PrintHelp();
-        bool PrintActionLine(uint32 idx, string command);
-        bool Print(string name);
-        bool Edit(string name, uint32 idx, string command);
+        bool PrintHelp(Player* requester);
+        bool PrintActionLine(uint32 idx, string command, Player* requester);
+        bool Print(string name, Player* requester);
+        bool Edit(string name, uint32 idx, string command, Player* requester);
     };
 }

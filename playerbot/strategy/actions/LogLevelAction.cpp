@@ -7,6 +7,7 @@ using namespace ai;
 bool LogLevelAction::Execute(Event& event)
 {
     string param = event.getParam();
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     Value<LogLevel> *value = ai->GetAiObjectContext()->GetValue<LogLevel>("log level");
 
     ostringstream out; 
@@ -19,7 +20,7 @@ bool LogLevelAction::Execute(Event& event)
     {
         out << "My log level is " << logLevel2string(value->Get());
     }
-    ai->TellPlayer(GetMaster(), out);
+    ai->TellPlayer(requester, out);
     return true;    
 }
 

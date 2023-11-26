@@ -27,9 +27,8 @@ void ReturnPositionResetAction::PrintStrategies(PlayerbotAI* ai, Event& event)
 {
     if (event.getParam() == "?")
     {
-        ai->ChangeStrategy("?", BotState::BOT_STATE_NON_COMBAT);
-        ai->ChangeStrategy("?", BotState::BOT_STATE_COMBAT);
-        ai->ChangeStrategy("?", BotState::BOT_STATE_REACTION);
+        Player* requester = event.getOwner() ? event.getOwner() : ai->GetMaster();
+        ai->PrintStrategies(requester, BotState::BOT_STATE_ALL);
     }
 }
 

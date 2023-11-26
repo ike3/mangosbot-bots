@@ -365,13 +365,14 @@ namespace ai
     public:
         LearnGlyphOfFireballAction(PlayerbotAI* ai) : Action(ai, "learn glyph of fireball") {}
 
-        virtual bool Execute(Event& event)
+        bool Execute(Event& event) override
         {
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
             bot->learnSpell(56975, false);
 
             ostringstream out;
             out << "I learned Glyph of Fireball";
-            ai->TellError(out.str());
+            ai->TellError(requester, out.str());
 
             return true;
         }
@@ -382,13 +383,14 @@ namespace ai
     public:
         RemoveGlyphOfFireballAction(PlayerbotAI* ai) : Action(ai, "remove glyph of fireball") {}
 
-        virtual bool Execute(Event& event)
+        bool Execute(Event& event) override
         {
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
             bot->removeSpell(56975);
 
             ostringstream out;
             out << "I removed Glyph of Fireball";
-            ai->TellError(out.str());
+            ai->TellError(requester, out.str());
 
             return true;
         }
@@ -399,13 +401,14 @@ namespace ai
     public:
         LearnGlyphOfFrostboltAction(PlayerbotAI* ai) : Action(ai, "learn glyph of frostbolt") {}
 
-        virtual bool Execute(Event& event)
+        bool Execute(Event& event) override
         {
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
             bot->learnSpell(56370, false);
 
             ostringstream out;
             out << "I learned Glyph of Frostbolt";
-            ai->TellError(out.str());
+            ai->TellError(requester, out.str());
 
             return true;
         }
@@ -416,13 +419,14 @@ namespace ai
     public:
         RemoveGlyphOfFrostboltAction(PlayerbotAI* ai) : Action(ai, "remove glyph of frostbolt") {}
 
-        virtual bool Execute(Event& event)
+        bool Execute(Event& event) override
         {
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
             bot->removeSpell(56370);
 
             ostringstream out;
             out << "I removed Glyph of Frostbolt";
-            ai->TellError(out.str());
+            ai->TellError(requester, out.str());
 
             return true;
         }
@@ -433,13 +437,14 @@ namespace ai
     public:
         LearnGlyphOfLivingBombAction(PlayerbotAI* ai) : Action(ai, "learn glyph of living bomb") {}
 
-        virtual bool Execute(Event& event)
+        bool Execute(Event& event) override
         {
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
             bot->learnSpell(64275, false);
 
             ostringstream out;
             out << "I learned Glyph of Living Bomb";
-            ai->TellError(out.str());
+            ai->TellError(requester, out.str());
 
             return true;
         }
@@ -450,13 +455,14 @@ namespace ai
     public:
         RemoveGlyphOfLivingBombAction(PlayerbotAI* ai) : Action(ai, "remove glyph of living bomb") {}
 
-        virtual bool Execute(Event& event)
+        bool Execute(Event& event) override
         {
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
             bot->removeSpell(64275);
 
             ostringstream out;
             out << "I removed Glyph of Living Bomb";
-            ai->TellError(out.str());
+            ai->TellError(requester, out.str());
 
             return true;
         }
@@ -467,13 +473,14 @@ namespace ai
     public:
         LearnGlyphOfMirrorImageAction(PlayerbotAI* ai) : Action(ai, "learn glyph of mirror image") {}
 
-        virtual bool Execute(Event& event)
+        bool Execute(Event& event) override
         {
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
             bot->learnSpell(63093, false);
 
             ostringstream out;
             out << "I learned Glyph of Mirror Image";
-            ai->TellError(out.str());
+            ai->TellError(requester, out.str());
 
             return true;
         }
@@ -484,13 +491,14 @@ namespace ai
     public:
         RemoveGlyphOfMirrorImageAction(PlayerbotAI* ai) : Action(ai, "remove glyph of mirror image") {}
 
-        virtual bool Execute(Event& event)
+        bool Execute(Event& event) override
         {
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
             bot->removeSpell(63093);
 
             ostringstream out;
             out << "I removed Glyph of Mirror Image";
-            ai->TellError(out.str());
+            ai->TellError(requester, out.str());
 
             return true;
         }
@@ -501,13 +509,14 @@ namespace ai
     public:
         LearnGlyphOfMoltenArmorAction(PlayerbotAI* ai) : Action(ai, "learn glyph of molten armor") {}
 
-        virtual bool Execute(Event& event)
+        bool Execute(Event& event) override
         {
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
             bot->learnSpell(42751, false);
 
             ostringstream out;
             out << "I learned Glyph of Molten Armor";
-            ai->TellError(out.str());
+            ai->TellError(requester, out.str());
 
             return true;
         }
@@ -518,13 +527,14 @@ namespace ai
     public:
         RemoveGlyphOfMoltenArmorAction(PlayerbotAI* ai) : Action(ai, "remove glyph of molten armor") {}
 
-        virtual bool Execute(Event& event)
+        bool Execute(Event& event) override
         {
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
             bot->removeSpell(42751);
 
             ostringstream out;
             out << "I removed Glyph of Molten Armor";
-            ai->TellError(out.str());
+            ai->TellError(requester, out.str());
 
             return true;
         }

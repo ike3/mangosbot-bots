@@ -8,13 +8,14 @@ using namespace ai;
 
 bool SaveManaAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
     double value = AI_VALUE(double, "mana save level");
 
     if (text == "?")
     {
         ostringstream out; out << "Mana save level: " << format(value);
-        ai->TellPlayer(GetMaster(), out);
+        ai->TellPlayer(requester, out);
         return true;
     }
 
@@ -52,8 +53,7 @@ bool SaveManaAction::Execute(Event& event)
     ai->GetAiObjectContext()->GetValue<double>("mana save level")->Set(value);
 
     ostringstream out; out << "Mana save level set: " << format(value);
-    ai->TellPlayer(GetMaster(), out);
-
+    ai->TellPlayer(requester, out);
     return true;
 }
 

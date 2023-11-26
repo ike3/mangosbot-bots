@@ -11,6 +11,7 @@ using namespace ai;
 
 bool ReviveFromCorpseAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     Player* master = ai->GetGroupMaster();
     Corpse* corpse = bot->GetCorpse();
 
@@ -22,7 +23,7 @@ bool ReviveFromCorpseAction::Execute(Event& event)
         {
             if (!ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT))
             {
-                ai->TellPlayerNoFacing(GetMaster(), "Welcome back!", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+                ai->TellPlayerNoFacing(requester, "Welcome back!", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
                 ai->ChangeStrategy("+follow,-stay", BotState::BOT_STATE_NON_COMBAT);
                 return true;
             }

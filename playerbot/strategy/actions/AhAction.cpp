@@ -12,6 +12,7 @@ using namespace ai;
 
 bool AhAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
 
     list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
@@ -24,18 +25,18 @@ bool AhAction::Execute(Event& event)
         if (!sRandomPlayerbotMgr.m_ahActionMutex.try_lock()) //Another bot is using the Auction right now. Try again later.
             return false;
 
-        bool doneAuction = ExecuteCommand(text, npc);
+        bool doneAuction = ExecuteCommand(requester, text, npc);
 
         sRandomPlayerbotMgr.m_ahActionMutex.unlock();
         
         return doneAuction;
     }
 
-    ai->TellError("Cannot find auctioneer nearby");
+    ai->TellPlayerNoFacing(requester, "Cannot find auctioneer nearby");
     return false;
 }
 
-bool AhAction::ExecuteCommand(string text, Unit* auctioneer)
+bool AhAction::ExecuteCommand(Player* requester, string text, Unit* auctioneer)
 {
     uint32 time;
 #ifdef MANGOSBOT_ZERO
@@ -72,7 +73,7 @@ bool AhAction::ExecuteCommand(string text, Unit* auctioneer)
 
             price *= item->GetCount();
 
-            postedItem |= PostItem(item, price, auctioneer, time);
+            postedItem |= PostItem(requester, item, price, auctioneer, time);
 
             if (!urand(0, 5))
                 break;
@@ -93,10 +94,10 @@ bool AhAction::ExecuteCommand(string text, Unit* auctioneer)
 
     Item* item = *found.begin();
 
-    return PostItem(item, price, auctioneer, time);
+    return PostItem(requester, item, price, auctioneer, time);
 }
 
-bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
+bool AhAction::PostItem(Player* requester, Item* item, uint32 price, Unit* auctioneer, uint32 time)
 {
     ObjectGuid itemGuid = item->GetObjectGuid();
     ItemPrototype const* proto = item->GetProto();    
@@ -127,7 +128,7 @@ bool AhAction::PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time)
 
     ostringstream out;
     out << "Posting " << ChatHelper::formatItem(itemQualifier, cnt) << " for " << ChatHelper::formatMoney(price) << " to the AH";
-    ai->TellPlayerNoFacing(GetMaster(), out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayerNoFacing(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     return true;
 }
 
@@ -144,8 +145,7 @@ uint32 AhAction::GetSellPrice(ItemPrototype const* proto)
     return price;
 }
 
-
-bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
+bool AhBidAction::ExecuteCommand(Player* requester, string text, Unit* auctioneer)
 {
     AuctionHouseEntry const* auctionHouseEntry = bot->GetSession()->GetCheckedAuctionHouseForAuctioneer(auctioneer->GetObjectGuid());
     if (!auctionHouseEntry)
@@ -267,7 +267,7 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
                     continue;
             }
 
-            bidItems = BidItem(auction, price, auctioneer);
+            bidItems = BidItem(requester, auction, price, auctioneer);
                 
             if (bidItems)
                 totalcount++;
@@ -326,10 +326,10 @@ bool AhBidAction::ExecuteCommand(string text, Unit* auctioneer)
 
     uint32 cost = std::min(auction->buyout, uint32(std::max(auction->bid, auction->startbid) * frand(1.05f, 1.25f)));
 
-    return BidItem(auction, cost, auctioneer);
+    return BidItem(requester, auction, cost, auctioneer);
 }
 
-bool AhBidAction::BidItem(AuctionEntry* auction, uint32 price, Unit* auctioneer)
+bool AhBidAction::BidItem(Player* requester, AuctionEntry* auction, uint32 price, Unit* auctioneer)
 {
     AuctionHouseEntry const* auctionHouseEntry = bot->GetSession()->GetCheckedAuctionHouseForAuctioneer(auctioneer->GetObjectGuid());
     if (!auctionHouseEntry)
@@ -364,7 +364,7 @@ bool AhBidAction::BidItem(AuctionEntry* auction, uint32 price, Unit* auctioneer)
         sPlayerbotAIConfig.logEvent(ai, "AhBidAction", proto->Name1, to_string(proto->ItemId));
         ostringstream out;
         out << "Bidding " << ChatHelper::formatMoney(price) << " on " << ChatHelper::formatItem(itemQualifier, count) << " on the AH";
-        ai->TellPlayerNoFacing(GetMaster(), out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayerNoFacing(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         return true;
     }
     return false;

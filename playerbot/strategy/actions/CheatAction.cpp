@@ -4,10 +4,9 @@
 
 using namespace ai;
 
-
-
 bool CheatAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string param = event.getParam();
 
     uint32 cheatMask = (uint32)ai->GetCheat();
@@ -37,7 +36,7 @@ bool CheatAction::Execute(Event& event)
             cheatMask ^= (uint32)newCheat;
             break;
         case '?':
-            ListCheats();
+            ListCheats(requester);
             return true;
         }
     }
@@ -65,7 +64,7 @@ string CheatAction::GetCheatName(BotCheatMask cheatMask)
     return cheatName[log2(((uint32)cheatMask))];
 }
 
-void CheatAction::ListCheats()
+void CheatAction::ListCheats(Player* requester)
 {
     ostringstream out;
     for (int i = 0; i < log2((uint32)BotCheatMask::maxMask); i++)
@@ -77,7 +76,7 @@ void CheatAction::ListCheats()
            out << "[" << GetCheatName(BotCheatMask(cheatMask)) << "]";
     }
 
-    ai->TellPlayerNoFacing(GetMaster(), out);
+    ai->TellPlayerNoFacing(requester, out);
 }
 
 void CheatAction::AddCheat(BotCheatMask cheatMask)

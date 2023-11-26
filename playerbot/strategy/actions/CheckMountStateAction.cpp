@@ -13,6 +13,7 @@ uint64 extractGuid(WorldPacket& packet);
 
 bool CheckMountStateAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     Player* groupMaster = ai->GetGroupMaster();
 
     bool hasAttackers = AI_VALUE(bool, "has attackers");
@@ -51,9 +52,9 @@ bool CheckMountStateAction::Execute(Event& event)
                 if (CanMountInBg())
                 {
                     if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
-                        ai->TellPlayerNoFacing(GetMaster(), "Mount in bg. No attackers or far from target and not in combat.");
+                        ai->TellPlayerNoFacing(requester, "Mount in bg. No attackers or far from target and not in combat.");
 
-                    return Mount();
+                    return Mount(requester);
                 }
             }
         }
@@ -63,7 +64,7 @@ bool CheckMountStateAction::Execute(Event& event)
     if (canAttackTarget)
     {
         if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
-            ai->TellPlayerNoFacing(GetMaster(), "Unmount. Able to attack target.");
+            ai->TellPlayerNoFacing(requester, "Unmount. Able to attack target.");
         return UnMount();
     }
 
@@ -75,15 +76,17 @@ bool CheckMountStateAction::Execute(Event& event)
     if (!canAttackTarget && (farFromTarget || shouldChaseTarget))
     {
         if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
-            ai->TellPlayerNoFacing(GetMaster(), "Mount. Unable to attack target and target is far or chasable.");
-        return Mount();
+            ai->TellPlayerNoFacing(requester, "Mount. Unable to attack target and target is far or chaseable.");
+        
+        return Mount(requester);
     }
 
     //Following master and close to master that is unmounted.
     if (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && groupMaster && groupMaster != bot && !farFromMaster && !IsLeaderMounted)
     {
         if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
-            ai->TellPlayerNoFacing(GetMaster(), "Unmount. Near umounted group master.");
+            ai->TellPlayerNoFacing(requester, "Unmount. Near umounted group master.");
+
         return UnMount();
     }
 
@@ -98,7 +101,8 @@ bool CheckMountStateAction::Execute(Event& event)
         if (guardPosition.isSet() && distance < ai->GetRange("follow"))
         {
             if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
-                ai->TellPlayerNoFacing(GetMaster(), "Unmount. Near umounted guard position.");
+                ai->TellPlayerNoFacing(requester, "Unmount. Near umounted guard position.");
+
             return UnMount();
         }
     }
@@ -114,7 +118,8 @@ bool CheckMountStateAction::Execute(Event& event)
         if (stayPosition.isSet() && distance < ai->GetRange("follow"))
         {
             if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
-                ai->TellPlayerNoFacing(GetMaster(), "Unmount. Near stay location.");
+                ai->TellPlayerNoFacing(requester, "Unmount. Near stay location.");
+
             return UnMount();
         }
     }
@@ -123,7 +128,8 @@ bool CheckMountStateAction::Execute(Event& event)
     if (travelTarget->isWorking())
     {
         if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
-            ai->TellPlayerNoFacing(GetMaster(), "Unmount. Near travel target.");
+            ai->TellPlayerNoFacing(requester, "Unmount. Near travel target.");
+
         return UnMount();
     }
 
@@ -131,7 +137,8 @@ bool CheckMountStateAction::Execute(Event& event)
     if (AI_VALUE(GuidPosition, "rpg target") && sServerFacade.IsDistanceLessThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.farDistance))
     {
         if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && IsMounted)
-            ai->TellPlayerNoFacing(GetMaster(), "Unmount. Near rpg target.");
+            ai->TellPlayerNoFacing(requester, "Unmount. Near rpg target.");
+
         return UnMount();
     }
 
@@ -141,16 +148,18 @@ bool CheckMountStateAction::Execute(Event& event)
         if (IsLeaderMounted && !hasAttackers)
         {
             if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
-                ai->TellPlayerNoFacing(GetMaster(), "Mount. Group master mounted and no attackers.");
-            return Mount();
+                ai->TellPlayerNoFacing(requester, "Mount. Group master mounted and no attackers.");
+
+            return Mount(requester);
         }
 
         //Mounting to move to master.
         if (farFromMaster && !bot->IsInCombat())
         {
             if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
-                ai->TellPlayerNoFacing(GetMaster(), "Mount. Far from group master and not in combat.");
-            return Mount();
+                ai->TellPlayerNoFacing(requester, "Mount. Far from group master and not in combat.");
+
+            return Mount(requester);
         }
     }
 
@@ -160,8 +169,9 @@ bool CheckMountStateAction::Execute(Event& event)
         if (travelTarget->isTraveling() && AI_VALUE(bool, "can move around"))
         {
             if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
-                ai->TellPlayerNoFacing(GetMaster(), "Mount. Traveling some place.");
-            return Mount();
+                ai->TellPlayerNoFacing(requester, "Mount. Traveling some place.");
+
+            return Mount(requester);
         }
         else if (!hasAttackers)
         {
@@ -169,16 +179,18 @@ bool CheckMountStateAction::Execute(Event& event)
             if (AI_VALUE(GuidPosition, "rpg target") && sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "rpg target"), sPlayerbotAIConfig.sightDistance))
             {
                 if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
-                    ai->TellPlayerNoFacing(GetMaster(), "Mount. Rpg target far away.");
-                return Mount();
+                    ai->TellPlayerNoFacing(requester, "Mount. Rpg target far away.");
+
+                return Mount(requester);
             }
 
             //Mounting in safe place.
             if (!ai->HasStrategy("guard", ai->GetState()) && !ai->HasStrategy("stay", ai->GetState()) && !AI_VALUE(list<ObjectGuid>, "possible rpg targets").empty() && urand(0, 100) > 50)
             {
                 if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
-                    ai->TellPlayerNoFacing(GetMaster(), "Mount. Near rpg targets.");
-                return Mount();
+                    ai->TellPlayerNoFacing(requester, "Mount. Near rpg targets.");
+
+                return Mount(requester);
             }
         }
 
@@ -193,8 +205,9 @@ bool CheckMountStateAction::Execute(Event& event)
             if (guardPosition.isSet() && distance > 40.0f)
             {
                 if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
-                    ai->TellPlayerNoFacing(GetMaster(), "Mount. Move to guard.");
-                return Mount();
+                    ai->TellPlayerNoFacing(requester, "Mount. Move to guard.");
+
+                return Mount(requester);
             }
         }
 
@@ -209,8 +222,9 @@ bool CheckMountStateAction::Execute(Event& event)
             if (guardPosition.isSet() && distance > 40.0f)
             {
                 if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT) && !IsMounted)
-                    ai->TellPlayerNoFacing(GetMaster(), "Mount. Move to stay.");
-                return Mount();
+                    ai->TellPlayerNoFacing(requester, "Mount. Move to stay.");
+
+                return Mount(requester);
             }
         }
     }
@@ -369,7 +383,7 @@ float CheckMountStateAction::GetAttackDistance() const
     return 35.0f;
 }
 
-bool CheckMountStateAction::Mount()
+bool CheckMountStateAction::Mount(Player* requester)
 {
     bool canFly = CanFly();
 
@@ -383,12 +397,12 @@ bool CheckMountStateAction::Mount()
     for (auto& mount : mountList)
     {
         if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
-            ai->TellPlayerNoFacing(GetMaster(), "Try to mount with " + chat->formatSpell(mount.GetSpellId()));
+            ai->TellPlayerNoFacing(requester, "Try to mount with " + chat->formatSpell(mount.GetSpellId()));
 
         if (currentSpeed >= mount.GetSpeed(canFly))
         {
             if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
-                ai->TellPlayerNoFacing(GetMaster(), "Speed not faster than current.");
+                ai->TellPlayerNoFacing(requester, "Speed not faster than current.");
 
             return false;
         }
@@ -396,7 +410,7 @@ bool CheckMountStateAction::Mount()
         if (currentSpeed) //Already mounted
         {
             if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
-                ai->TellPlayerNoFacing(GetMaster(), "Mounted, unmount to mount faster next time.");
+                ai->TellPlayerNoFacing(requester, "Mounted, unmount to mount faster next time.");
             return UnMount();
         }
 
@@ -412,7 +426,7 @@ bool CheckMountStateAction::Mount()
         if (!mount.IsValidLocation())
         {
             if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
-                ai->TellPlayerNoFacing(GetMaster(), "Bot can not use this mount here.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+                ai->TellPlayerNoFacing(requester, "Bot can not use this mount here.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
             continue;
         }
 
@@ -421,11 +435,11 @@ bool CheckMountStateAction::Mount()
             if (!mount.GetItem())
             {
                 if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
-                    ai->TellPlayerNoFacing(GetMaster(), "Bot does not have this mount.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+                    ai->TellPlayerNoFacing(requester, "Bot does not have this mount.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
                 continue;
             }
 
-            if (UseItemAuto(GetMaster(), mount.GetItem()))
+            if (UseItemAuto(requester, mount.GetItem()))
             {
                 SetDuration(3000U); // 3s
                 didMount = true;
@@ -433,7 +447,7 @@ bool CheckMountStateAction::Mount()
             else
             {
                 if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
-                    ai->TellPlayerNoFacing(GetMaster(), "Mounting failed.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+                    ai->TellPlayerNoFacing(requester, "Mounting failed.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
             }
         }
         else
@@ -441,7 +455,7 @@ bool CheckMountStateAction::Mount()
             if (!ai->HasSpell(mount.GetSpellId()))
             {
                 if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
-                    ai->TellPlayerNoFacing(GetMaster(), "Bot does not have this mount spell.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+                    ai->TellPlayerNoFacing(requester, "Bot does not have this mount spell.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
                 continue;
             }
 
@@ -454,14 +468,14 @@ bool CheckMountStateAction::Mount()
             else
             {
                 if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
-                    ai->TellPlayerNoFacing(GetMaster(), "Mounting spell failed.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+                    ai->TellPlayerNoFacing(requester, "Mounting spell failed.", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
             }
         }
 
         if (didMount)
         {
             if (ai->HasStrategy("debug mount", BotState::BOT_STATE_NON_COMBAT))
-                ai->TellPlayerNoFacing(GetMaster(), "Mounting.");
+                ai->TellPlayerNoFacing(requester, "Mounting.");
 
             return didMount;
         }

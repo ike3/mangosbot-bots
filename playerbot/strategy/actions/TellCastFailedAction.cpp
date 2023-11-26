@@ -7,6 +7,7 @@ using namespace ai;
 
 bool TellCastFailedAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     WorldPacket p(event.getPacket());
     p.rpos(0);
     uint8 castCount, result;
@@ -49,12 +50,13 @@ bool TellCastFailedAction::Execute(Event& event)
 #endif
     );
     if (castTime >= 2000)
-        ai->TellError(out.str());
+        ai->TellError(requester, out.str());
     return true;
 }
 
 bool TellSpellAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string spell = event.getParam();
     uint32 spellId = AI_VALUE2(uint32, "spell id", spell);
     if (!spellId)
@@ -65,6 +67,6 @@ bool TellSpellAction::Execute(Event& event)
         return false;
 
     ostringstream out; out << chat->formatSpell(spellInfo);
-    ai->TellError(out.str());
+    ai->TellError(requester, out.str());
     return true;
 }

@@ -7,7 +7,7 @@
 
 using namespace ai;
 
-bool StayActionBase::Stay()
+bool StayActionBase::Stay(Player* requester)
 {
     AI_VALUE(LastMovement&, "last movement").Set(NULL);
 
@@ -21,7 +21,7 @@ bool StayActionBase::Stay()
 	if (mm.GetCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE || bot->IsFlying())
 #endif
 	{
-		if (verbose) ai->TellError("I can not stay, I'm flying!");
+		if (verbose) ai->TellError(requester, "I can not stay, I'm flying!");
 		return false;
 	} 
 
@@ -46,7 +46,8 @@ bool StayActionBase::Stay()
 
 bool StayAction::Execute(Event& event)
 {
-    return Stay();
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    return Stay(requester);
 }
 
 bool StayAction::isUseful()

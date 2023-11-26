@@ -127,18 +127,18 @@ float ChooseRpgTargetAction::getMaxRelevance(GuidPosition guidP)
 
 bool ChooseRpgTargetAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
 
-    Player* master = ai->GetMaster();;
     GuidPosition masterRpgTarget;
-    if (master && master != bot && master->GetPlayerbotAI() && master->GetMapId() == bot->GetMapId() && !master->IsBeingTeleported())
+    if (requester && requester != bot && requester->GetPlayerbotAI() && requester->GetMapId() == bot->GetMapId() && !requester->IsBeingTeleported())
     {
-        Player* player = ai->GetMaster();
-        GuidPosition masterRpgTarget = PAI_VALUE(GuidPosition, "rpg target");
+        
     }
     else
-        master = nullptr;
-
+    {
+        requester = nullptr;
+    }
 
     unordered_map<ObjectGuid, uint32> targets;
     vector<ObjectGuid> targetList;
@@ -281,7 +281,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
             it = targets.erase(it);
         else if (hasGoodRelevance && it->second <= 1.0) //Remove useless targets if there's any good ones
             it = targets.erase(it);
-        else if (!hasGoodRelevance && master && (!masterRpgTarget || it->first != masterRpgTarget)) //Remove useless targets if it's not masters target.
+        else if (!hasGoodRelevance && requester && (!masterRpgTarget || it->first != masterRpgTarget)) //Remove useless targets if it's not masters target.
             it = targets.erase(it);
         else
             ++it;
@@ -293,7 +293,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
         {
             ostringstream out;
             out << "found: no targets, " << checked << " checked.";
-            ai->TellPlayerNoFacing(GetMaster(), out);
+            ai->TellPlayerNoFacing(requester, out);
         }
         sLog.outDetail("%s can't choose RPG target: all %zu are not available", bot->GetName(), possibleTargets.size());
         RESET_AI_VALUE(set<ObjectGuid>&,"ignore rpg target");
@@ -307,7 +307,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
         std::sort(sortedTargets.begin(), sortedTargets.end(), [](pair<ObjectGuid, uint32>i, pair<ObjectGuid, uint32> j) {return i.second > j.second; });
 
-        ai->TellPlayerNoFacing(GetMaster(), "------" + to_string(targets.size()) + "------");
+        ai->TellPlayerNoFacing(requester, "------" + to_string(targets.size()) + "------");
 
         uint32 checked = 0;
 
@@ -323,7 +323,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
             out << " " << rgpActionReason[guidP] << " " << target.second;
 
-            ai->TellPlayerNoFacing(GetMaster(), out);
+            ai->TellPlayerNoFacing(requester, out);
 
             checked++;
 
@@ -331,7 +331,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
             {
                 ostringstream out;
                 out << "and " << (sortedTargets.size()-checked) << " more...";
-                ai->TellPlayerNoFacing(GetMaster(), out);
+                ai->TellPlayerNoFacing(requester, out);
                 break;
             }
         }
@@ -370,7 +370,7 @@ bool ChooseRpgTargetAction::Execute(Event& event)
 
         out << " " << rgpActionReason[guidP] << " " << targets[guidP];
 
-        ai->TellPlayerNoFacing(GetMaster(), out);
+        ai->TellPlayerNoFacing(requester, out);
     }
 
     SET_AI_VALUE(GuidPosition, "rpg target", guidP);

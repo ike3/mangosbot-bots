@@ -371,19 +371,24 @@ TalentSpec* ChangeTalentsAction::GetBestPremadeSpec(int specId)
 
 bool AutoSetTalentsAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     sPlayerbotAIConfig.logEvent(ai, "AutoSetTalentsAction", to_string(bot->m_Played_time[PLAYED_TIME_LEVEL]), to_string(bot->m_Played_time[PLAYED_TIME_TOTAL]));
 
     ostringstream out;
 
     if (sPlayerbotAIConfig.autoPickTalents == "no" && !sRandomPlayerbotMgr.IsRandomBot(bot))
+    {
         return false;
+    }
 
     if (bot->GetFreeTalentPoints() <= 0)
+    {
         return false;
+    }
 
     AutoSelectTalents(&out);
 
-    ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
     return true;
 }

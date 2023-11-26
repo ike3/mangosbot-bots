@@ -21,7 +21,7 @@ bool BankAction::Execute(Event& event)
         return ExecuteCommand(requester, text, npc);
     }
 
-    ai->TellError("Cannot find banker nearby");
+    ai->TellError(requester, "Cannot find banker nearby");
     return false;
 }
 

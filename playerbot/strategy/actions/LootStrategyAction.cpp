@@ -11,6 +11,7 @@ using namespace ai;
 bool LootStrategyAction::Execute(Event& event)
 {
     string strategy = event.getParam();
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
 
     LootObjectStack* lootItems = AI_VALUE(LootObjectStack*, "available loot");
     set<uint32>& alwaysLootItems = AI_VALUE(set<uint32>&, "always loot list");
@@ -21,22 +22,24 @@ bool LootStrategyAction::Execute(Event& event)
             ostringstream out;
             out << "Loot strategy: ";
             out << AI_VALUE(string, "loot strategy");
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(requester, out);
         }
 
         {
             ostringstream out;
             out << "Always loot items: ";
-
             for (set<uint32>::iterator i = alwaysLootItems.begin(); i != alwaysLootItems.end(); i++)
             {
                 ItemPrototype const *proto = sItemStorage.LookupEntry<ItemPrototype>(*i);
                 if (!proto)
+                {
                     continue;
+                }
 
                 out << chat->formatItem(proto);
             }
-            ai->TellPlayer(GetMaster(), out);
+
+            ai->TellPlayer(requester, out);
         }
     }
     else
@@ -51,7 +54,7 @@ bool LootStrategyAction::Execute(Event& event)
 
             ostringstream out;
             out << "Loot strategy set to " << lootStrategy;
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(requester, out);
             return true;
         }
 
@@ -66,21 +69,23 @@ bool LootStrategyAction::Execute(Event& event)
                 {
                     ostringstream out;
                     out << (StoreLootAction::IsLootAllowed(itemQualifier, ai) ? "|cFF000000Will loot " : "|c00FF0000Won't loot ") << ChatHelper::formatItem(itemQualifier);
-                    ai->TellPlayer(GetMaster(), out.str());
+                    ai->TellPlayer(requester, out.str());
                 }
             }
             else if (remove)
             {
                 set<uint32>::iterator j = alwaysLootItems.find(itemQualifier.GetId());
                 if (j != alwaysLootItems.end())
+                {
                     alwaysLootItems.erase(j);
+                }
 
-                ai->TellPlayer(GetMaster(), "Item(s) removed from always loot list");
+                ai->TellPlayer(requester, "Item(s) removed from always loot list");
             }
             else
             {
                 alwaysLootItems.insert(itemQualifier.GetId());
-                ai->TellPlayer(GetMaster(), "Item(s) added to always loot list");
+                ai->TellPlayer(requester, "Item(s) added to always loot list");
             }
         }
     }

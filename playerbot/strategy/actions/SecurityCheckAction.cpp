@@ -5,7 +5,6 @@
 
 using namespace ai;
 
-
 bool SecurityCheckAction::isUseful()
 {
     return sRandomPlayerbotMgr.IsRandomBot(bot) && ai->GetMaster() && ai->GetMaster()->GetSession()->GetSecurity() < SEC_GAMEMASTER && !ai->GetMaster()->GetPlayerbotAI();
@@ -13,6 +12,7 @@ bool SecurityCheckAction::isUseful()
 
 bool SecurityCheckAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     Group* group = bot->GetGroup();
     if (group)
     {
@@ -22,7 +22,7 @@ bool SecurityCheckAction::Execute(Event& event)
         {
             if ((ai->GetGroupMaster()->GetSession()->GetSecurity() == SEC_PLAYER) && (!bot->GetGuildId() || bot->GetGuildId() != ai->GetGroupMaster()->GetGuildId()))
             {
-                ai->TellError("I will play with this loot type only if I'm in your guild :/");
+                ai->TellError(requester, "I will play with this loot type only if I'm in your guild :/");
                 ai->ChangeStrategy("+passive,+stay", BotState::BOT_STATE_NON_COMBAT);
                 ai->ChangeStrategy("+passive,+stay", BotState::BOT_STATE_COMBAT);
             }

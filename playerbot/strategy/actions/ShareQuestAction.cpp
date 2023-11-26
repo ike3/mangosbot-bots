@@ -6,11 +6,13 @@ using namespace ai;
 
 bool ShareQuestAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string link = event.getParam();
-    if (!GetMaster())
+
+    if (!requester)
         return false;
 
-    PlayerbotChatHandler handler(GetMaster());
+    PlayerbotChatHandler handler(requester);
     uint32 entry = handler.extractQuestId(link);
     if (!entry)
         return false;
@@ -28,7 +30,7 @@ bool ShareQuestAction::Execute(Event& event)
             WorldPacket p;
             p << entry;
             bot->GetSession()->HandlePushQuestToParty(p);
-            ai->TellPlayer(GetMaster(), "Quest shared", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(requester, "Quest shared", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             return true;
         }
     }
@@ -38,6 +40,7 @@ bool ShareQuestAction::Execute(Event& event)
 
 bool AutoShareQuestAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     bool shared = false;
 
     for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
@@ -94,7 +97,7 @@ bool AutoShareQuestAction::Execute(Event& event)
         WorldPacket p;
         p << logQuest;
         bot->GetSession()->HandlePushQuestToParty(p);
-        ai->TellPlayer(GetMaster(), "Quest shared", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(requester, "Quest shared", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         shared = true;
     }
 

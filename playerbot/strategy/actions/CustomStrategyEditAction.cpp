@@ -7,9 +7,10 @@ using namespace ai;
 
 bool CustomStrategyEditAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
     int pos = text.find(" ");
-    if (pos == string::npos) return PrintHelp();
+    if (pos == string::npos) return PrintHelp(requester);
     string name = text.substr(0, pos);
     text = text.substr(pos + 1);
 
@@ -18,39 +19,39 @@ bool CustomStrategyEditAction::Execute(Event& event)
     string idx = text.substr(0, pos);
     text = pos >= text.size() ? "" : text.substr(pos + 1);
 
-    return idx == "?" ? Print(name) : Edit(name, atoi(idx.c_str()), text);
+    return idx == "?" ? Print(name, requester) : Edit(name, atoi(idx.c_str()), text, requester);
 }
 
-bool CustomStrategyEditAction::PrintHelp()
+bool CustomStrategyEditAction::PrintHelp(Player* requester)
 {
-    ai->TellPlayer(GetMaster(), "=== Custom strategies ===");
-
+    ai->TellPlayer(requester, "=== Custom strategies ===");
     uint32 owner = (uint32)ai->GetBot()->GetGUIDLow();
-    QueryResult* results = PlayerbotDatabase.PQuery("SELECT distinct name FROM ai_playerbot_custom_strategy WHERE owner = '%u'",
-            owner);
+    QueryResult* results = PlayerbotDatabase.PQuery("SELECT distinct name FROM ai_playerbot_custom_strategy WHERE owner = '%u'", owner);
+    
     if (results)
     {
         do
         {
             Field* fields = results->Fetch();
             string name = fields[0].GetString();
-            ai->TellPlayer(GetMaster(), name);
-        } while (results->NextRow());
-
+            ai->TellPlayer(requester, name);
+        } 
+        while (results->NextRow());
         delete results;
     }
-    ai->TellPlayer(GetMaster(), "Usage: cs <name> <idx> <command>");
+
+    ai->TellPlayer(requester, "Usage: cs <name> <idx> <command>");
     return false;
 }
 
-bool CustomStrategyEditAction::Print(string name)
+bool CustomStrategyEditAction::Print(string name, Player* requester)
 {
     ostringstream out; out << "=== " << name << " ===";
-    ai->TellPlayer(GetMaster(), out.str());
+    ai->TellPlayer(requester, out.str());
 
     uint32 owner = (uint32)ai->GetBot()->GetGUIDLow();
-    QueryResult* results = PlayerbotDatabase.PQuery("SELECT idx, action_line FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' order by idx",
-            name.c_str(), owner);
+    QueryResult* results = PlayerbotDatabase.PQuery("SELECT idx, action_line FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' order by idx", name.c_str(), owner);
+    
     if (results)
     {
         do
@@ -58,41 +59,39 @@ bool CustomStrategyEditAction::Print(string name)
             Field* fields = results->Fetch();
             uint32 idx = fields[0].GetUInt32();
             string action = fields[1].GetString();
-
-            PrintActionLine(idx, action);
-        } while (results->NextRow());
-
+            PrintActionLine(idx, action, requester);
+        } 
+        while (results->NextRow());
         delete results;
     }
+
     return true;
 }
 
-bool CustomStrategyEditAction::Edit(string name, uint32 idx, string command)
+bool CustomStrategyEditAction::Edit(string name, uint32 idx, string command, Player* requester)
 {
     uint32 owner = (uint32)ai->GetBot()->GetGUIDLow();
-    QueryResult* results = PlayerbotDatabase.PQuery("SELECT action_line FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' and idx = '%u'",
-            name.c_str(), owner, idx);
+    QueryResult* results = PlayerbotDatabase.PQuery("SELECT action_line FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' and idx = '%u'", name.c_str(), owner, idx);
+
     if (results)
     {
         if (command.empty())
         {
-            PlayerbotDatabase.DirectPExecute("DELETE FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' and idx = '%u'",
-                        name.c_str(), owner, idx);
+            PlayerbotDatabase.DirectPExecute("DELETE FROM ai_playerbot_custom_strategy WHERE name = '%s' and owner = '%u' and idx = '%u'", name.c_str(), owner, idx);
         }
         else
         {
-            PlayerbotDatabase.DirectPExecute("UPDATE ai_playerbot_custom_strategy SET action_line = '%s' WHERE name = '%s' and owner = '%u' and idx = '%u'",
-                        command.c_str(), name.c_str(), owner, idx);
+            PlayerbotDatabase.DirectPExecute("UPDATE ai_playerbot_custom_strategy SET action_line = '%s' WHERE name = '%s' and owner = '%u' and idx = '%u'", command.c_str(), name.c_str(), owner, idx);
         }
+
         delete results;
     }
     else
     {
-        PlayerbotDatabase.DirectPExecute("INSERT INTO ai_playerbot_custom_strategy (name, owner, idx, action_line) VALUES ('%s', '%u', '%u', '%s')",
-                    name.c_str(), owner, idx, command.c_str());
+        PlayerbotDatabase.DirectPExecute("INSERT INTO ai_playerbot_custom_strategy (name, owner, idx, action_line) VALUES ('%s', '%u', '%u', '%s')", name.c_str(), owner, idx, command.c_str());
     }
 
-    PrintActionLine(idx, command);
+    PrintActionLine(idx, command, requester);
 
     ostringstream ss; ss << "custom::" << name;
     Strategy* strategy = ai->GetAiObjectContext()->GetStrategy(ss.str());
@@ -108,9 +107,9 @@ bool CustomStrategyEditAction::Edit(string name, uint32 idx, string command)
     return true;
 }
 
-bool CustomStrategyEditAction::PrintActionLine(uint32 idx, string command)
+bool CustomStrategyEditAction::PrintActionLine(uint32 idx, string command, Player* requester)
 {
     ostringstream out; out << "#" << idx << " " << command;
-    ai->TellPlayer(GetMaster(), out.str());
+    ai->TellPlayer(requester, out.str());
     return true;
 }

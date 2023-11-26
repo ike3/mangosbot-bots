@@ -25,7 +25,8 @@ namespace ai
 
         virtual bool Execute(Event& event)
         {
-            ai->TellPlayer(GetMaster(), BOT_TEXT("wait_travel_close"));
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+            ai->TellPlayer(requester, BOT_TEXT("wait_travel_close"));
             return true;
         }
 

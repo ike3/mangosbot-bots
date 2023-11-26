@@ -111,7 +111,7 @@ bool GossipHelloAction::ProcessGossip(Player* requester, int menuToSelect)
     GossipMenu& menu = bot->GetPlayerMenu()->GetGossipMenu();
     if (menuToSelect >= 0 && (unsigned int)menuToSelect >= menu.MenuItemCount())
     {
-        ai->TellError("Unknown gossip option");
+        ai->TellError(requester, "Unknown gossip option");
         return false;
     }
     GossipMenuItem const& item = menu.GetItem(menuToSelect);

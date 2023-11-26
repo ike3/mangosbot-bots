@@ -23,7 +23,7 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
     private:
-        void ListQuests(QuestListFilter filter, QuestTravelDetail travelDetail = QUEST_TRAVEL_DETAIL_NONE);
-        int ListQuests(bool completed, bool silent, QuestTravelDetail travelDetail);
+        void ListQuests(Player* requester, QuestListFilter filter, QuestTravelDetail travelDetail = QUEST_TRAVEL_DETAIL_NONE);
+        int ListQuests(Player* requester, bool completed, bool silent, QuestTravelDetail travelDetail);
     };
 }

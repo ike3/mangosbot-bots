@@ -11,6 +11,7 @@ using namespace ai;
 
 bool AttackAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     Unit* target = GetTarget();
     if (target && target->IsInWorld() && target->GetMapId() == bot->GetMapId())
     {
@@ -20,7 +21,7 @@ bool AttackAction::Execute(Event& event)
         //    return false;
         //}
 
-        return Attack(target);
+        return Attack(requester, target);
     }
 
     return false;
@@ -34,7 +35,7 @@ bool AttackMyTargetAction::Execute(Event& event)
         const ObjectGuid guid = requester->GetSelectionGuid();
         if (guid)
         {
-            if (Attack(ai->GetUnit(guid)))
+            if (Attack(requester, ai->GetUnit(guid)))
             {
                 SET_AI_VALUE(ObjectGuid, "attack target", guid);
                 return true;
@@ -42,7 +43,7 @@ bool AttackMyTargetAction::Execute(Event& event)
         }
         else if (verbose)
         {
-            ai->TellError("You have no target");
+            ai->TellError(requester, "You have no target");
         }
     }
 
@@ -51,11 +52,12 @@ bool AttackMyTargetAction::Execute(Event& event)
 
 bool AttackRTITargetAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     Unit* rtiTarget = AI_VALUE(Unit*, "rti target");
 
     if (rtiTarget && rtiTarget->IsInWorld() && rtiTarget->GetMapId() == bot->GetMapId())
     {
-        if (Attack(rtiTarget))
+        if (Attack(requester, rtiTarget))
         {
             SET_AI_VALUE(ObjectGuid, "attack target", rtiTarget->GetObjectGuid());
             return true;
@@ -63,7 +65,7 @@ bool AttackRTITargetAction::Execute(Event& event)
     }
     else
     {
-        ai->TellError("I dont see my rti attack target");
+        ai->TellError(requester, "I dont see my rti attack target");
     }
 
     return false;
@@ -85,16 +87,16 @@ bool AttackRTITargetAction::isUseful()
     return true;
 }
 
-bool AttackAction::Attack(Unit* target)
+bool AttackAction::Attack(Player* requester, Unit* target)
 {
     MotionMaster &mm = *bot->GetMotionMaster();
 	if (mm.GetCurrentMovementGeneratorType() == TAXI_MOTION_TYPE || (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f))
     {
-        if (verbose) ai->TellError("I cannot attack in flight");
+        if (verbose) ai->TellError(requester, "I cannot attack in flight");
         return false;
     }
 
-    if(IsTargetValid(target))
+    if(IsTargetValid(requester, target))
     {
         if (bot->IsMounted() && (sServerFacade.GetDistance2d(bot, target) < 40.0f || bot->IsFlying()))
         {
@@ -157,26 +159,26 @@ bool AttackAction::Attack(Unit* target)
     return false;
 }
 
-bool AttackAction::IsTargetValid(Unit* target)
+bool AttackAction::IsTargetValid(Player* requester, Unit* target)
 {
     ostringstream msg;
     if (!target)
     {
-        if (verbose) ai->TellError("I have no target");
+        if (verbose) ai->TellError(requester, "I have no target");
         return false;
     }
     else if (sServerFacade.IsFriendlyTo(bot, target))
     {
         msg << target->GetName();
         msg << " is friendly to me";
-        if (verbose) ai->TellError(msg.str());
+        if (verbose) ai->TellError(requester, msg.str());
         return false;
     }
     else if (sServerFacade.UnitIsDead(target))
     {
         msg << target->GetName();
         msg << " is dead";
-        if (verbose) ai->TellError(msg.str());
+        if (verbose) ai->TellError(requester, msg.str());
         return false;
     }
 
@@ -190,5 +192,6 @@ bool AttackDuelOpponentAction::isUseful()
 
 bool AttackDuelOpponentAction::Execute(Event& event)
 {
-    return Attack(AI_VALUE(Unit*, "duel target"));
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    return Attack(requester, AI_VALUE(Unit*, "duel target"));
 }

@@ -8,6 +8,7 @@ using namespace ai;
 
 bool TeleportAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     list<ObjectGuid> gos = *context->GetValue<list<ObjectGuid> >("nearest game objects");
     for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)
     {
@@ -25,7 +26,7 @@ bool TeleportAction::Execute(Event& event)
             continue;
 
         ostringstream out; out << "Teleporting using " << goInfo->name;
-        ai->TellPlayerNoFacing(GetMaster(), out.str());
+        ai->TellPlayerNoFacing(requester, out.str());
 
         ai->ChangeStrategy("-follow,+stay", BotState::BOT_STATE_NON_COMBAT);
 
@@ -38,10 +39,9 @@ bool TeleportAction::Execute(Event& event)
 #ifdef CMANGOS
         spell->SpellStart(&targets, NULL);
 #endif
-            spell->cast(true);
+        spell->cast(true);
         return true;
     }
-
 
     LastMovement& movement = context->GetValue<LastMovement&>("last area trigger")->Get();
     if (movement.lastAreaTrigger)
@@ -55,6 +55,6 @@ bool TeleportAction::Execute(Event& event)
         return true;
     }
 
-    ai->TellError("Cannot find any portal to teleport");
+    ai->TellPlayerNoFacing(requester, "Cannot find any portal to teleport");
     return false;
 }

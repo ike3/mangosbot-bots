@@ -10,6 +10,7 @@ vector<string> split(const string &s, char delim);
 
 bool GiveItemAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     Unit* target = GetTarget();
     if (!target) return false;
 
@@ -43,13 +44,13 @@ bool GiveItemAction::Execute(Event& event)
 
             ostringstream out;
             out << "Got " << chat->formatItem(item, item->GetCount()) << " from " << bot->GetName();
-            receiverAi->TellPlayerNoFacing(GetMaster(), out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            receiverAi->TellPlayerNoFacing(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         else
         {
             ostringstream out;
             out << "Cannot get " << chat->formatItem(item, item->GetCount()) << " from " << bot->GetName() << "- my bags are full";
-            receiverAi->TellError(out.str());
+            receiverAi->TellPlayerNoFacing(requester, out.str());
         }
     }
 

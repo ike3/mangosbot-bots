@@ -68,24 +68,23 @@ namespace ai
 
     bool LfgAction::Execute(Event& event)
     {
+        Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
         if (bot->InBattleGround())
             return false;
 
         if (bot->InBattleGroundQueue())
             return false;
 
-        Player* master = event.getOwner();
-
-        if (!ai->IsSafe(master))
+        if (!ai->IsSafe(requester))
             return false;
 
-        if (master->GetLevel() == DEFAULT_MAX_LEVEL && bot->GetLevel() != DEFAULT_MAX_LEVEL)
+        if (requester->GetLevel() == DEFAULT_MAX_LEVEL && bot->GetLevel() != DEFAULT_MAX_LEVEL)
             return false;
 
-        if (master->GetLevel() > bot->GetLevel() + 4 || bot->GetLevel() > master->GetLevel() + 4)
+        if (requester->GetLevel() > bot->GetLevel() + 4 || bot->GetLevel() > requester->GetLevel() + 4)
             return false;
 
-        Group* group = master->GetGroup();
+        Group* group = requester->GetGroup();
 
         unordered_map<Classes, unordered_map<BotRoles,uint32>> allowedClassNr;
         unordered_map<BotRoles, uint32> allowedRoles;
@@ -94,8 +93,8 @@ namespace ai
         allowedRoles[BOT_ROLE_HEALER] = 1;
         allowedRoles[BOT_ROLE_DPS] = 3;
 
-        BotRoles role = ai->IsTank(master, false) ? BOT_ROLE_TANK : (ai->IsHeal(master, false) ? BOT_ROLE_HEALER : BOT_ROLE_DPS);
-        Classes cls = (Classes)master->getClass();
+        BotRoles role = ai->IsTank(requester, false) ? BOT_ROLE_TANK : (ai->IsHeal(requester, false) ? BOT_ROLE_HEALER : BOT_ROLE_DPS);
+        Classes cls = (Classes)requester->getClass();
         
         if (group)
         {
@@ -179,7 +178,7 @@ namespace ai
                 return false;
         }
 
-        bool invite = Invite(master, bot);
+        bool invite = Invite(requester, bot);
 
         if (invite)
         {
@@ -191,9 +190,9 @@ namespace ai
             placeholders["%spotsleft"] = to_string(allowedRoles[role] - 1);
 
             if(allowedRoles[role] > 1)
-                ai->TellPlayer(GetMaster(), BOT_TEXT2("Joining as %role, %spotsleft %role spots left.", placeholders));
+                ai->TellPlayer(requester, BOT_TEXT2("Joining as %role, %spotsleft %role spots left.", placeholders));
             else
-                ai->TellPlayer(GetMaster(), BOT_TEXT2("Joining as %role.", placeholders));
+                ai->TellPlayer(requester, BOT_TEXT2("Joining as %role.", placeholders));
 
             return true;
         }

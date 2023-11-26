@@ -10,6 +10,6 @@ namespace ai
         virtual bool Execute(Event& event);
 
     private:
-        void TellHeader(uint32 subClass);
+        void TellHeader(uint32 subClass, Player* requester);
     };
 }

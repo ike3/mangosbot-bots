@@ -60,24 +60,24 @@ private:
     Player* bot;
 };
 
-void BuffAction::TellHeader(uint32 subClass)
+void BuffAction::TellHeader(uint32 subClass, Player* requester)
 {
     switch (subClass)
     {
     case ITEM_SUBCLASS_ELIXIR:
-        ai->TellPlayer(GetMaster(), "--- Elixir ---");
+        ai->TellPlayer(requester, "--- Elixir ---");
         return;
     case ITEM_SUBCLASS_FLASK:
-        ai->TellPlayer(GetMaster(), "--- Flask ---");
+        ai->TellPlayer(requester, "--- Flask ---");
         return;
     case ITEM_SUBCLASS_SCROLL:
-        ai->TellPlayer(GetMaster(), "--- Scroll ---");
+        ai->TellPlayer(requester, "--- Scroll ---");
         return;
     case ITEM_SUBCLASS_FOOD:
-        ai->TellPlayer(GetMaster(), "--- Food ---");
+        ai->TellPlayer(requester, "--- Food ---");
         return;
     case ITEM_SUBCLASS_ITEM_ENHANCEMENT:
-        ai->TellPlayer(GetMaster(), "--- Enchant ---");
+        ai->TellPlayer(requester, "--- Enchant ---");
         return;
     }
 }
@@ -85,6 +85,7 @@ void BuffAction::TellHeader(uint32 subClass)
 bool BuffAction::Execute(Event& event)
 {
     string text = event.getParam();
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
 
     FindBuffVisitor visitor(bot);
     ai->InventoryIterateItems(&visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
@@ -98,7 +99,10 @@ bool BuffAction::Execute(Event& event)
         if (oldSubClass != subClass)
         {
             if (!items.empty())
-                TellHeader(subClass);
+            {
+                TellHeader(subClass, requester);
+            }
+
             oldSubClass = subClass;
         }
         for (list<Item*>::iterator j = items.begin(); j != items.end(); ++j)
@@ -106,7 +110,7 @@ bool BuffAction::Execute(Event& event)
             Item* item = *j;
             ostringstream out;
             out << chat->formatItem(item, item->GetCount());
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(requester, out);
         }
     }
     

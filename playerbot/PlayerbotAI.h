@@ -314,6 +314,7 @@ public:
     bool CanDoSpecificAction(const string& name, bool isUseful = true, bool isPossible = true);
     virtual bool DoSpecificAction(const string& name, Event event = Event(), bool silent = false);
     void ChangeStrategy(const string& name, BotState type);
+    void PrintStrategies(Player* requester, BotState type);
     void ClearStrategies(BotState type);
     list<string_view> GetStrategies(BotState type);
     bool ContainsStrategy(StrategyType type);
@@ -338,7 +339,7 @@ public:
     bool TellPlayer(Player* player, string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true);
     bool TellPlayerNoFacing(Player* player, ostringstream& stream, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true, bool noRepeat = true) { return TellPlayerNoFacing(player, stream.str(), securityLevel, isPrivate, noRepeat); }
     bool TellPlayerNoFacing(Player* player, string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, bool isPrivate = true, bool noRepeat = true);
-    bool TellError(string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
+    bool TellError(Player* player, string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
     void SpellInterrupted(uint32 spellid);
     int32 CalculateGlobalCooldown(uint32 spellid);
     void InterruptSpell();
@@ -436,7 +437,7 @@ private:
 
 private:
     void _fillGearScoreData(Player *player, Item* item, std::vector<uint32>* gearScore, uint32& twoHandScore);
-    bool IsTellAllowed(PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
+    bool IsTellAllowed(Player* player, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
 
 public:
 	Player* GetBot() { return bot; }

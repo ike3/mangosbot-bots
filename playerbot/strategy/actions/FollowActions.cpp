@@ -93,6 +93,7 @@ bool FollowAction::CanDeadFollow(Unit* target)
 
 bool FleeToMasterAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     Unit* fTarget = AI_VALUE(Unit*, "master target");
     bool canFollow = Follow(fTarget);
     if (!canFollow)
@@ -114,22 +115,22 @@ bool FleeToMasterAction::Execute(Event& event)
     if (distance > sPlayerbotAIConfig.reactDistance && bot->IsInCombat())
     {
         if (!urand(0, scale))
-            ai->TellPlayerNoFacing(GetMaster(), "I'm heading to your location but I'm in combat", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(requester, "I'm heading to your location but I'm in combat", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             //ai->TellPlayer(BOT_TEXT("wait_travel_combat"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else if (distance < sPlayerbotAIConfig.reactDistance * 3)
     {
         if (!urand(0, scale))
-            ai->TellPlayerNoFacing(GetMaster(), BOT_TEXT("wait_travel_close"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(requester, BOT_TEXT("wait_travel_close"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else if (distance < 1000)
     {
         if (!urand(0, scale*4))
-            ai->TellPlayerNoFacing(GetMaster(), BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(requester, BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
     else
         if (!urand(0, scale*6))
-            ai->TellPlayerNoFacing(GetMaster(), BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(requester, BOT_TEXT("wait_travel_medium"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
            
     SetDuration(3000U);
     return true;

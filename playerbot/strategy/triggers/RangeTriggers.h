@@ -332,7 +332,7 @@ namespace ai
 
             Unit* followTarget = AI_VALUE(Unit*, "follow target");
 
-            if (!followTarget)
+            if (!followTarget || !ai->IsSafe(followTarget))
                 return false;
 
             //We need to land or liftoff.

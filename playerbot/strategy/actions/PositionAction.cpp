@@ -5,7 +5,7 @@
 
 using namespace ai;
 
-void TellPosition(PlayerbotAI* ai, string name, ai::PositionEntry pos)
+void TellPosition(PlayerbotAI* ai, Player* requester, string name, ai::PositionEntry pos)
 {
     ostringstream out; out << "Position " << name;
     if (pos.isSet())
@@ -16,17 +16,17 @@ void TellPosition(PlayerbotAI* ai, string name, ai::PositionEntry pos)
     }
     else
         out << " is not set";
-    ai->TellPlayer(ai->GetMaster(), out);
+    ai->TellPlayer(requester, out);
 }
 
 bool PositionAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
 	string param = event.getParam();
 	if (param.empty())
 		return false;
 
-    Player* master = GetMaster();
-    if (!master)
+    if (!requester)
         return false;
 
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
@@ -35,7 +35,7 @@ bool PositionAction::Execute(Event& event)
         for (ai::PositionMap::iterator i = posMap.begin(); i != posMap.end(); ++i)
         {
             if (i->second.isSet())
-                TellPosition(ai, i->first, i->second);
+                TellPosition(ai, requester, i->first, i->second);
         }
         return true;
     }
@@ -43,7 +43,7 @@ bool PositionAction::Execute(Event& event)
     vector<string> params = split(param, ' ');
     if (params.size() != 2)
     {
-        ai->TellPlayer(GetMaster(), "Whisper position <name> ?/set/reset");
+        ai->TellPlayer(requester, "Whisper position <name> ?/set/reset");
         return false;
     }
 
@@ -52,7 +52,7 @@ bool PositionAction::Execute(Event& event)
 	ai::PositionEntry pos = posMap[name];
 	if (action == "?")
 	{
-	    TellPosition(ai, name, pos);
+	    TellPosition(ai, requester, name, pos);
 	    return true;
 	}
 
@@ -63,7 +63,7 @@ bool PositionAction::Execute(Event& event)
         posMap[name] = pos;
 
         ostringstream out; out << "Position " << name << " is set";
-        ai->TellPlayer(GetMaster(), out);
+        ai->TellPlayer(requester, out);
         return true;
     }
 
@@ -73,7 +73,7 @@ bool PositionAction::Execute(Event& event)
 	    posMap[name] = pos;
 
 	    ostringstream out; out << "Position " << name << " is set";
-	    ai->TellPlayer(GetMaster(), out);
+	    ai->TellPlayer(requester, out);
 	    return true;
 	}
 
@@ -83,7 +83,7 @@ bool PositionAction::Execute(Event& event)
 	    posMap[name] = pos;
 
 	    ostringstream out; out << "Position " << name << " is reset";
-	    ai->TellPlayer(GetMaster(), out);
+	    ai->TellPlayer(requester, out);
 	    return true;
 	}
 
@@ -92,11 +92,12 @@ bool PositionAction::Execute(Event& event)
 
 bool MoveToPositionAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
 	ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()[qualifier];
     if (!pos.isSet())
     {
         ostringstream out; out << "Position " << qualifier << " is not set";
-        ai->TellPlayer(GetMaster(), out);
+        ai->TellPlayer(requester, out);
         return false;
     }
 
@@ -180,7 +181,7 @@ bool ReturnToStayPositionAction::isPossible()
         const float distance = bot->GetDistance(stayPosition.x, stayPosition.y, stayPosition.z);
         if (distance > sPlayerbotAIConfig.reactDistance)
         {
-            ai->TellError("The stay position is too far to return. I am going to stay where I am now");
+            ai->TellError(GetMaster(), "The stay position is too far to return. I am going to stay where I am now");
             
             // Set the stay position to current position
             stayPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());
@@ -210,7 +211,7 @@ bool ReturnToPullPositionAction::isPossible()
                     const float distance = bot->GetDistance(stayPosition.x, stayPosition.y, stayPosition.z);
                     if (distance > sPlayerbotAIConfig.reactDistance)
                     {
-                        ai->TellError("The pull position is too far to return. I am going to pull where I am now");
+                        ai->TellError(GetMaster(), "The pull position is too far to return. I am going to pull where I am now");
 
                         // Set the stay position to current position
                         stayPosition.Set(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ(), bot->GetMapId());

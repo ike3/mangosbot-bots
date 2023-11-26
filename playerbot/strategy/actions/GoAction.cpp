@@ -17,8 +17,8 @@ char* strstri(const char* haystack, const char* needle);
 
 bool GoAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     string param = event.getParam();
@@ -29,13 +29,13 @@ bool GoAction::Execute(Event& event)
         Map2ZoneCoordinates(x, y, bot->GetZoneId());
         ostringstream out;
         out << "I am at " << x << "," << y;
-        ai->TellPlayer(GetMaster(), out.str());
+        ai->TellPlayer(requester, out.str());
         return true;
     }
 
     if (param.find("where") != string::npos)
     {
-        return TellWhereToGo(param);
+        return TellWhereToGo(param, requester);
     }
     if (param.find("how") != string::npos && param.size() > 4)
     {
@@ -43,10 +43,10 @@ bool GoAction::Execute(Event& event)
         TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot, destination);
         if (!dest)
         {
-            ai->TellPlayerNoFacing(GetMaster(), "I don't know how to travel to " + destination);
+            ai->TellPlayerNoFacing(requester, "I don't know how to travel to " + destination);
             return false;
         }
-        return TellHowToGo(dest);
+        return TellHowToGo(dest, requester);
     }
     map<string, int> goTos;
     goTos.emplace(std::pair("zone", 5));
@@ -72,7 +72,7 @@ bool GoAction::Execute(Event& event)
 
             if (!dest)
             {
-                ai->TellPlayerNoFacing(GetMaster(), "I don't know how to travel to " + destination);
+                ai->TellPlayerNoFacing(requester, "I don't know how to travel to " + destination);
                 return false;
             }
 
@@ -80,9 +80,9 @@ bool GoAction::Execute(Event& event)
                 return false;
 
             if (ai->HasStrategy("stay", BotState::BOT_STATE_NON_COMBAT) || ai->HasStrategy("guard", BotState::BOT_STATE_NON_COMBAT) || (ai->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) && ai->GetMaster() && !ai->IsSelfMaster()))
-                return TellHowToGo(dest);
+                return TellHowToGo(dest, requester);
 
-            return TravelTo(dest);
+            return TravelTo(dest, requester);
 
         }
     }
@@ -92,29 +92,29 @@ bool GoAction::Execute(Event& event)
 
         TravelDestination* dest = ChooseTravelTargetAction::FindDestination(bot, destination);
 
-        return TravelTo(dest);
+        return TravelTo(dest, requester);
     }
 
-    if (MoveToGo(param))
+    if (MoveToGo(param, requester))
         return true;
 
-    if (MoveToUnit(param))
+    if (MoveToUnit(param, requester))
         return true;
 
-    if (MoveToGps(param))
+    if (MoveToGps(param, requester))
         return true;
 
 
-    if (MoveToMapGps(param))
+    if (MoveToMapGps(param, requester))
         return true;
 
-    return MoveToPosition(param);
+    return MoveToPosition(param, requester);
 
-    ai->TellPlayer(GetMaster(), "Whisper 'go x,y', 'go [game object]', 'go unit' or 'go position' and I will go there." + ChatHelper::formatValue("help", "action:go", "go help") + " for more information.");
+    ai->TellPlayer(requester, "Whisper 'go x,y', 'go [game object]', 'go unit' or 'go position' and I will go there." + ChatHelper::formatValue("help", "action:go", "go help") + " for more information.");
     return false;
 }
 
-bool GoAction::TellWhereToGo(string& param) const
+bool GoAction::TellWhereToGo(string& param, Player* requester) const
 {
     string text;
 
@@ -127,11 +127,11 @@ bool GoAction::TellWhereToGo(string& param) const
 
     target->setStatus(TravelStatus::TRAVEL_STATUS_EXPIRED);
 
-    travelAction->getNewTarget(target, target);
+    travelAction->getNewTarget(requester, target, target);
 
     if (!target->getDestination() || target->getDestination()->getTitle().empty())
     {
-        ai->TellPlayerNoFacing(ai->GetMaster(), "I have no place I want to go to.");
+        ai->TellPlayerNoFacing(requester, "I have no place I want to go to.");
         return false;
     }
 
@@ -148,13 +148,13 @@ bool GoAction::TellWhereToGo(string& param) const
 
     if (!dest)
     {
-        ai->TellPlayerNoFacing(ai->GetMaster(), "I have no place I want to go to");
+        ai->TellPlayerNoFacing(requester, "I have no place I want to go to");
         return false;
     }
 
     string link = ChatHelper::formatValue("command", "go to " + title, title, "FF00FFFF");
 
-    ai->TellPlayerNoFacing(ai->GetMaster(), "I would like to travel to " + link + "(" + target->getDestination()->getTitle() + ")");
+    ai->TellPlayerNoFacing(requester, "I would like to travel to " + link + "(" + target->getDestination()->getTitle() + ")");
 
     delete travelAction;
     return true;
@@ -183,7 +183,7 @@ bool GoAction::LeaderAlreadyTraveling(TravelDestination* dest) const
     return true;
 }
 
-bool GoAction::TellHowToGo(TravelDestination* dest) const
+bool GoAction::TellHowToGo(TravelDestination* dest, Player* requester) const
 {
     WorldPosition botPos = WorldPosition(bot);
     WorldPosition* point = dest->nearestPoint(botPos);
@@ -225,20 +225,20 @@ bool GoAction::TellHowToGo(TravelDestination* dest) const
         }
 
         if (nearNode)
-            ai->TellPlayerNoFacing(ai->GetMaster(), "We are now near " + nearNode->getName() + ".");
+            ai->TellPlayerNoFacing(requester, "We are now near " + nearNode->getName() + ".");
 
-        ai->TellPlayerNoFacing(ai->GetMaster(), "if we want to travel to " + dest->getTitle());
+        ai->TellPlayerNoFacing(requester, "if we want to travel to " + dest->getTitle());
         if (nextNode->getPosition()->getAreaName(true, true) != botPos.getAreaName(true, true))
-            ai->TellPlayerNoFacing(ai->GetMaster(), "we should head to " + nextNode->getName() + " in " + nextNode->getPosition()->getAreaName(true, true));
+            ai->TellPlayerNoFacing(requester, "we should head to " + nextNode->getName() + " in " + nextNode->getPosition()->getAreaName(true, true));
         else
-            ai->TellPlayerNoFacing(ai->GetMaster(), "we should head to " + nextNode->getName());
+            ai->TellPlayerNoFacing(requester, "we should head to " + nextNode->getName());
 
         pointAngle = botPos.getAngleTo(poi);
     }
     else
-        ai->TellPlayerNoFacing(ai->GetMaster(), "We are near " + dest->getTitle());
+        ai->TellPlayerNoFacing(requester, "We are near " + dest->getTitle());
 
-    ai->TellPlayer(ai->GetMaster(), "it is " + to_string(uint32(round(poi.distance(botPos)))) + " yards to the " + ChatHelper::formatAngle(pointAngle));
+    ai->TellPlayer(requester, "it is " + to_string(uint32(round(poi.distance(botPos)))) + " yards to the " + ChatHelper::formatAngle(pointAngle));
     sServerFacade.SetFacingTo(bot, pointAngle, true);
     bot->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
     ai->Poi(poi.getX(), poi.getY());
@@ -246,7 +246,7 @@ bool GoAction::TellHowToGo(TravelDestination* dest) const
     return true;
 }
 
-bool GoAction::TravelTo(TravelDestination* dest) const
+bool GoAction::TravelTo(TravelDestination* dest, Player* requester) const
 {
     TravelTarget* target = AI_VALUE(TravelTarget*, "travel target");
     WorldPosition botPos = WorldPosition(bot);
@@ -261,7 +261,7 @@ bool GoAction::TravelTo(TravelDestination* dest) const
         target->setForced(true);
 
         ostringstream out; out << "Traveling to " << dest->getTitle();
-        ai->TellPlayerNoFacing(ai->GetMaster(), out.str());
+        ai->TellPlayerNoFacing(requester, out.str());
 
         if (!ai->HasStrategy("travel", BotState::BOT_STATE_NON_COMBAT))
             ai->ChangeStrategy("+travel once", BotState::BOT_STATE_NON_COMBAT);
@@ -276,7 +276,7 @@ bool GoAction::TravelTo(TravelDestination* dest) const
     }
 }
 
-bool GoAction::MoveToGo(string& param) 
+bool GoAction::MoveToGo(string& param, Player* requester)
 {
     list<ObjectGuid> gos = ChatHelper::parseGameobjects(param);
     if (gos.empty())
@@ -289,19 +289,19 @@ bool GoAction::MoveToGo(string& param)
         {
             if (sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, go), sPlayerbotAIConfig.reactDistance))
             {
-                ai->TellError("It is too far away");
+                ai->TellError(requester, "It is too far away");
                 return false;
             }
 
             ostringstream out; out << "Moving to " << ChatHelper::formatGameobject(go);
-            ai->TellPlayerNoFacing(GetMaster(), out.str());
+            ai->TellPlayerNoFacing(requester, out.str());
             return MoveNear(bot->GetMapId(), go->GetPositionX(), go->GetPositionY(), go->GetPositionZ() + 0.5f, ai->GetRange("follow"));
         }
     }
     return false;
 }
 
-bool GoAction::MoveToUnit(string& param)
+bool GoAction::MoveToUnit(string& param, Player* requester)
 {
     list<ObjectGuid> units;
     list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
@@ -314,7 +314,7 @@ bool GoAction::MoveToUnit(string& param)
         if (unit && strstri(unit->GetName(), param.c_str()))
         {
             ostringstream out; out << "Moving to " << unit->GetName();
-            ai->TellPlayerNoFacing(GetMaster(), out.str());
+            ai->TellPlayerNoFacing(requester, out.str());
             return MoveNear(bot->GetMapId(), unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ() + 0.5f, ai->GetRange("follow"));
         }
     }
@@ -322,7 +322,7 @@ bool GoAction::MoveToUnit(string& param)
     return false;
 }
 
-bool GoAction::MoveToGps(string& param)
+bool GoAction::MoveToGps(string& param, Player* requester)
 {
     if (param.find(";") != string::npos)
     {
@@ -369,7 +369,7 @@ bool GoAction::MoveToGps(string& param)
                 CreateWp(bot, i.x, i.y, i.z, 0.0, 11144);
             }
 
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(requester, out);
         }
 
         if (bot->IsWithinLOS(x, y, z, true))
@@ -380,7 +380,7 @@ bool GoAction::MoveToGps(string& param)
     return false;
 }
 
-bool GoAction::MoveToMapGps(string& param)
+bool GoAction::MoveToMapGps(string& param, Player* requester)
 {
     if (param.find(",") != string::npos)
     {
@@ -400,14 +400,14 @@ bool GoAction::MoveToMapGps(string& param)
 
         if (sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, x, y), sPlayerbotAIConfig.reactDistance))
         {
-            ai->TellPlayer(GetMaster(), BOT_TEXT("error_far"));
+            ai->TellPlayer(requester, BOT_TEXT("error_far"));
             return false;
         }
 
         const TerrainInfo* terrain = map->GetTerrain();
         if (terrain->IsUnderWater(x, y, z) || terrain->IsInWater(x, y, z))
         {
-            ai->TellError(BOT_TEXT("error_water"));
+            ai->TellError(requester, BOT_TEXT("error_water"));
             return false;
         }
 
@@ -418,32 +418,32 @@ bool GoAction::MoveToMapGps(string& param)
 #endif
         if (ground <= INVALID_HEIGHT)
         {
-            ai->TellError(BOT_TEXT("error_cant_go"));
+            ai->TellError(requester, BOT_TEXT("error_cant_go"));
             return false;
         }
 
         float x1 = x, y1 = y;
         Map2ZoneCoordinates(x1, y1, bot->GetZoneId());
         ostringstream out; out << "Moving to " << x1 << "," << y1;
-        ai->TellPlayerNoFacing(GetMaster(), out.str());
+        ai->TellPlayerNoFacing(requester, out.str());
         return MoveNear(bot->GetMapId(), x, y, z + 0.5f, ai->GetRange("follow"));
     }
     return false;
 }
 
-bool GoAction::MoveToPosition(string& param)
+bool GoAction::MoveToPosition(string& param, Player* requester)
 {
     PositionEntry pos = context->GetValue<PositionMap&>("position")->Get()[param];
     if (pos.isSet())
     {
         if (sServerFacade.IsDistanceGreaterThan(sServerFacade.GetDistance2d(bot, pos.x, pos.y), sPlayerbotAIConfig.reactDistance))
         {
-            ai->TellError(BOT_TEXT("error_far"));
+            ai->TellError(requester, BOT_TEXT("error_far"));
             return false;
         }
 
         ostringstream out; out << "Moving to position " << param;
-        ai->TellPlayerNoFacing(GetMaster(), out.str());
+        ai->TellPlayerNoFacing(requester, out.str());
         return MoveNear(bot->GetMapId(), pos.x, pos.y, pos.z + 0.5f, ai->GetRange("follow"));
     }
     return false;

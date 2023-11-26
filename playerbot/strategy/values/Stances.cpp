@@ -222,12 +222,13 @@ bool StanceValue::Load(string name)
 bool SetStanceAction::Execute(Event& event)
 {
     string stance = event.getParam();
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
 
     StanceValue* value = (StanceValue*)context->GetValue<Stance*>("stance");
     if (stance == "?" || stance.empty())
     {
         ostringstream str; str << "Stance: |cff00ff00" << value->Get()->getName();
-        ai->TellPlayer(GetMaster(), str);
+        ai->TellPlayer(requester, str);
         return true;
     }
 
@@ -243,12 +244,12 @@ bool SetStanceAction::Execute(Event& event)
     if (!value->Load(stance))
     {
         ostringstream str; str << "Invalid stance: |cffff0000" << stance;
-        ai->TellPlayer(GetMaster(), str);
-        ai->TellPlayer(GetMaster(), "Please set to any of:|cffffffff near (default), tank, turnback, behind");
+        ai->TellPlayer(requester, str);
+        ai->TellPlayer(requester, "Please set to any of:|cffffffff near (default), tank, turnback, behind");
         return false;
     }
 
     ostringstream str; str << "Stance set to: " << stance;
-    ai->TellPlayer(GetMaster(), str);
+    ai->TellPlayer(requester, str);
     return true;
 }

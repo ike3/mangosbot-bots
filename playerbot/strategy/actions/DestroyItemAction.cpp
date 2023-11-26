@@ -7,19 +7,20 @@ using namespace ai;
 
 bool DestroyItemAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
     ItemIds ids = chat->parseItems(text);
 
     for (ItemIds::iterator i =ids.begin(); i != ids.end(); i++)
     {
         FindItemByIdVisitor visitor(*i);
-        DestroyItem(&visitor);
+        DestroyItem(&visitor, requester);
     }
 
     return true;
 }
 
-void DestroyItemAction::DestroyItem(FindItemVisitor* visitor)
+void DestroyItemAction::DestroyItem(FindItemVisitor* visitor, Player* requester)
 {
     ai->InventoryIterateItems(visitor, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
     list<Item*> items = visitor->GetResult();
@@ -28,12 +29,13 @@ void DestroyItemAction::DestroyItem(FindItemVisitor* visitor)
 		Item* item = *i;
         ostringstream out; out << chat->formatItem(item) << " destroyed";
         bot->DestroyItem(item->GetBagSlot(),item->GetSlot(), true);
-        ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }
 
 bool SmartDestroyItemAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     uint8 bagSpace = AI_VALUE(uint8, "bag space");
 
     if (bagSpace < 90)
@@ -53,20 +55,23 @@ bool SmartDestroyItemAction::Execute(Event& event)
                 continue;
 
             FindItemByIdVisitor visitor(item->GetProto()->ItemId);
-            DestroyItem(&visitor);
+            DestroyItem(&visitor, requester);
 
             bagSpace = AI_VALUE(uint8, "bag space");
 
             if (bagSpace < 90)
                 return true;
         }
+
         return true;
     }
 
     vector<ItemUsage> bestToDestroy = { ItemUsage::ITEM_USAGE_NONE }; //First destroy anything useless.
 
     if (!AI_VALUE(bool, "can sell") && AI_VALUE(bool, "should get money")) //We need money so quest items are less important since they can't directly be sold.
+    {
         bestToDestroy.push_back(ItemUsage::ITEM_USAGE_QUEST);
+    }
     else //We don't need money so destroy the cheapest stuff.
     {
         bestToDestroy.push_back(ItemUsage::ITEM_USAGE_VENDOR);
@@ -89,7 +94,7 @@ bool SmartDestroyItemAction::Execute(Event& event)
                 continue;
 
             FindItemByIdVisitor visitor(item);
-            DestroyItem(&visitor);
+            DestroyItem(&visitor, requester);
 
             bagSpace = AI_VALUE(uint8, "bag space");
 

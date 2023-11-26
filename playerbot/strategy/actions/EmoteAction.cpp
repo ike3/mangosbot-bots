@@ -147,7 +147,7 @@ Unit* EmoteActionBase::GetTarget()
     return target;
 }
 
-bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote, bool verbal)
+bool EmoteActionBase::ReceiveEmote(Player* requester, Player* source, uint32 emote, bool verbal)
 {
     uint32 emoteId = 0;
     uint32 textEmote = 0;
@@ -164,18 +164,18 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote, bool verbal)
         textEmote = TEXTEMOTE_SALUTE;
         break;
     case 325:
-        if (ai->GetMaster() == source)
+        if (requester == source)
         {
             ai->ChangeStrategy("-follow,+stay", BotState::BOT_STATE_NON_COMBAT);
-            ai->TellPlayerNoFacing(GetMaster(), "Fine.. I'll stay right here..", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(requester, "Fine.. I'll stay right here..", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         break;
     case TEXTEMOTE_BECKON:
     case 324:
-        if (ai->GetMaster() == source)
+        if (requester == source)
         {
             ai->ChangeStrategy("+follow", BotState::BOT_STATE_NON_COMBAT);
-            ai->TellPlayerNoFacing(GetMaster(), "Wherever you go, I'll follow..", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(requester, "Wherever you go, I'll follow..", PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
         break;
     case TEXTEMOTE_WAVE:
@@ -652,6 +652,7 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote, bool verbal)
 
 bool EmoteAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     WorldPacket p(event.getPacket());
     uint32 emote = 0;
     Player* pSource = NULL;
@@ -781,7 +782,7 @@ bool EmoteAction::Execute(Event& event)
     }
 
     if (emote)
-        return ReceiveEmote(pSource, emote, bot->InBattleGround() ? false : urand(0, 1));
+        return ReceiveEmote(requester, pSource, emote, bot->InBattleGround() ? false : urand(0, 1));
 
     if (param.find("sound") == 0)
     {

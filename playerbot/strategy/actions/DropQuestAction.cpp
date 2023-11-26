@@ -6,6 +6,7 @@ using namespace ai;
 
 bool DropQuestAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string link = event.getParam();
     if (!GetMaster())
         return false;
@@ -38,47 +39,48 @@ bool DropQuestAction::Execute(Event& event)
     bot->SetQuestStatus(entry, QUEST_STATUS_NONE);
     bot->getQuestStatusMap()[entry].m_rewarded = false;
 
-    ai->TellPlayer(GetMaster(), BOT_TEXT("quest_remove"));
+    ai->TellPlayer(requester, BOT_TEXT("quest_remove"));
     return true;
 }
 
 bool CleanQuestLogAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string link = event.getParam();
     if (ai->HasActivePlayerMaster())
         return false;
 
     uint8 totalQuests = 0;
 
-    DropQuestType(totalQuests); //Count the total quests
+    DropQuestType(requester, totalQuests); //Count the total quests
      
     if (MAX_QUEST_LOG_SIZE - totalQuests > 6)
     {
-        DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE, true, true); //Drop failed quests
+        DropQuestType(requester, totalQuests, MAX_QUEST_LOG_SIZE, true, true); //Drop failed quests
         return true;
     }
 
     if (AI_VALUE(bool, "can fight equal")) //Only drop gray quests when able to fight proper lvl quests.
     {
-        DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6); //Drop gray/red quests.
-        DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true); //Drop gray/red quests with progress.
-        DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true, true); //Drop gray/red completed quests.
+        DropQuestType(requester, totalQuests, MAX_QUEST_LOG_SIZE - 6); //Drop gray/red quests.
+        DropQuestType(requester, totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true); //Drop gray/red quests with progress.
+        DropQuestType(requester, totalQuests, MAX_QUEST_LOG_SIZE - 6, false, true, true); //Drop gray/red completed quests.
     }
 
     if (MAX_QUEST_LOG_SIZE - totalQuests > 4)
         return true;
 
-    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 4, true); //Drop quests without progress.
+    DropQuestType(requester, totalQuests, MAX_QUEST_LOG_SIZE - 4, true); //Drop quests without progress.
 
     if (MAX_QUEST_LOG_SIZE - totalQuests > 2)
         return true;
 
-    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 2, true, true); //Drop quests with progress.
+    DropQuestType(requester, totalQuests, MAX_QUEST_LOG_SIZE - 2, true, true); //Drop quests with progress.
 
     if (MAX_QUEST_LOG_SIZE - totalQuests > 0)
         return true;
 
-    DropQuestType(totalQuests, MAX_QUEST_LOG_SIZE - 1, true, true, true); //Drop completed quests.
+    DropQuestType(requester, totalQuests, MAX_QUEST_LOG_SIZE - 1, true, true, true); //Drop completed quests.
 
     if (MAX_QUEST_LOG_SIZE - totalQuests > 0)
         return true;
@@ -86,7 +88,7 @@ bool CleanQuestLogAction::Execute(Event& event)
     return false;
 }
 
-void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isGreen, bool hasProgress, bool isComplete)
+void CleanQuestLogAction::DropQuestType(Player* requester, uint8 &numQuest, uint8 wantNum, bool isGreen, bool hasProgress, bool isComplete)
 {
     vector<uint8> slots;
 
@@ -150,7 +152,7 @@ void CleanQuestLogAction::DropQuestType(uint8 &numQuest, uint8 wantNum, bool isG
 
         numQuest--;
 
-        ai->TellPlayer(GetMaster(), BOT_TEXT("quest_remove") + " " + chat->formatQuest(quest), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(requester, BOT_TEXT("quest_remove") + " " + chat->formatQuest(quest), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }
 

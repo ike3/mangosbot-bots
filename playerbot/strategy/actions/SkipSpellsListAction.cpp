@@ -9,20 +9,21 @@ using namespace ai;
 
 bool SkipSpellsListAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string cmd = event.getParam();
     set<uint32>& skipSpells = AI_VALUE(set<uint32>&, "skip spells list");
 
     if (cmd == "reset")
     {
         skipSpells.clear();
-        ai->TellPlayer(GetMaster(), "The ignored spell list has been cleared");
+        ai->TellPlayer(requester, "The ignored spell list has been cleared");
         return true;
     }
     else if (cmd.empty() || cmd == "?")
     {   
         if (skipSpells.empty())
         {
-            ai->TellPlayer(GetMaster(), "Ignored spell list is empty");
+            ai->TellPlayer(requester, "Ignored spell list is empty");
         }
         else
         {
@@ -41,7 +42,7 @@ bool SkipSpellsListAction::Execute(Event& event)
                 out << chat->formatSpell(spellEntry);
             }
 
-            ai->TellPlayer(GetMaster(), out);
+            ai->TellPlayer(requester, out);
         }
 
         return true;
@@ -68,14 +69,14 @@ bool SkipSpellsListAction::Execute(Event& event)
 
                 if (!spellId)
                 {
-                    ai->TellError("Unknown spell " + spell);
+                    ai->TellError(requester, "Unknown spell " + spell);
                     continue;
                 }
 
                 const SpellEntry* spellEntry = sServerFacade.LookupSpellInfo(spellId);
                 if (!spellEntry)
                 {
-                    ai->TellError("Unknown spell " + spell);
+                    ai->TellError(requester, "Unknown spell " + spell);
                     continue;
                 }
 
@@ -87,7 +88,7 @@ bool SkipSpellsListAction::Execute(Event& event)
                         skipSpells.erase(j);
                         ostringstream out;
                         out << chat->formatSpell(spellEntry) << " removed from ignored spells";
-                        ai->TellPlayer(GetMaster(), out);
+                        ai->TellPlayer(requester, out);
                     }
                 }
                 else
@@ -98,7 +99,7 @@ bool SkipSpellsListAction::Execute(Event& event)
                         skipSpells.insert(spellId);
                         ostringstream out;
                         out << chat->formatSpell(spellEntry) << " added to ignored spells";
-                        ai->TellPlayer(GetMaster(), out);
+                        ai->TellPlayer(requester, out);
                     }
                 }
             }
@@ -107,7 +108,7 @@ bool SkipSpellsListAction::Execute(Event& event)
         }
         else
         {
-            ai->TellError("Please specify one or more spells to ignore");
+            ai->TellPlayer(requester, "Please specify one or more spells to ignore");
         }
     }
 

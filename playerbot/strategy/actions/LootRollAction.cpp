@@ -56,11 +56,12 @@ bool LootStartRollAction::Execute(Event& event)
 
 bool RollAction::Execute(Event& event)
 {      
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
 
     if (text.empty())
     {
-        ai->TellPlayerNoFacing(GetMaster(), "Please give a roll type or item. See " + ChatHelper::formatValue("help", "action:roll", "roll help") + " for more information.");
+        ai->TellPlayerNoFacing(requester, "Please give a roll type or item. See " + ChatHelper::formatValue("help", "action:roll", "roll help") + " for more information.");
         return false;
     }
 
@@ -74,7 +75,7 @@ bool RollAction::Execute(Event& event)
 
     if (type != "need" && type != "greed" && type != "pass" && type != "auto")
     {
-        ai->TellPlayerNoFacing(GetMaster(), "Please give a correct roll type. need, greed, pass or auto. See " + ChatHelper::formatValue("help", "action:roll", "roll help") + " for more information.");
+        ai->TellPlayerNoFacing(requester, "Please give a correct roll type. need, greed, pass or auto. See " + ChatHelper::formatValue("help", "action:roll", "roll help") + " for more information.");
         return false;
     }
 

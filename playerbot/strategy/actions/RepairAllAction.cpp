@@ -8,6 +8,7 @@ using namespace ai;
 
 bool RepairAllAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
     for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
     {
@@ -71,7 +72,7 @@ bool RepairAllAction::Execute(Event& event)
         {
             ostringstream out;
             out << "Repair: " << chat->formatMoney(totalCost) << " (" << unit->GetName() << ")";
-            ai->TellPlayerNoFacing(GetMaster(), out.str(),PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayerNoFacing(requester, out.str(),PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
             if (sPlayerbotAIConfig.globalSoundEffects)
                 bot->PlayDistanceSound(1116);
 
@@ -83,6 +84,6 @@ bool RepairAllAction::Execute(Event& event)
         return durability < 100 && AI_VALUE(uint8, "durability") > durability;
     }
 
-    ai->TellError("Cannot find any npc to repair at");
+    ai->TellPlayerNoFacing(requester, "Cannot find any npc to repair at");
     return false;
 }

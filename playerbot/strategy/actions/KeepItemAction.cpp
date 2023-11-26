@@ -9,6 +9,7 @@ using namespace ai;
 
 bool KeepItemAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
 
     string type = text.substr(0, text.find(" "));
@@ -17,7 +18,7 @@ bool KeepItemAction::Execute(Event& event)
     {
         ostringstream out;
         out << "Please specify the items that should be kept. See " << ChatHelper::formatValue("help", "action:keep", "keep help") << " for more information.";
-        ai->TellPlayer(GetMaster(), out.str());
+        ai->TellPlayer(requester, out.str());
         return false;
     }
     else if (string("none,keep,equip,greed,need,?,").find(type + ",") == string::npos) //Non type = using keep.
@@ -47,7 +48,7 @@ bool KeepItemAction::Execute(Event& event)
         else
             out << "No items found.";
 
-        ai->TellPlayer(GetMaster(), out.str());
+        ai->TellPlayer(requester, out.str());
         return true;
     }
 
@@ -59,7 +60,7 @@ bool KeepItemAction::Execute(Event& event)
             ItemQualifier qualifier(id);
             out << chat->formatItem(qualifier);
             out << ": " << keepName[AI_VALUE2_EXISTS(ForceItemUsage, "force item usage", id, ForceItemUsage::FORCE_USAGE_NONE)] << " the item.";
-            ai->TellPlayer(GetMaster(), out.str());
+            ai->TellPlayer(requester, out.str());
 
         }
         return true;
@@ -89,7 +90,7 @@ bool KeepItemAction::Execute(Event& event)
     ostringstream out;
     out << changed;
     out << " items changed to: " << keepName[usage] << " the item.";
-    ai->TellPlayer(GetMaster(), out.str());
+    ai->TellPlayer(requester, out.str());
 
     sPlayerbotDbStore.Save(ai);
 

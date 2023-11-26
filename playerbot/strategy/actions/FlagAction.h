@@ -9,8 +9,5 @@ namespace ai
     public:
         FlagAction(PlayerbotAI* ai) : ChatCommandAction(ai, "flag") {}
         virtual bool Execute(Event& event) override;
-
-    private:
-        bool TellUsage();
     };
 }

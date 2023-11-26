@@ -12,9 +12,9 @@ namespace ai
         virtual bool Execute(Event& event);
 
     protected:
-        bool Teleport(Player *summoner, Player *player);
-        bool SummonUsingGos(Player *summoner, Player *player);
-        bool SummonUsingNpcs(Player *summoner, Player *player);
+        bool Teleport(Player* requester, Player *summoner, Player *player);
+        bool SummonUsingGos(Player* requester, Player *summoner, Player *player);
+        bool SummonUsingNpcs(Player* requester, Player *summoner, Player *player);
     };
 
     class UseMeetingStoneAction : public SummonAction

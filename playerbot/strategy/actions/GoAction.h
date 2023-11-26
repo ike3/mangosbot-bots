@@ -30,14 +30,14 @@ namespace ai
 #endif 
 
     private:
-        bool TellWhereToGo(string& param) const;
+        bool TellWhereToGo(string& param, Player* requester) const;
         bool LeaderAlreadyTraveling(TravelDestination* dest) const;
-        bool TellHowToGo(TravelDestination* dest) const;
-        bool TravelTo(TravelDestination* dest) const;
-        bool MoveToGo(string& param);
-        bool MoveToUnit(string& param);
-        bool MoveToGps(string& param);
-        bool MoveToMapGps(string& param);
-        bool MoveToPosition(std::string& param);
+        bool TellHowToGo(TravelDestination* dest, Player* requester) const;
+        bool TravelTo(TravelDestination* dest, Player* requester) const;
+        bool MoveToGo(string& param, Player* requester);
+        bool MoveToUnit(string& param, Player* requester);
+        bool MoveToGps(string& param, Player* requester);
+        bool MoveToMapGps(string& param, Player* requester);
+        bool MoveToPosition(std::string& param, Player* requester);
 	};
 }

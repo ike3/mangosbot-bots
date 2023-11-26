@@ -15,8 +15,8 @@ namespace ai
         virtual bool isPossible() override { return true; }; //Override movement stay.
 
     protected:
-        bool Attack(Unit* target);
-        bool IsTargetValid(Unit* target);
+        bool Attack(Player* requester, Unit* target);
+        bool IsTargetValid(Player* requester, Unit* target);
     };
 
     class AttackMyTargetAction : public AttackAction

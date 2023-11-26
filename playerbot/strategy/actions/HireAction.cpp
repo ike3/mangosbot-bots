@@ -6,14 +6,14 @@ using namespace ai;
 
 bool HireAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     if (!sRandomPlayerbotMgr.IsRandomBot(bot))
         return false;
 
-    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(master->GetObjectGuid());
+    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(requester->GetObjectGuid());
     QueryResult* results = CharacterDatabase.PQuery("SELECT count(*) FROM characters where account = '%u'", account);
 
     uint32 charCount = 10;
@@ -26,28 +26,28 @@ bool HireAction::Execute(Event& event)
 
     if (charCount >= 10)
     {
-        ai->TellPlayer(GetMaster(), "You already have the maximum number of characters");
+        ai->TellPlayer(requester, "You already have the maximum number of characters");
         return false;
     }
 
-    if ((int)bot->GetLevel() > (int)master->GetLevel())
+    if ((int)bot->GetLevel() > (int)requester->GetLevel())
     {
-        ai->TellPlayer(GetMaster(), "You cannot hire higher level characters than you");
+        ai->TellPlayer(requester, "You cannot hire higher level characters than you");
         return false;
     }
 
-    uint32 discount = sRandomPlayerbotMgr.GetTradeDiscount(bot, master);
+    uint32 discount = sRandomPlayerbotMgr.GetTradeDiscount(bot, requester);
     uint32 m = 1 + (bot->GetLevel() / 10);
     uint32 moneyReq = m * 5000 * bot->GetLevel();
     if ((int)discount < (int)moneyReq)
     {
         ostringstream out;
         out << "You cannot hire me - I barely know you. Make sure you have at least " << chat->formatMoney(moneyReq) << " as a trade discount";
-        ai->TellPlayer(GetMaster(), out.str());
+        ai->TellPlayer(requester, out.str());
         return false;
     }
 
-    ai->TellPlayer(GetMaster(), "I will join you at your next relogin");
+    ai->TellPlayer(requester, "I will join you at your next relogin");
 
     bot->SetMoney(moneyReq);
     sRandomPlayerbotMgr.Remove(bot);

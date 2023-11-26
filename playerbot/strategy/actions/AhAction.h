@@ -10,8 +10,9 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
     private:
-        virtual bool ExecuteCommand(string text, Unit* auctioneer);
-        bool PostItem(Item* item, uint32 price, Unit* auctioneer, uint32 time);
+        virtual bool ExecuteCommand(Player* requester, string text, Unit* auctioneer);
+        bool PostItem(Player* requester, Item* item, uint32 price, Unit* auctioneer, uint32 time);
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "ah"; } //Must equal iternal name
         virtual string GetHelpDescription()
@@ -47,7 +48,7 @@ namespace ai
         virtual vector<string> GetUsedValues() { return { "nearest npcs", "item usage", "free money for" }; }
 #endif 
     private:
-        virtual bool ExecuteCommand(string text, Unit* auctioneer);
-        bool BidItem(AuctionEntry* auction, uint32 price, Unit* auctioneer);
+        virtual bool ExecuteCommand(Player* requester, string text, Unit* auctioneer);
+        bool BidItem(Player* requester, AuctionEntry* auction, uint32 price, Unit* auctioneer);
     };
 }

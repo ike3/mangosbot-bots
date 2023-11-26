@@ -8,6 +8,7 @@ using namespace ai;
 
 bool TaxiAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     ai->RemoveShapeshift();
 
     LastMovement& movement = context->GetValue<LastMovement&>("last taxi")->Get();
@@ -18,7 +19,7 @@ bool TaxiAction::Execute(Event& event)
     {
         movement.taxiNodes.clear();
         movement.Set(NULL);
-        ai->TellPlayer(GetMaster(), "I am ready for the next flight");
+        ai->TellPlayer(requester, "I am ready for the next flight");
         return true;
     }
 
@@ -44,7 +45,7 @@ bool TaxiAction::Execute(Event& event)
 
         if (param == "?")
         {
-            ai->TellPlayerNoFacing(GetMaster(), "=== Taxi ===");
+            ai->TellPlayerNoFacing(requester, "=== Taxi ===");
             int index = 1;
             for (vector<uint32>::iterator i = nodes.begin(); i != nodes.end(); ++i)
             {
@@ -56,7 +57,7 @@ bool TaxiAction::Execute(Event& event)
 
                 ostringstream out;
                 out << index++ << ": " << dest->name[0];
-                ai->TellPlayerNoFacing(GetMaster(), out.str());
+                ai->TellPlayerNoFacing(requester, out.str());
             }
             return true;
         }
@@ -75,13 +76,13 @@ bool TaxiAction::Execute(Event& event)
         {
             movement.taxiNodes.clear();
             movement.Set(NULL);
-            ai->TellError("I can't fly with you");
+            ai->TellPlayerNoFacing(requester, "I can't fly with you");
             return false;
         }
 
         return true;
     }
 
-    ai->TellError("Cannot find any flightmaster to talk");
+    ai->TellPlayerNoFacing(requester, "Cannot find any flightmaster to talk");
     return false;
 }

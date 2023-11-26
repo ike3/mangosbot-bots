@@ -63,10 +63,9 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
     msg << " - learned";
 }
 
-void TrainerAction::Iterate(Creature* creature, TrainerSpellAction action, SpellIds& spells)
+void TrainerAction::Iterate(Player* requester, Creature* creature, TrainerSpellAction action, SpellIds& spells)
 {
-    TellHeader(creature);
-
+    TellHeader(requester, creature);
     TrainerSpellData const* cSpells = creature->GetTrainerSpells();
     TrainerSpellData const* tSpells = creature->GetTrainerTemplateSpells();
     float fDiscountMod =  bot->GetReputationPriceDiscount(creature);
@@ -138,18 +137,17 @@ void TrainerAction::Iterate(Creature* creature, TrainerSpellAction action, Spell
         if (action)
             (this->*action)(cost, tSpell, out);
 
-        ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 
-    TellFooter(totalCost);
+    TellFooter(requester, totalCost);
 }
 
 bool TrainerAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string text = event.getParam();
-
-    Player* master = GetMaster();
-    Creature* creature;
+    Creature* creature = nullptr;
 
     if (event.getSource() == "rpg action")
     {
@@ -158,8 +156,8 @@ bool TrainerAction::Execute(Event& event)
     }
     else
     {
-        if (master)
-            creature = ai->GetCreature(master->GetSelectionGuid());
+        if (requester)
+            creature = ai->GetCreature(requester->GetSelectionGuid());
         else
             return false;
     }
@@ -175,7 +173,7 @@ bool TrainerAction::Execute(Event& event)
             
     if (!creature->IsTrainerOf(bot, false))
     {
-        ai->TellError("This trainer cannot teach me");
+        ai->TellPlayerNoFacing(requester, "This trainer cannot teach me");
         return false;
     }
 
@@ -184,7 +182,7 @@ bool TrainerAction::Execute(Event& event)
     TrainerSpellData const* tSpells = creature->GetTrainerTemplateSpells();
     if (!cSpells && !tSpells)
     {
-        ai->TellError("No spells can be learned from this trainer");
+        ai->TellPlayerNoFacing(requester, "No spells can be learned from this trainer");
         return false;
     }
 
@@ -194,24 +192,24 @@ bool TrainerAction::Execute(Event& event)
         spells.insert(spell);
 
     if (text.find("learn") != string::npos || sRandomPlayerbotMgr.IsFreeBot(bot) || (sPlayerbotAIConfig.autoTrainSpells != "no" && (creature->GetCreatureInfo()->TrainerType != TRAINER_TYPE_TRADESKILLS || !ai->HasActivePlayerMaster()))) //Todo rewrite to only exclude start primary profession skills and make config dependent.
-        Iterate(creature, &TrainerAction::Learn, spells);
+        Iterate(requester, creature, &TrainerAction::Learn, spells);
     else
-        Iterate(creature, NULL, spells);
+        Iterate(requester, creature, NULL, spells);
 
     return true;
 }
 
-void TrainerAction::TellHeader(Creature* creature)
+void TrainerAction::TellHeader(Player* requester, Creature* creature)
 {
     ostringstream out; out << "--- Can learn from " << creature->GetName() << " ---";
-    ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 }
 
-void TrainerAction::TellFooter(uint32 totalCost)
+void TrainerAction::TellFooter(Player* requester, uint32 totalCost)
 {
     if (totalCost)
     {
         ostringstream out; out << "Total cost: " << chat->formatMoney(totalCost);
-        ai->TellPlayer(GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 }

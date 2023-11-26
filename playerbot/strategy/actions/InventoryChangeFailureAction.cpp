@@ -9,7 +9,8 @@ map<InventoryResult, string> InventoryChangeFailureAction::messages;
 
 bool InventoryChangeFailureAction::Execute(Event& event)
 {
-    if (!ai->GetMaster())
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     if (messages.empty())
@@ -91,7 +92,7 @@ bool InventoryChangeFailureAction::Execute(Event& event)
     string msg = messages[(InventoryResult)err];
     if (!msg.empty())
     {
-        ai->TellError(msg);
+        ai->TellError(requester, msg);
         return true;
     }
 

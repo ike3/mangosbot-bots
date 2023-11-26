@@ -4,12 +4,14 @@
 
 namespace ai
 {
-    class AcceptInvitationAction : public Action {
+    class AcceptInvitationAction : public Action 
+    {
     public:
         AcceptInvitationAction(PlayerbotAI* ai) : Action(ai, "accept invitation") {}
 
         virtual bool Execute(Event& event)
         {
+            Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
             Group* grp = bot->GetGroupInvite();
             if (!grp)
                 return false;
@@ -74,7 +76,7 @@ namespace ai
                 value->Load(masterFormation->getName());
             }
 
-            ai->TellPlayer(GetMaster(), BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(requester, BOT_TEXT("hello"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
 
             ai->DoSpecificAction("reset raids", event, true);
             ai->DoSpecificAction("update gear", event, true);

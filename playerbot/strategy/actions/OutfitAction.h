@@ -11,7 +11,7 @@ namespace ai
         virtual bool Execute(Event& event) override;
 
     private:
-        void List();
+        void List(Player* requester);
         void Save(string name, ItemIds outfit);
         void Update(string name);
     };

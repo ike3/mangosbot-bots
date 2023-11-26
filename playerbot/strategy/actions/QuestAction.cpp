@@ -236,6 +236,7 @@ bool QuestAction::AcceptQuest(Player* requester, Quest const* quest, uint64 ques
 
 bool QuestObjectiveCompletedAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     WorldPacket p(event.getPacket());
     p.rpos(0);
 
@@ -249,7 +250,7 @@ bool QuestObjectiveCompletedAction::Execute(Event& event)
         GameObjectInfo const* info = sObjectMgr.GetGameObjectInfo(entry);
         if (info)
         {
-            ai->TellPlayer(GetMaster(), chat->formatQuestObjective(info->name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(requester, chat->formatQuestObjective(info->name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
     }
     else
@@ -257,7 +258,7 @@ bool QuestObjectiveCompletedAction::Execute(Event& event)
         CreatureInfo const* info = sObjectMgr.GetCreatureTemplate(entry);
         if (info)
         {
-            ai->TellPlayer(GetMaster(), chat->formatQuestObjective(info->Name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+            ai->TellPlayer(requester, chat->formatQuestObjective(info->Name, available, required), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
         }
     }
 

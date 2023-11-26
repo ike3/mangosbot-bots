@@ -8,6 +8,7 @@ using namespace ai;
 
 bool GuildAcceptAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     WorldPacket p(event.getPacket());
     p.rpos(0);
     Player* inviter = nullptr;
@@ -24,17 +25,17 @@ bool GuildAcceptAction::Execute(Event& event)
     uint32 guildId = inviter->GetGuildId();
     if (!guildId)
     {
-        ai->TellError("You are not in a guild!");
+        ai->TellError(requester, "You are not in a guild!");
         accept = false;
     }
     else if (bot->GetGuildId())
     {
-        ai->TellError("Sorry, I am in a guild already");
+        ai->TellError(requester, "Sorry, I am in a guild already");
         accept = false;
     }
     else if (!ai->GetSecurity()->CheckLevelFor(PlayerbotSecurityLevel::PLAYERBOT_SECURITY_INVITE, false, inviter, true))
     {
-        ai->TellError("Sorry, I don't want to join your guild :(");
+        ai->TellError(requester, "Sorry, I don't want to join your guild :(");
         accept = false;
     }
 
@@ -42,7 +43,7 @@ bool GuildAcceptAction::Execute(Event& event)
 
     if(guild && guild->GetMemberSize() > 1000)
     {
-        ai->TellError("This guild has over 1000 members. To stop it from reaching the 1064 member limit I refuse to join it.");
+        ai->TellError(requester, "This guild has over 1000 members. To stop it from reaching the 1064 member limit I refuse to join it.");
         accept = false;
     }
 

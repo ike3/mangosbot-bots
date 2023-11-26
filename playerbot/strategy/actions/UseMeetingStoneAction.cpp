@@ -15,8 +15,8 @@ using namespace MaNGOS;
 
 bool UseMeetingStoneAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master)
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester)
         return false;
 
     WorldPacket p(event.getPacket());
@@ -24,22 +24,22 @@ bool UseMeetingStoneAction::Execute(Event& event)
     ObjectGuid guid;
     p >> guid;
 
-	if (master->GetSelectionGuid() && master->GetSelectionGuid() != bot->GetObjectGuid())
+	if (requester->GetSelectionGuid() && requester->GetSelectionGuid() != bot->GetObjectGuid())
 		return false;
 
-	if (!master->GetSelectionGuid() && master->GetGroup() != bot->GetGroup())
+	if (!requester->GetSelectionGuid() && requester->GetGroup() != bot->GetGroup())
 		return false;
 
-    if (master->IsBeingTeleported())
+    if (requester->IsBeingTeleported())
         return false;
 
     if (sServerFacade.IsInCombat(bot))
     {
-        ai->TellError("I am in combat");
+        ai->TellPlayerNoFacing(requester, "I am in combat");
         return false;
     }
 
-    Map* map = master->GetMap();
+    Map* map = requester->GetMap();
     if (!map)
         return false;
 
@@ -51,7 +51,7 @@ bool UseMeetingStoneAction::Execute(Event& event)
 	if (!goInfo || goInfo->type != GAMEOBJECT_TYPE_SUMMONING_RITUAL)
         return false;
 
-    return Teleport(master, bot);
+    return Teleport(requester, requester, bot);
 }
 
 class AnyGameObjectInObjectRangeCheck
@@ -72,38 +72,37 @@ private:
     float i_range;
 };
 
-
 bool SummonAction::Execute(Event& event)
 {
-    Player* master = GetMaster();
-    if (!master || master->IsBeingTeleported())
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    if (!requester || requester->IsBeingTeleported())
         return false;
 
-    if (master->GetSession()->GetSecurity() > SEC_PLAYER || sPlayerbotAIConfig.nonGmFreeSummon)
-        return Teleport(master, bot);
+    if (requester->GetSession()->GetSecurity() > SEC_PLAYER || sPlayerbotAIConfig.nonGmFreeSummon)
+        return Teleport(requester, requester, bot);
 
-    if(bot->GetMapId() == master->GetMapId() && !WorldPosition(bot).canPathTo(master,bot) && bot->GetDistance(master) < sPlayerbotAIConfig.sightDistance) //We can't walk to master so fine to short-range teleport.
-        return Teleport(master, bot);
+    if(bot->GetMapId() == requester->GetMapId() && !WorldPosition(bot).canPathTo(requester, bot) && bot->GetDistance(requester) < sPlayerbotAIConfig.sightDistance) //We can't walk to requester so fine to short-range teleport.
+        return Teleport(requester, requester, bot);
 
     if (bot->IsTaxiFlying())
         return false;
 
-    if (SummonUsingGos(master, bot) || SummonUsingNpcs(master, bot))
+    if (SummonUsingGos(requester, requester, bot) || SummonUsingNpcs(requester, requester, bot))
     {
-        ai->TellPlayerNoFacing(GetMaster(), BOT_TEXT("hello"));
+        ai->TellPlayerNoFacing(requester, BOT_TEXT("hello"));
         return true;
     }
 
-    if (SummonUsingGos(bot, master) || SummonUsingNpcs(bot, master))
+    if (SummonUsingGos(requester, bot, requester) || SummonUsingNpcs(requester, bot, requester))
     {
-        ai->TellPlayerNoFacing(GetMaster(), "Welcome!");
+        ai->TellPlayerNoFacing(requester, "Welcome!");
         return true;
     }
 
     return false;
 }
 
-bool SummonAction::SummonUsingGos(Player *summoner, Player *player)
+bool SummonAction::SummonUsingGos(Player* requester, Player *summoner, Player *player)
 {
     list<GameObject*> targets;
     AnyGameObjectInObjectRangeCheck u_check(summoner, sPlayerbotAIConfig.sightDistance);
@@ -114,14 +113,14 @@ bool SummonAction::SummonUsingGos(Player *summoner, Player *player)
     {
         GameObject* go = *tIter;
         if (go && sServerFacade.isSpawned(go) && go->GetGoType() == GAMEOBJECT_TYPE_MEETINGSTONE)
-            return Teleport(summoner, player);
+            return Teleport(requester, summoner, player);
     }
 
-    ai->TellError(summoner == bot ? "There is no meeting stone nearby" : "There is no meeting stone near you");
+    ai->TellPlayerNoFacing(requester, summoner == bot ? "There is no meeting stone nearby" : "There is no meeting stone near you");
     return false;
 }
 
-bool SummonAction::SummonUsingNpcs(Player *summoner, Player *player)
+bool SummonAction::SummonUsingNpcs(Player* requester, Player *summoner, Player *player)
 {
     if (!sPlayerbotAIConfig.summonAtInnkeepersEnabled)
         return false;
@@ -137,13 +136,13 @@ bool SummonAction::SummonUsingNpcs(Player *summoner, Player *player)
         {
             if (!player->HasItemCount(6948, 1, false))
             {
-                ai->TellError(player == bot ? "I have no hearthstone" : "You have no hearthstone");
+                ai->TellPlayerNoFacing(requester, player == bot ? "I have no hearthstone" : "You have no hearthstone");
                 return false;
             }
 
             if (!sServerFacade.IsSpellReady(player, 8690))
             {
-                ai->TellError(player == bot ? "My hearthstone is not ready" : "Your hearthstone is not ready");
+                ai->TellPlayerNoFacing(requester, player == bot ? "My hearthstone is not ready" : "Your hearthstone is not ready");
                 return false;
             }
 
@@ -161,17 +160,16 @@ bool SummonAction::SummonUsingNpcs(Player *summoner, Player *player)
                     );
             spell.SendSpellCooldown();
 
-            return Teleport(summoner, player);
+            return Teleport(requester, summoner, player);
         }
     }
 
-    ai->TellError(summoner == bot ? "There are no innkeepers nearby" : "There are no innkeepers near you");
+    ai->TellPlayerNoFacing(requester, summoner == bot ? "There are no innkeepers nearby" : "There are no innkeepers near you");
     return false;
 }
 
-bool SummonAction::Teleport(Player *summoner, Player *player)
+bool SummonAction::Teleport(Player* requester, Player *summoner, Player *player)
 {
-    Player* master = GetMaster();
     if (!summoner->IsBeingTeleported() && !player->IsBeingTeleported() && summoner != player)
     {
         float followAngle = GetFollowAngle();
@@ -194,7 +192,7 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
                 {
                     player->ResurrectPlayer(1.0f, false);
                     player->SpawnCorpseBones();
-                    ai->TellPlayerNoFacing(GetMaster(), "I live, again!");
+                    ai->TellPlayerNoFacing(requester, "I live, again!");
                 }                
 
                 if (player->IsTaxiFlying())
@@ -218,7 +216,7 @@ bool SummonAction::Teleport(Player *summoner, Player *player)
         }
     }
 
-    ai->TellError("Not enough place to summon");
+    ai->TellPlayerNoFacing(requester, "Not enough place to summon");
     return false;
 }
 

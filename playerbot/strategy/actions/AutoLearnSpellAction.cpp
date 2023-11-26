@@ -7,6 +7,7 @@ using namespace ai;
 
 bool AutoLearnSpellAction::Execute(Event& event)
 {
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
     string param = event.getParam();
 
     ostringstream out;
@@ -23,7 +24,7 @@ bool AutoLearnSpellAction::Execute(Event& event)
 
         map<string, string> args;
         args["%spells"] = out.str();
-        ai->TellPlayer(GetMaster(), BOT_TEXT2("auto_learn_spell", args), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+        ai->TellPlayer(requester, BOT_TEXT2("auto_learn_spell", args), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 
     return true;
