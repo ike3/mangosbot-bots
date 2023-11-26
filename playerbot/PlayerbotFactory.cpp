@@ -2704,7 +2704,7 @@ ObjectGuid PlayerbotFactory::GetRandomBot()
         if (!sAccountMgr.GetCharactersCount(accountId))
             continue;
 
-        QueryResult *result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account = '%u'", accountId);
+        auto result = CharacterDatabase.PQuery("SELECT guid FROM characters WHERE account = '%u'", accountId);
         if (!result)
             continue;
 
@@ -2715,8 +2715,6 @@ ObjectGuid PlayerbotFactory::GetRandomBot()
             if (!sObjectMgr.GetPlayer(guid))
                 guids.push_back(guid);
         } while (result->NextRow());
-
-        delete result;
     }
 
     if (guids.empty())
@@ -3537,7 +3535,7 @@ void PlayerbotFactory::LoadEnchantContainer()
 
    uint32 count = 0;
 
-   QueryResult* result = PlayerbotDatabase.PQuery("SELECT class, spec, spellid, slotid FROM ai_playerbot_enchants");
+   auto result = PlayerbotDatabase.PQuery("SELECT class, spec, spellid, slotid FROM ai_playerbot_enchants");
    if (result)
    {
       do
@@ -3554,8 +3552,6 @@ void PlayerbotFactory::LoadEnchantContainer()
          m_EnchantContainer.push_back(pEnchant);
          ++count;
       } while (result->NextRow());
-
-      delete result;
    }
 }
 

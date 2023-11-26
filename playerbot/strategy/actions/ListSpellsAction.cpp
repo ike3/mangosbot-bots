@@ -67,16 +67,14 @@ list<pair<uint32, string> > ListSpellsAction::GetSpellList(string filter)
 
     if (vendorItems.empty())
     {
-        QueryResult* results = WorldDatabase.PQuery("SELECT item FROM npc_vendor where maxcount = 0");
-        if (results != NULL)
+        auto results = WorldDatabase.PQuery("SELECT item FROM npc_vendor where maxcount = 0");
+        if (results)
         {
             do
             {
                 Field* fields = results->Fetch();
                 vendorItems.insert(fields[0].GetUInt32());
             } while (results->NextRow());
-
-            delete results;
         }
     }
 

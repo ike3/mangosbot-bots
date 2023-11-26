@@ -1429,7 +1429,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         verticalSpeed = -verticalSpeed;
 
         // calculate rough knockback time
-        float moveTimeHalf = verticalSpeed / 19.29f;
+        float moveTimeHalf = verticalSpeed / Movement::gravity;
 
         float dis = 2 * moveTimeHalf * horizontalSpeed;
         float max_height = -Movement::computeFallElevation(moveTimeHalf, false, -verticalSpeed);

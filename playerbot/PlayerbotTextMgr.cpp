@@ -31,7 +31,7 @@ void PlayerbotTextMgr::replaceAll(std::string & str, const std::string & from, c
 void PlayerbotTextMgr::LoadBotTexts()
 {
     sLog.outBasic("Loading playerbot texts...");
-    QueryResult* results = PlayerbotDatabase.PQuery("SELECT `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8` FROM `ai_playerbot_texts`");
+    auto results = PlayerbotDatabase.PQuery("SELECT `name`, `text`, `say_type`, `reply_type`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8` FROM `ai_playerbot_texts`");
     int count = 0;
     if (results)
     {
@@ -51,8 +51,6 @@ void PlayerbotTextMgr::LoadBotTexts()
             botTexts[name].push_back(BotTextEntry(name, text, text_locale, sayType, replyType));
             count++;
         } while (results->NextRow());
-
-        delete results;
     }
     sLog.outBasic("%d playerbot texts loaded", count);
 }
@@ -61,7 +59,7 @@ void PlayerbotTextMgr::LoadBotTextChance()
 {
     if (botTextChance.empty())
     {
-        QueryResult* results = PlayerbotDatabase.PQuery("SELECT name, probability FROM ai_playerbot_texts_chance");
+        auto results = PlayerbotDatabase.PQuery("SELECT name, probability FROM ai_playerbot_texts_chance");
         if (results)
         {
             do
@@ -72,7 +70,6 @@ void PlayerbotTextMgr::LoadBotTextChance()
 
                 botTextChance[name] = probability;
             } while (results->NextRow());
-            delete results;
         }
     }
 }

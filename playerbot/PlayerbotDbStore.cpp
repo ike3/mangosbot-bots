@@ -18,7 +18,7 @@ void PlayerbotDbStore::Load(PlayerbotAI *ai)
 {
     uint64 guid = ai->GetBot()->GetObjectGuid().GetRawValue();
 
-    QueryResult* results = PlayerbotDatabase.PQuery("SELECT `key`,`value` FROM `ai_playerbot_db_store` WHERE `guid` = '%lu'", guid);
+    auto results = PlayerbotDatabase.PQuery("SELECT `key`,`value` FROM `ai_playerbot_db_store` WHERE `guid` = '%lu'", guid);
     if (results)
     {
         ai->ClearStrategies(BotState::BOT_STATE_COMBAT);
@@ -40,8 +40,6 @@ void PlayerbotDbStore::Load(PlayerbotAI *ai)
         } while (results->NextRow());
 
         ai->GetAiObjectContext()->Load(values);
-
-        delete results;
     }
 }
 

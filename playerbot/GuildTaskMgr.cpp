@@ -339,7 +339,7 @@ bool GuildTaskMgr::SendKillAdvertisement(uint32 creatureId, uint32 owner, uint32
     if (!proto)
         return false;
 
-    QueryResult *result = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z FROM creature where id = '%u'", creatureId);
+    auto result = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z FROM creature where id = '%u'", creatureId);
     if (!result)
         return false;
 
@@ -359,7 +359,6 @@ bool GuildTaskMgr::SendKillAdvertisement(uint32 creatureId, uint32 owner, uint32
         location = entry->area_name[0];
         break;
     } while (result->NextRow());
-    delete result;
 
     ostringstream body;
     body << GetHelloText(owner);
@@ -477,7 +476,7 @@ bool GuildTaskMgr::IsGuildTaskItem(uint32 itemId, uint32 guildId)
 {
     uint32 value = 0;
 
-    QueryResult* results = PlayerbotDatabase.PQuery(
+    auto results = PlayerbotDatabase.PQuery(
             "select `value`, `time`, validIn from ai_playerbot_guild_tasks where `value` = '%u' and guildid = '%u' and `type` = 'itemTask'",
             itemId, guildId);
 
@@ -489,8 +488,6 @@ bool GuildTaskMgr::IsGuildTaskItem(uint32 itemId, uint32 guildId)
         uint32 validIn = fields[2].GetUInt32();
         if ((time(0) - lastChangeTime) >= validIn)
             value = 0;
-
-		delete results;
     }
 
     return value;
@@ -500,7 +497,7 @@ map<uint32,uint32> GuildTaskMgr::GetTaskValues(uint32 owner, string type, uint32
 {
     map<uint32,uint32> result;
 
-    QueryResult* results = PlayerbotDatabase.PQuery(
+    auto results = PlayerbotDatabase.PQuery(
             "select `value`, `time`, validIn, guildid from ai_playerbot_guild_tasks where owner = '%u' and `type` = '%s'",
             owner, type.c_str());
 
@@ -520,8 +517,6 @@ map<uint32,uint32> GuildTaskMgr::GetTaskValues(uint32 owner, string type, uint32
         result[guildId] = value;
 
     } while (results->NextRow());
-
-	delete results;
 	return result;
 }
 
@@ -529,7 +524,7 @@ uint32 GuildTaskMgr::GetTaskValue(uint32 owner, uint32 guildId, string type, uin
 {
     uint32 value = 0;
 
-    QueryResult* results = PlayerbotDatabase.PQuery(
+    auto results = PlayerbotDatabase.PQuery(
             "select `value`, `time`, validIn from ai_playerbot_guild_tasks where owner = '%u' and guildid = '%u' and `type` = '%s'",
             owner, guildId, type.c_str());
 
@@ -544,8 +539,6 @@ uint32 GuildTaskMgr::GetTaskValue(uint32 owner, uint32 guildId, string type, uin
 
         if (validIn) *validIn = secs;
     }
-
-	delete results;
 	return value;
 }
 
@@ -604,7 +597,7 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
 
         uint32 owner = (uint32)guid.GetRawValue();
 
-        QueryResult* result = PlayerbotDatabase.PQuery(
+        auto result = PlayerbotDatabase.PQuery(
                 "select `value`, `time`, validIn, guildid from ai_playerbot_guild_tasks where owner = '%u' and type='activeTask' order by guildid",
                 owner);
 
@@ -704,7 +697,6 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
             } while (result->NextRow());
 
             Field* fields = result->Fetch();
-			delete result;
         }
 
         return true;
@@ -744,7 +736,7 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
         }
 
         uint32 owner = (uint32)guid.GetRawValue();
-        QueryResult* result = PlayerbotDatabase.PQuery(
+        auto result = PlayerbotDatabase.PQuery(
                 "select distinct guildid from ai_playerbot_guild_tasks where owner = '%u'",
                 owner);
 
@@ -763,7 +755,6 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* handler, char const* args)
             } while (result->NextRow());
 
             Field* fields = result->Fetch();
-			delete result;
             return true;
         }
     }
@@ -1003,7 +994,7 @@ void GuildTaskMgr::CheckKillTaskInternal(Player* player, Unit* victim)
 void GuildTaskMgr::CleanupAdverts()
 {
     uint32 deliverTime = time(0) - sPlayerbotAIConfig.minGuildTaskChangeTime;
-    QueryResult *result = CharacterDatabase.PQuery("select id, receiver from mail where subject like 'Guild Task%%' and deliver_time <= '%u'", deliverTime);
+    auto result = CharacterDatabase.PQuery("select id, receiver from mail where subject like 'Guild Task%%' and deliver_time <= '%u'", deliverTime);
     if (!result)
         return;
 
@@ -1017,7 +1008,6 @@ void GuildTaskMgr::CleanupAdverts()
         if (player) player->RemoveMail(id);
         count++;
     } while (result->NextRow());
-    delete result;
 
     if (count > 0)
     {
@@ -1029,7 +1019,7 @@ void GuildTaskMgr::CleanupAdverts()
 void GuildTaskMgr::RemoveDuplicatedAdverts()
 {
     uint32 deliverTime = time(0);
-    QueryResult *result = CharacterDatabase.PQuery(
+    auto result = CharacterDatabase.PQuery(
             "select m.id, m.receiver from (SELECT max(id) as id, subject, receiver FROM mail where subject like 'Guild Task%%' and deliver_time <= '%u' group by subject, receiver) q "
             "join mail m on m.subject = q.subject where m.id <> q.id and m.deliver_time <= '%u'",
             deliverTime, deliverTime);
@@ -1048,7 +1038,6 @@ void GuildTaskMgr::RemoveDuplicatedAdverts()
         count++;
         ids.push_back(id);
     } while (result->NextRow());
-    delete result;
 
     if (count > 0)
     {
@@ -1106,7 +1095,7 @@ bool GuildTaskMgr::CheckTaskTransfer(string text, Player* ownerPlayer, Player* b
             guild->GetName().c_str(), ownerPlayer->GetName());
 
     uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(ownerPlayer->GetObjectGuid());
-    QueryResult* results = CharacterDatabase.PQuery("SELECT guid,name FROM characters where account = '%u'",
+    auto results = CharacterDatabase.PQuery("SELECT guid,name FROM characters where account = '%u'",
             account);
     if (results != NULL)
     {
@@ -1141,7 +1130,6 @@ bool GuildTaskMgr::CheckTaskTransfer(string text, Player* ownerPlayer, Player* b
                 }
             }
         } while (results->NextRow());
-        delete results;
     }
 
     return true;

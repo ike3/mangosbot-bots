@@ -14,14 +14,13 @@ bool HireAction::Execute(Event& event)
         return false;
 
     uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(requester->GetObjectGuid());
-    QueryResult* results = CharacterDatabase.PQuery("SELECT count(*) FROM characters where account = '%u'", account);
+    auto results = CharacterDatabase.PQuery("SELECT count(*) FROM characters where account = '%u'", account);
 
     uint32 charCount = 10;
     if (results)
     {
         Field* fields = results->Fetch();
         charCount = fields[0].GetUInt32();
-        delete results;
     }
 
     if (charCount >= 10)

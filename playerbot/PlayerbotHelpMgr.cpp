@@ -921,7 +921,7 @@ void PlayerbotHelpMgr::FormatHelpTopics()
 void PlayerbotHelpMgr::LoadBotHelpTexts()
 {
     sLog.outBasic("Loading playerbot texts...");
-    QueryResult* results = PlayerbotDatabase.PQuery("SELECT `name`, `template_text`, `text`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8` FROM `ai_playerbot_help_texts`");
+    auto results = PlayerbotDatabase.PQuery("SELECT `name`, `template_text`, `text`, `text_loc1`, `text_loc2`, `text_loc3`, `text_loc4`, `text_loc5`, `text_loc6`, `text_loc7`, `text_loc8` FROM `ai_playerbot_help_texts`");
     int count = 0;
     if (results)
     {
@@ -943,8 +943,6 @@ void PlayerbotHelpMgr::LoadBotHelpTexts()
 
             count++;
         } while (results->NextRow());
-
-        delete results;
     }
     sLog.outBasic("%d playerbot helptexts loaded", count);
 

@@ -401,13 +401,11 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
     if (sRandomPlayerbotMgr.IsRandomBot(bot))
     {
         uint32 lowguid = bot->GetObjectGuid().GetCounter();
-        QueryResult* result = CharacterDatabase.PQuery("SELECT 1 FROM character_social WHERE flags='%u' and friend='%d'", SOCIAL_FLAG_FRIEND, lowguid);
+        auto result = CharacterDatabase.PQuery("SELECT 1 FROM character_social WHERE flags='%u' and friend='%d'", SOCIAL_FLAG_FRIEND, lowguid);
         if (result)
             bot->GetPlayerbotAI()->SetPlayerFriend(true);
         else
             bot->GetPlayerbotAI()->SetPlayerFriend(false);
-
-        delete result;
 
         if (sPlayerbotAIConfig.instantRandomize && !sPlayerbotAIConfig.disableRandomLevels && !bot->GetTotalPlayedTime())
         {
@@ -891,7 +889,7 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
             continue;
         }
 
-        QueryResult* results = CharacterDatabase.PQuery(
+        auto results = CharacterDatabase.PQuery(
             "SELECT name FROM characters WHERE account = '%u'",
             accountId);
         if (results)
@@ -902,8 +900,6 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
                 string charName = fields[0].GetString();
                 bots.insert(charName);
             } while (results->NextRow());
-
-			delete results;
         }
 	}
 
@@ -941,12 +937,11 @@ uint32 PlayerbotHolder::GetAccountId(string name)
 {
     uint32 accountId = 0;
 
-    QueryResult* results = LoginDatabase.PQuery("SELECT id FROM account WHERE username = '%s'", name.c_str());
+    auto results = LoginDatabase.PQuery("SELECT id FROM account WHERE username = '%s'", name.c_str());
     if(results)
     {
         Field* fields = results->Fetch();
         accountId = fields[0].GetUInt32();
-		delete results;
     }
 
     return accountId;
@@ -986,7 +981,7 @@ string PlayerbotHolder::ListBots(Player* master)
 
     if (master)
     {
-        QueryResult* results = CharacterDatabase.PQuery("SELECT class,name FROM characters where account = '%u'",
+        auto results = CharacterDatabase.PQuery("SELECT class,name FROM characters where account = '%u'",
                 master->GetSession()->GetAccountId());
         if (results != NULL)
         {
@@ -1002,7 +997,6 @@ string PlayerbotHolder::ListBots(Player* master)
                     classes[name] = classNames[cls];
                 }
             } while (results->NextRow());
-			delete results;
         }
     }
 
@@ -1203,7 +1197,7 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
         return;
 
     uint32 accountId = player->GetSession()->GetAccountId();
-    QueryResult* results = CharacterDatabase.PQuery(
+    auto results = CharacterDatabase.PQuery(
         "SELECT name FROM characters WHERE account = '%u'",
         accountId);
     if (results)
@@ -1216,8 +1210,6 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
             if (first) first = false; else out << ",";
             out << fields[0].GetString();
         } while (results->NextRow());
-
-        delete results;
 
         HandlePlayerbotCommand(out.str().c_str(), player);
     }

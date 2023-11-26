@@ -759,7 +759,7 @@ void TravelMgr::loadAreaLevels()
     string query = "SELECT id, level FROM ai_playerbot_zone_level";
 
     {
-        QueryResult* result = PlayerbotDatabase.PQuery(query.c_str());
+        auto result = PlayerbotDatabase.PQuery(query.c_str());
 
         vector<uint32> loadedAreas;
 
@@ -776,8 +776,6 @@ void TravelMgr::loadAreaLevels()
 
                 loadedAreas.push_back(fields[0].GetUInt32());
             } while (result->NextRow());
-
-            delete result;
 
             sLog.outString(">> Loaded " SIZEFMTD " area levels.", areaLevels.size());
         }
@@ -2109,7 +2107,7 @@ void TravelMgr::LoadQuestTravelTable()
         ostringstream cout; cout << sPlayerbotAIConfig.randomBotAccountPrefix << 0;
         string accountName = cout.str();
 
-        QueryResult* results = LoginDatabase.PQuery("SELECT id FROM account where username = '%s'", accountName.c_str());
+        auto results = LoginDatabase.PQuery("SELECT id FROM account where username = '%s'", accountName.c_str());
         if (results)
         {
 

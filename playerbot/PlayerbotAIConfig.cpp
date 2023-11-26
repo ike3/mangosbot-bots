@@ -650,7 +650,7 @@ void PlayerbotAIConfig::loadFreeAltBotAccounts()
 
     freeAltBots.clear();
 
-    QueryResult* results = LoginDatabase.PQuery("SELECT username, id FROM account where username not like '%s%%'", randomBotAccountPrefix.c_str());
+    auto results = LoginDatabase.PQuery("SELECT username, id FROM account where username not like '%s%%'", randomBotAccountPrefix.c_str());
     if (results)
     {
         do
@@ -664,7 +664,7 @@ void PlayerbotAIConfig::loadFreeAltBotAccounts()
             if (std::find(toggleAlwaysOnlineAccounts.begin(), toggleAlwaysOnlineAccounts.end(), accountName) != toggleAlwaysOnlineAccounts.end())
                 accountAlwaysOnline = !accountAlwaysOnline;                       
 
-            QueryResult* result = CharacterDatabase.PQuery("SELECT name, guid FROM characters WHERE account = '%u'", accountId);
+            auto result = CharacterDatabase.PQuery("SELECT name, guid FROM characters WHERE account = '%u'", accountId);
             if (!result)
                 continue;
 
@@ -688,11 +688,9 @@ void PlayerbotAIConfig::loadFreeAltBotAccounts()
                     freeAltBots.push_back(make_pair(accountId, guid));
 
             } while (result->NextRow());
-            delete result;
         
 
         } while (results->NextRow());
-        delete results;
     }
 }
 

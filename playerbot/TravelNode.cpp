@@ -2839,7 +2839,7 @@ void TravelNodeMap::loadNodeStore()
     std::unordered_map<uint32, TravelNode*> saveNodes;   
 
     {
-        QueryResult* result = PlayerbotDatabase.PQuery(query.c_str());
+        auto result = PlayerbotDatabase.PQuery(query.c_str());
 
         if (result)
         {
@@ -2860,8 +2860,6 @@ void TravelNodeMap::loadNodeStore()
 
             } while (result->NextRow());
 
-            delete result;
-
             sLog.outString(">> Loaded " SIZEFMTD " travelNodes.", saveNodes.size());
         }
         else
@@ -2877,7 +2875,7 @@ void TravelNodeMap::loadNodeStore()
         //                     0        1          2    3      4         5              6          7          8               9             10 
         string query = "SELECT node_id, to_node_id,type,object,distance,swim_distance, extra_cost,calculated, max_creature_0,max_creature_1,max_creature_2 FROM ai_playerbot_travelnode_link";
 
-        QueryResult* result = PlayerbotDatabase.PQuery(query.c_str());
+        auto result = PlayerbotDatabase.PQuery(query.c_str());
 
         if (result)
         {
@@ -2901,8 +2899,6 @@ void TravelNodeMap::loadNodeStore()
             } while (result->NextRow());
 
             sLog.outString(">> Loaded " SIZEFMTD " travelNode paths.", result->GetRowCount());
-
-            delete result;
         }
         else
         {
@@ -2915,7 +2911,7 @@ void TravelNodeMap::loadNodeStore()
         //                     0        1           2   3      4   5  6
         string query = "SELECT node_id, to_node_id, nr, map_id, x, y, z FROM ai_playerbot_travelnode_path order by node_id, to_node_id, nr";
 
-        QueryResult* result = PlayerbotDatabase.PQuery(query.c_str());
+        auto result = PlayerbotDatabase.PQuery(query.c_str());
 
         if (result)
         {
@@ -2944,8 +2940,6 @@ void TravelNodeMap::loadNodeStore()
             } while (result->NextRow());
 
             sLog.outString(">> Loaded " SIZEFMTD " travelNode paths points.", result->GetRowCount());
-
-            delete result;
         }
         else
         {

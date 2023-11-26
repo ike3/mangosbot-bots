@@ -25,13 +25,13 @@
 
 using namespace ahbot;
 
-bool Player::MinimalLoadFromDB( QueryResult *result, uint32 guid )
+bool Player::MinimalLoadFromDB( std::unique_ptr<QueryResult> result, uint32 guid )
 {
     bool delete_result = true;
     if (!result)
     {
         //                                        0     1           2           3           4    5          6          7
-        result = CharacterDatabase.PQuery("SELECT name, position_x, position_y, position_z, map, totaltime, leveltime, at_login FROM characters WHERE guid = '%u'",guid);
+        auto results = CharacterDatabase.PQuery ("SELECT name, position_x, position_y, position_z, map, totaltime, leveltime, at_login FROM characters WHERE guid = '%u'",guid);
         if (!result)
             return false;
     }
@@ -54,7 +54,6 @@ bool Player::MinimalLoadFromDB( QueryResult *result, uint32 guid )
     m_atLoginFlags = fields[7].GetUInt32();
 
     if (delete_result)
-        delete result;
 
     for (int i = 0; i < PLAYER_SLOTS_COUNT; ++i)
         m_items[i] = NULL;
@@ -435,7 +434,7 @@ int AhBot::Answer(int auction, Category* category, ItemBag* inAuctionItems)
 
 uint32 AhBot::GetTime(string category, uint32 id, uint32 auctionHouse, uint32 type)
 {
-    QueryResult* results = PlayerbotDatabase.PQuery("SELECT MAX(buytime) FROM ahbot_history WHERE item = '%u' AND won = '%u' AND auction_house = '%u' AND category = '%s'",
+    auto results = PlayerbotDatabase.PQuery("SELECT MAX(buytime) FROM ahbot_history WHERE item = '%u' AND won = '%u' AND auction_house = '%u' AND category = '%s'",
         id, type, factions[auctionHouse], category.c_str());
 
     if (!results)
@@ -443,7 +442,6 @@ uint32 AhBot::GetTime(string category, uint32 id, uint32 auctionHouse, uint32 ty
 
     Field* fields = results->Fetch();
     uint32 result = fields[0].GetUInt32();
-    delete results;
 
     return result;
 }
@@ -824,7 +822,7 @@ uint32 AhBot::GetAnswerCount(uint32 itemId, uint32 auctionHouse, uint32 withinTi
 {
     uint32 count = 0;
 
-    QueryResult* results = PlayerbotDatabase.PQuery("SELECT COUNT(*) FROM ahbot_history WHERE "
+    auto results = PlayerbotDatabase.PQuery("SELECT COUNT(*) FROM ahbot_history WHERE "
         "item = '%u' AND won in (2, 3) AND auction_house = '%u' AND buytime > '%lu'",
         itemId, factions[auctionHouse], time(0) - withinTime);
     if (results)
@@ -834,8 +832,6 @@ uint32 AhBot::GetAnswerCount(uint32 itemId, uint32 auctionHouse, uint32 withinTi
             Field* fields = results->Fetch();
             count = fields[0].GetUInt32();
         } while (results->NextRow());
-
-        delete results;
     }
 
     return count;
@@ -856,7 +852,7 @@ uint32 AhBot::GetAvailableMoney(uint32 auctionHouse)
     data[AHBOT_WON_SELF] = 0;
 
     const AuctionHouseEntry* ahEntry = sAuctionHouseStore.LookupEntry(auctionHouse);
-    QueryResult* results = PlayerbotDatabase.PQuery(
+    auto results = PlayerbotDatabase.PQuery(
         "SELECT won, SUM(bid) FROM ahbot_history WHERE auction_house = '%u' GROUP BY won HAVING won > 0 ORDER BY won",
         factions[auctionHouse]);
     if (results)
@@ -867,8 +863,6 @@ uint32 AhBot::GetAvailableMoney(uint32 auctionHouse)
             data[fields[0].GetUInt32()] = fields[1].GetUInt32();
 
         } while (results->NextRow());
-
-        delete results;
     }
 
     results = PlayerbotDatabase.PQuery(
@@ -881,8 +875,6 @@ uint32 AhBot::GetAvailableMoney(uint32 auctionHouse)
         uint32 now = time(0);
         if (lastBuyTime && now > lastBuyTime)
         result += (now - lastBuyTime) / 3600 / 24 * sAhBotConfig.alwaysAvailableMoney;
-
-        delete results;
     }
 
     AuctionHouseObject::AuctionEntryMap const& auctionEntryMap = sAuctionMgr.GetAuctionsMap(ahEntry)->GetAuctions();
@@ -901,7 +893,7 @@ uint32 AhBot::GetAvailableMoney(uint32 auctionHouse)
 
 void AhBot::CheckCategoryMultipliers()
 {
-    QueryResult* results = PlayerbotDatabase.PQuery("SELECT category, multiplier, max_auction_count, expire_time FROM ahbot_category");
+    auto results = PlayerbotDatabase.PQuery("SELECT category, multiplier, max_auction_count, expire_time FROM ahbot_category");
     if (results)
     {
         do
@@ -912,8 +904,6 @@ void AhBot::CheckCategoryMultipliers()
             categoryMultiplierExpireTimes[fields[0].GetString()] = fields[3].GetUInt64();
 
         } while (results->NextRow());
-
-        delete results;
     }
 
     PlayerbotDatabase.PExecute("DELETE FROM ahbot_category");
@@ -953,11 +943,10 @@ void AhBot::updateMarketPrice(uint32 itemId, double price, uint32 auctionHouse)
 {
     double marketPrice = 0;
 
-    QueryResult* results = PlayerbotDatabase.PQuery("SELECT price FROM ahbot_price WHERE item = '%u' AND auction_house = '%u'", itemId, auctionHouse);
+    auto results = PlayerbotDatabase.PQuery("SELECT price FROM ahbot_price WHERE item = '%u' AND auction_house = '%u'", itemId, auctionHouse);
     if (results)
     {
         marketPrice = results->Fetch()[0].GetFloat();
-        delete results;
     }
 
     if (marketPrice > 0)
@@ -1006,7 +995,7 @@ void AhBot::LoadRandomBots()
         if (!sAccountMgr.GetCharactersCount(accountId))
             continue;
 
-        QueryResult *result = CharacterDatabase.PQuery("SELECT guid, race FROM characters WHERE account = '%u'", accountId);
+        auto result = CharacterDatabase.PQuery("SELECT guid, race FROM characters WHERE account = '%u'", accountId);
         if (!result)
             continue;
 
@@ -1020,7 +1009,6 @@ void AhBot::LoadRandomBots()
             bidders[3].push_back(guid);
             allBidders.insert(guid);
         } while (result->NextRow());
-        delete result;
     }
 
 
@@ -1223,7 +1211,7 @@ void AhBot::Dump()
 void AhBot::CleanupPropositions()
 {
     uint32 deliverTime = time(0) - 3600 * 24 * 2;
-    QueryResult *result = CharacterDatabase.PQuery("select id, receiver from mail where subject like 'AH Proposition%%' and deliver_time <= '%u'", deliverTime);
+    auto result = CharacterDatabase.PQuery("select id, receiver from mail where subject like 'AH Proposition%%' and deliver_time <= '%u'", deliverTime);
     if (!result)
         return;
 
@@ -1237,7 +1225,6 @@ void AhBot::CleanupPropositions()
         if (player) player->RemoveMail(id);
         count++;
     } while (result->NextRow());
-    delete result;
 
     if (count > 0)
     {

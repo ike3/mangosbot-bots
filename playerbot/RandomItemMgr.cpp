@@ -261,7 +261,7 @@ RandomItemList RandomItemMgr::Query(uint32 level, RandomItemType type, RandomIte
 
 void RandomItemMgr::BuildRandomItemCache()
 {
-    QueryResult* results = PlayerbotDatabase.PQuery("select lvl, type, item from ai_playerbot_rnditem_cache");
+    auto results = PlayerbotDatabase.PQuery("select lvl, type, item from ai_playerbot_rnditem_cache");
     if (results)
     {
         sLog.outString("Loading random item cache");
@@ -278,7 +278,6 @@ void RandomItemMgr::BuildRandomItemCache()
             count++;
 
         } while (results->NextRow());
-        delete results;
         sLog.outString("Equipment cache loaded from %d records", count);
     }
     else
@@ -945,7 +944,7 @@ void RandomItemMgr::BuildItemInfoCache()
 
     // load weightscales
     sLog.outString("Loading weightscales info");
-    QueryResult* results = PlayerbotDatabase.PQuery("select id, name, class from ai_playerbot_weightscales");
+    auto results = PlayerbotDatabase.PQuery("select id, name, class from ai_playerbot_weightscales");
 
     if (results)
     {
@@ -968,11 +967,10 @@ void RandomItemMgr::BuildItemInfoCache()
             totalcount++;
 
         } while (results->NextRow());
-        delete results;
 
         sLog.outString("Loaded %d weightscale class specs", totalcount);
 
-        QueryResult* result = PlayerbotDatabase.PQuery("select id, field, val from ai_playerbot_weightscale_data");
+        auto result = PlayerbotDatabase.PQuery("select id, field, val from ai_playerbot_weightscale_data");
         if (result)
         {
             do
@@ -990,7 +988,6 @@ void RandomItemMgr::BuildItemInfoCache()
                 statcount++;
 
             } while (result->NextRow());
-            delete result;
         }
 
         sLog.outString("Loaded %d weightscale stat weights", statcount);
@@ -1008,7 +1005,7 @@ void RandomItemMgr::BuildItemInfoCache()
     std::vector<uint32> allianceItems;
     std::vector<uint32> hordeItems;
     vendorItems.clear();
-    if (QueryResult* result = WorldDatabase.PQuery("%s", "SELECT item, entry FROM npc_vendor"))
+    if (auto result = WorldDatabase.PQuery("%s", "SELECT item, entry FROM npc_vendor"))
     {
         BarGoLink bar(result->GetRowCount());
         do
@@ -1031,7 +1028,6 @@ void RandomItemMgr::BuildItemInfoCache()
             }
 #endif
         } while (result->NextRow());
-        delete result;
     }
     sLog.outString("Loaded %d vendor items...", vendorItems.size());
     sLog.outString("Loaded %d alliance only vendor items...", allianceItems.size());
@@ -3057,7 +3053,7 @@ void RandomItemMgr::BuildEquipCache()
     if (maxLevel > sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL))
         maxLevel = sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL);
 
-    QueryResult* results = PlayerbotDatabase.PQuery("select clazz, spec, lvl, slot, quality, item from ai_playerbot_equip_cache");
+    auto results = PlayerbotDatabase.PQuery("select clazz, spec, lvl, slot, quality, item from ai_playerbot_equip_cache");
     if (results)
     {
         sLog.outString("Loading equipment cache for %d classes, %d levels, %d slots, %d quality from %d items",
@@ -3078,7 +3074,6 @@ void RandomItemMgr::BuildEquipCache()
             count++;
 
         } while (results->NextRow());
-        delete results;
         sLog.outString("Equipment cache loaded from %d records", count);
     }
     else
@@ -3231,7 +3226,7 @@ void RandomItemMgr::BuildAmmoCache()
     {
         for (uint32 subClass = ITEM_SUBCLASS_ARROW; subClass <= ITEM_SUBCLASS_BULLET; subClass++)
         {
-            QueryResult* results = WorldDatabase.PQuery(
+            auto results = WorldDatabase.PQuery(
                     "select entry, RequiredLevel from item_template where class = '%u' and subclass = '%u' and RequiredLevel <= '%u' and quality = '%u' order by RequiredLevel desc",
                     ITEM_CLASS_PROJECTILE, subClass, level, ITEM_QUALITY_NORMAL);
             if (!results)
@@ -3244,11 +3239,9 @@ void RandomItemMgr::BuildAmmoCache()
                 ammoCache[level / 10][subClass] = entry;
 				counter1++;
             }
-
-            delete results;
         }
 
-        QueryResult* results = WorldDatabase.PQuery(
+        auto results = WorldDatabase.PQuery(
             "select entry, RequiredLevel from item_template where class = '%u' and subclass = '%u' and RequiredLevel <= '%u' and quality = '%u' order by RequiredLevel desc",
             ITEM_CLASS_WEAPON, ITEM_SUBCLASS_WEAPON_THROWN, level, ITEM_QUALITY_NORMAL);
         if (!results)
@@ -3261,8 +3254,6 @@ void RandomItemMgr::BuildAmmoCache()
             ammoCache[level / 10][ITEM_SUBCLASS_WEAPON_THROWN] = entry;
             counter1++;
         }
-
-        delete results;
     }
 	sLog.outString("Cached %d types of ammo", counter1); // TEST
 }
@@ -3573,7 +3564,7 @@ vector<uint32> RandomItemMgr::GetGemsList()
 
 void RandomItemMgr::BuildRarityCache()
 {
-    QueryResult* results = PlayerbotDatabase.PQuery("select item, rarity from ai_playerbot_rarity_cache");
+    auto results = PlayerbotDatabase.PQuery("select item, rarity from ai_playerbot_rarity_cache");
     if (results)
     {
         sLog.outBasic("Loading item rarity cache");
@@ -3588,7 +3579,6 @@ void RandomItemMgr::BuildRarityCache()
             count++;
 
         } while (results->NextRow());
-        delete results;
         sLog.outString("Item rarity cache loaded from %d records", count);
     }
     else
@@ -3616,7 +3606,7 @@ void RandomItemMgr::BuildRarityCache()
 
             if (!proto->ItemLevel/* || proto->RequiredLevel > sAhBotConfig.maxRequiredLevel || proto->ItemLevel > sAhBotConfig.maxItemLevel*/)
                 continue;
-            QueryResult* results = WorldDatabase.PQuery(
+            auto results = WorldDatabase.PQuery(
                     "select max(q.chance) from ( "
                     // "-- Creature "
                     "select  "
@@ -3709,8 +3699,6 @@ void RandomItemMgr::BuildRarityCache()
                             itemId, rarity);
                 }
             }
-
-            delete results;
         }
         sLog.outString("Item rarity cache built from %u items", sItemStorage.GetMaxEntry());
     }

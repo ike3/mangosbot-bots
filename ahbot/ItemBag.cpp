@@ -169,7 +169,7 @@ void AvailableItemsBag::Load()
 {
     set<uint32> vendorItems;
 
-      QueryResult* results = WorldDatabase.PQuery("SELECT item FROM npc_vendor where maxcount = 0");
+      auto results = WorldDatabase.PQuery("SELECT item FROM npc_vendor where maxcount = 0");
       if (results != NULL)
       {
           do
@@ -177,8 +177,6 @@ void AvailableItemsBag::Load()
               Field* fields = results->Fetch();
               vendorItems.insert(fields[0].GetUInt32());
           } while (results->NextRow());
-
-          delete results;
       }
 
       BarGoLink bar(sItemStorage.GetMaxEntry());

@@ -161,7 +161,7 @@ void SuggestWhatToDoAction::grindMaterials()
     if (bot->GetLevel() <= 5)
         return;
 
-    QueryResult *result = PlayerbotDatabase.PQuery("SELECT distinct category, multiplier FROM ahbot_category where category not in ('other', 'quest', 'trade', 'reagent') and multiplier > 3 order by multiplier desc limit 10");
+    auto result = PlayerbotDatabase.PQuery("SELECT distinct category, multiplier FROM ahbot_category where category not in ('other', 'quest', 'trade', 'reagent') and multiplier > 3 order by multiplier desc limit 10");
     if (!result)
         return;
 
@@ -171,7 +171,6 @@ void SuggestWhatToDoAction::grindMaterials()
         Field* fields = result->Fetch();
         categories[fields[0].GetCppString()] = fields[1].GetFloat();
     } while (result->NextRow());
-    delete result;
 
     for (map<string, double>::iterator i = categories.begin(); i != categories.end(); ++i)
     {

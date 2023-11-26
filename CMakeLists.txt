@@ -242,7 +242,7 @@ endif()
 
 add_library(${LIBRARY_NAME} STATIC ${LIBRARY_SRCS})
 
-target_link_libraries(${LIBRARY_NAME} shared detour)
+target_link_libraries(${LIBRARY_NAME} shared Detour)
 
 if(UNIX)
   # Both systems don't have libdl and don't need them

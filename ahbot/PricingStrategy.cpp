@@ -75,11 +75,10 @@ double PricingStrategy::GetMarketPrice(uint32 itemId, uint32 auctionHouse)
 {
     double marketPrice = 0;
 
-    QueryResult* results = PlayerbotDatabase.PQuery("SELECT price FROM ahbot_price WHERE item = '%u' AND auction_house = '%u'", itemId, auctionHouse);
+    auto results = PlayerbotDatabase.PQuery("SELECT price FROM ahbot_price WHERE item = '%u' AND auction_house = '%u'", itemId, auctionHouse);
     if (results)
     {
         marketPrice = results->Fetch()[0].GetFloat();
-        delete results;
     }
 
     return RoundPrice(marketPrice);
@@ -130,7 +129,7 @@ double PricingStrategy::GetCategoryPriceMultiplier(uint32 untilTime, uint32 auct
 {
     double result = 1.0;
 
-    QueryResult* results = PlayerbotDatabase.PQuery(
+    auto results = PlayerbotDatabase.PQuery(
         "SELECT count(*) FROM (SELECT round(buytime/3600/24/5) as days FROM ahbot_history WHERE category = '%s' AND won = '1' AND buytime <= '%u' AND auction_house = '%u' group by days) q",
         category->GetName().c_str(), untilTime, AhBot::factions[auctionHouse]);
     if (results)
@@ -140,8 +139,6 @@ double PricingStrategy::GetCategoryPriceMultiplier(uint32 untilTime, uint32 auct
 
         if (count)
             result += count;
-
-        delete results;
     }
 
     return result;
@@ -158,7 +155,7 @@ double PricingStrategy::GetItemPriceMultiplier(ItemPrototype const* proto, uint3
 {
     double result = 1.0;
 
-    QueryResult* results = PlayerbotDatabase.PQuery(
+    auto results = PlayerbotDatabase.PQuery(
         "SELECT count(*) FROM (SELECT round(buytime/3600/24/5) as days FROM ahbot_history WHERE won = '1' AND item = '%u' AND buytime <= '%u' AND auction_house = '%u' group by days) q",
         proto->ItemId, untilTime, AhBot::factions[auctionHouse]);
     if (results)
@@ -168,8 +165,6 @@ double PricingStrategy::GetItemPriceMultiplier(ItemPrototype const* proto, uint3
 
         if (count)
             result += count;
-
-        delete results;
     }
 
     return result;
@@ -199,14 +194,13 @@ uint32 PricingStrategy::GetDefaultBuyPrice(ItemPrototype const* proto)
     {
         double result = 1.0;
 
-        QueryResult* results = WorldDatabase.PQuery(
+        auto results = WorldDatabase.PQuery(
             "select max(QuestLevel), max(MinLevel) from quest_template where ReqItemId1 = %u or ReqItemId2 = %u or ReqItemId3 = %u or ReqItemId4 = %u",
             proto->ItemId, proto->ItemId, proto->ItemId, proto->ItemId);
         if (results)
         {
             Field* fields = results->Fetch();
             level = max(fields[0].GetUInt32(), fields[1].GetUInt32());
-            delete results;
         }
     }
     if (!price) price = sAhBotConfig.defaultMinPrice * level * level / 40;
