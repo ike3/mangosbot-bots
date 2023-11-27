@@ -32,7 +32,7 @@ AiPlayerbot.BotAutologin = 0
 # Guild Task system
 AiPlayerbot.EnableGuildTasks = 0
 
-# Enable LFG for random bots (NYI)
+# Enable LFG for random bots
 AiPlayerbot.RandomBotJoinLfg = 1
 
 # Enable BG/Arena for random Bots
@@ -90,11 +90,11 @@ AiPlayerbot.RandomGearLoweringChance = 0.15
 AiPlayerbot.RandomGearMaxLevel = 500
 
 # Max difference between bot level and item's required level to be used in randomisation
-# Default = 11, means bots level 60 can use items that require (themselves or via quests) level 49 and above
-AiPlayerbot.RandomGearMaxDiff = 11
+# Default = 9, means bots level 60 can use items that require (themselves or via quests) level 51 and above
+AiPlayerbot.RandomGearMaxDiff = 9
 
 # Regularly upgrade bots equipment for their level
-AiPlayerbot.RandomGearUpgradeEnabled = 1
+AiPlayerbot.RandomGearUpgradeEnabled = 0
 
 # List of item IDs to exclude from random gear, separated by comma
 AiPlayerbot.RandomGearBlacklist = 0
@@ -104,6 +104,9 @@ AiPlayerbot.RandomBotMaxLevelChance = 0.15
 
 # Chance bot chooses RPG (Teleport to random camp for their level) instead of grinding
 AiPlayerbot.RandomBotRpgChance = 0.20
+
+# Random bots teleport to zones around real player if level is appropriate
+# AiPlayerbot.RandomBotTeleportNearPlayer = 0
 
 # Chance for bot to use potions
 #AiPlayerbot.UsePotionChance = 1.0
@@ -176,6 +179,12 @@ AiPlayerbot.RandomBotQuestIds = 7848,3802,5505,6502,7761,9378
 
 # Bots will chat in say/guild when they invite other bots to groups/raids/guilds
 # AiPlayerbot.InviteChat = 1
+
+# The summon command can be used without restriction by non-gms.
+# AiPlayerbot.NonGmFreeSummon = 0
+
+# Bots will put their talentspec in guild notes when they change/tell their talents if they have the rights.
+# AiPlayerbot.TalentsInPublicNote = 0
 
 # Bots will chat in guild about certain events
 # AIPlayerbot.GuildFeedbackRate = 100.0        # Actual events like levelup, hard kills or nice loot.
@@ -596,7 +605,7 @@ AiPlayerbot.GlobalCooldown = 1500
 #AiPlayerbot.MaxWaitForMove = 5000
 
 # Delay between two bot actions (default 100)
-AiPlayerbot.ReactDelay = 500
+AiPlayerbot.ReactDelay = 100
 
 # Inactivity delay
 AiPlayerbot.PassiveDelay = 10000
@@ -673,14 +682,14 @@ AiPlayerbot.FleeingEnabled = 1
 #AiPlayerbot.OpenGoSpell = 6477
 
 # Intervals
-AiPlayerbot.RandomBotUpdateInterval = 60
+AiPlayerbot.RandomBotUpdateInterval = 1
 AiPlayerbot.RandomBotCountChangeMinInterval = 1800
 AiPlayerbot.RandomBotCountChangeMaxInterval = 7200
 #AiPlayerbot.MinRandomBotInWorldTime = 3600
 #AiPlayerbot.MaxRandomBotInWorldTime = 1209600
 #AiPlayerbot.MinRandomBotRandomizeTime = 7200
 #AiPlayerbot.MaxRandomRandomizeTime = 1209600
-#AiPlayerbot.RandomBotsPerInterval = 60
+#AiPlayerbot.RandomBotsPerInterval = 3
 #AiPlayerbot.RandomBotsMaxLoginsPerInterval = 30
 #AiPlayerbot.MinRandomBotsPriceChangeInterval = 7200
 #AiPlayerbot.MaxRandomBotsPriceChangeInterval = 172800
@@ -725,12 +734,6 @@ AiPlayerbot.PerfMonEnabled = 0
 #         attackspeed     (very fast attackspeed)
 #         breath          (underwater breathing)
 # AiPlayerbot.BotCheats = taxi,item,breath
-
-# The summon command can be used without restriction by non-gms.
-# AiPlayerbot.NonGmFreeSummon = 0
-
-# Bots will put their talentspec in guild notes when they change/tell their talents if they have the rights.
-# AiPlayerbot.TalentsInPublicNote = 0
 
 # Self bot turns your current character into a bot with the command ".bot self"
 # !!DISCLAMER!! Selfbots will work and act like randombots based on their enabled strategies. Your epic mount will be sold to a vendor!
