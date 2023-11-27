@@ -191,6 +191,12 @@ bool GoAction::TellHowToGo(TravelDestination* dest, Player* requester) const
     vector<WorldPosition> beginPath, endPath;
     TravelNodeRoute route = sTravelNodeMap.getRoute(botPos, *point, beginPath, bot);
 
+    if (route.isEmpty())
+    {
+        ai->TellPlayerNoFacing(requester, "I don't know how to travel to " + dest->getTitle());
+        return false;
+    }
+
     WorldPosition poi = *point;
     float pointAngle = botPos.getAngleTo(poi);
 
