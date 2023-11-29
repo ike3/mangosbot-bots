@@ -727,7 +727,14 @@ bool Engine::ListenAndExecute(Action* action, Event& event)
             }
         }
 
-        ai->TellPlayerNoFacing(ai->GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL,true, false);
+        if (ai->GetMaster())
+        {
+            ai->TellPlayerNoFacing(ai->GetMaster(), out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, true, false);
+        }
+        else
+        {
+            ai->GetBot()->Say(out.str(), (ai->GetBot()->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH));
+        }
     }
 
     if (ai->HasStrategy("debug threat", BotState::BOT_STATE_NON_COMBAT))
