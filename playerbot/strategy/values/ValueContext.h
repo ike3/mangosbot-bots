@@ -383,6 +383,7 @@ namespace ai
             creators["trigger active"] = &ValueContext::trigger_active;
 
             creators["party tank without lifebloom"] = &ValueContext::party_tank_without_lifebloom;
+            creators["move style"] = &ValueContext::move_style;
         }
 
     private:
@@ -658,5 +659,6 @@ namespace ai
         static UntypedValue* trigger_active(PlayerbotAI* ai) { return new TriggerActiveValue(ai); }
 
         static UntypedValue* party_tank_without_lifebloom(PlayerbotAI* ai) { return new PartyTankWithoutLifebloomValue(ai); }
+        static UntypedValue* move_style(PlayerbotAI* ai) { return new MoveStyleValue(ai); }
     };
 };

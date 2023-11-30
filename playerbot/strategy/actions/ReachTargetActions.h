@@ -6,6 +6,7 @@
 #include "../../ServerFacade.h"
 #include "../generic/PullStrategy.h"
 #include "../NamedObjectContext.h"
+#include "../values/MoveStyleValue.h"
 #include "GenericSpellActions.h"
 
 namespace ai
@@ -51,6 +52,13 @@ namespace ai
                     chaseDist = (chaseDist - sPlayerbotAIConfig.contactDistance);
                 }
 
+                if (MoveStyleValue::WaitForEnemy(ai) && target->m_movementInfo.HasMovementFlag(movementFlagsMask) &&
+                        sServerFacade.IsInFront(target, bot, sPlayerbotAIConfig.sightDistance, CAST_ANGLE_IN_FRONT) &&
+                        sServerFacade.IsDistanceGreaterThan(distanceToTarget, sPlayerbotAIConfig.tooCloseDistance))
+                {
+                    return true;
+                }                    
+                
                 if (inLos && isFriend && (range <= ai->GetRange("follow")))
                 {
                     return MoveNear(target, chaseDist);

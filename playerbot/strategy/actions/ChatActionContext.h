@@ -71,6 +71,7 @@
 #include "GuildManagementActions.h"
 #include "RtscAction.h"
 #include "BattleGroundJoinAction.h"
+#include "MoveStyleAction.h"
 #include "ValueActions.h"
 
 namespace ai
@@ -190,6 +191,7 @@ namespace ai
             creators["guild leader"] = &ChatActionContext::guild_leader;
 
             creators["bg free"] = &ChatActionContext::bg_free;
+            creators["move style"] = &ChatActionContext::move_style;
         }
 
     private:
@@ -302,5 +304,6 @@ namespace ai
         static Action* guild_leave(PlayerbotAI* ai) { return new GuildLeaveAction(ai); }
         static Action* guild_leader(PlayerbotAI* ai) { return new GuildLeaderAction(ai); }
         static Action* bg_free(PlayerbotAI* ai) { return new BGLeaveAction(ai); }
+        static Action* move_style(PlayerbotAI* ai) { return new MoveStyleAction(ai); }
     };
 };
