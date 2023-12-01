@@ -276,7 +276,6 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
         for (Group::MemberSlotList::const_iterator i = slots.begin(); i != slots.end(); ++i)
         {
             ObjectGuid member = i->guid;
-            
             if (master)
             {
                 if (master->GetObjectGuid() == member)
@@ -285,14 +284,14 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
                     break;
                 }
             }
-            else
+
+            // Don't disband alt groups when master goes away 
+            // (will need to manually disband with leave command)
+            uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(member);
+            if (!sPlayerbotAIConfig.IsInRandomAccountList(account))
             {
-                uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(member);
-                if (!sPlayerbotAIConfig.IsInRandomAccountList(account))
-                {
-                    groupValid = true;
-                    break;
-                }
+                groupValid = true;
+                break;
             }
         }
 
