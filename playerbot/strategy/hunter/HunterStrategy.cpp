@@ -96,7 +96,7 @@ void HunterStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "stealthed nearby",
-        NextAction::array(0, new NextAction("flare", ACTION_NORMAL + 1), NULL)));
+        NextAction::array(0, new NextAction("flare", ACTION_NORMAL + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "no pet",
@@ -113,6 +113,10 @@ void HunterStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "hunters pet dead",
         NextAction::array(0, new NextAction("revive pet", ACTION_NORMAL + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "often",
+        NextAction::array(0, new NextAction("initialize pet", ACTION_NORMAL + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "no ammo",

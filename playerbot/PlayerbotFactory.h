@@ -64,6 +64,8 @@ public:
     void AddConsumes() { return AddConsumables(); }
     void AddFood() { return InitFood(); }
     void InitAmmo();
+    void InitPet();
+    void InitPetSpells();
 
 private:
     void Prepare();
@@ -85,7 +87,6 @@ private:
     void InitTalentsTree(bool incremental);
     void InitTalents(uint32 specNo);
     void InitQuests(list<uint32>& questMap);
-    void InitPet();
     void InitTaxiNodes();
     void ClearInventory();
     void ClearAllItems();

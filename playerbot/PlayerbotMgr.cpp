@@ -594,6 +594,13 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
                 factory.InitAmmo();
                 return "ok";
             }
+            else if (cmd == "pet")
+            {
+                PlayerbotFactory factory(bot, master->GetLevel(), ITEM_QUALITY_LEGENDARY);
+                factory.InitPet();
+                factory.InitPetSpells();
+                return "ok";
+            }
         }
 
         if (cmd == "levelup" || cmd == "level")
