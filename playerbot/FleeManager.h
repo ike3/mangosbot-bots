@@ -53,6 +53,7 @@ namespace ai
 		void cleanup(list<FleePoint*> &points);
 		FleePoint* selectOptimalDestination(list<FleePoint*> &points);
 		bool isBetterThan(FleePoint* point, FleePoint* other);
+		bool isTooCloseToEdge(float x, float y, float z, float angle);
 
 	private:
 		Player* bot;

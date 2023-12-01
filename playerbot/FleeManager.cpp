@@ -3,6 +3,7 @@
 #include "FleeManager.h"
 #include "PlayerbotAIConfig.h"
 #include "Group.h"
+#include "strategy/values/MoveStyleValue.h"
 #include "ServerFacade.h"
 
 using namespace ai;
@@ -74,6 +75,7 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
                 if (intersectsOri(angle, enemyOri, angleIncrement)) continue;
 
                 float x = botPosX + cos(angle) * maxAllowedDistance, y = botPosY + sin(angle) * maxAllowedDistance, z = botPosZ + CONTACT_DISTANCE;
+                if (MoveStyleValue::CheckForEdges(bot->GetPlayerbotAI()) && isTooCloseToEdge(x, y, z, angle)) continue;
 
                 if (forceMaxDistance && sServerFacade.IsDistanceLessThan(sServerFacade.GetDistance2d(bot, x, y), maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance))
                     continue;
@@ -98,6 +100,28 @@ void FleeManager::calculatePossibleDestinations(list<FleePoint*> &points)
             }
         }
 	}
+}
+
+bool FleeManager::isTooCloseToEdge(float x, float y, float z, float angle)
+{
+    Map* map = bot->GetMap();
+    const TerrainInfo* terrain = map->GetTerrain();
+    for (float a = angle; a <= angle + 2*M_PI; a += M_PI / 4)
+    {
+        float dist = sPlayerbotAIConfig.followDistance;
+        float tx = x + cos(a) * dist;
+        float ty = y + sin(a) * dist;
+        float tz = z;
+        bot->UpdateAllowedPositionZ(tx, ty, tz);
+
+        if (terrain && terrain->IsInWater(tx, ty, tz))
+            return true;
+
+        if (!bot->IsWithinLOS(tx, ty, tz))
+            return true;
+    }
+
+    return false;
 }
 
 void FleeManager::cleanup(list<FleePoint*> &points)
