@@ -285,14 +285,11 @@ void PlayerbotHolder::OnBotLogin(Player * const bot)
                     break;
                 }
             }
-            else
+            uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(member);
+            if (!sPlayerbotAIConfig.IsInRandomAccountList(account))
             {
-                uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(member);
-                if (!sPlayerbotAIConfig.IsInRandomAccountList(account))
-                {
-                    groupValid = true;
-                    break;
-                }
+                groupValid = true;
+                break;
             }
         }
 
