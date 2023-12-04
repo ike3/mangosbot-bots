@@ -43,8 +43,8 @@ uint32 SpellIdValue::Calculate()
             return 0;
 
         wstrToLower(wnamepart);
-        char firstSymbol = tolower(namepart[0]);
-        int spellLength = wnamepart.length();
+        firstSymbol = tolower(namepart[0]);
+        spellLength = wnamepart.length();
     }
 
     int loc = bot->GetSession()->GetSessionDbcLocale();
@@ -95,10 +95,16 @@ uint32 SpellIdValue::Calculate()
     {
         for (PetSpellMap::const_iterator itr = pet->m_spells.begin(); itr != pet->m_spells.end(); ++itr)
         {
+            uint32 spellId = itr->first;
+            if (!ids.empty())
+            {
+                if (std::find(ids.begin(), ids.end(), spellId) == ids.end())
+                    continue;
+            }
+
             if(itr->second.state == PETSPELL_REMOVED)
                 continue;
 
-            uint32 spellId = itr->first;
             const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
             if (!pSpellInfo)
                 continue;
@@ -106,9 +112,12 @@ uint32 SpellIdValue::Calculate()
             if (pSpellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL)
                 continue;
 
-            char* spellName = pSpellInfo->SpellName[loc];
-            if (tolower(spellName[0]) != firstSymbol || strlen(spellName) != spellLength || !Utf8FitTo(spellName, wnamepart))
-                continue;
+            if (ids.empty())
+            {
+                char* spellName = pSpellInfo->SpellName[loc];
+                if (tolower(spellName[0]) != firstSymbol || strlen(spellName) != spellLength || !Utf8FitTo(spellName, wnamepart))
+                    continue;
+            }
 
             spellIds.insert(spellId);
         }
