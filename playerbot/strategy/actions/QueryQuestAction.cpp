@@ -22,6 +22,24 @@ bool QueryQuestAction::Execute(Event& event)
     PlayerbotChatHandler ch(bot);
     uint32 questId = ch.extractQuestId(text);
     if (!questId)
+    {
+        for (uint8 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
+        {
+            uint32 logQuest = bot->GetQuestSlotQuestId(slot);
+
+            Quest const* quest = sObjectMgr.GetQuestTemplate(logQuest);
+            if (!quest)
+                continue;
+
+            if (text.find(quest->GetTitle()) != string::npos)
+            {
+                questId = quest->GetQuestId();
+                break;
+            }
+        }
+    }
+    
+    if (!questId)
         return false;
 
     for (uint16 slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)

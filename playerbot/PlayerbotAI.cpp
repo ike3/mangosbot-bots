@@ -3317,14 +3317,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
     if (spellSuccess != SPELL_CAST_OK)
         return false;
 
-    if (urand(0, 100) < sPlayerbotAIConfig.attackEmoteChance * 600 && bot->IsInCombat())
-    {
-        vector<uint32> sounds;
-        sounds.push_back(TEXTEMOTE_OPENFIRE);
-        sounds.push_back(305);
-        sounds.push_back(307);
-        PlaySound(sounds[urand(0, sounds.size() - 1)]);
-    }
+    PlayAttackEmote(6);
 
     if(waitForSpell)
     {
@@ -6041,4 +6034,22 @@ bool PlayerbotAI::HasPlayerRelation()
 void PlayerbotAI::QueueChatResponse(uint8 msgtype, ObjectGuid guid1, ObjectGuid guid2, std::string message, std::string chanName, std::string name)
 {
     chatReplies.push(ChatQueuedReply(msgtype, guid1.GetCounter(), guid2.GetCounter(), message, chanName, name, time(0) + urand(inCombat ? 10 : 5, inCombat ? 25 : 15)));
+}
+
+
+bool PlayerbotAI::PlayAttackEmote(float chanceMultiplier)
+{
+    auto group = bot->GetGroup();
+    if (group) chanceMultiplier /= (group->GetMembersCount() - 1);
+    if ((float)urand(0, 10000) * chanceMultiplier < sPlayerbotAIConfig.attackEmoteChance * 10000.0f && bot->IsInCombat())
+    {
+        vector<uint32> sounds;
+        sounds.push_back(TEXTEMOTE_OPENFIRE);
+        sounds.push_back(305);
+        sounds.push_back(307);
+        PlaySound(sounds[urand(0, sounds.size() - 1)]);
+        return true;
+    }
+
+    return false;
 }

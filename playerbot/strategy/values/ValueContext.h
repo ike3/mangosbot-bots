@@ -183,6 +183,8 @@ namespace ai
             creators["stack space for item"] = &ValueContext::stack_space_for_item;
             creators["should loot object"] = &ValueContext::should_loot_object;
             creators["always loot list"] = &ValueContext::always_loot_list;
+            creators["skip loot list"] = &ValueContext::skip_loot_list;
+            creators["skip go loot list"] = &ValueContext::skip_go_loot_list;
             creators["loot strategy"] = &ValueContext::loot_strategy;
             creators["active rolls"] = &ValueContext::active_rolls;
             creators["last movement"] = &ValueContext::last_movement;
@@ -456,7 +458,9 @@ namespace ai
         static UntypedValue* has_available_loot(PlayerbotAI* ai) { return new HasAvailableLootValue(ai); }
         static UntypedValue* stack_space_for_item(PlayerbotAI* ai) { return new StackSpaceForItem(ai); }
         static UntypedValue* should_loot_object(PlayerbotAI* ai) { return new ShouldLootObject(ai); }
-        static UntypedValue* always_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai); }
+        static UntypedValue* always_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai, "always loot list"); }
+        static UntypedValue* skip_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai, "skip loot list"); }
+        static UntypedValue* skip_go_loot_list(PlayerbotAI* ai) { return new AlwaysLootListValue(ai, "skip go loot list"); }
         static UntypedValue* loot_strategy(PlayerbotAI* ai) { return new LootStrategyValue(ai); }
         static UntypedValue* active_rolls(PlayerbotAI* ai) { return new ActiveRolls(ai); }
         

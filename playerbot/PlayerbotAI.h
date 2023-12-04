@@ -348,6 +348,7 @@ public:
     void WaitForSpellCast(Spell *spell);
     bool PlaySound(uint32 emote);
     bool PlayEmote(uint32 emote);
+    bool PlayAttackEmote(float chanceDivider);
     void Ping(float x, float y);
     void Poi(float x, float y, string icon_name = "This way", Player* player = nullptr, uint32 flags = 99, uint32 icon = 6 /* red flag */, uint32 icon_data = 0);
     Item * FindPoison() const;

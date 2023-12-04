@@ -381,6 +381,10 @@ bool StoreLootAction::IsLootAllowed(ItemQualifier& itemQualifier, PlayerbotAI *a
     if (lootItems.find(itemQualifier.GetId()) != lootItems.end())
         return true;
 
+    set<uint32>& skipItems = AI_VALUE(set<uint32>&, "skip loot list");
+    if (skipItems.find(itemQualifier.GetId()) != skipItems.end())
+        return false;
+
     uint32 max = proto->MaxCount;
     if (max > 0 && ai->GetBot()->HasItemCount(itemQualifier.GetId(), max, true))
         return false;
