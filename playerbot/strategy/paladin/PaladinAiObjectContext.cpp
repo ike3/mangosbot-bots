@@ -205,6 +205,7 @@ namespace ai
                 creators["protection"] = &paladin::ClassStrategyFactoryInternal::protection;
                 creators["tank"] = &paladin::ClassStrategyFactoryInternal::protection;
                 creators["holy"] = &paladin::ClassStrategyFactoryInternal::holy;
+                creators["heal"] = &paladin::ClassStrategyFactoryInternal::holy;
             }
 
         private:

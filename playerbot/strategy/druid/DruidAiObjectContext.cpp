@@ -258,6 +258,7 @@ namespace ai
                 creators["dps feral"] = &druid::ClassStrategyFactoryInternal::dps_feral;
                 creators["balance"] = &druid::ClassStrategyFactoryInternal::balance;
                 creators["restoration"] = &druid::ClassStrategyFactoryInternal::restoration;
+                creators["heal"] = &druid::ClassStrategyFactoryInternal::restoration;
             }
 
         private:

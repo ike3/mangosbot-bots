@@ -342,6 +342,7 @@ namespace ai
             ClassStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
             {
                 creators["restoration"] = &shaman::ClassStrategyFactoryInternal::restoration;
+                creators["heal"] = &shaman::ClassStrategyFactoryInternal::restoration;
                 creators["enhancement"] = &shaman::ClassStrategyFactoryInternal::enhancement;
                 creators["elemental"] = &shaman::ClassStrategyFactoryInternal::elemental;
             }
