@@ -221,6 +221,10 @@ void ChatCommandHandlerStrategy::InitReactionTriggers(std::list<TriggerNode*> &t
         NextAction::array(0, new NextAction("wait for attack time", relevance), NULL)));
 
     triggers.push_back(new TriggerNode(
+        "pet",
+        NextAction::array(0, new NextAction("pet", relevance), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "focus heal",
         NextAction::array(0, new NextAction("focus heal target", relevance), NULL)));
 

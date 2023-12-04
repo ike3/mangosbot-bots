@@ -23,6 +23,7 @@
 #include "Group.h"
 #include "Pet.h"
 #include "SpellAuras.h"
+#include "SpellMgr.h"
 #include "../ahbot/AhBot.h"
 #include "GuildTaskMgr.h"
 #include "PlayerbotDbStore.h"
@@ -3157,25 +3158,9 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
         target = bot;
 
     Pet* pet = bot->GetPet();
-	SpellEntry const *pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
-	if (pet && pet->HasSpell(spellId))
+    if (pet && pet->HasSpell(spellId))
     {
-	    bool autocast = false;
-	    for(AutoSpellList::iterator i = pet->m_autospells.begin(); i != pet->m_autospells.end(); ++i)
-	    {
-	        if (*i == spellId)
-	        {
-	            autocast = true;
-	            break;
-	        }
-	    }
-
-		pet->ToggleAutocast(spellId, !autocast);
-		ostringstream out;
-		out << (autocast ? "|cffff0000|Disabling" : "|cFF00ff00|Enabling") << " pet auto-cast for ";
-		out << chatHelper.formatSpell(pSpellInfo);
-        TellPlayer(GetMaster(), out);
-        return true;
+        return CastPetSpell(spellId, target);
     }
 
     aiObjectContext->GetValue<LastMovement&>("last movement")->Get().Set(NULL);
@@ -3221,6 +3206,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
         return false;
     }
 
+    const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
     Spell *spell = new Spell(bot, pSpellInfo, false);
 
     SpellCastTargets targets;
@@ -3374,25 +3360,9 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
         return false;
 
     Pet* pet = bot->GetPet();
-    SpellEntry const* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
     if (pet && pet->HasSpell(spellId))
     {
-        bool autocast = false;
-        for (AutoSpellList::iterator i = pet->m_autospells.begin(); i != pet->m_autospells.end(); ++i)
-        {
-            if (*i == spellId)
-            {
-                autocast = true;
-                break;
-            }
-        }
-
-        pet->ToggleAutocast(spellId, !autocast);
-        ostringstream out;
-        out << (autocast ? "|cffff0000|Disabling" : "|cFF00ff00|Enabling") << " pet auto-cast for ";
-        out << chatHelper.formatSpell(pSpellInfo);
-        TellPlayer(GetMaster(), out);
-        return true;
+        return CastPetSpell(spellId, nullptr);
     }
 
     aiObjectContext->GetValue<LastMovement&>("last movement")->Get().Set(NULL);
@@ -3440,6 +3410,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
         return false;
     }
 
+    const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
     Spell* spell = new Spell(bot, pSpellInfo, false);
 
     SpellCastTargets targets;
@@ -3562,6 +3533,44 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
     }
 
     return true;
+}
+
+bool PlayerbotAI::CastPetSpell(uint32 spellId, Unit* target)
+{
+    Pet* pet = bot->GetPet();
+    if (pet && spellId && pet->HasSpell(spellId))
+    {
+        auto IsAutocastActive = [&pet, &spellId]() -> bool
+        {
+            for (AutoSpellList::iterator i = pet->m_autospells.begin(); i != pet->m_autospells.end(); ++i)
+            {
+                if (*i == spellId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        // Send pet spell action packet
+        uint8 flag = ACT_PASSIVE;
+        if (IsAutocastable(spellId))
+        {
+            flag = IsAutocastActive() ? ACT_ENABLED : ACT_DISABLED;
+        }
+
+        uint32 command = (flag << 24) | spellId;
+
+        WorldPacket data(CMSG_PET_ACTION);
+        data << pet->GetObjectGuid();
+        data << command;
+        data << (target ? target->GetObjectGuid() : ObjectGuid());
+        bot->GetSession()->HandlePetAction(data);
+        return true;
+    }
+
+    return false;
 }
 
 bool PlayerbotAI::CanCastVehicleSpell(uint32 spellId, Unit* target)

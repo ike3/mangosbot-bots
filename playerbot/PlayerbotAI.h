@@ -398,6 +398,7 @@ public:
     virtual bool CastSpell(string name, Unit* target, Item* itemTarget = NULL, bool waitForSpell = true, uint32* outSpellDuration = NULL, bool canUseReagentCheat = true);
     bool CastSpell(uint32 spellId, Unit* target, Item* itemTarget = NULL, bool waitForSpell = true, uint32* outSpellDuration = NULL, bool canUseReagentCheat = true);
     bool CastSpell(uint32 spellId, float x, float y, float z, Item* itemTarget = NULL, bool waitForSpell = true, uint32* outSpellDuration = NULL, bool canUseReagentCheat = true);
+    bool CastPetSpell(uint32 spellId, Unit* target);
     bool CastVehicleSpell(uint32 spellId, Unit* target);
     bool CastVehicleSpell(uint32 spellId, float x, float y, float z);
 

@@ -136,6 +136,8 @@ bool InitializePetAction::isUseful()
 
             return !hasTamedPet;
         }
+// Warlock pets should auto learn spells in WOTLK
+#ifndef MANGOSBOT_TWO
         else if (bot->getClass() == CLASS_WARLOCK)
         {
             // Only initialize if warlock has the pet summoned
@@ -212,7 +214,7 @@ bool InitializePetAction::isUseful()
                     spellList[PET_FELHUNTER].push_back(std::pair(64, 27280));
                 }
 
-                // Voidwalker
+                // Voidwalker spells
                 {
                     // Consume Shadows
                     spellList[PET_VOIDWALKER].push_back(std::pair(18, 17767));
@@ -257,7 +259,7 @@ bool InitializePetAction::isUseful()
                     spellList[PET_VOIDWALKER].push_back(std::pair(80, 47984));
                 }
 
-                // Succubus
+                // Succubus spells
                 {
                     // Lash of Pain
                     spellList[PET_SUCCUBUS].push_back(std::pair(20, 7814));
@@ -284,7 +286,7 @@ bool InitializePetAction::isUseful()
                     spellList[PET_SUCCUBUS].push_back(std::pair(70, 27275));
                 }
 
-                // Felguard
+                // Felguard spells
                 {
                     // Anguish
                     spellList[PET_FELGUARD].push_back(std::pair(50, 33698));
@@ -330,7 +332,84 @@ bool InitializePetAction::isUseful()
                 }
             }
         }
+#endif
     }
 
     return false;
+}
+
+bool SetPetAction::Execute(Event& event)
+{
+    Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
+    std::string command = event.getParam();
+
+    // Extract the command and the parameters
+    std::string parameter;
+    size_t spacePos = command.find_first_of(" ");
+    if (spacePos != std::string::npos)
+    {
+        parameter = command.substr(spacePos + 1);
+        command = command.substr(0, spacePos);
+    }
+
+    Pet* pet = bot->GetPet();
+    if (pet)
+    {
+        if (command == "autocast")
+        {
+            const std::string& spellName = parameter;
+            if (!spellName.empty())
+            {
+                const uint32 spellId = AI_VALUE2(uint32, "spell id", spellName);
+                if (pet->HasSpell(spellId) && IsAutocastable(spellId))
+                {
+                    auto IsAutocastActive = [&pet, &spellId]() -> bool
+                    {
+                        for (AutoSpellList::iterator i = pet->m_autospells.begin(); i != pet->m_autospells.end(); ++i)
+                        {
+                            if (*i == spellId)
+                            {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    };
+
+                    const bool autocastActive = IsAutocastActive();
+                    pet->ToggleAutocast(spellId, !autocastActive);
+
+                    ostringstream out;
+                    out << (autocastActive ? "Disabling" : "Enabling") << " pet autocast for ";
+                    out << ChatHelper::formatSpell(sServerFacade.LookupSpellInfo(spellId));
+                    ai->TellPlayer(GetMaster(), out);
+
+                    return true;
+                }
+                else
+                {
+                    ai->TellPlayer(requester, "I can't set to autocast that spell.");
+                }
+            }
+            else
+            {
+                ai->TellPlayer(requester, "Please specify a pet spell to set the autocast.");
+            }
+        }
+        else
+        {
+            ai->TellPlayer(requester, "Please specify a pet command (Like autocast).");
+        }
+    }
+    else
+    {
+        ai->TellPlayer(requester, "I don't have any pets");
+    }
+
+    return false;
+}
+
+bool SetPetAction::isUseful()
+{
+    return bot->GetPet();
 }

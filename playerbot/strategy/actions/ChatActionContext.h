@@ -181,6 +181,7 @@ namespace ai
             creators["focus heal target"] = &ChatActionContext::focus_heal_target;
             creators["follow target"] = &ChatActionContext::follow_target;
             creators["self resurrect"] = &ChatActionContext::self_resurrect;
+            creators["pet"] = &ChatActionContext::pet;
 
             creators["guild invite"] = &ChatActionContext::guild_invite;
             creators["guild join"] = &ChatActionContext::guild_join;
@@ -295,6 +296,7 @@ namespace ai
         static Action* focus_heal_target(PlayerbotAI* ai) { return new SetFocusHealTargetAction(ai); }
         static Action* follow_target(PlayerbotAI* ai) { return new SetFollowTargetAction(ai); }
         static Action* self_resurrect(PlayerbotAI* ai) { return new SelfResurrectAction(ai); }
+        static Action* pet(PlayerbotAI* ai) { return new SetPetAction(ai); }
 
         static Action* guild_invite(PlayerbotAI* ai) { return new GuildInviteAction(ai); }
         static Action* guild_join(PlayerbotAI* ai) { return new GuildJoinAction(ai); }

@@ -143,4 +143,12 @@ namespace ai
         bool Execute(Event& event) override;
         bool isUseful() override;
     };
+
+    class SetPetAction : public Action
+    {
+    public:
+        SetPetAction(PlayerbotAI* ai) : Action(ai, "pet") {}
+        bool Execute(Event& event) override;
+        bool isUseful() override;
+    };
 }

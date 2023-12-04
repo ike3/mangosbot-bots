@@ -543,12 +543,13 @@ void PlayerbotFactory::AddConsumables()
 
 void PlayerbotFactory::InitPet()
 {
+    // Randomize a new pet (only for hunters)
+    if (bot->getClass() != CLASS_HUNTER)
+        return;
+
     Pet* pet = bot->GetPet();
     if (!pet)
     {
-        if (bot->getClass() != CLASS_HUNTER)
-            return;
-
         Map* map = bot->GetMap();
         if (!map)
             return;
@@ -606,43 +607,23 @@ void PlayerbotFactory::InitPet()
             pet->setFaction(bot->GetFaction());
             pet->SetLevel(bot->GetLevel());
             pet->InitStatsForLevel(bot->GetLevel());
-#ifdef MANGOSBOT_TWO
-
-#else
+#ifndef MANGOSBOT_TWO
             pet->SetLoyaltyLevel(BEST_FRIEND);
 #endif
             pet->SetPower(POWER_HAPPINESS, HAPPINESS_LEVEL_SIZE * 2);
             pet->GetCharmInfo()->SetPetNumber(sObjectMgr.GeneratePetNumber(), true);
-#ifdef CMANGOS
             pet->GetMap()->Add((Creature*)pet);
             pet->AIM_Initialize();
-#endif
-#ifdef MANGOS
-            pet->GetMap()->Add((Creature*)pet);
-            pet->AIM_Initialize();
-#endif
             pet->InitPetCreateSpells();
-#ifdef CMANGOS
             pet->LearnPetPassives();
             pet->CastPetAuras(true);
             pet->CastOwnerTalentAuras();
             pet->UpdateAllStats();
-#endif
-#ifdef MANGOS
-            pet->LearnPetPassives();
-            pet->CastPetAuras(true);
-            pet->CastOwnerTalentAuras();
-            pet->UpdateAllStats();
-#endif
             bot->SetPet(pet);
             bot->SetPetGuid(pet->GetObjectGuid());
 
             sLog.outDebug(  "Bot %s: assign pet %d (%d level)", bot->GetName(), co->Entry, bot->GetLevel());
-            pet->SavePetToDB(PET_SAVE_AS_CURRENT
-#ifdef CMANGOS
-                    , bot
-#endif
-            );
+            pet->SavePetToDB(PET_SAVE_AS_CURRENT, bot);
             bot->PetSpellInitialize();
             break;
         }
@@ -653,9 +634,7 @@ void PlayerbotFactory::InitPet()
     {
         pet->InitStatsForLevel(bot->GetLevel());
         pet->SetLevel(bot->GetLevel());
-#ifdef MANGOSBOT_TWO
-
-#else
+#ifndef MANGOSBOT_TWO
         pet->SetLoyaltyLevel(BEST_FRIEND);
 #endif
         pet->SetPower(POWER_HAPPINESS, HAPPINESS_LEVEL_SIZE * 2);
@@ -695,7 +674,7 @@ void PlayerbotFactory::InitPetSpells()
             // TO DO
             // ...
         }
-// Warlock pets should auto learn spells on WOTLK
+// Warlock pets should auto learn spells in WOTLK
 #ifndef MANGOSBOT_TWO
         else if (bot->getClass() == CLASS_WARLOCK)
         {
@@ -769,7 +748,7 @@ void PlayerbotFactory::InitPetSpells()
                 spellList[PET_FELHUNTER].push_back(std::pair(64, 27280));
             }
 
-            // Voidwalker
+            // Voidwalker spells
             {
                 // Consume Shadows
                 spellList[PET_VOIDWALKER].push_back(std::pair(18, 17767));
@@ -814,7 +793,7 @@ void PlayerbotFactory::InitPetSpells()
                 spellList[PET_VOIDWALKER].push_back(std::pair(80, 47984));
             }
 
-            // Succubus
+            // Succubus spells
             {
                 // Lash of Pain
                 spellList[PET_SUCCUBUS].push_back(std::pair(20, 7814));
@@ -841,7 +820,7 @@ void PlayerbotFactory::InitPetSpells()
                 spellList[PET_SUCCUBUS].push_back(std::pair(70, 27275));
             }
 
-            // Felguard
+            // Felguard spells
             {
                 // Anguish
                 spellList[PET_FELGUARD].push_back(std::pair(50, 33698));
