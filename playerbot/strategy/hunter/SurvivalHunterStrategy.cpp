@@ -283,6 +283,75 @@ void SurvivalHunterCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>
     HunterCcRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void SurvivalHunterStingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterStingStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterStingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPveStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterStingPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 #endif
 #ifdef MANGOSBOT_ONE // TBC
 
@@ -560,6 +629,75 @@ void SurvivalHunterCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>
 {
     SurvivalHunterCcStrategy::InitNonCombatTriggers(triggers);
     HunterCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SurvivalHunterStingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterStingStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterStingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPveStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterStingPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 #endif
@@ -851,6 +989,75 @@ void SurvivalHunterCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>
 {
     SurvivalHunterCcStrategy::InitNonCombatTriggers(triggers);
     HunterCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SurvivalHunterStingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterStingStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterStingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPveStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterStingPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void SurvivalHunterAspectRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    SurvivalHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 #endif

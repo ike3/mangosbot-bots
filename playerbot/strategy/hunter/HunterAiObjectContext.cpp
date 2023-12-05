@@ -144,6 +144,108 @@ namespace ai
             static Strategy* cc_beast_mastery_raid(PlayerbotAI* ai) { return new BeastMasteryHunterCcRaidStrategy(ai); }
         };
 
+        class StingManualStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            StingManualStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["sting"] = &hunter::StingManualStrategyFactoryInternal::sting;
+                creators["sting serpent"] = &hunter::StingManualStrategyFactoryInternal::sting_serpent;
+                creators["sting scorpid"] = &hunter::StingManualStrategyFactoryInternal::sting_scorpid;
+                creators["sting viper"] = &hunter::StingManualStrategyFactoryInternal::sting_viper;
+            }
+
+        private:
+            static Strategy* sting(PlayerbotAI* ai) { return new HunterStingPlaceholderStrategy(ai); }
+            static Strategy* sting_serpent(PlayerbotAI* ai) { return new HunterManualStingStrategy(ai, "sting serpent", "serpent sting", "serpent sting"); }
+            static Strategy* sting_scorpid(PlayerbotAI* ai) { return new HunterManualStingStrategy(ai, "sting scorpid", "scorpid sting", "scorpid sting"); }
+            static Strategy* sting_viper(PlayerbotAI* ai) { return new HunterManualStingStrategy(ai, "sting viper", "viper sting", "viper sting"); }
+        };
+
+        class StingSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            StingSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["sting marksmanship pve"] = &hunter::StingSituationStrategyFactoryInternal::sting_marksmanship_pve;
+                creators["sting marksmanship pvp"] = &hunter::StingSituationStrategyFactoryInternal::sting_marksmanship_pvp;
+                creators["sting marksmanship raid"] = &hunter::StingSituationStrategyFactoryInternal::sting_marksmanship_raid;
+                creators["sting survival pve"] = &hunter::StingSituationStrategyFactoryInternal::sting_survival_pve;
+                creators["sting survival pvp"] = &hunter::StingSituationStrategyFactoryInternal::sting_survival_pvp;
+                creators["sting survival raid"] = &hunter::StingSituationStrategyFactoryInternal::sting_survival_raid;
+                creators["sting beast mastery pve"] = &hunter::StingSituationStrategyFactoryInternal::sting_beast_mastery_pve;
+                creators["sting beast mastery pvp"] = &hunter::StingSituationStrategyFactoryInternal::sting_beast_mastery_pvp;
+                creators["sting beast mastery raid"] = &hunter::StingSituationStrategyFactoryInternal::sting_beast_mastery_raid;
+            }
+
+        private:
+            static Strategy* sting_marksmanship_pve(PlayerbotAI* ai) { return new MarksmanshipHunterStingPveStrategy(ai); }
+            static Strategy* sting_marksmanship_pvp(PlayerbotAI* ai) { return new MarksmanshipHunterStingPvpStrategy(ai); }
+            static Strategy* sting_marksmanship_raid(PlayerbotAI* ai) { return new MarksmanshipHunterStingRaidStrategy(ai); }
+            static Strategy* sting_survival_pve(PlayerbotAI* ai) { return new SurvivalHunterStingPveStrategy(ai); }
+            static Strategy* sting_survival_pvp(PlayerbotAI* ai) { return new SurvivalHunterStingPvpStrategy(ai); }
+            static Strategy* sting_survival_raid(PlayerbotAI* ai) { return new SurvivalHunterStingRaidStrategy(ai); }
+            static Strategy* sting_beast_mastery_pve(PlayerbotAI* ai) { return new BeastMasteryHunterStingPveStrategy(ai); }
+            static Strategy* sting_beast_mastery_pvp(PlayerbotAI* ai) { return new BeastMasteryHunterStingPvpStrategy(ai); }
+            static Strategy* sting_beast_mastery_raid(PlayerbotAI* ai) { return new BeastMasteryHunterStingRaidStrategy(ai); }
+        };
+
+        class AspectManualStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            AspectManualStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["aspect"] = &hunter::AspectManualStrategyFactoryInternal::aspect;
+                creators["aspect hawk"] = &hunter::AspectManualStrategyFactoryInternal::aspect_hawk;
+                creators["aspect monkey"] = &hunter::AspectManualStrategyFactoryInternal::aspect_monkey;
+                creators["aspect cheetah"] = &hunter::AspectManualStrategyFactoryInternal::aspect_cheetah;
+                creators["aspect pack"] = &hunter::AspectManualStrategyFactoryInternal::aspect_pack;
+                creators["aspect beast"] = &hunter::AspectManualStrategyFactoryInternal::aspect_beast;
+                creators["aspect wild"] = &hunter::AspectManualStrategyFactoryInternal::aspect_wild;
+                creators["aspect viper"] = &hunter::AspectManualStrategyFactoryInternal::aspect_viper;
+                creators["aspect dragonhawk"] = &hunter::AspectManualStrategyFactoryInternal::aspect_dragonhawk;
+            }
+
+        private:
+            static Strategy* aspect(PlayerbotAI* ai) { return new HunterAspectPlaceholderStrategy(ai); }
+            static Strategy* aspect_hawk(PlayerbotAI* ai) { return new HunterManualAspectStrategy(ai, "aspect hawk", "aspect of the hawk", "aspect of the hawk"); }
+            static Strategy* aspect_monkey(PlayerbotAI* ai) { return new HunterManualAspectStrategy(ai, "aspect monkey", "aspect of the monkey", "aspect of the monkey"); }
+            static Strategy* aspect_cheetah(PlayerbotAI* ai) { return new HunterManualAspectStrategy(ai, "aspect cheetah", "aspect of the cheetah", "aspect of the cheetah"); }
+            static Strategy* aspect_pack(PlayerbotAI* ai) { return new HunterManualAspectStrategy(ai, "aspect pack", "aspect of the pack", "aspect of the pack"); }
+            static Strategy* aspect_beast(PlayerbotAI* ai) { return new HunterManualAspectStrategy(ai, "aspect beast", "aspect of the beast", "aspect of the beast"); }
+            static Strategy* aspect_wild(PlayerbotAI* ai) { return new HunterManualAspectStrategy(ai, "aspect wild", "aspect of the wild", "aspect of the wild"); }
+            static Strategy* aspect_viper(PlayerbotAI* ai) { return new HunterManualAspectStrategy(ai, "aspect viper", "aspect of the viper", "aspect of the viper"); }
+            static Strategy* aspect_dragonhawk(PlayerbotAI* ai) { return new HunterManualAspectStrategy(ai, "aspect dragonhawk", "aspect of the dragonhawk", "aspect of the dragonhawk"); }
+        };
+
+        class AspectSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>
+        {
+        public:
+            AspectSituationStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
+            {
+                creators["aspect marksmanship pve"] = &hunter::AspectSituationStrategyFactoryInternal::aspect_marksmanship_pve;
+                creators["aspect marksmanship pvp"] = &hunter::AspectSituationStrategyFactoryInternal::aspect_marksmanship_pvp;
+                creators["aspect marksmanship raid"] = &hunter::AspectSituationStrategyFactoryInternal::aspect_marksmanship_raid;
+                creators["aspect survival pve"] = &hunter::AspectSituationStrategyFactoryInternal::aspect_survival_pve;
+                creators["aspect survival pvp"] = &hunter::AspectSituationStrategyFactoryInternal::aspect_survival_pvp;
+                creators["aspect survival raid"] = &hunter::AspectSituationStrategyFactoryInternal::aspect_survival_raid;
+                creators["aspect beast mastery pve"] = &hunter::AspectSituationStrategyFactoryInternal::aspect_beast_mastery_pve;
+                creators["aspect beast mastery pvp"] = &hunter::AspectSituationStrategyFactoryInternal::aspect_beast_mastery_pvp;
+                creators["aspect beast mastery raid"] = &hunter::AspectSituationStrategyFactoryInternal::aspect_beast_mastery_raid;
+            }
+
+        private:
+            static Strategy* aspect_marksmanship_pve(PlayerbotAI* ai) { return new MarksmanshipHunterAspectPveStrategy(ai); }
+            static Strategy* aspect_marksmanship_pvp(PlayerbotAI* ai) { return new MarksmanshipHunterAspectPvpStrategy(ai); }
+            static Strategy* aspect_marksmanship_raid(PlayerbotAI* ai) { return new MarksmanshipHunterAspectRaidStrategy(ai); }
+            static Strategy* aspect_survival_pve(PlayerbotAI* ai) { return new SurvivalHunterAspectPveStrategy(ai); }
+            static Strategy* aspect_survival_pvp(PlayerbotAI* ai) { return new SurvivalHunterAspectPvpStrategy(ai); }
+            static Strategy* aspect_survival_raid(PlayerbotAI* ai) { return new SurvivalHunterAspectRaidStrategy(ai); }
+            static Strategy* aspect_beast_mastery_pve(PlayerbotAI* ai) { return new BeastMasteryHunterAspectPveStrategy(ai); }
+            static Strategy* aspect_beast_mastery_pvp(PlayerbotAI* ai) { return new BeastMasteryHunterAspectPvpStrategy(ai); }
+            static Strategy* aspect_beast_mastery_raid(PlayerbotAI* ai) { return new BeastMasteryHunterAspectRaidStrategy(ai); }
+        };
+
         class ClassStrategyFactoryInternal : public NamedObjectContext<Strategy>
         {
         public:
@@ -193,7 +295,6 @@ namespace ai
         public:
             TriggerFactoryInternal()
             {
-                creators["aspect of the viper"] = &TriggerFactoryInternal::aspect_of_the_viper;
                 creators["black arrow"] = &TriggerFactoryInternal::black_arrow;
                 creators["black arrow on snare target"] = &TriggerFactoryInternal::black_arrow_snare;
                 creators["no stings"] = &TriggerFactoryInternal::NoStings;
@@ -203,12 +304,16 @@ namespace ai
                 creators["freezing trap"] = &TriggerFactoryInternal::freezing_trap;
                 creators["frost trap"] = &TriggerFactoryInternal::frost_trap;
                 creators["explosive trap"] = &TriggerFactoryInternal::explosive_trap;
-                creators["aspect of the pack"] = &TriggerFactoryInternal::aspect_of_the_pack;
                 creators["rapid fire"] = &TriggerFactoryInternal::rapid_fire;
                 creators["aspect of the hawk"] = &TriggerFactoryInternal::aspect_of_the_hawk;
                 creators["aspect of the wild"] = &TriggerFactoryInternal::aspect_of_the_wild;
                 creators["aspect of the viper"] = &TriggerFactoryInternal::aspect_of_the_viper;
-                creators["trueshot aura"] = &TriggerFactoryInternal::trueshot_aura;
+                creators["aspect of the monkey"] = &TriggerFactoryInternal::aspect_of_the_monkey;
+                creators["aspect of the beast"] = &TriggerFactoryInternal::aspect_of_the_beast;
+                creators["aspect of the cheetah"] = &TriggerFactoryInternal::aspect_of_the_cheetah;
+                creators["aspect of the dragonhawk"] = &TriggerFactoryInternal::aspect_of_the_dragonhawk;
+                creators["aspect of the pack"] = &TriggerFactoryInternal::aspect_of_the_pack;
+                creators["trueshot aspect"] = &TriggerFactoryInternal::trueshot_aspect;
                 creators["serpent sting on attacker"] = &TriggerFactoryInternal::serpent_sting_on_attacker;
                 creators["viper sting on attacker"] = &TriggerFactoryInternal::viper_sting_on_attacker;
                 creators["pet not happy"] = &TriggerFactoryInternal::pet_not_happy;
@@ -257,8 +362,7 @@ namespace ai
             static Trigger* pet_not_happy(PlayerbotAI* ai) { return new HunterPetNotHappy(ai); }
             static Trigger* serpent_sting_on_attacker(PlayerbotAI* ai) { return new SerpentStingOnAttackerTrigger(ai); }
             static Trigger* viper_sting_on_attacker(PlayerbotAI* ai) { return new ViperStingOnAttackerTrigger(ai); }
-            static Trigger* trueshot_aura(PlayerbotAI* ai) { return new TrueshotAuraTrigger(ai); }
-            static Trigger* aspect_of_the_viper(PlayerbotAI* ai) { return new HunterAspectOfTheViperTrigger(ai); }
+            static Trigger* trueshot_aspect(PlayerbotAI* ai) { return new TrueshotAuraTrigger(ai); }
             static Trigger* black_arrow(PlayerbotAI* ai) { return new BlackArrowTrigger(ai); }
             static Trigger* NoStings(PlayerbotAI* ai) { return new HunterNoStingsActiveTrigger(ai); }
             static Trigger* hunters_pet_dead(PlayerbotAI* ai) { return new HuntersPetDeadTrigger(ai); }
@@ -267,10 +371,7 @@ namespace ai
             static Trigger* freezing_trap(PlayerbotAI* ai) { return new FreezingTrapTrigger(ai); }
             static Trigger* frost_trap(PlayerbotAI* ai) { return new FrostTrapTrigger(ai); }
             static Trigger* explosive_trap(PlayerbotAI* ai) { return new ExplosiveTrapTrigger(ai); }
-            static Trigger* aspect_of_the_pack(PlayerbotAI* ai) { return new HunterAspectOfThePackTrigger(ai); }
             static Trigger* rapid_fire(PlayerbotAI* ai) { return new RapidFireTrigger(ai); }
-            static Trigger* aspect_of_the_hawk(PlayerbotAI* ai) { return new HunterAspectOfTheHawkTrigger(ai); }
-            static Trigger* aspect_of_the_wild(PlayerbotAI* ai) { return new HunterAspectOfTheWildTrigger(ai); }
             static Trigger* low_ammo(PlayerbotAI* ai) { return new HunterLowAmmoTrigger(ai); }
             static Trigger* no_ammo(PlayerbotAI* ai) { return new HunterNoAmmoTrigger(ai); }
             static Trigger* has_ammo(PlayerbotAI* ai) { return new HunterHasAmmoTrigger(ai); }
@@ -279,6 +380,14 @@ namespace ai
             static Trigger* feign_death(PlayerbotAI* ai) { return new FeignDeathTrigger(ai); }
             static Trigger* no_beast(PlayerbotAI* ai) { return new HunterNoPet(ai); }
             static Trigger* stealthed_nearby(PlayerbotAI* ai) { return new StealthedNearbyTrigger(ai); }
+            static Trigger* aspect_of_the_viper(PlayerbotAI* ai) { return new AspectOfTheViperTrigger(ai); }
+            static Trigger* aspect_of_the_pack(PlayerbotAI* ai) { return new AspectOfThePackTrigger(ai); }
+            static Trigger* aspect_of_the_hawk(PlayerbotAI* ai) { return new AspectOfTheHawkTrigger(ai); }
+            static Trigger* aspect_of_the_wild(PlayerbotAI* ai) { return new AspectOfTheWildTrigger(ai); }
+            static Trigger* aspect_of_the_monkey(PlayerbotAI* ai) { return new AspectOfTheMonkeyTrigger(ai); }
+            static Trigger* aspect_of_the_beast(PlayerbotAI* ai) { return new AspectOfTheBeastTrigger(ai); }
+            static Trigger* aspect_of_the_cheetah(PlayerbotAI* ai) { return new AspectOfTheCheetahTrigger(ai); }
+            static Trigger* aspect_of_the_dragonhawk(PlayerbotAI* ai) { return new AspectOfTheDragonhawkTrigger(ai); }
         };
     };
 };
@@ -324,8 +433,10 @@ namespace ai
                 creators["aspect of the viper"] = &AiObjectContextInternal::aspect_of_the_viper;
                 creators["aspect of the pack"] = &AiObjectContextInternal::aspect_of_the_pack;
                 creators["aspect of the cheetah"] = &AiObjectContextInternal::aspect_of_the_cheetah;
+                creators["aspect of the beast"] = &AiObjectContextInternal::aspect_of_the_beast;
+                creators["aspect of the dragonhawk"] = &AiObjectContextInternal::aspect_of_the_dragonhawk;
                 creators["remove aspect of the cheetah"] = &AiObjectContextInternal::remove_aspect_of_the_cheetah;
-                creators["trueshot aura"] = &AiObjectContextInternal::trueshot_aura;
+                creators["trueshot aspect"] = &AiObjectContextInternal::trueshot_aspect;
                 creators["feign death"] = &AiObjectContextInternal::feign_death;
                 creators["wing clip"] = &AiObjectContextInternal::wing_clip;
                 creators["raptor strike"] = &AiObjectContextInternal::raptor_strike;
@@ -382,7 +493,7 @@ namespace ai
             static Action* bestial_wrath(PlayerbotAI* ai) { return new CastBestialWrathAction(ai); }
             static Action* feed_pet(PlayerbotAI* ai) { return new FeedPetAction(ai); }
             static Action* feign_death(PlayerbotAI* ai) { return new CastFeignDeathAction(ai); }
-            static Action* trueshot_aura(PlayerbotAI* ai) { return new CastTrueshotAuraAction(ai); }
+            static Action* trueshot_aspect(PlayerbotAI* ai) { return new CastTrueshotAuraAction(ai); }
             static Action* auto_shot(PlayerbotAI* ai) { return new CastAutoShotAction(ai); }
             static Action* aimed_shot(PlayerbotAI* ai) { return new CastAimedShotAction(ai); }
             static Action* chimera_shot(PlayerbotAI* ai) { return new CastChimeraShotAction(ai); }
@@ -411,6 +522,8 @@ namespace ai
             static Action* aspect_of_the_viper(PlayerbotAI* ai) { return new CastAspectOfTheViperAction(ai); }
             static Action* aspect_of_the_pack(PlayerbotAI* ai) { return new CastAspectOfThePackAction(ai); }
             static Action* aspect_of_the_cheetah(PlayerbotAI* ai) { return new CastAspectOfTheCheetahAction(ai); }
+            static Action* aspect_of_the_beast(PlayerbotAI* ai) { return new CastAspectOfTheBeastAction(ai); }
+            static Action* aspect_of_the_dragonhawk(PlayerbotAI* ai) { return new CastAspectOfTheDragonhawkAction(ai); }
             static Action* remove_aspect_of_the_cheetah(PlayerbotAI* ai) { return new RemoveBuffAction(ai, "aspect of the cheetah"); }
             static Action* wing_clip(PlayerbotAI* ai) { return new CastWingClipAction(ai); }
             static Action* raptor_strike(PlayerbotAI* ai) { return new CastRaptorStrikeAction(ai); }
@@ -445,6 +558,10 @@ HunterAiObjectContext::HunterAiObjectContext(PlayerbotAI* ai) : AiObjectContext(
     strategyContexts.Add(new ai::hunter::BuffSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::hunter::BoostSituationStrategyFactoryInternal());
     strategyContexts.Add(new ai::hunter::CcSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::hunter::StingManualStrategyFactoryInternal());
+    strategyContexts.Add(new ai::hunter::StingSituationStrategyFactoryInternal());
+    strategyContexts.Add(new ai::hunter::AspectManualStrategyFactoryInternal());
+    strategyContexts.Add(new ai::hunter::AspectSituationStrategyFactoryInternal());
     actionContexts.Add(new ai::hunter::AiObjectContextInternal());
     triggerContexts.Add(new ai::hunter::TriggerFactoryInternal());
 }

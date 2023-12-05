@@ -3,6 +3,20 @@
 
 namespace ai
 {
+    class HunterStingPlaceholderStrategy : public PlaceholderStrategy
+    {
+    public:
+        HunterStingPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
+        string getName() override { return "sting"; }
+    };
+
+    class HunterAspectPlaceholderStrategy : public PlaceholderStrategy
+    {
+    public:
+        HunterAspectPlaceholderStrategy(PlayerbotAI* ai) : PlaceholderStrategy(ai) {}
+        string getName() override { return "aspect"; }
+    };
+
     class HunterStrategy : public ClassStrategy
     {
     public:
@@ -166,5 +180,104 @@ namespace ai
     public:
         static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
         static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class HunterStingStrategy : public Strategy
+    {
+    public:
+        HunterStingStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class HunterStingPvpStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class HunterStingPveStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class HunterStingRaidStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class HunterManualStingStrategy : public Strategy
+    {
+    public:
+        HunterManualStingStrategy(PlayerbotAI* ai, std::string inName, std::string inTriggerName, std::string inActionName)
+        : Strategy(ai) 
+        , name(inName)
+        , triggerName(inTriggerName)
+        , actionName(inActionName) {}
+
+        string getName() override { return name; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+
+    private:
+        std::string name;
+        std::string triggerName;
+        std::string actionName;
+    };
+
+    class HunterAspectStrategy : public Strategy
+    {
+    public:
+        HunterAspectStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+
+    protected:
+        virtual void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
+
+    class HunterAspectPvpStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class HunterAspectPveStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class HunterAspectRaidStrategy
+    {
+    public:
+        static void InitCombatTriggers(std::list<TriggerNode*>& triggers);
+        static void InitNonCombatTriggers(std::list<TriggerNode*>& triggers);
+    };
+
+    class HunterManualAspectStrategy : public Strategy
+    {
+    public:
+        HunterManualAspectStrategy(PlayerbotAI* ai, std::string inName, std::string inTriggerName, std::string inActionName)
+        : Strategy(ai) 
+        , name(inName)
+        , triggerName(inTriggerName)
+        , actionName(inActionName) {}
+
+        string getName() override { return name; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+
+    private:
+        std::string name;
+        std::string triggerName;
+        std::string actionName;
     };
 }

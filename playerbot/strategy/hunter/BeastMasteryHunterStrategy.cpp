@@ -287,6 +287,75 @@ void BeastMasteryHunterCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNo
     HunterCcRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void BeastMasteryHunterStingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterStingStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterStingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPveStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterStingPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitNonCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 #endif
 #ifdef MANGOSBOT_ONE // TBC
 
@@ -570,6 +639,75 @@ void BeastMasteryHunterCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNo
     HunterCcRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void BeastMasteryHunterStingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterStingStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterStingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPveStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterStingPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitNonCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
 #endif
 #ifdef MANGOSBOT_TWO // WOTLK
 
@@ -851,6 +989,75 @@ void BeastMasteryHunterCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNo
 {
     BeastMasteryHunterCcStrategy::InitNonCombatTriggers(triggers);
     HunterCcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterStingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterStingStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterStingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPveStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterStingPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterStingStrategy::InitCombatTriggers(triggers);
+    HunterStingRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    HunterAspectStrategy::InitNonCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPveStrategy::InitNonCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectPvpStrategy::InitNonCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitCombatTriggers(triggers);
+}
+
+void BeastMasteryHunterAspectRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    BeastMasteryHunterAspectStrategy::InitNonCombatTriggers(triggers);
+    HunterAspectRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
 #endif

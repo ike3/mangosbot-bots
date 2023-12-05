@@ -9,53 +9,57 @@ namespace ai
     BEGIN_TRIGGER(HunterNoStingsActiveTrigger, Trigger)
     END_TRIGGER()
 
-    class HunterAspectOfTheHawkTrigger : public BuffTrigger
+    class AspectOfTheHawkTrigger : public BuffTrigger
     {
     public:
-        HunterAspectOfTheHawkTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the hawk") 
-        {
-            checkInterval = 1;
-        }
-
-        virtual bool IsActive()
-        {
-            if (!BuffTrigger::IsActive())
-                return false;
-
-            Unit* target = AI_VALUE(Unit*, "current target");
-            return target && !sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), 5.0);
-        }
+        AspectOfTheHawkTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the hawk") {}
     };
 
-    class HunterAspectOfTheWildTrigger : public BuffTrigger
+    class AspectOfTheWildTrigger : public BuffTrigger
     {
     public:
-        HunterAspectOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the wild") 
-        {
-            checkInterval = 1;
-        }
+        AspectOfTheWildTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the wild") {}
     };
 
-    class HunterAspectOfTheViperTrigger : public BuffTrigger
+    class AspectOfTheViperTrigger : public BuffTrigger
     {
     public:
-        HunterAspectOfTheViperTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the viper") {}
-
-        virtual bool IsActive()
-        {
-            return SpellTrigger::IsActive() && !ai->HasAura(spell, GetTarget());
-        }
+        AspectOfTheViperTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the viper") {}
     };
 
-    class HunterAspectOfThePackTrigger : public BuffTrigger
+    class AspectOfThePackTrigger : public BuffTrigger
     {
     public:
-        HunterAspectOfThePackTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the pack") {}
+        AspectOfThePackTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the pack") {}
+    };
 
-        virtual bool IsActive()
+    class AspectOfTheMonkeyTrigger : public BuffTrigger
+    {
+    public:
+        AspectOfTheMonkeyTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the monkey") {}
+    };
+
+    class AspectOfTheBeastTrigger : public BuffTrigger
+    {
+    public:
+        AspectOfTheBeastTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the beast") {}
+    };
+
+    class AspectOfTheCheetahTrigger : public BuffTrigger
+    {
+    public:
+        AspectOfTheCheetahTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the cheetah") {}
+    };
+
+    class AspectOfTheDragonhawkTrigger : public BuffTrigger
+    {
+    public:
+        AspectOfTheDragonhawkTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "aspect of the dragonhawk") {}
+    
+        bool IsActive() override
         {
-            return BuffTrigger::IsActive() && !ai->HasAura("aspect of the cheetah", GetTarget());
-        };
+            return BuffTrigger::IsActive() && !ai->HasAura("aspect of the hawk", bot);
+        }
     };
 
     BEGIN_TRIGGER(HuntersPetDeadTrigger, Trigger)

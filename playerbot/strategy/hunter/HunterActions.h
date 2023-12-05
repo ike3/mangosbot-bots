@@ -80,19 +80,40 @@ namespace ai
     {
     public:
         CastAspectOfTheCheetahAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the cheetah") {}
-        virtual bool isUseful();
+        
+        bool isUseful() override
+        {
+            return CastBuffSpellAction::isUseful() && !AI_VALUE(bool, "has attackers");
+        }
     };
 
     class CastAspectOfThePackAction : public CastBuffSpellAction
     {
     public:
         CastAspectOfThePackAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the pack") {}
+    
+        bool isUseful() override
+        {
+            return CastBuffSpellAction::isUseful() && !AI_VALUE(bool, "has attackers");
+        }
     };
 
     class CastAspectOfTheViperAction : public CastBuffSpellAction
     {
     public:
         CastAspectOfTheViperAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the viper") {}
+    };
+
+    class CastAspectOfTheBeastAction : public CastBuffSpellAction
+    {
+    public:
+        CastAspectOfTheBeastAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the beast") {}
+    };
+
+    class CastAspectOfTheDragonhawkAction : public CastBuffSpellAction
+    {
+    public:
+        CastAspectOfTheDragonhawkAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "aspect of the dragonhawk") {}
     };
 
     class CastCallPetAction : public CastBuffSpellAction
@@ -418,6 +439,14 @@ private:
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc beast mastery pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc beast mastery pve", strategiesRequired);
 
+            strategiesRequired = { "beast mastery", "sting" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "sting beast mastery pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "sting beast mastery pve", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "aspect" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aspect beast mastery pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aspect beast mastery pve", strategiesRequired);
+
             strategiesRequired = { "marksmanship" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "marksmanship pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "marksmanship pve", strategiesRequired);
@@ -440,6 +469,14 @@ private:
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc marksmanship pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc marksmanship pve", strategiesRequired);
 
+            strategiesRequired = { "marksmanship", "sting" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "sting marksmanship pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "sting marksmanship pve", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "aspect" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aspect marksmanship pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aspect marksmanship pve", strategiesRequired);
+
             strategiesRequired = { "survival" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "survival pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "survival pve", strategiesRequired);
@@ -461,6 +498,14 @@ private:
             strategiesRequired = { "survival", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc survival pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc survival pve", strategiesRequired);
+
+            strategiesRequired = { "survival", "sting" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "sting survival pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "sting survival pve", strategiesRequired);
+
+            strategiesRequired = { "survival", "aspect" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aspect survival pve", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aspect survival pve", strategiesRequired);
         }
     };
 
@@ -491,6 +536,14 @@ private:
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc beast mastery pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc beast mastery pvp", strategiesRequired);
 
+            strategiesRequired = { "beast mastery", "sting" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "sting beast mastery pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "sting beast mastery pvp", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "aspect" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aspect beast mastery pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aspect beast mastery pvp", strategiesRequired);
+
             strategiesRequired = { "marksmanship" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "marksmanship pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "marksmanship pvp", strategiesRequired);
@@ -513,6 +566,14 @@ private:
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc marksmanship pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc marksmanship pvp", strategiesRequired);
 
+            strategiesRequired = { "marksmanship", "sting" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "sting marksmanship pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "sting marksmanship pvp", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "aspect" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aspect marksmanship pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aspect marksmanship pvp", strategiesRequired);
+
             strategiesRequired = { "survival" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "survival pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "survival pvp", strategiesRequired);
@@ -534,6 +595,14 @@ private:
             strategiesRequired = { "survival", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc survival pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc survival pvp", strategiesRequired);
+
+            strategiesRequired = { "survival", "sting" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "sting survival pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "sting survival pvp", strategiesRequired);
+
+            strategiesRequired = { "survival", "aspect" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aspect survival pvp", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aspect survival pvp", strategiesRequired);
         }
     };
 
@@ -564,6 +633,14 @@ private:
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc beast mastery raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc beast mastery raid", strategiesRequired);
 
+            strategiesRequired = { "beast mastery", "sting" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "sting beast mastery raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "sting beast mastery raid", strategiesRequired);
+
+            strategiesRequired = { "beast mastery", "aspect" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aspect beast mastery raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aspect beast mastery raid", strategiesRequired);
+
             strategiesRequired = { "marksmanship" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "marksmanship raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "marksmanship raid", strategiesRequired);
@@ -586,6 +663,14 @@ private:
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc marksmanship raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc marksmanship raid", strategiesRequired);
 
+            strategiesRequired = { "marksmanship", "sting" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "sting marksmanship raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "sting marksmanship raid", strategiesRequired);
+
+            strategiesRequired = { "marksmanship", "aspect" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aspect marksmanship raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aspect marksmanship raid", strategiesRequired);
+
             strategiesRequired = { "survival" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "survival raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "survival raid", strategiesRequired);
@@ -607,6 +692,14 @@ private:
             strategiesRequired = { "survival", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc survival raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc survival raid", strategiesRequired);
+
+            strategiesRequired = { "survival", "sting" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "sting survival raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "sting survival raid", strategiesRequired);
+
+            strategiesRequired = { "survival", "aspect" };
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aspect survival raid", strategiesRequired);
+            strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aspect survival raid", strategiesRequired);
         }
     };
 }

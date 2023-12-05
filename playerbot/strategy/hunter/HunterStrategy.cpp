@@ -13,6 +13,7 @@ public:
         creators["aimed shot"] = &aimed_shot;
         creators["rapid fire"] = &rapid_fire;
         creators["aspect of the pack"] = &aspect_of_the_pack;
+        creators["aspect of the dragonhawk"] = &aspect_of_the_dragonhawk;
         creators["wing clip"] = &wing_clip;
         creators["intimidation"] = &intimidation;
         creators["scatter shot"] = &scatter_shot;
@@ -25,6 +26,8 @@ private:
     ACTION_NODE_A(rapid_fire, "rapid fire", "readiness");
 
     ACTION_NODE_A(aspect_of_the_pack, "aspect of the pack", "aspect of the cheetah");
+
+    ACTION_NODE_A(aspect_of_the_dragonhawk, "aspect of the dragonhawk", "aspect of the hawk");
 
     ACTION_NODE_A(wing_clip, "wing clip", "raptor strike");
 
@@ -78,10 +81,6 @@ void HunterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("hunter's mark", ACTION_NORMAL + 6), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "no stings",
-        NextAction::array(0, new NextAction("viper sting", ACTION_NORMAL + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "aimed shot",
         NextAction::array(0, new NextAction("aimed shot", ACTION_NORMAL + 2), NULL)));
 
@@ -140,10 +139,6 @@ void HunterStrategy::InitDeadTriggers(std::list<TriggerNode*>& triggers)
 void HunterPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassPvpStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "no stings",
-        NextAction::array(0, new NextAction("serpent sting", ACTION_NORMAL + 4), NULL)));
 }
 
 void HunterPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -169,10 +164,6 @@ void HunterPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "often",
         NextAction::array(0, new NextAction("immolation trap on target", ACTION_INTERRUPT), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "no stings",
-        NextAction::array(0, new NextAction("serpent sting", ACTION_NORMAL + 4), NULL)));
 }
 
 void HunterPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -228,14 +219,6 @@ void HunterAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("volley", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "serpent sting on attacker",
-        NextAction::array(0, new NextAction("serpent sting on attacker", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "viper sting on attacker",
-        NextAction::array(0, new NextAction("viper sting on attacker", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "multi-shot",
         NextAction::array(0, new NextAction("multi-shot", ACTION_HIGH), NULL)));
 }
@@ -282,14 +265,6 @@ void HunterBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "target of attacker close",
         NextAction::array(0, new NextAction("deterrence", ACTION_EMERGENCY + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "target of attacker close",
-        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "aspect of the hawk",
-        NextAction::array(0, new NextAction("aspect of the hawk", ACTION_HIGH + 5), NULL)));
 }
 
 void HunterBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -308,27 +283,11 @@ void HunterBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers
 void HunterBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffPvpStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "has attackers",
-        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "player has flag",
-        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH), NULL)));
 }
 
 void HunterBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffPvpStrategy::InitNonCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "has attackers",
-        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "player has flag",
-        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH), NULL)));
 }
 
 void HunterBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -468,6 +427,103 @@ void HunterCcRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 void HunterCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CcRaidStrategy::InitNonCombatTriggers(triggers);
+}
+
+void HunterStingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    if (ai->HasStrategy("aoe", BotState::BOT_STATE_COMBAT))
+    {
+        triggers.push_back(new TriggerNode(
+            "serpent sting on attacker",
+            NextAction::array(0, new NextAction("serpent sting on attacker", ACTION_HIGH + 2), NULL)));
+
+        triggers.push_back(new TriggerNode(
+            "viper sting on attacker",
+            NextAction::array(0, new NextAction("viper sting on attacker", ACTION_HIGH + 1), NULL)));
+    }
+
+    triggers.push_back(new TriggerNode(
+        "no stings",
+        NextAction::array(0, new NextAction("viper sting", ACTION_NORMAL + 5), NULL)));
+}
+
+void HunterStingPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "no stings",
+        NextAction::array(0, new NextAction("serpent sting", ACTION_NORMAL + 4), NULL)));
+}
+
+void HunterStingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "no stings",
+        NextAction::array(0, new NextAction("serpent sting", ACTION_NORMAL + 4), NULL)));
+}
+
+void HunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "target of attacker close",
+        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "aspect of the hawk",
+        NextAction::array(0, new NextAction("aspect of the hawk", ACTION_HIGH + 5), NULL)));
+}
+
+void HunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "aspect of the hawk",
+        NextAction::array(0, new NextAction("aspect of the hawk", ACTION_NORMAL), NULL)));
+}
+
+void HunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "has attackers",
+        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH + 6), NULL)));
+}
+
+void HunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "has attackers",
+        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH + 6), NULL)));
+}
+
+void HunterAspectPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
 }
 
 #endif
@@ -509,14 +565,6 @@ void HunterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("hunter's mark", ACTION_NORMAL + 6), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "no stings",
-        NextAction::array(0, new NextAction("viper sting", ACTION_NORMAL + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "no stings",
-        NextAction::array(0, new NextAction("serpent sting", ACTION_NORMAL + 4), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "aimed shot",
         NextAction::array(0, new NextAction("aimed shot", ACTION_NORMAL + 2), NULL)));
 
@@ -655,14 +703,6 @@ void HunterAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
         NextAction::array(0, new NextAction("volley", ACTION_HIGH + 3), NULL)));
 
     triggers.push_back(new TriggerNode(
-        "serpent sting on attacker",
-        NextAction::array(0, new NextAction("serpent sting on attacker", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "viper sting on attacker",
-        NextAction::array(0, new NextAction("viper sting on attacker", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "multi-shot",
         NextAction::array(0, new NextAction("multi-shot", ACTION_HIGH), NULL)));
 }
@@ -709,14 +749,6 @@ void HunterBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "target of attacker close",
         NextAction::array(0, new NextAction("deterrence", ACTION_EMERGENCY + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "target of attacker close",
-        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "aspect of the hawk",
-        NextAction::array(0, new NextAction("aspect of the hawk", ACTION_HIGH + 5), NULL)));
 }
 
 void HunterBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -735,27 +767,11 @@ void HunterBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers
 void HunterBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffPvpStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "has attackers",
-        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "player has flag",
-        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH), NULL)));
 }
 
 void HunterBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffPvpStrategy::InitNonCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "has attackers",
-        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "player has flag",
-        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH), NULL)));
 }
 
 void HunterBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -887,6 +903,103 @@ void HunterCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
     CcRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void HunterStingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    if (ai->HasStrategy("aoe", BotState::BOT_STATE_COMBAT))
+    {
+        triggers.push_back(new TriggerNode(
+            "serpent sting on attacker",
+            NextAction::array(0, new NextAction("serpent sting on attacker", ACTION_HIGH + 2), NULL)));
+
+        triggers.push_back(new TriggerNode(
+            "viper sting on attacker",
+            NextAction::array(0, new NextAction("viper sting on attacker", ACTION_HIGH + 1), NULL)));
+    }
+
+    triggers.push_back(new TriggerNode(
+        "no stings",
+        NextAction::array(0, new NextAction("viper sting", ACTION_NORMAL + 5), NULL)));
+}
+
+void HunterStingPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "no stings",
+        NextAction::array(0, new NextAction("serpent sting", ACTION_NORMAL + 4), NULL)));
+}
+
+void HunterStingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "no stings",
+        NextAction::array(0, new NextAction("serpent sting", ACTION_NORMAL + 4), NULL)));
+}
+
+void HunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "target of attacker close",
+        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "aspect of the hawk",
+        NextAction::array(0, new NextAction("aspect of the hawk", ACTION_HIGH + 5), NULL)));
+}
+
+void HunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "aspect of the hawk",
+        NextAction::array(0, new NextAction("aspect of the hawk", ACTION_NORMAL), NULL)));
+}
+
+void HunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "has attackers",
+        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH + 6), NULL)));
+}
+
+void HunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "has attackers",
+        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH + 6), NULL)));
+}
+
+void HunterAspectPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 #endif
 #ifdef MANGOSBOT_TWO // WOTLK
 
@@ -924,14 +1037,6 @@ void HunterStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "hunter's mark",
         NextAction::array(0, new NextAction("hunter's mark", ACTION_NORMAL + 6), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "no stings",
-        NextAction::array(0, new NextAction("viper sting", ACTION_NORMAL + 5), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "no stings",
-        NextAction::array(0, new NextAction("serpent sting", ACTION_NORMAL + 4), NULL)));
 
     triggers.push_back(new TriggerNode(
         "aimed shot",
@@ -1070,14 +1175,6 @@ void HunterAoeStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "ranged medium aoe",
         NextAction::array(0, new NextAction("volley", ACTION_HIGH + 3), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "serpent sting on attacker",
-        NextAction::array(0, new NextAction("serpent sting on attacker", ACTION_HIGH + 2), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "viper sting on attacker",
-        NextAction::array(0, new NextAction("viper sting on attacker", ACTION_HIGH + 1), NULL)));
 
     triggers.push_back(new TriggerNode(
         "multi-shot",
@@ -1126,14 +1223,6 @@ void HunterBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "target of attacker close",
         NextAction::array(0, new NextAction("deterrence", ACTION_HIGH + 7), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "target of attacker close",
-        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_HIGH + 6), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "aspect of the hawk",
-        NextAction::array(0, new NextAction("aspect of the hawk", ACTION_HIGH + 5), NULL)));
 }
 
 void HunterBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1152,27 +1241,11 @@ void HunterBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers
 void HunterBuffPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffPvpStrategy::InitCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "has attackers",
-        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "player has flag",
-        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH), NULL)));
 }
 
 void HunterBuffPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     BuffPvpStrategy::InitNonCombatTriggers(triggers);
-
-    triggers.push_back(new TriggerNode(
-        "has attackers",
-        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 1), NULL)));
-
-    triggers.push_back(new TriggerNode(
-        "player has flag",
-        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH), NULL)));
 }
 
 void HunterBuffPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -1304,4 +1377,127 @@ void HunterCcRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
     CcRaidStrategy::InitNonCombatTriggers(triggers);
 }
 
+void HunterStingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    if (ai->HasStrategy("aoe", BotState::BOT_STATE_COMBAT))
+    {
+        triggers.push_back(new TriggerNode(
+            "serpent sting on attacker",
+            NextAction::array(0, new NextAction("serpent sting on attacker", ACTION_HIGH + 2), NULL)));
+
+        triggers.push_back(new TriggerNode(
+            "viper sting on attacker",
+            NextAction::array(0, new NextAction("viper sting on attacker", ACTION_HIGH + 1), NULL)));
+    }
+
+    triggers.push_back(new TriggerNode(
+        "no stings",
+        NextAction::array(0, new NextAction("viper sting", ACTION_NORMAL + 5), NULL)));
+}
+
+void HunterStingPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "no stings",
+        NextAction::array(0, new NextAction("serpent sting", ACTION_NORMAL + 4), NULL)));
+}
+
+void HunterStingPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "no stings",
+        NextAction::array(0, new NextAction("serpent sting", ACTION_NORMAL + 4), NULL)));
+}
+
+void HunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "target of attacker close",
+        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "aspect of the dragonhawk",
+        NextAction::array(0, new NextAction("aspect of the dragonhawk", ACTION_HIGH + 5), NULL)));
+}
+
+void HunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "aspect of the dragonhawk",
+        NextAction::array(0, new NextAction("aspect of the dragonhawk", ACTION_NORMAL), NULL)));
+}
+
+void HunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "has attackers",
+        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH + 6), NULL)));
+}
+
+void HunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "has attackers",
+        NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "player has flag",
+        NextAction::array(0, new NextAction("aspect of the cheetah", ACTION_HIGH + 6), NULL)));
+}
+
+void HunterAspectPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectPveStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
+void HunterAspectRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+
+}
+
 #endif
+
+void HunterManualStingStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    if (ai->HasStrategy("aoe", BotState::BOT_STATE_COMBAT))
+    {
+        triggers.push_back(new TriggerNode(
+            triggerName + " on attacker",
+            NextAction::array(0, new NextAction(actionName + " on attacker", ACTION_HIGH + 1), NULL)));
+    }
+
+    triggers.push_back(new TriggerNode(
+        "no stings",
+        NextAction::array(0, new NextAction(actionName, ACTION_HIGH), NULL)));
+}
+
+void HunterManualAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        triggerName,
+        NextAction::array(0, new NextAction(actionName, ACTION_HIGH), NULL)));
+}
+
+void HunterManualAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    InitCombatTriggers(triggers);
+}

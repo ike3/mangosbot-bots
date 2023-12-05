@@ -15,11 +15,6 @@ bool CastViperStingAction::isUseful()
     return CastRangedDebuffSpellAction::isUseful() && AI_VALUE2(uint8, "mana", GetTargetName()) >= 10;
 }
 
-bool CastAspectOfTheCheetahAction::isUseful()
-{
-    return !AI_VALUE(bool, "has attackers") && !ai->HasAnyAuraOf(GetTarget(), "aspect of the cheetah", "aspect of the pack", NULL);
-}
-
 bool FeedPetAction::Execute(Event& event)
 {
     Pet* pet = bot->GetPet();
