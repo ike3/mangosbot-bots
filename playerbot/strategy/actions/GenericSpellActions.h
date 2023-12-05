@@ -38,6 +38,18 @@ namespace ai
         uint32 spellId;
     };
 
+    class CastPetSpellAction : public CastSpellAction
+    {
+    public:
+        CastPetSpellAction(PlayerbotAI* ai, string spell) : CastSpellAction(ai, spell) {}
+
+        virtual bool isPossible() override;
+
+    protected:
+        virtual string GetTargetName() override { return "current target"; }
+        string GetReachActionName() override { return ""; }
+    };
+
 	//---------------------------------------------------------------------------------------------------------------------
 	class CastAuraSpellAction : public CastSpellAction
 	{

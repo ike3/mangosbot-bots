@@ -248,6 +248,45 @@ Unit* CastSpellAction::GetTarget()
     return targetNameQualifier.empty() ? AI_VALUE(Unit*, targetName) : AI_VALUE2(Unit*, targetName, targetNameQualifier);
 }
 
+bool CastPetSpellAction::isPossible()
+{
+    Unit* spellTarget = GetTarget();
+    if (!spellTarget)
+        return false;
+
+    Unit* pet = AI_VALUE(Unit*, "pet target");
+    if (pet)
+    {
+        const uint32& spellId = GetSpellID();
+        if (pet->HasSpell(spellId) && pet->IsSpellReady(spellId))
+        {
+            bool canReach = false;
+            const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(spellId);
+            if (pSpellInfo)
+            {
+                const float dist = pet->GetDistance(spellTarget, true, DIST_CALC_COMBAT_REACH);
+                canReach = dist <= (range + sPlayerbotAIConfig.contactDistance);
+
+                if (pSpellInfo->rangeIndex != SPELL_RANGE_IDX_COMBAT && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_SELF_ONLY && pSpellInfo->rangeIndex != SPELL_RANGE_IDX_ANYWHERE)
+                {
+                    float max_range, min_range;
+                    if (ai->GetSpellRange(GetSpellName(), &max_range, &min_range))
+                    {
+                        canReach = dist < max_range && dist >= min_range;
+                    }
+                }
+            }
+
+            if (canReach)
+            {
+                return ai->CanCastSpell(spellId, spellTarget, 0, true);
+            }
+        }
+    }
+
+    return false;
+}
+
 bool CastAuraSpellAction::isUseful()
 {
     return CastSpellAction::isUseful() && !ai->HasAura(GetSpellName(), GetTarget(), false, isOwner);

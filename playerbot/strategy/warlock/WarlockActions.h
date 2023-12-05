@@ -250,6 +250,28 @@ namespace ai
 		CastSoulLinkAction(PlayerbotAI* ai) : CastBuffSpellAction(ai, "soul link") {}
     };
 
+    class CastSacrificeAction : public CastPetSpellAction
+    {
+    public:
+        CastSacrificeAction(PlayerbotAI* ai) : CastPetSpellAction(ai, "sacrifice") {}
+        string GetTargetName() override { return "self target"; }
+    };
+
+    class CastSpellLockAction : public CastPetSpellAction
+    {
+    public:
+        CastSpellLockAction(PlayerbotAI* ai) : CastPetSpellAction(ai, "spell lock") {}
+    };
+
+    class CastSpellLockOnEnemyHealerAction : public CastPetSpellAction
+    {
+    public:
+        CastSpellLockOnEnemyHealerAction(PlayerbotAI* ai) : CastPetSpellAction(ai, "spell lock") {}
+        virtual string GetTargetName() override { return "enemy healer target"; }
+        virtual string GetTargetQualifier() override { return GetSpellName(); }
+        virtual string getName() override { return GetSpellName() + " on enemy healer"; }
+    };
+
 	class CastSummonImpAction : public CastBuffSpellAction
 	{
 	public:

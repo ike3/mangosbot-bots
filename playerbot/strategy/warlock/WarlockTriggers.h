@@ -265,4 +265,21 @@ namespace ai
     public:
         NoFelguardTrigger(PlayerbotAI* ai) : NoSpecificPetTrigger(ai, "no felguard", 17252) {}
     };
+
+    class SpellLockTrigger : public InterruptSpellTrigger
+    {
+    public:
+        SpellLockTrigger(PlayerbotAI* ai) : InterruptSpellTrigger(ai, "spell lock") {}
+
+        bool SpellLockTrigger::IsActive() override
+        {
+            return InterruptSpellTrigger::IsActive();
+        }
+    };
+
+    class SpellLockEnemyHealerTrigger : public InterruptEnemyHealerTrigger
+    {
+    public:
+        SpellLockEnemyHealerTrigger(PlayerbotAI* ai) : InterruptEnemyHealerTrigger(ai, "spell lock") {}
+    };
 }

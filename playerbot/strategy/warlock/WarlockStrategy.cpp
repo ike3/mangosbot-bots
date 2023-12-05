@@ -35,6 +35,10 @@ void WarlockStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("sacrifice", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "life tap",
         NextAction::array(0, new NextAction("life tap", ACTION_HIGH + 3), NULL)));
 
@@ -317,6 +321,14 @@ void WarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     CcStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "spell lock on enemy healer",
+        NextAction::array(0, new NextAction("spell lock on enemy healer", ACTION_INTERRUPT + 7), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "spell lock",
+        NextAction::array(0, new NextAction("spell lock", ACTION_INTERRUPT + 6), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "death coil interrupt",
         NextAction::array(0, new NextAction("death coil", ACTION_INTERRUPT + 5), NULL)));
 
@@ -466,6 +478,10 @@ void WarlockCursesRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trig
 void WarlockStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     ClassStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("sacrifice", ACTION_EMERGENCY), NULL)));
 
     triggers.push_back(new TriggerNode(
         "life tap",
@@ -752,6 +768,14 @@ void WarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 void WarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CcStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "spell lock on enemy healer",
+        NextAction::array(0, new NextAction("spell lock on enemy healer", ACTION_INTERRUPT + 7), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "spell lock",
+        NextAction::array(0, new NextAction("spell lock", ACTION_INTERRUPT + 6), NULL)));
 
     triggers.push_back(new TriggerNode(
         "death coil interrupt",
@@ -905,6 +929,10 @@ void WarlockStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     ClassStrategy::InitCombatTriggers(triggers);
 
     triggers.push_back(new TriggerNode(
+        "critical health",
+        NextAction::array(0, new NextAction("sacrifice", ACTION_EMERGENCY), NULL)));
+
+    triggers.push_back(new TriggerNode(
         "life tap",
         NextAction::array(0, new NextAction("life tap", ACTION_HIGH + 3), NULL)));
 
@@ -1189,6 +1217,14 @@ void WarlockBoostRaidStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& tr
 void WarlockCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     CcStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "spell lock on enemy healer",
+        NextAction::array(0, new NextAction("spell lock on enemy healer", ACTION_INTERRUPT + 7), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "spell lock",
+        NextAction::array(0, new NextAction("spell lock", ACTION_INTERRUPT + 6), NULL)));
 
     triggers.push_back(new TriggerNode(
         "death coil interrupt",

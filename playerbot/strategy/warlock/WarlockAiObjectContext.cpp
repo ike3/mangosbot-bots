@@ -348,6 +348,8 @@ namespace ai
                 creators["no succubus"] = &TriggerFactoryInternal::no_succubus;
                 creators["no felhunter"] = &TriggerFactoryInternal::no_felhunter;
                 creators["no felguard"] = &TriggerFactoryInternal::no_felguard;
+                creators["spell lock"] = &TriggerFactoryInternal::spell_lock;
+                creators["spell lock enemy healer"] = &TriggerFactoryInternal::spell_lock_enemy_healer;
             }
 
         private:
@@ -401,6 +403,8 @@ namespace ai
             static Trigger* no_succubus(PlayerbotAI* ai) { return new NoSuccubusTrigger(ai); }
             static Trigger* no_felhunter(PlayerbotAI* ai) { return new NoFelhunterTrigger(ai); }
             static Trigger* no_felguard(PlayerbotAI* ai) { return new NoFelguardTrigger(ai); }
+            static Trigger* spell_lock(PlayerbotAI* ai) { return new SpellLockTrigger(ai); }
+            static Trigger* spell_lock_enemy_healer(PlayerbotAI* ai) { return new SpellLockEnemyHealerTrigger(ai); }
         };
 
         class AiObjectContextInternal : public NamedObjectContext<Action>
@@ -471,6 +475,9 @@ namespace ai
                 creators["curse of exhaustion"] = &AiObjectContextInternal::curse_of_exhaustion;
                 creators["demonic sacrifice"] = &AiObjectContextInternal::demonic_sacrifice;
                 creators["soul link"] = &AiObjectContextInternal::soul_link;
+                creators["sacrifice"] = &AiObjectContextInternal::sacrifice;
+                creators["spell lock"] = &AiObjectContextInternal::spell_lock;
+                creators["spell lock on enemy healer"] = &AiObjectContextInternal::spell_lock_on_enemy_healer;
                 creators["update pve strats"] = &AiObjectContextInternal::update_pve_strats;
                 creators["update pvp strats"] = &AiObjectContextInternal::update_pvp_strats;
                 creators["update raid strats"] = &AiObjectContextInternal::update_raid_strats;
@@ -541,6 +548,9 @@ namespace ai
             static Action* soul_fire(PlayerbotAI* ai) { return new CastSoulFireAction(ai); }
             static Action* demonic_sacrifice(PlayerbotAI* ai) { return new CastDemonicSacrificeAction(ai); }
             static Action* soul_link(PlayerbotAI* ai) { return new CastSoulLinkAction(ai); }
+            static Action* sacrifice(PlayerbotAI* ai) { return new CastSacrificeAction(ai); }
+            static Action* spell_lock(PlayerbotAI* ai) { return new CastSpellLockAction(ai); }
+            static Action* spell_lock_on_enemy_healer(PlayerbotAI* ai) { return new CastSpellLockOnEnemyHealerAction(ai); }
             static Action* update_pve_strats(PlayerbotAI* ai) { return new UpdateWarlockPveStrategiesAction(ai); }
             static Action* update_pvp_strats(PlayerbotAI* ai) { return new UpdateWarlockPvpStrategiesAction(ai); }
             static Action* update_raid_strats(PlayerbotAI* ai) { return new UpdateWarlockRaidStrategiesAction(ai); }

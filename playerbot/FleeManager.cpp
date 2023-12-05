@@ -106,7 +106,7 @@ bool FleeManager::isTooCloseToEdge(float x, float y, float z, float angle)
 {
     Map* map = bot->GetMap();
     const TerrainInfo* terrain = map->GetTerrain();
-    for (float a = angle; a <= angle + 2*M_PI; a += M_PI / 4)
+    for (double a = angle; a <= angle + 2*M_PI; a += M_PI / 4)
     {
         float dist = sPlayerbotAIConfig.followDistance;
         float tx = x + cos(a) * dist;
