@@ -646,33 +646,33 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost dps feral pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost dps feral pve", strategiesRequired);
 
-            strategiesRequired = { "restoration" };
+            strategiesRequired = { "restoration/heal" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "restoration pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "restoration pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "restoration pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "restoration pve", strategiesRequired);
 
-            strategiesRequired = { "restoration", "aoe" };
+            strategiesRequired = { "restoration/heal", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe restoration pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe restoration pve", strategiesRequired);
 
-            strategiesRequired = { "restoration", "cc" };
+            strategiesRequired = { "restoration/heal", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc restoration pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc restoration pve", strategiesRequired);
 
-            strategiesRequired = { "restoration", "stealth" };
+            strategiesRequired = { "restoration/heal", "stealth" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "stealth restoration pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "stealth restoration pve", strategiesRequired);
 
-            strategiesRequired = { "restoration", "cure" };
+            strategiesRequired = { "restoration/heal", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure restoration pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure restoration pve", strategiesRequired);
 
-            strategiesRequired = { "restoration", "buff" };
+            strategiesRequired = { "restoration/heal", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff restoration pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff restoration pve", strategiesRequired);
 
-            strategiesRequired = { "restoration", "boost" };
+            strategiesRequired = { "restoration/heal", "boost" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost restoration pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost restoration pve", strategiesRequired);
 
@@ -777,33 +777,33 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost dps feral pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost dps feral pvp", strategiesRequired);
 
-            strategiesRequired = { "restoration" };
+            strategiesRequired = { "restoration/heal" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "restoration pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "restoration pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "restoration pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "restoration pvp", strategiesRequired);
 
-            strategiesRequired = { "restoration", "aoe" };
+            strategiesRequired = { "restoration/heal", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe restoration pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe restoration pvp", strategiesRequired);
 
-            strategiesRequired = { "restoration", "cc" };
+            strategiesRequired = { "restoration/heal", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc restoration pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc restoration pvp", strategiesRequired);
 
-            strategiesRequired = { "restoration", "stealth" };
+            strategiesRequired = { "restoration/heal", "stealth" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "stealth restoration pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "stealth restoration pvp", strategiesRequired);
 
-            strategiesRequired = { "restoration", "cure" };
+            strategiesRequired = { "restoration/heal", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure restoration pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure restoration pvp", strategiesRequired);
 
-            strategiesRequired = { "restoration", "buff" };
+            strategiesRequired = { "restoration/heal", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff restoration pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff restoration pvp", strategiesRequired);
 
-            strategiesRequired = { "restoration", "boost" };
+            strategiesRequired = { "restoration/heal", "boost" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost restoration pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost restoration pvp", strategiesRequired);
 
@@ -908,33 +908,33 @@ namespace ai
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost dps feral raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost dps feral raid", strategiesRequired);
 
-            strategiesRequired = { "restoration" };
+            strategiesRequired = { "restoration/heal" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "restoration raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "restoration raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "restoration raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "restoration raid", strategiesRequired);
 
-            strategiesRequired = { "restoration", "aoe" };
+            strategiesRequired = { "restoration/heal", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe restoration raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe restoration raid", strategiesRequired);
 
-            strategiesRequired = { "restoration", "cc" };
+            strategiesRequired = { "restoration/heal", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc restoration raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc restoration raid", strategiesRequired);
 
-            strategiesRequired = { "restoration", "stealth" };
+            strategiesRequired = { "restoration/heal", "stealth" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "stealth restoration raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "stealth restoration raid", strategiesRequired);
 
-            strategiesRequired = { "restoration", "cure" };
+            strategiesRequired = { "restoration/heal", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure restoration raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure restoration raid", strategiesRequired);
 
-            strategiesRequired = { "restoration", "buff" };
+            strategiesRequired = { "restoration/heal", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff restoration raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff restoration raid", strategiesRequired);
 
-            strategiesRequired = { "restoration", "boost" };
+            strategiesRequired = { "restoration/heal", "boost" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost restoration raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost restoration raid", strategiesRequired);
 

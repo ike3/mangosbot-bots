@@ -664,37 +664,37 @@ namespace ai
     public:
         UpdatePaladinPveStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update pve strats")
         {
-            std::vector<std::string> strategiesRequired = { "holy" };
+            std::vector<std::string> strategiesRequired = { "holy/heal" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "holy pve", strategiesRequired);
 
-            strategiesRequired = { "holy", "aoe" };
+            strategiesRequired = { "holy/heal", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe holy pve", strategiesRequired);
 
-            strategiesRequired = { "holy", "cure" };
+            strategiesRequired = { "holy/heal", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure holy pve", strategiesRequired);
 
-            strategiesRequired = { "holy", "buff" };
+            strategiesRequired = { "holy/heal", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff holy pve", strategiesRequired);
 
-            strategiesRequired = { "holy", "boost" };
+            strategiesRequired = { "holy/heal", "boost" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost holy pve", strategiesRequired);
 
-            strategiesRequired = { "holy", "cc" };
+            strategiesRequired = { "holy/heal", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc holy pve", strategiesRequired);
 
-            strategiesRequired = { "holy", "aura" };
+            strategiesRequired = { "holy/heal", "aura" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aura holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aura holy pve", strategiesRequired);
 
-            strategiesRequired = { "holy", "blessing" };
+            strategiesRequired = { "holy/heal", "blessing" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "blessing holy pve", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "blessing holy pve", strategiesRequired);
 
@@ -777,37 +777,37 @@ namespace ai
     public:
         UpdatePaladinPvpStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update pvp strats")
         {
-            std::vector<std::string> strategiesRequired = { "holy" };
+            std::vector<std::string> strategiesRequired = { "holy/heal" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "holy pvp", strategiesRequired);
 
-            strategiesRequired = { "holy", "aoe" };
+            strategiesRequired = { "holy/heal", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe holy pvp", strategiesRequired);
 
-            strategiesRequired = { "holy", "cure" };
+            strategiesRequired = { "holy/heal", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure holy pvp", strategiesRequired);
 
-            strategiesRequired = { "holy", "buff" };
+            strategiesRequired = { "holy/heal", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff holy pvp", strategiesRequired);
 
-            strategiesRequired = { "holy", "boost" };
+            strategiesRequired = { "holy/heal", "boost" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost holy pvp", strategiesRequired);
 
-            strategiesRequired = { "holy", "cc" };
+            strategiesRequired = { "holy/heal", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc holy pvp", strategiesRequired);
 
-            strategiesRequired = { "holy", "aura" };
+            strategiesRequired = { "holy/heal", "aura" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aura holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aura holy pvp", strategiesRequired);
 
-            strategiesRequired = { "holy", "blessing" };
+            strategiesRequired = { "holy/heal", "blessing" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "blessing holy pvp", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "blessing holy pvp", strategiesRequired);
 
@@ -890,37 +890,37 @@ namespace ai
     public:
         UpdatePaladinRaidStrategiesAction(PlayerbotAI* ai) : UpdateStrategyDependenciesAction(ai, "update raid strats")
         {
-            std::vector<std::string> strategiesRequired = { "holy" };
+            std::vector<std::string> strategiesRequired = { "holy/heal" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_DEAD, "holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_REACTION, "holy raid", strategiesRequired);
 
-            strategiesRequired = { "holy", "aoe" };
+            strategiesRequired = { "holy/heal", "aoe" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aoe holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aoe holy raid", strategiesRequired);
 
-            strategiesRequired = { "holy", "cure" };
+            strategiesRequired = { "holy/heal", "cure" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cure holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cure holy raid", strategiesRequired);
 
-            strategiesRequired = { "holy", "buff" };
+            strategiesRequired = { "holy/heal", "buff" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "buff holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "buff holy raid", strategiesRequired);
 
-            strategiesRequired = { "holy", "boost" };
+            strategiesRequired = { "holy/heal", "boost" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "boost holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "boost holy raid", strategiesRequired);
 
-            strategiesRequired = { "holy", "cc" };
+            strategiesRequired = { "holy/heal", "cc" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "cc holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "cc holy raid", strategiesRequired);
 
-            strategiesRequired = { "holy", "aura" };
+            strategiesRequired = { "holy/heal", "aura" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "aura holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "aura holy raid", strategiesRequired);
 
-            strategiesRequired = { "holy", "blessing" };
+            strategiesRequired = { "holy/heal", "blessing" };
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_COMBAT, "blessing holy raid", strategiesRequired);
             strategiesToUpdate.emplace_back(BotState::BOT_STATE_NON_COMBAT, "blessing holy raid", strategiesRequired);
 
