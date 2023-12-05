@@ -13,7 +13,7 @@ namespace ai
         virtual vector<string> GetAllowedValues() { return StrSplit(allowedValues, ","); }
 
         virtual string Save() override { return value; };
-        virtual bool Load(string value) override { Set(value); return true; };
+        virtual bool Load(string value) override;
     private:
         string allowedValues;
     };

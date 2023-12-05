@@ -49,3 +49,10 @@ void SubStrategyValue::SetValues(string& currentValue, const string newValue, co
 	if(!currentValues.empty())
 		currentValue.pop_back();
 }
+
+bool SubStrategyValue::Load(string value)
+{
+    this->value = "";
+    Set(value);
+    return true;
+}
