@@ -33,7 +33,7 @@ namespace ai
             }
         }
 
-        virtual bool Execute(Event& event)
+        virtual bool Execute(Event& event) override
 		{
             Unit* target = GetTarget();
             if (target)
@@ -72,7 +72,7 @@ namespace ai
             return false;
         }
 
-        virtual bool isUseful()
+        virtual bool isUseful() override
 		{
             // Do not move if stay strategy is set
             if (!ai->HasStrategy("stay", ai->GetState()))
@@ -104,7 +104,7 @@ namespace ai
             return false;
         }
 
-        virtual string GetTargetName() { return "current target"; }
+        virtual string GetTargetName() override { return "current target"; }
         string GetSpellName() const { return spellName; }
 
         virtual Unit* GetTarget() override
@@ -137,7 +137,7 @@ namespace ai
     public:
         CastReachTargetSpellAction(PlayerbotAI* ai, string spell, float distance) : CastSpellAction(ai, spell), distance(distance) {}
 
-		virtual bool isUseful()
+		virtual bool isUseful() override
 		{
             // Do not move if stay strategy is set
             if (ai->HasStrategy("stay", ai->GetState()))
@@ -190,6 +190,6 @@ namespace ai
     {
     public:
         ReachPartyMemberToHealAction(PlayerbotAI* ai) : ReachTargetAction(ai, "reach party member to heal", ai->GetRange("heal")) {}
-        virtual string GetTargetName() { return "party member to heal"; }
+        virtual string GetTargetName() override { return "party member to heal"; }
     };
 }

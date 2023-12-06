@@ -64,7 +64,7 @@ namespace ai
             return false;
         }
         
-        virtual bool Execute(Event& event)
+        virtual bool Execute(Event& event) override
         {
             GameObject* go = ai->GetGameObject(lightwellGameObject);
             if (go)
@@ -94,7 +94,7 @@ namespace ai
     public:
         ChatCommandAction(PlayerbotAI* ai, string name, uint32 duration = sPlayerbotAIConfig.reactDelay) : Action(ai, name, duration) {}
     public:
-        virtual bool Execute(Event& event) { return true; }
+        virtual bool Execute(Event& event) override { return true; }
     };
 
     class UpdateStrategyDependenciesAction : public Action

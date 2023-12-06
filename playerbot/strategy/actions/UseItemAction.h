@@ -500,7 +500,7 @@ namespace ai
             return bot->GetLevel() >= 52;
         }
 
-        virtual uint32 GetItemId() 
+        virtual uint32 GetItemId() override
         { 
             if (bot->GetSkillValue(202) >= 325)
                 return 23737;

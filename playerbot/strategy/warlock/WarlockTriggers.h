@@ -271,7 +271,7 @@ namespace ai
     public:
         SpellLockTrigger(PlayerbotAI* ai) : InterruptSpellTrigger(ai, "spell lock") {}
 
-        bool SpellLockTrigger::IsActive() override
+        bool IsActive() override
         {
             return InterruptSpellTrigger::IsActive();
         }
