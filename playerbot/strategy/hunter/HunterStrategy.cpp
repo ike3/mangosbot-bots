@@ -241,6 +241,10 @@ void HunterBuffStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
     triggers.push_back(new TriggerNode(
         "target of attacker close",
         NextAction::array(0, new NextAction("deterrence", ACTION_EMERGENCY + 1), NULL)));
+
+    triggers.push_back(new TriggerNode(
+        "feign death",
+        NextAction::array(0, new NextAction("remove feign death", ACTION_HIGH), NULL)));
 }
 
 void HunterBuffStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
