@@ -22,6 +22,7 @@ namespace ai
                 creators["pull"] = &hunter::StrategyFactoryInternal::pull;
                 creators["cc"] = &hunter::StrategyFactoryInternal::cc;
                 creators["boost"] = &hunter::StrategyFactoryInternal::boost;
+                creators["pet"] = &hunter::StrategyFactoryInternal::pet;
             }
 
         private:
@@ -30,6 +31,7 @@ namespace ai
             static Strategy* pull(PlayerbotAI* ai) { return new PullStrategy(ai, "serpent sting"); }
             static Strategy* cc(PlayerbotAI* ai) { return new CcPlaceholderStrategy(ai); }
             static Strategy* boost(PlayerbotAI* ai) { return new BoostPlaceholderStrategy(ai); }
+            static Strategy* pet(PlayerbotAI* ai) { return new HunterPetStrategy(ai); }
         };
 
         class AoeSituationStrategyFactoryInternal : public NamedObjectContext<Strategy>

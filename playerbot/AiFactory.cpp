@@ -429,7 +429,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 combatEngine->addStrategy("marksmanship");
             }
 
-            combatEngine->addStrategies("dps assist", "ranged", "cc", "aoe", "buff", "boost", "aspect", "sting", NULL);
+            combatEngine->addStrategies("dps assist", "ranged", "cc", "aoe", "buff", "boost", "aspect", "sting", "pet", NULL);
             break;
         }
 
@@ -670,7 +670,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
                 nonCombatEngine->addStrategy("marksmanship");
             }
 
-            nonCombatEngine->addStrategies("dps assist", "cc", "aoe", "buff", "boost", "aspect", NULL);
+            nonCombatEngine->addStrategies("dps assist", "cc", "aoe", "buff", "boost", "aspect", "pet", NULL);
             break;
         }
 

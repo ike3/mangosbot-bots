@@ -280,4 +280,15 @@ namespace ai
         std::string triggerName;
         std::string actionName;
     };
+
+    class HunterPetStrategy : public Strategy
+    {
+    public:
+        HunterPetStrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "pet"; }
+
+    private:
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+    };
 }
