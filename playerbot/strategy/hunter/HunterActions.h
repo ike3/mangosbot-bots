@@ -412,6 +412,19 @@ private:
         CastExplosiveTrapInPlaceAction(PlayerbotAI* ai) : TrapInPlace(ai, "explosive trap") {}
     };
 
+    class CastDismissPetAction : public CastSpellAction
+    {
+    public:
+        CastDismissPetAction(PlayerbotAI* ai) : CastSpellAction(ai, "dismiss pet") {}
+
+        string GetTargetName() override { return "self target"; }
+
+        bool isUseful() override
+        {
+            return AI_VALUE(Unit*, "pet target");
+        }
+    };
+
     class UpdateHunterPveStrategiesAction : public UpdateStrategyDependenciesAction
     {
     public:

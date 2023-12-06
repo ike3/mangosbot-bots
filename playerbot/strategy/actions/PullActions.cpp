@@ -104,6 +104,7 @@ bool PullStartAction::Execute(Event& event)
                 UnitAI* creatureAI = ((Creature*)pet)->AI();
                 if (creatureAI)
                 {
+                    strategy->SetPetReactState(creatureAI->GetReactState());
                     creatureAI->SetReactState(REACT_PASSIVE);
                 }
             }
@@ -212,14 +213,14 @@ bool PullEndAction::Execute(Event& event)
     PullStrategy* strategy = PullStrategy::Get(ai);
     if (strategy)
     {
-        // Reset the pet to defensive mode
+        // Restore the pet react state
         Pet* pet = bot->GetPet();
         if (pet)
         {
             UnitAI* creatureAI = ((Creature*)pet)->AI();
             if (creatureAI)
             {
-                creatureAI->SetReactState(REACT_DEFENSIVE);
+                creatureAI->SetReactState(strategy->GetPetReactState());
             }
         }
 

@@ -24,11 +24,12 @@ private:
 };
 
 PullStrategy::PullStrategy(PlayerbotAI* ai, string pullAction, string prePullAction)
-    : Strategy(ai)
-    , pullActionName(pullAction)
-    , preActionName(prePullAction)
-    , pendingToStart(false)
-    , pullStartTime(0)
+: Strategy(ai)
+, pullActionName(pullAction)
+, preActionName(prePullAction)
+, pendingToStart(false)
+, pullStartTime(0)
+, petReactState(REACT_DEFENSIVE)
 {
     actionNodeFactories.Add(new PullStrategyActionNodeFactory());
 

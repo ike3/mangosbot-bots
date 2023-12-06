@@ -396,9 +396,178 @@ bool SetPetAction::Execute(Event& event)
                 ai->TellPlayer(requester, "Please specify a pet spell to set the autocast.");
             }
         }
+        else if (command == "aggressive")
+        {
+            // Send pet action packet
+            const ObjectGuid& petGuid = pet->GetObjectGuid();
+            const ObjectGuid& targetGuid = ObjectGuid();
+            const uint8 flag = ACT_REACTION;
+            const uint32 spellId = REACT_AGGRESSIVE;
+            const uint32 command = (flag << 24) | spellId;
+
+            WorldPacket data(CMSG_PET_ACTION);
+            data << petGuid;
+            data << command;
+            data << targetGuid;
+            bot->GetSession()->HandlePetAction(data);
+
+            ai->TellPlayer(requester, "Setting pet to aggressive mode");
+            return true;
+        }
+        else if (command == "defensive")
+        {
+            // Send pet action packet
+            const ObjectGuid& petGuid = pet->GetObjectGuid();
+            const ObjectGuid& targetGuid = ObjectGuid();
+            const uint8 flag = ACT_REACTION;
+            const uint32 spellId = REACT_DEFENSIVE;
+            const uint32 command = (flag << 24) | spellId;
+
+            WorldPacket data(CMSG_PET_ACTION);
+            data << petGuid;
+            data << command;
+            data << targetGuid;
+            bot->GetSession()->HandlePetAction(data);
+
+            ai->TellPlayer(requester, "Setting pet to defensive mode");
+            return true;
+        }
+        else if (command == "passive")
+        {
+            // Send pet action packet
+            const ObjectGuid& petGuid = pet->GetObjectGuid();
+            const ObjectGuid& targetGuid = ObjectGuid();
+            const uint8 flag = ACT_REACTION;
+            const uint32 spellId = REACT_PASSIVE;
+            const uint32 command = (flag << 24) | spellId;
+
+            WorldPacket data(CMSG_PET_ACTION);
+            data << petGuid;
+            data << command;
+            data << targetGuid;
+            bot->GetSession()->HandlePetAction(data);
+
+            ai->TellPlayer(requester, "Setting pet to passive mode");
+            return true;
+        }
+        else if (command == "follow")
+        {
+            // Send pet action packet
+            const ObjectGuid& petGuid = pet->GetObjectGuid();
+            const ObjectGuid& targetGuid = ObjectGuid();
+            const uint8 flag = ACT_COMMAND;
+            const uint32 spellId = COMMAND_FOLLOW;
+            const uint32 command = (flag << 24) | spellId;
+
+            WorldPacket data(CMSG_PET_ACTION);
+            data << petGuid;
+            data << command;
+            data << targetGuid;
+            bot->GetSession()->HandlePetAction(data);
+
+            ai->TellPlayer(requester, "Setting pet to follow me");
+            return true;
+        }
+        else if (command == "stay")
+        {
+            // Send pet action packet
+            const ObjectGuid& petGuid = pet->GetObjectGuid();
+            const ObjectGuid& targetGuid = ObjectGuid();
+            const uint8 flag = ACT_COMMAND;
+            const uint32 spellId = COMMAND_STAY;
+            const uint32 command = (flag << 24) | spellId;
+
+            WorldPacket data(CMSG_PET_ACTION);
+            data << petGuid;
+            data << command;
+            data << targetGuid;
+            bot->GetSession()->HandlePetAction(data);
+
+            ai->TellPlayer(requester, "Setting pet to stay in place");
+            return true;
+        }
+        else if (command == "attack")
+        {
+            if (requester->GetTarget())
+            {
+                // Send pet action packet
+                const ObjectGuid& petGuid = pet->GetObjectGuid();
+                const ObjectGuid& targetGuid = requester->GetTarget()->GetObjectGuid();
+                const uint8 flag = ACT_COMMAND;
+                const uint32 spellId = COMMAND_ATTACK;
+                const uint32 command = (flag << 24) | spellId;
+
+                WorldPacket data(CMSG_PET_ACTION);
+                data << petGuid;
+                data << command;
+                data << targetGuid;
+                bot->GetSession()->HandlePetAction(data);
+
+                ai->TellPlayer(requester, "Sending pet to attack");
+                return true;
+            }
+            else
+            {
+                ai->TellPlayer(requester, "Please select a target to attack");
+            }
+        }
+        else if (command == "dismiss")
+        {
+            if (pet->getPetType() == HUNTER_PET)
+            {
+                if (ai->DoSpecificAction("dismiss pet", event, true))
+                {
+                    ai->ChangeStrategy("-pet", BotState::BOT_STATE_COMBAT);
+                    ai->ChangeStrategy("-pet", BotState::BOT_STATE_NON_COMBAT);
+                    ai->TellPlayer(requester, "Dismissing pet");
+                    return true;
+                }
+                else
+                {
+                    ai->TellPlayer(requester, "I can't dismiss my pet");
+                }
+            }
+            else
+            {
+                // Send pet action packet
+                const ObjectGuid& petGuid = pet->GetObjectGuid();
+                const ObjectGuid& targetGuid = ObjectGuid();
+                const uint8 flag = ACT_COMMAND;
+                const uint32 spellId = COMMAND_DISMISS;
+                const uint32 command = (flag << 24) | spellId;
+
+                WorldPacket data(CMSG_PET_ACTION);
+                data << petGuid;
+                data << command;
+                data << targetGuid;
+                bot->GetSession()->HandlePetAction(data);
+
+                ai->ChangeStrategy("+pet", BotState::BOT_STATE_COMBAT);
+                ai->ChangeStrategy("+pet", BotState::BOT_STATE_NON_COMBAT);
+                ai->ChangeStrategy("-pet", BotState::BOT_STATE_COMBAT);
+                ai->ChangeStrategy("-pet", BotState::BOT_STATE_NON_COMBAT);
+                ai->TellPlayer(requester, "Dismissing pet");
+
+                return true;
+            }
+        }
         else
         {
             ai->TellPlayer(requester, "Please specify a pet command (Like autocast).");
+        }
+    }
+    else if (command == "call")
+    {
+        if (bot->getClass() == CLASS_HUNTER || bot->getClass() == CLASS_WARLOCK)
+        {
+            ai->ChangeStrategy("+pet", BotState::BOT_STATE_COMBAT);
+            ai->ChangeStrategy("+pet", BotState::BOT_STATE_NON_COMBAT);
+            ai->TellPlayer(requester, "Calling my pet");
+            return true;
+        }
+        else
+        {
+            ai->TellPlayer(requester, "I can't call any pets");
         }
     }
     else
@@ -407,9 +576,4 @@ bool SetPetAction::Execute(Event& event)
     }
 
     return false;
-}
-
-bool SetPetAction::isUseful()
-{
-    return bot->GetPet();
 }

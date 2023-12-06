@@ -389,14 +389,6 @@ namespace ai
             static Trigger* aspect_of_the_cheetah(PlayerbotAI* ai) { return new AspectOfTheCheetahTrigger(ai); }
             static Trigger* aspect_of_the_dragonhawk(PlayerbotAI* ai) { return new AspectOfTheDragonhawkTrigger(ai); }
         };
-    };
-};
-
-namespace ai
-{
-    namespace hunter
-    {
-        using namespace ai;
 
         class AiObjectContextInternal : public NamedObjectContext<Action>
         {
@@ -471,6 +463,7 @@ namespace ai
                 creators["frost trap in place"] = &AiObjectContextInternal::frost_trap_in_place;
                 creators["explosive trap in place"] = &AiObjectContextInternal::explosive_trap_in_place;
                 creators["freezing trap in place"] = &AiObjectContextInternal::freezing_trap_in_place;
+                creators["dismiss pet"] = &AiObjectContextInternal::dismiss_pet;
                 creators["update pve strats"] = &AiObjectContextInternal::update_pve_strats;
                 creators["update pvp strats"] = &AiObjectContextInternal::update_pvp_strats;
                 creators["update raid strats"] = &AiObjectContextInternal::update_raid_strats;
@@ -542,6 +535,7 @@ namespace ai
             static Action* explosive_trap_in_place(PlayerbotAI* ai) { return new CastExplosiveTrapInPlaceAction(ai); }
             static Action* frost_trap_in_place(PlayerbotAI* ai) { return new CastFrostTrapInPlaceAction(ai); }
             static Action* freezing_trap_in_place(PlayerbotAI* ai) { return new CastFreezingTrapInPlaceAction(ai); }
+            static Action* dismiss_pet(PlayerbotAI* ai) { return new CastDismissPetAction(ai); }
             static Action* update_pve_strats(PlayerbotAI* ai) { return new UpdateHunterPveStrategiesAction(ai); }
             static Action* update_pvp_strats(PlayerbotAI* ai) { return new UpdateHunterPvpStrategiesAction(ai); }
             static Action* update_raid_strats(PlayerbotAI* ai) { return new UpdateHunterRaidStrategiesAction(ai); }

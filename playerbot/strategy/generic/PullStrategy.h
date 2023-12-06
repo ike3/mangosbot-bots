@@ -32,6 +32,8 @@ namespace ai
         bool HasPullStarted() const { return pullStartTime > 0; }
         void OnPullStarted();
         void OnPullEnded();
+        ReactStates GetPetReactState() const { return petReactState; }
+        void SetPetReactState(ReactStates reactState) { petReactState = reactState; }
 
     private:
         void SetTarget(Unit* target);
@@ -46,6 +48,7 @@ namespace ai
         string preActionName;
         bool pendingToStart;
         time_t pullStartTime;
+        ReactStates petReactState;
     };
 
     class PullMultiplier : public Multiplier

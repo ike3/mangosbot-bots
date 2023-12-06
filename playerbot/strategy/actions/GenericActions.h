@@ -149,6 +149,5 @@ namespace ai
     public:
         SetPetAction(PlayerbotAI* ai) : Action(ai, "pet") {}
         bool Execute(Event& event) override;
-        bool isUseful() override;
     };
 }
