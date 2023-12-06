@@ -339,6 +339,7 @@ bool UseItemAction::UseItemAuto(Player* requester, Item* item)
 
         bot->addUnitState(UNIT_STAND_STATE_SIT);
         ai->InterruptSpell();
+        ai->StopMoving();
 
         float hp = bot->GetHealthPercent();
         float mp = bot->GetPower(POWER_MANA) * 100.0f / bot->GetMaxPower(POWER_MANA);
