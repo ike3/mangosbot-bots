@@ -40,7 +40,7 @@ namespace ai
         void add();
         void rem();
         WorldPosition() : WorldLocation() { add(); };
-        WorldPosition(const WorldLocation loc) : WorldLocation(loc) { add(); }
+        WorldPosition(const WorldLocation& loc) : WorldLocation(loc) { add(); }
         WorldPosition(const WorldPosition& pos) : WorldLocation(pos) { add(); }
         WorldPosition(const string str) {char p; stringstream  out(str); out >> mapid >> p >> coord_x >> p >> coord_y >> p >> coord_z >> p >> orientation; add();}
         WorldPosition(const uint32 mapid, const float x, const float y, const float z = 0, float orientation = 0) : WorldLocation(mapid, x, y, z, orientation) { add(); }

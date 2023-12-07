@@ -200,8 +200,6 @@ bool SpiritHealerAction::Execute(Event& event)
     }
 
     uint32 dCount = AI_VALUE(uint32, "death count");
-    int64 deadTime = time(nullptr) - corpse->GetGhostTime();
-
     GuidPosition grave = AI_VALUE(GuidPosition, "best graveyard");
 
     if (grave && grave.fDist(bot) < sPlayerbotAIConfig.sightDistance)
@@ -248,30 +246,32 @@ bool SpiritHealerAction::Execute(Event& event)
         return false;
     }
 
-    if (!ai->AllowActivity(DETAILED_MOVE_ACTIVITY) && !ai->HasPlayerNearby(WorldPosition(grave)))
+    const int64 deadTime = time(nullptr) - corpse->GetGhostTime();
+
+    // Prevent taking too long to go to corpse (20 mins)
+    bool shouldTeleportToGY = deadTime > 1200;
+
+    // Check if we can teleport to the graveyard when nobody is looking
+    if (!shouldTeleportToGY && !ai->AllowActivity(DETAILED_MOVE_ACTIVITY) && !ai->HasPlayerNearby(WorldPosition(grave)))
     {
-        uint32 delay = sServerFacade.GetDistance2d(bot, corpse) / bot->GetSpeed(MOVE_RUN); //Time a bot would take to travel to it's corpse.
-        delay = min(delay, uint32(10 * MINUTE)); //Cap time to get to corpse at 10 minutes.
+        //Time a bot would take to travel to it's corpse.
+        uint32 delay = sServerFacade.GetDistance2d(bot, corpse) / bot->GetSpeed(MOVE_RUN);
+        //Cap time to get to corpse at 10 minutes.
+        delay = min(delay, uint32(10 * MINUTE));
 
-        if (deadTime > delay)
-        {
-            bot->GetMotionMaster()->Clear();
-            bot->TeleportTo(grave.getMapId(), grave.getX(), grave.getY(), grave.getZ(), 0);
-        }
+        shouldTeleportToGY = deadTime > delay;
+    }
 
+    if (shouldTeleportToGY)
+    {
+        bot->GetMotionMaster()->Clear();
+        bot->TeleportTo(grave.getMapId(), grave.getX(), grave.getY(), grave.getZ(), 0);
         return true;
     }
     else
     {
-        bool moved = false;
-
-        moved = MoveTo(grave.getMapId(), grave.getX(), grave.getY(), grave.getZ(), false, false);
-
-        if (moved)
-            return true;
+        return MoveTo(grave.getMapId(), grave.getX(), grave.getY(), grave.getZ(), false, false);
     }
-
-    return false;
 }
 
 bool SpiritHealerAction::isUseful()
