@@ -93,6 +93,10 @@ void ElementalShamanPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
 {
     ElementalShamanStrategy::InitCombatTriggers(triggers);
     ShamanPvpStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("chain lightning", ACTION_HIGH), NULL)));
 }
 
 void ElementalShamanPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -517,6 +521,10 @@ void ElementalShamanPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
 {
     ElementalShamanStrategy::InitCombatTriggers(triggers);
     ShamanPvpStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("chain lightning", ACTION_HIGH), NULL)));
 }
 
 void ElementalShamanPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
@@ -941,6 +949,10 @@ void ElementalShamanPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& tri
 {
     ElementalShamanStrategy::InitCombatTriggers(triggers);
     ShamanPvpStrategy::InitCombatTriggers(triggers);
+
+    triggers.push_back(new TriggerNode(
+        "very often",
+        NextAction::array(0, new NextAction("chain lightning", ACTION_HIGH), NULL)));
 }
 
 void ElementalShamanPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
