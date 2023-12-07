@@ -674,7 +674,7 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
     string command = args;
 
     char *cmd = strtok ((char*)args, " ");
-    char *charname = strtok (NULL, " ");
+    const char *charname = strtok (NULL, " ");
     if (!cmd)
     {
         messages.push_back("usage: list/reload or add/init/remove PLAYERNAME");
@@ -829,7 +829,8 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
 
         if (!hasBot)
         {
-            if (master->GetPlayerbotAI()) {
+            if (master->GetPlayerbotAI()) 
+            {
                 {
                     delete master->GetPlayerbotAI();
                 }
@@ -842,8 +843,15 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
 
     if (!charname)
     {
-        messages.push_back("usage: list or add/init/remove PLAYERNAME");
-        return messages;
+        if (master->GetTarget() && master->GetTarget()->IsPlayer() && !((Player*)master->GetTarget())->isRealPlayer())
+        {
+            charname = master->GetTarget()->GetName();
+        }
+        else
+        {
+            messages.push_back("usage: list or add/init/remove PLAYERNAME");
+            return messages;
+        }
     }
 
     std::string cmdStr = cmd;
