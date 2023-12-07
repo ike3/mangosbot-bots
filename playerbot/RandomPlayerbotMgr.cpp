@@ -292,7 +292,7 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
         guildsDeleted = false;
         arenaTeamsDeleted = false;
 
-        list<uint32> availableBots = GetBots();
+        list<uint32>& availableBots = GetBots();
 
         for (auto& bot : availableBots)
         {
@@ -544,7 +544,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             urand(sPlayerbotAIConfig.randomBotCountChangeMinInterval, sPlayerbotAIConfig.randomBotCountChangeMaxInterval));
     }
 
-    list<uint32> availableBots = GetBots();    
+    list<uint32>& availableBots = GetBots();    
     uint32 availableBotCount = availableBots.size();
     uint32 onlineBotCount = playerBots.size();
     
@@ -1986,12 +1986,14 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     vector<WorldPosition> tlocs;
 
     for (auto& loc : locs)
+    {
         tlocs.push_back(WorldPosition(loc));
+    }
 
     //Do not teleport to maps disabled in config
-    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldPosition l) {vector<uint32>::iterator i = find(sPlayerbotAIConfig.randomBotMaps.begin(), sPlayerbotAIConfig.randomBotMaps.end(), l.getMapId()); return i == sPlayerbotAIConfig.randomBotMaps.end(); }), tlocs.end());
+    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [](const WorldPosition& l) {vector<uint32>::iterator i = find(sPlayerbotAIConfig.randomBotMaps.begin(), sPlayerbotAIConfig.randomBotMaps.end(), l.getMapId()); return i == sPlayerbotAIConfig.randomBotMaps.end(); }), tlocs.end());
 
-    //Random shuffle based on distance. Closer distances are more likely (but not exclusivly) to be at the begin of the list.
+    //Random shuffle based on distance. Closer distances are more likely (but not exclusively) to be at the begin of the list.
     tlocs = sTravelMgr.getNextPoint(WorldPosition(bot), tlocs, 0);
 
     //5% + 0.1% per level chance node on different map in selection.
@@ -2004,30 +2006,51 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     // teleport to active areas only
     if (sPlayerbotAIConfig.randomBotTeleportNearPlayer && activeOnly)
     {
-        tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldPosition l)
+        tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [this](const WorldPosition& l)
         {
             uint32 mapId = l.getMapId();
             Map* tMap = sMapMgr.FindMap(mapId, 0);
-            if (!tMap || !tMap->IsContinent())
-                return true;
+            if (tMap && tMap->IsContinent() && tMap->HasActiveAreas())
+            {
+                ContinentArea teleportArea = sMapMgr.GetContinentInstanceId(mapId, l.getX(), l.getY());
+                if (tMap->HasActiveAreas(teleportArea))
+                {
+                    uint32 zoneId = sTerrainMgr.GetZoneId(mapId, l.coord_x, l.coord_y, l.coord_z);
+                    if (tMap->HasActiveZone(zoneId))
+                    {
+                        if (sPlayerbotAIConfig.randomBotTeleportNearPlayerMaxAmount > 0 && sPlayerbotAIConfig.randomBotTeleportNearPlayerMaxAmountRadius > 0.0f)
+                        {
+                            int botsNearTeleportPoint = 0;
+                            for (auto& pair : GetAllBots())
+                            {
+                                // Only check the bots that are on the same zone
+                                Player* otherBot = pair.second;
+                                if (otherBot && !otherBot->IsBeingTeleported() && zoneId == otherBot->GetZoneId())
+                                {
+                                    if (l.fDist(WorldPosition(otherBot)) <= sPlayerbotAIConfig.randomBotTeleportNearPlayerMaxAmountRadius)
+                                    {
+                                        botsNearTeleportPoint++;
+                                    }
+                                }
+                            }
 
-            if (!tMap->HasActiveAreas())
-                return true;
+                            return botsNearTeleportPoint >= sPlayerbotAIConfig.randomBotTeleportNearPlayerMaxAmount;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
 
-            uint32 zoneId = sTerrainMgr.GetZoneId(mapId, l.coord_x, l.coord_y, l.coord_z);
+            return true;
+        }), 
+        tlocs.end());
 
-            ContinentArea teleportArea = sMapMgr.GetContinentInstanceId(mapId, l.getX(), l.getY());
-
-            if (tMap->HasActiveAreas(teleportArea))
-                return !tMap->HasActiveZone(zoneId);
-            else
-                return true;
-
-            //return !tMap->HasActiveAreas(teleportArea);
-        }), tlocs.end());
         /*if (!tlocs.empty())
         {
-            tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldPosition l)
+            tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](const WorldPosition& l)
             {
                 uint32 mapId = l.getMapId();
                 Map* tMap = sMapMgr.FindMap(mapId, 0);
@@ -2046,8 +2069,9 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
             }), tlocs.end());
         }*/
     }
+
     // filter starter zones
-    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](WorldPosition l)
+    tlocs.erase(std::remove_if(tlocs.begin(), tlocs.end(), [bot](const WorldPosition& l)
     {
         uint32 mapId = l.getMapId();
         uint32 zoneId, areaId;
@@ -2142,7 +2166,6 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     {
         for (int attemtps = 0; attemtps < 3; ++attemtps)
         {
-
             WorldLocation loc = tlocs[i];
 
 #ifdef MANGOSBOT_ONE
@@ -2342,10 +2365,10 @@ void RandomPlayerbotMgr::PrintTeleportCache()
 {
     sPlayerbotAIConfig.openLog("telecache.csv", "w");
 
-    for (auto l : sRandomPlayerbotMgr.locsPerLevelCache)
+    for (auto& l : sRandomPlayerbotMgr.locsPerLevelCache)
     {
         uint32 level = l.first;
-        for (auto p : l.second)
+        for (auto& p : l.second)
         {
             ostringstream out;
             out << level << ",";
@@ -2358,10 +2381,10 @@ void RandomPlayerbotMgr::PrintTeleportCache()
     for (auto r : sRandomPlayerbotMgr.rpgLocsCacheLevel)
     {
         uint32 race =  r.first;
-        for (auto l : r.second)
+        for (auto& l : r.second)
         {
             uint32 level = l.first;
-            for (auto p : l.second)
+            for (auto& p : l.second)
             {
                 ostringstream out;
                 out << level << ",";
@@ -2650,7 +2673,7 @@ bool RandomPlayerbotMgr::IsRandomBot(uint32 bot)
     return GetEventValue(bot, "add");
 }
 
-list<uint32> RandomPlayerbotMgr::GetBots()
+list<uint32>& RandomPlayerbotMgr::GetBots()
 {
     if (!currentBots.empty()) return currentBots;
 
@@ -3265,27 +3288,30 @@ void RandomPlayerbotMgr::PrintStats()
             TravelState state = target->getTravelState();
             stateCount[(uint8)state]++;
 
-            Quest const* quest;
-
+            const Quest* quest = nullptr;
             if (target->getDestination())
+            {
                 quest = target->getDestination()->GetQuestTemplate();
-
+            }
 
             if (quest)
             {
                 bool found = false;
-
                 for (auto& q : questCount)
                 {
                     if (q.first != quest)
+                    {
                         continue;
+                    }
 
                     q.second++;
                     found = true;
                 }
 
                 if (!found)
+                {
                     questCount.push_back(make_pair(quest, 1));
+                }
             }
         }
     }

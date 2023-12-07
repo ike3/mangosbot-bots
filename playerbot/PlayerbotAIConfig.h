@@ -84,6 +84,8 @@ public:
     std::list<string> toggleAlwaysOnlineChars;
     uint32 randomBotTeleportDistance;
     bool randomBotTeleportNearPlayer;
+    uint32 randomBotTeleportNearPlayerMaxAmount;
+    float randomBotTeleportNearPlayerMaxAmountRadius;
     uint32 randomGearMaxLevel;
     uint32 randomGearMaxDiff;
     bool randomGearUpgradeEnabled;
