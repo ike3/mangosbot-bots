@@ -166,7 +166,7 @@ public:
         uint32 GetEventValue(uint32 bot, string event);
         string GetEventData(uint32 bot, string event);
         uint32 SetEventValue(uint32 bot, string event, uint32 value, uint32 validIn, string data = "");
-        list<uint32>& GetBots();
+        list<uint32> GetBots();
         list<uint32> GetBgBots(uint32 bracket);
         time_t BgCheckTimer;
         time_t LfgCheckTimer;

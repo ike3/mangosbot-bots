@@ -292,7 +292,7 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
         guildsDeleted = false;
         arenaTeamsDeleted = false;
 
-        list<uint32>& availableBots = GetBots();
+        list<uint32> availableBots = GetBots();
 
         for (auto& bot : availableBots)
         {
@@ -544,7 +544,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool minimal)
             urand(sPlayerbotAIConfig.randomBotCountChangeMinInterval, sPlayerbotAIConfig.randomBotCountChangeMaxInterval));
     }
 
-    list<uint32>& availableBots = GetBots();    
+    list<uint32> availableBots = GetBots();    
     uint32 availableBotCount = availableBots.size();
     uint32 onlineBotCount = playerBots.size();
     
@@ -2673,7 +2673,7 @@ bool RandomPlayerbotMgr::IsRandomBot(uint32 bot)
     return GetEventValue(bot, "add");
 }
 
-list<uint32>& RandomPlayerbotMgr::GetBots()
+list<uint32> RandomPlayerbotMgr::GetBots()
 {
     if (!currentBots.empty()) return currentBots;
 
