@@ -57,7 +57,7 @@ bool GoAction::Execute(Event& event)
     goTos.emplace(std::pair("to", 3));
     for (const auto& option : goTos)
     {
-        if (param.find(option.first) != string::npos && param.size() > option.second)
+        if (param.find(option.first) == 0 && param.size() > option.second)
         {
             string destination = param.substr(option.second);
             TravelDestination* dest = nullptr;
