@@ -22,6 +22,56 @@ list<ObjectGuid> AttackersValue::Calculate()
     if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
         return result;
 
+    // Try to get the value from nearby friendly bots.
+    list<ObjectGuid> nearGuids = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get();
+    for (auto& i : nearGuids)
+    {
+        Player* player = sObjectMgr.GetPlayer(i);
+
+        if (!player)
+            continue;
+
+        if (player == bot)
+            continue;
+
+        if (player->GetMapId() != bot->GetMapId())
+            continue;
+
+        if (sServerFacade.GetDistance2d(bot, player) > 10.0f)
+            continue;
+
+        PlayerbotAI* botAi = player->GetPlayerbotAI();
+
+        if (!botAi)
+            continue;
+
+        // Ignore bots without the value.
+        if (!PHAS_AI_VALUE2("attackers", qualifier))
+            continue;
+
+        UntypedValue* pValue = botAi->GetAiObjectContext()->GetUntypedValue("attackers::" + qualifier);
+        
+        // Ignore expired values.
+        if (pValue->Expired())
+            continue;
+
+        AttackersValue* pAttackersValue = dynamic_cast<AttackersValue*>(pValue);
+
+        if (!pAttackersValue)
+            continue;
+
+        if (pAttackersValue->calculatePos.sqDistance2d(bot) > 100.0f)
+            continue;
+
+        // Make the value expire at the same time as the copied value.
+        lastCheckTime = time(0) - botAi->GetAiObjectContext()->GetUntypedValue("attackers::" + qualifier)->ExpireTime();
+        calculatePos = pAttackersValue->calculatePos;
+       
+        return PAI_VALUE2(list<ObjectGuid>, "attackers", qualifier);
+    }
+
+    calculatePos = bot;
+
     set<Unit*> targets;
 
     // Check if we only need one attacker

@@ -132,6 +132,8 @@ namespace ai
 
 #define PAI_VALUE(type, name) player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<type>(name)->Get()
 #define PAI_VALUE2(type, name, param) player->GetPlayerbotAI()->GetAiObjectContext()->GetValue<type>(name, param)->Get()
+#define PHAS_AI_VALUE(name) player->GetPlayerbotAI()->GetAiObjectContext()->HasValue(name)
+#define PHAS_AI_VALUE2(name, param) player->GetPlayerbotAI()->GetAiObjectContext()->HasValue(name, param)
 #define MAI_VALUE(type, name) master->GetPlayerbotAI()->GetAiObjectContext()->GetValue<type>(name)->Get()
 #define MAI_VALUE2(type, name, param) master->GetPlayerbotAI()->GetAiObjectContext()->GetValue<type>(name, param)->Get()
 #define GAI_VALUE(type, name) sSharedObjectContext.GetValue<type>(name)->Get()

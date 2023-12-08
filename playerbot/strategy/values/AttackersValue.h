@@ -39,5 +39,7 @@ namespace ai
         static float GetRange() { return sPlayerbotAIConfig.sightDistance; }
 
         static bool InCombat(Unit* target, Player* player, bool checkPullTargets = true);
+
+        WorldPosition calculatePos;
     };
 }
