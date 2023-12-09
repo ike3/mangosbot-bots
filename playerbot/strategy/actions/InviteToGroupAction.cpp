@@ -84,6 +84,14 @@ namespace ai
         if (requester->GetLevel() > bot->GetLevel() + 4 || bot->GetLevel() > requester->GetLevel() + 4)
             return false;
 
+        string param = event.getParam();
+
+        if (!param.empty() && param != "40" && param != "25" && param != "20" && param != "10" && param != "5")
+        {
+            ai->TellError(requester, BOT_TEXT2("Unknown group size. Valid sizes for lfg are 40, 25, 20, 10 and 5.", {}));
+            return false;
+        }
+
         Group* group = requester->GetGroup();
 
         unordered_map<Classes, unordered_map<BotRoles,uint32>> allowedClassNr;
@@ -95,15 +103,20 @@ namespace ai
 
         BotRoles role = ai->IsTank(requester, false) ? BOT_ROLE_TANK : (ai->IsHeal(requester, false) ? BOT_ROLE_HEALER : BOT_ROLE_DPS);
         Classes cls = (Classes)requester->getClass();
-        
+
         if (group)
         {
-            if (group->IsFull())
-                return false;
-
-            if (group->IsRaidGroup())
-            {
+            //If no input use max raid for raid groups.
+            if (param.empty() && group->IsRaidGroup())
 #ifdef MANGOSBOT_ZERO
+                param = "40";
+#else
+                param = "20";
+#endif
+
+            //Select optimal group layout.
+            if (param == "40")
+            {
                 allowedRoles[BOT_ROLE_TANK] = 4;
                 allowedRoles[BOT_ROLE_HEALER] = 16;
                 allowedRoles[BOT_ROLE_DPS] = 20;
@@ -125,11 +138,32 @@ namespace ai
                 allowedClassNr[CLASS_MAGE][BOT_ROLE_DPS] = 15;
                 allowedClassNr[CLASS_WARLOCK][BOT_ROLE_DPS] = 4;
                 allowedClassNr[CLASS_DRUID][BOT_ROLE_DPS] = 1;
-#else
+            }
+            else if (param == "25")
+            {
                 allowedRoles[BOT_ROLE_TANK] = 3;
                 allowedRoles[BOT_ROLE_HEALER] = 7;
                 allowedRoles[BOT_ROLE_DPS] = 15;
-#endif
+            }
+            else if (param == "20")
+            {
+                allowedRoles[BOT_ROLE_TANK] = 2;
+                allowedRoles[BOT_ROLE_HEALER] = 5;
+                allowedRoles[BOT_ROLE_DPS] = 13;
+            }
+            else if (param == "10")
+            {
+                allowedRoles[BOT_ROLE_TANK] = 2;
+                allowedRoles[BOT_ROLE_HEALER] = 3;
+                allowedRoles[BOT_ROLE_DPS] = 5;
+            }
+
+            if (group->IsFull())
+            {
+                if (param.empty() || param == "5"  || group->IsRaidGroup())
+                    return false; //Group or raid is full so stop trying.
+                else
+                    group->ConvertToRaid(); //We want a raid but are in a group so convert and continue.
             }
 
             Group::MemberSlotList const& groupSlot = group->GetMemberSlots();
