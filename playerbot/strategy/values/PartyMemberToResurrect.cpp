@@ -40,6 +40,10 @@ private:
 
 Unit* PartyMemberToResurrect::Calculate()
 {
+	if (bot->InBattleGround())
+    {
+        return false; // Do not res in battleground, we have spirit healers. TODO: Add exception for Battleres somehow...
+    }
 	FindDeadPlayer finder(ai, this);
     return FindPartyMember(finder);
 }
