@@ -43,7 +43,9 @@ bool RewardAction::Execute(Event& event)
        return true;
     }
 
-    ai->TellPlayer(requester, BOT_TEXT("quest_error_talk"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+    if(!ai->GetMaster() || sServerFacade.GetDistance2d(bot, ai->GetMaster()) < sPlayerbotAIConfig.reactDistance || ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
+        ai->TellPlayer(requester, BOT_TEXT("quest_error_talk"), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
+
     return false;
 }
 

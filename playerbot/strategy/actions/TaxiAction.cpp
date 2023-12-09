@@ -83,6 +83,8 @@ bool TaxiAction::Execute(Event& event)
         return true;
     }
 
-    ai->TellPlayerNoFacing(requester, "Cannot find any flightmaster to talk");
+    if(!ai->GetMaster() || sServerFacade.GetDistance2d(bot, ai->GetMaster()) < sPlayerbotAIConfig.reactDistance || ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
+        ai->TellPlayerNoFacing(requester, "Cannot find any flightmaster to talk");
+
     return false;
 }

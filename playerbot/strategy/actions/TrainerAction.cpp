@@ -173,7 +173,8 @@ bool TrainerAction::Execute(Event& event)
             
     if (!creature->IsTrainerOf(bot, false))
     {
-        ai->TellPlayerNoFacing(requester, "This trainer cannot teach me");
+        if (!ai->GetMaster() || sServerFacade.GetDistance2d(bot, ai->GetMaster()) < sPlayerbotAIConfig.reactDistance || ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
+            ai->TellPlayerNoFacing(requester, "This trainer cannot teach me");
         return false;
     }
 
@@ -182,7 +183,8 @@ bool TrainerAction::Execute(Event& event)
     TrainerSpellData const* tSpells = creature->GetTrainerTemplateSpells();
     if (!cSpells && !tSpells)
     {
-        ai->TellPlayerNoFacing(requester, "No spells can be learned from this trainer");
+        if (!ai->GetMaster() || sServerFacade.GetDistance2d(bot, ai->GetMaster()) < sPlayerbotAIConfig.reactDistance || ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
+            ai->TellPlayerNoFacing(requester, "No spells can be learned from this trainer");
         return false;
     }
 

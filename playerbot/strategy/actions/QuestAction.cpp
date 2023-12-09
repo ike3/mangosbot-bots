@@ -146,7 +146,9 @@ bool QuestAction::ProcessQuests(WorldObject* questGiver)
     if (sServerFacade.GetDistance2d(bot, questGiver) > INTERACTION_DISTANCE && !sPlayerbotAIConfig.syncQuestWithPlayer)
     {
         Player* master = ai->GetMaster();
-        ai->TellPlayerNoFacing(master, BOT_TEXT("quest_error_talk"));
+        if (!ai->GetMaster() || sServerFacade.GetDistance2d(bot, ai->GetMaster()) < sPlayerbotAIConfig.reactDistance || ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
+            ai->TellPlayerNoFacing(master, BOT_TEXT("quest_error_talk"));
+
         return false;
     }
 
@@ -195,7 +197,7 @@ bool QuestAction::AcceptQuest(Player* requester, Quest const* quest, uint64 ques
         {
             outputMessage = BOT_TEXT2("quest_error_have_quest", args);
         }
-        else
+        else if (!ai->GetMaster() || sServerFacade.GetDistance2d(bot, ai->GetMaster()) < sPlayerbotAIConfig.reactDistance || ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
         {
             outputMessage = BOT_TEXT2("quest_error_cant_take", args);
         }
