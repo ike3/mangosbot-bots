@@ -362,11 +362,30 @@ bool UseItemAction::UseItemAuto(Player* requester, Item* item)
             p = hp;
             TellConsumableUse(requester, item, "Eating", p);
         }
+        
+        bool waitForWellFed = false;
+        for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+        {
+            if (proto->Spells[i].SpellId > 0)
+            {
+                if (SpellEntry const* spellInfo = sSpellTemplate.LookupEntry<SpellEntry>(proto->Spells[i].SpellId))
+                {
+                    for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+                    {
+                        if (spellInfo->Effect[j] == SPELL_EFFECT_APPLY_AURA && spellInfo->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_TRIGGER_SPELL)
+                        {
+                            waitForWellFed = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
         if(!bot->IsInCombat())
         {
             const float multiplier = bot->InBattleGround() ? 20000.0f : 27000.0f;
-            const float duration = multiplier * ((100 - p) / 100.0f);
+            const float duration = waitForWellFed ? 15000.0f : multiplier * ((100 - p) / 100.0f);
             SetDuration(duration);
         }
     }
