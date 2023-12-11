@@ -4527,10 +4527,10 @@ bool BGTactics::resetObjective()
 
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
     ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
-    // do not switch hiding spots
-    if (teamFlagTaken() && (bot->HasAura(BG_WS_SPELL_WARSONG_FLAG) || bot->HasAura(BG_WS_SPELL_SILVERWING_FLAG)))
-    {
-        return false;
+    // do not switch hiding spots - disabled for now until hiding spots reimplemented since it causes bots to stop moving
+    //if (teamFlagTaken() && (bot->HasAura(BG_WS_SPELL_WARSONG_FLAG) || bot->HasAura(BG_WS_SPELL_SILVERWING_FLAG)))
+    //{
+    //    return false;
 
         /*if (bot->GetTeam() == HORDE)
         {
@@ -4542,7 +4542,7 @@ bool BGTactics::resetObjective()
             if (pos.x != WS_FLAG_POS_HORDE.x && pos.x != WS_FLAG_POS_ALLIANCE.x && pos.y != WS_FLAG_POS_HORDE.y && pos.y != WS_FLAG_POS_ALLIANCE.y)
                 return false;
         }*/
-    }
+    //}
     pos.Reset();
     posMap["bg objective"] = pos;
 
