@@ -76,7 +76,8 @@ bool TaxiAction::Execute(Event& event)
         {
             movement.taxiNodes.clear();
             movement.Set(NULL);
-            ai->TellPlayerNoFacing(requester, "I can't fly with you");
+            if (!ai->GetMaster() || sServerFacade.GetDistance2d(bot, ai->GetMaster()) < sPlayerbotAIConfig.reactDistance || ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
+                ai->TellPlayerNoFacing(requester, "I can't fly with you");
             return false;
         }
 
