@@ -65,7 +65,8 @@ void TrainerAction::Learn(uint32 cost, TrainerSpell const* tSpell, ostringstream
 
 void TrainerAction::Iterate(Player* requester, Creature* creature, TrainerSpellAction action, SpellIds& spells)
 {
-    TellHeader(requester, creature);
+    bool hasHeader = false;    
+
     TrainerSpellData const* cSpells = creature->GetTrainerSpells();
     TrainerSpellData const* tSpells = creature->GetTrainerTemplateSpells();
     float fDiscountMod =  bot->GetReputationPriceDiscount(creature);
@@ -137,10 +138,18 @@ void TrainerAction::Iterate(Player* requester, Creature* creature, TrainerSpellA
         if (action)
             (this->*action)(cost, tSpell, out);
 
+        if (!hasHeader)
+        {
+            TellHeader(requester, creature);
+            hasHeader = true;
+        }
         ai->TellPlayer(requester, out, PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
     }
 
-    TellFooter(requester, totalCost);
+    if(hasHeader)
+        TellFooter(requester, totalCost);
+    else if (!ai->GetMaster() || sServerFacade.GetDistance2d(bot, ai->GetMaster()) < sPlayerbotAIConfig.reactDistance || ai->HasStrategy("debug", BotState::BOT_STATE_NON_COMBAT))
+        ai->TellPlayerNoFacing(requester, "No spells can be learned from this trainer");
 }
 
 bool TrainerAction::Execute(Event& event)
@@ -168,8 +177,7 @@ bool TrainerAction::Execute(Event& event)
 #ifdef CMANGOS
     if (!creature || !creature->isTrainer())
 #endif
-        return false;
-
+        return false;       
             
     if (!creature->IsTrainerOf(bot, false))
     {
