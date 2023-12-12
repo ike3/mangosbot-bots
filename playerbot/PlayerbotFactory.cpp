@@ -659,6 +659,9 @@ void PlayerbotFactory::InitPet()
 
         pet->ToggleAutocast(spellId, true);
     }
+
+    // Force dismiss pet to fix missing flags
+    pet->ForcedDespawn();
 }
 
 void PlayerbotFactory::InitPetSpells()

@@ -129,8 +129,18 @@ bool SelectNewTargetAction::Execute(Event& event)
         UnitAI* creatureAI = ((Creature*)pet)->AI();
         if (creatureAI)
         {
-            creatureAI->SetReactState(REACT_PASSIVE);
-            pet->AttackStop();
+            // Send pet action packet
+            const ObjectGuid& petGuid = pet->GetObjectGuid();
+            const ObjectGuid& targetGuid = ObjectGuid();
+            const uint8 flag = ACT_COMMAND;
+            const uint32 spellId = COMMAND_FOLLOW;
+            const uint32 command = (flag << 24) | spellId;
+
+            WorldPacket data(CMSG_PET_ACTION);
+            data << petGuid;
+            data << command;
+            data << targetGuid;
+            bot->GetSession()->HandlePetAction(data);
         }
     }
 
