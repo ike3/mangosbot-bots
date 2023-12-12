@@ -50,7 +50,7 @@ list<ObjectGuid> AttackersValue::Calculate()
             continue;
 
         UntypedValue* pValue = botAi->GetAiObjectContext()->GetUntypedValue("attackers::" + qualifier);
-        
+
         // Ignore expired values.
         if (pValue->Expired())
             continue;
@@ -66,8 +66,37 @@ list<ObjectGuid> AttackersValue::Calculate()
         // Make the value expire at the same time as the copied value.
         lastCheckTime = time(0) - botAi->GetAiObjectContext()->GetUntypedValue("attackers::" + qualifier)->ExpireTime();
         calculatePos = pAttackersValue->calculatePos;
-       
-        return PAI_VALUE2(list<ObjectGuid>, "attackers", qualifier);
+
+        result = PAI_VALUE2(list<ObjectGuid>, "attackers", qualifier);
+
+        // Add the current target
+        Unit* currentTarget = PAI_VALUE(Unit*, "current target");
+        if (currentTarget)
+        {
+            result.push_back(currentTarget->GetObjectGuid());
+        }
+
+        // Add the previous target
+        Unit* oldTarget = PAI_VALUE(Unit*, "old target");
+        if (oldTarget)
+        {
+            result.push_back(oldTarget->GetObjectGuid());
+        }
+
+        // Add the pull and attack targets (Only consider the owner bot)
+        Unit* attackTarget = ai->GetUnit(PAI_VALUE(ObjectGuid, "attack target"));
+        if (attackTarget)
+        {
+            result.push_back(attackTarget->GetObjectGuid());
+        }
+
+        Unit* pullTarget = PAI_VALUE(Unit*, "pull target");
+        if (pullTarget)
+        {
+            result.push_back(pullTarget->GetObjectGuid());
+        }
+
+        return result;
     }
 
     calculatePos = bot;
