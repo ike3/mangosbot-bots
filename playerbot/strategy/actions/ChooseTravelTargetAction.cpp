@@ -606,7 +606,7 @@ bool ChooseTravelTargetAction::SetBestTarget(Player* requester, TravelTarget* ta
     target->setTarget(TravelDestinations.front(), travelPoints.front());
 
     if (ai->HasStrategy("debug travel", BotState::BOT_STATE_NON_COMBAT))
-        ai->TellPlayerNoFacing(requester, "Point at " + to_string(floor(target->distance(bot))) + "y selected.");
+        ai->TellPlayerNoFacing(requester, "Point at " + to_string(uint32(target->distance(bot))) + "y selected.");
 
     return target->isActive();
 }
