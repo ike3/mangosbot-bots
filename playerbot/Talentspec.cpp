@@ -15,7 +15,7 @@ bool TalentSpec::CheckTalentLink(string link, ostringstream* out) {
     for (char& c : link) {
         if (validChar.find(c) == string::npos && validNums.find(c) == string::npos)
         {
-            *out << "talent link is invalid. Must be in format 0-0-0";
+            *out << "talent link is invalid. Must be in format 0-0-0 (see end of wowhead talent calculator url) or a part of a predefined spec as shown with command 'talents list'";
             return false;
         }
         if (validNums.find(c) != string::npos)
@@ -23,7 +23,7 @@ bool TalentSpec::CheckTalentLink(string link, ostringstream* out) {
     }
 
     if (nums == 0) {
-        *out << "talent link is invalid. Needs atleast one number.";
+        *out << "talents are invalid. Needs atleast one number.";
         return false;
     }
 
