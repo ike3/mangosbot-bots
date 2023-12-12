@@ -756,6 +756,13 @@ bool ChooseTravelTargetAction::SetQuestTarget(Player* requester, TravelTarget* t
         }
     }
 
+    if (newQuests && TravelDestinations.empty())
+    {
+        PerformanceMonitorOperation* pmo = sPerformanceMonitor.start(PERF_MON_VALUE, "getQuestTravelDestinations3", &context->performanceStack);
+        TravelDestinations = sTravelMgr.getQuestTravelDestinations(bot, -1, true, false); //If we really don't find any new quests look futher away.
+        if (pmo) pmo->finish();
+    }
+
     if (ai->HasStrategy("debug travel", BotState::BOT_STATE_NON_COMBAT))
         ai->TellPlayerNoFacing(requester, to_string(TravelDestinations.size()) + " quest destinations found.");
 
