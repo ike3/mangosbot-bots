@@ -315,7 +315,7 @@ namespace ai
                 creators["aspect of the cheetah"] = &TriggerFactoryInternal::aspect_of_the_cheetah;
                 creators["aspect of the dragonhawk"] = &TriggerFactoryInternal::aspect_of_the_dragonhawk;
                 creators["aspect of the pack"] = &TriggerFactoryInternal::aspect_of_the_pack;
-                creators["trueshot aspect"] = &TriggerFactoryInternal::trueshot_aspect;
+                creators["trueshot aura"] = &TriggerFactoryInternal::trueshot_aura;
                 creators["serpent sting on attacker"] = &TriggerFactoryInternal::serpent_sting_on_attacker;
                 creators["viper sting on attacker"] = &TriggerFactoryInternal::viper_sting_on_attacker;
                 creators["pet not happy"] = &TriggerFactoryInternal::pet_not_happy;
@@ -364,7 +364,7 @@ namespace ai
             static Trigger* pet_not_happy(PlayerbotAI* ai) { return new HunterPetNotHappy(ai); }
             static Trigger* serpent_sting_on_attacker(PlayerbotAI* ai) { return new SerpentStingOnAttackerTrigger(ai); }
             static Trigger* viper_sting_on_attacker(PlayerbotAI* ai) { return new ViperStingOnAttackerTrigger(ai); }
-            static Trigger* trueshot_aspect(PlayerbotAI* ai) { return new TrueshotAuraTrigger(ai); }
+            static Trigger* trueshot_aura(PlayerbotAI* ai) { return new TrueshotAuraTrigger(ai); }
             static Trigger* black_arrow(PlayerbotAI* ai) { return new BlackArrowTrigger(ai); }
             static Trigger* NoStings(PlayerbotAI* ai) { return new HunterNoStingsActiveTrigger(ai); }
             static Trigger* hunters_pet_dead(PlayerbotAI* ai) { return new HuntersPetDeadTrigger(ai); }
@@ -430,7 +430,7 @@ namespace ai
                 creators["aspect of the beast"] = &AiObjectContextInternal::aspect_of_the_beast;
                 creators["aspect of the dragonhawk"] = &AiObjectContextInternal::aspect_of_the_dragonhawk;
                 creators["remove aspect of the cheetah"] = &AiObjectContextInternal::remove_aspect_of_the_cheetah;
-                creators["trueshot aspect"] = &AiObjectContextInternal::trueshot_aspect;
+                creators["trueshot aura"] = &AiObjectContextInternal::trueshot_aura;
                 creators["feign death"] = &AiObjectContextInternal::feign_death;
                 creators["wing clip"] = &AiObjectContextInternal::wing_clip;
                 creators["raptor strike"] = &AiObjectContextInternal::raptor_strike;
@@ -488,7 +488,7 @@ namespace ai
             static Action* bestial_wrath(PlayerbotAI* ai) { return new CastBestialWrathAction(ai); }
             static Action* feed_pet(PlayerbotAI* ai) { return new FeedPetAction(ai); }
             static Action* feign_death(PlayerbotAI* ai) { return new CastFeignDeathAction(ai); }
-            static Action* trueshot_aspect(PlayerbotAI* ai) { return new CastTrueshotAuraAction(ai); }
+            static Action* trueshot_aura(PlayerbotAI* ai) { return new CastTrueshotAuraAction(ai); }
             static Action* auto_shot(PlayerbotAI* ai) { return new CastAutoShotAction(ai); }
             static Action* aimed_shot(PlayerbotAI* ai) { return new CastAimedShotAction(ai); }
             static Action* chimera_shot(PlayerbotAI* ai) { return new CastChimeraShotAction(ai); }
