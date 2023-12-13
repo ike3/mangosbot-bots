@@ -70,27 +70,27 @@ list<ObjectGuid> AttackersValue::Calculate()
         result = PAI_VALUE2(list<ObjectGuid>, "attackers", qualifier);
 
         // Add the current target
-        Unit* currentTarget = PAI_VALUE(Unit*, "current target");
+        Unit* currentTarget = AI_VALUE(Unit*, "current target");
         if (currentTarget)
         {
             result.push_back(currentTarget->GetObjectGuid());
         }
 
         // Add the previous target
-        Unit* oldTarget = PAI_VALUE(Unit*, "old target");
+        Unit* oldTarget = AI_VALUE(Unit*, "old target");
         if (oldTarget)
         {
             result.push_back(oldTarget->GetObjectGuid());
         }
 
         // Add the pull and attack targets (Only consider the owner bot)
-        Unit* attackTarget = ai->GetUnit(PAI_VALUE(ObjectGuid, "attack target"));
+        Unit* attackTarget = ai->GetUnit(AI_VALUE(ObjectGuid, "attack target"));
         if (attackTarget)
         {
             result.push_back(attackTarget->GetObjectGuid());
         }
 
-        Unit* pullTarget = PAI_VALUE(Unit*, "pull target");
+        Unit* pullTarget = AI_VALUE(Unit*, "pull target");
         if (pullTarget)
         {
             result.push_back(pullTarget->GetObjectGuid());
