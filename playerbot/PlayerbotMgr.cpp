@@ -785,11 +785,18 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
     }
 
     if (!strcmp(cmd, "self"))
-    {
+    {        
         if (master->GetPlayerbotAI())
         {
-            messages.push_back("Disable player ai");
             DisablePlayerBot(master->GetGUIDLow());
+           
+            if (sRandomPlayerbotMgr.GetValue(master->GetObjectGuid().GetCounter(), "selfbot"))
+            {
+                messages.push_back("Disable player ai (on login)");
+                sRandomPlayerbotMgr.SetValue(master->GetObjectGuid().GetCounter(), "selfbot", 0);
+            }
+            else
+                messages.push_back("Disable player ai");
         }
         else if (sPlayerbotAIConfig.selfBotLevel == 0)
             messages.push_back("Self-bot is disabled");
@@ -797,8 +804,15 @@ list<string> PlayerbotHolder::HandlePlayerbotCommand(char const* args, Player* m
             messages.push_back("You do not have permission to enable player ai");
         else
         {
-            messages.push_back("Enable player ai");
             OnBotLogin(master);
+
+            if (charname && !strcmp(charname, "login"))
+            {
+                messages.push_back("Enable player ai (on login)");
+                sRandomPlayerbotMgr.SetValue(master->GetObjectGuid().GetCounter(), "selfbot", 1);
+            }
+            else
+                messages.push_back("Enable player ai");
         }
        return messages;
      }
@@ -1204,7 +1218,7 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
     sPlayerbotTextMgr.AddLocalePriority(player->GetSession()->GetSessionDbLocaleIndex());
     sLog.outBasic("Player %s logged in, localeDbc %i, localeDb %i", player->GetName(), (uint32)(player->GetSession()->GetSessionDbcLocale()), player->GetSession()->GetSessionDbLocaleIndex());
 
-    if(sPlayerbotAIConfig.selfBotLevel > 2 || sPlayerbotAIConfig.IsFreeAltBot(player))
+    if(sPlayerbotAIConfig.selfBotLevel > 2 || sPlayerbotAIConfig.IsFreeAltBot(player) || sRandomPlayerbotMgr.GetValue(master->GetObjectGuid().GetCounter(), "selfbot"))
         HandlePlayerbotCommand("self", player);
 
     if (!sPlayerbotAIConfig.botAutologin)

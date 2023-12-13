@@ -2736,7 +2736,7 @@ uint32 RandomPlayerbotMgr::GetEventValue(uint32 bot, string event)
     }
     CachedEvent e = eventCache[bot][event];
 
-    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink" && event != "init" && event != "current_time" && event != "always")
+    if ((time(0) - e.lastChangeTime) >= e.validIn && event != "specNo" && event != "specLink" && event != "init" && event != "current_time" && event != "always" && event != "selfbot")
         e.value = 0;
 
     return e.value;
