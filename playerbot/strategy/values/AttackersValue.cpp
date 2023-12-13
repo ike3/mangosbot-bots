@@ -22,6 +22,7 @@ list<ObjectGuid> AttackersValue::Calculate()
     if (bot->IsFlying() && WorldPosition(bot).currentHeight() > 10.0f)
         return result;
 
+    /*
     // Try to get the value from nearby friendly bots.
     list<ObjectGuid> nearGuids = ai->GetAiObjectContext()->GetValue<list<ObjectGuid> >("nearest friendly players")->Get();
     for (auto& i : nearGuids)
@@ -98,6 +99,7 @@ list<ObjectGuid> AttackersValue::Calculate()
 
         return result;
     }
+    */
 
     calculatePos = bot;
 
