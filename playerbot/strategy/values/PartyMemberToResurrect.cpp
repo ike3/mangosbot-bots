@@ -30,6 +30,13 @@ public:
     virtual bool Check(Unit* unit)
     {
         Player* player = dynamic_cast<Player*>(unit);
+
+        if (player)
+        {
+			if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST) && player->InBattleGround())
+				return false;
+		}
+
         return player && !player->isRessurectRequested() && sServerFacade.GetDistance2d(ai->GetBot(), player) <= ai->GetRange("spell") && sServerFacade.GetDeathState(player) == CORPSE && !value->IsTargetOfSpellCast(player, predicate);
     }
 

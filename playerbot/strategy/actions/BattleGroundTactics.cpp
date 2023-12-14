@@ -87,6 +87,9 @@ std::vector<uint32> const vFlagsAB = { BG_AB_BANNER_ALLIANCE , BG_AB_BANNER_CONT
                                        BG_AB_BANNER_MINE };
 
 std::vector<uint32> const vFlagsWS = { GO_WS_SILVERWING_FLAG, GO_WS_WARSONG_FLAG, GO_WS_SILVERWING_FLAG_DROP, GO_WS_WARSONG_FLAG_DROP };
+static std::map<uint32, GameObject*> botSelectedObjectives;
+static std::map<uint32, uint32> botObjectiveSelectionTime;
+static std::map<uint32, uint32> botLastObjectiveCheckTime;
 
 #ifndef MANGOSBOT_ZERO
 std::vector<uint32> const vFlagsEY = { GO_EY_NETHERSTORM_FLAG, GO_EY_NETHERSTORM_FLAG_DROP};
@@ -487,6 +490,45 @@ BattleBotPath vPath_AB_AllianceBase_to_Stables =
     { 1189.29f, 1219.49f, -53.119f, nullptr },
     { 1177.17f, 1210.21f, -56.4593f, nullptr },
     { 1167.98f, 1202.9f, -56.4743f, nullptr },
+};
+// Blacksmith to Lumber Mill
+BattleBotPath vPath_AB_Blacksmith_to_LumberMill =
+{
+    { 967.04f, 1039.03f, -45.091f, nullptr },
+    { 933.67f, 1016.49f, -50.5154f, nullptr },
+    { 904.02f, 996.63f, -62.3461f, nullptr },
+    { 841.74f, 985.23f, -58.8920f, nullptr },
+    { 796.25f, 1009.93f, -44.3286f, nullptr },
+    { 781.29f, 1034.49f, -32.887f, nullptr },
+    { 793.17f, 1107.21f, 5.5663f, nullptr },
+    { 848.98f, 1155.9f, 11.3453f, nullptr },
+};
+// Blacksmith to GoldMine
+BattleBotPath vPath_AB_Blacksmith_to_GoldMine =
+{
+    { 1035.98f, 1015.66f, -46.0278f, nullptr },
+    { 1096.86f, 1002.05f, -60.8013f, nullptr },
+    { 1159.93f, 1003.69f, -63.8378f, nullptr },
+    { 1198.03f, 1064.09f, -65.8385f, nullptr },
+    { 1218.58f, 1016.96f, -76.9848f, nullptr },
+    { 1192.83f, 956.25f, -93.6974f, nullptr },
+    { 1162.93f, 908.92f, -108.6703f, nullptr },
+    { 1144.94f, 860.09f, -111.2100f, nullptr },
+};
+// Farm to Stables
+BattleBotPath vPath_AB_Farm_to_Stable =
+{
+    { 749.88f, 878.23f, -55.1523f, nullptr },
+    { 819.77f, 931.13f, -57.5882f, nullptr },
+    { 842.34f, 984.76f, -59.0333f, nullptr },
+    { 863.03f, 1051.47f, -58.0495f, nullptr },
+    { 899.28f, 1098.27f, -57.4149f, nullptr },
+    { 949.22f, 1153.27f, -54.4464f, nullptr },
+    { 999.07f, 1189.47f, -49.9125f, nullptr },
+    { 1063.11f, 1211.55f, -53.4164f, nullptr },
+    { 1098.45f, 1225.47f, -53.1301f, nullptr },
+    { 1146.02f, 1226.34f, -53.8979f, nullptr },
+    { 1167.10f, 1204.31f, -56.55f, nullptr },
 };
 // Alliance Base to Gold Mine
 BattleBotPath vPath_AB_AllianceBase_to_GoldMine =
@@ -2094,6 +2136,9 @@ std::vector<BattleBotPath*> const vPaths_AB =
     &vPath_AB_Stables_to_LumberMill,
     &vPath_AB_Farm_to_GoldMine,
     &vPath_AB_Farm_to_LumberMill,
+	&vPath_AB_Blacksmith_to_LumberMill,
+    &vPath_AB_Blacksmith_to_GoldMine,
+    &vPath_AB_Farm_to_Stable,
 };
 
 std::vector<BattleBotPath*> const vPaths_AV =
@@ -3295,23 +3340,23 @@ bool BGTactics::selectObjective(bool reset)
         {
             if (bot->GetTeam() == ALLIANCE)
             {
-                if (teamFlagTaken())
-                {
-                    Position hidePos = WS_FLAG_HIDE_ALLIANCE[urand(0, 4)];
-                    pos.Set(hidePos.x, hidePos.y, hidePos.z, bot->GetMapId());
-                }
-                else
-                    pos.Set(WS_FLAG_POS_ALLIANCE.x, WS_FLAG_POS_ALLIANCE.y, WS_FLAG_POS_ALLIANCE.z, bot->GetMapId());
+                //if (teamFlagTaken())
+                //{
+                //    Position hidePos = WS_FLAG_HIDE_ALLIANCE[urand(0, 4)];
+                //    pos.Set(hidePos.x, hidePos.y, hidePos.z, bot->GetMapId());
+                //}
+                //else
+                pos.Set(WS_FLAG_POS_ALLIANCE.x, WS_FLAG_POS_ALLIANCE.y, WS_FLAG_POS_ALLIANCE.z, bot->GetMapId());
             }
             else
             {
-                if (teamFlagTaken())
-                {
-                    Position hidePos = WS_FLAG_HIDE_HORDE[urand(0, 4)];
-                    pos.Set(hidePos.x, hidePos.y, hidePos.z, bot->GetMapId());
-                }
-                else
-                    pos.Set(WS_FLAG_POS_HORDE.x, WS_FLAG_POS_HORDE.y, WS_FLAG_POS_HORDE.z, bot->GetMapId());
+                //if (teamFlagTaken())
+                //{
+                //    Position hidePos = WS_FLAG_HIDE_HORDE[urand(0, 4)];
+                //    pos.Set(hidePos.x, hidePos.y, hidePos.z, bot->GetMapId());
+                //}
+                //else
+                pos.Set(WS_FLAG_POS_HORDE.x, WS_FLAG_POS_HORDE.y, WS_FLAG_POS_HORDE.z, bot->GetMapId());
             }
 
             //ostringstream out;
@@ -3411,121 +3456,119 @@ bool BGTactics::selectObjective(bool reset)
     }
     case BATTLEGROUND_AB:
     {
-        if (bot->GetTeam() == HORDE) // HORDE
+        // Common setup for both HORDE and ALLIANCE
+        uint32 role = context->GetValue<uint32>("bg role")->Get();
+        bool defender = role < 5;
+        uint32 botGUID = bot->GetGUIDLow();
+
+        bool isDead = bot->IsDead();
+
+        if (isDead && (botSelectedObjectives[botGUID] != nullptr))
         {
-            if (!BgObjective)
+            bot->Say("I'm dead, guess I'll reset my objective.", LANG_UNIVERSAL);
+            botSelectedObjectives[botGUID] = nullptr; // Reset objective if we die... maybe more lucky elsewhere -- wait I don't think this is executed on dead bots so it's never triggered? Try something else
+            botObjectiveSelectionTime[botGUID] = 0;
+        }
+
+        std::set<GameObject*> uniqueObjectives;
+
+        for (const auto& objective : AB_AttackObjectives)
+        {
+            bool isActiveNeutral = bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_NEUTRAL);
+
+            bool isOccupied = (bot->GetTeam() == HORDE) ? bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_OCCUPIED) : bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_OCCUPIED);
+            bool isContested = (bot->GetTeam() == HORDE) ? bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_CONTESTED) : bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_CONTESTED);
+            bool isFriendly = (bot->GetTeam() == HORDE) ? bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_OCCUPIED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_CONTESTED) : bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_OCCUPIED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_CONTESTED);
+
+            // If we're a defender, target friendly, neutral or under attack objectives (maybe remove the under attack ones?). if we're an attacker, target enemy, neutral or under attack objectives. 
+            if ((defender && (isActiveNeutral || isFriendly || isContested)) || (!defender && (isActiveNeutral || isContested || isOccupied)))
             {
-                // copy of alliance tactics
-                uint32 role = context->GetValue<uint32>("bg role")->Get();
-                bool defender = role < 2;
-
-                // pick 3 objectives
-                std::vector<GameObject*> objectives;
-                for (auto i = 0; i < 3; ++i)
+                if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, BG_AB_NODE_STATUS_NEUTRAL)))
                 {
-                    WorldObject* pAttackObjectiveObject = nullptr;
-                    float attackObjectiveDistance = FLT_MAX;
-
-                    for (const auto& objective : AB_AttackObjectives)
-                    {
-                        if ((!defender && (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_NEUTRAL) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_OCCUPIED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_CONTESTED))) ||
-                            (defender && (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_CONTESTED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_OCCUPIED))))
-                        {
-                            if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, BG_AB_NODE_STATUS_NEUTRAL)))
-                            {
-                                float const distance = sqrt(bot->GetDistance(pGO));
-                                // do not pick if already in list
-                                vector<GameObject*>::iterator f = find(objectives.begin(), objectives.end(), pGO);
-                                if (f != objectives.end())
-                                    continue;
-
-                                objectives.push_back(pGO);
-                                attackObjectiveDistance = distance;
-                                //ostringstream out; out << "Possible Attack Point #" << objective.first;
-                                //bot->Say(out.str(), LANG_UNIVERSAL);
-                                //if (attackObjectiveDistance > distance)
-                                //{
-                                //    // do not pick if already in list
-                                //    vector<GameObject*>::iterator f = find(objectives.begin(), objectives.end(), pGO);
-                                //    if (f != objectives.end())
-                                //        continue;
-
-                                //    objectives.push_back(pGO);
-                                //    attackObjectiveDistance = distance;
-                                //    //ostringstream out; out << "Possible Attack Point #" << objective.first;
-                                //    //bot->Say(out.str(), LANG_UNIVERSAL);
-                                //}
-                            }
-                        }
-                    }
-                }
-                if (!objectives.empty())
-                {
-                    // pick random objective
-                    BgObjective = objectives[urand(0, objectives.size() - 1)];
+                    // Add it to the list if it's valid.
+                    uniqueObjectives.insert(pGO);
                 }
             }
         }
-        else // ALLIANCE
+
+        GameObject* BgObjective = nullptr;
+
+
+
+        // Check if the bot has previously selected an objective and if it's still valid
+        if (botSelectedObjectives.find(botGUID) != botSelectedObjectives.end() &&
+            uniqueObjectives.find(botSelectedObjectives[botGUID]) != uniqueObjectives.end())
         {
-            uint32 role = context->GetValue<uint32>("bg role")->Get();
-            bool defender = role < 2;
+            uint32 elapsedTime = WorldTimer::getMSTime() - botObjectiveSelectionTime[botGUID];
+            float probabilityToKeepSameObjective = 1.0f; // Start at 100% then lower over time
 
-            // pick 3 objectives
-            std::vector<GameObject*> objectives;
-            for (auto i = 0; i < 3; ++i)
+            GameObject* lastObj = botSelectedObjectives[botGUID];
+            float const lastObjDist = sqrt(bot->GetDistance(lastObj));
+
+            if (lastObjDist < 50.00f) // if we are close, stick to the objective a bit longer
             {
-                WorldObject* pAttackObjectiveObject = nullptr;
-                float attackObjectiveDistance = FLT_MAX;
-
-                for (const auto& objective : AB_AttackObjectives)
+                if (elapsedTime > 60000)
                 {
-                    if ((!defender && (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_NEUTRAL) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_OCCUPIED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_HORDE_CONTESTED))) ||
-                        (defender && (bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_CONTESTED) || bg->IsActiveEvent(objective.first, BG_AB_NODE_STATUS_ALLY_OCCUPIED))))
-                    {
-                        if (GameObject* pGO = bot->GetMap()->GetGameObject(bg->GetSingleGameObjectGuid(objective.first, BG_AB_NODE_STATUS_NEUTRAL)))
-                        {
-                            float const distance = sqrt(bot->GetDistance(pGO));
-                            // do not pick if already in list
-                            vector<GameObject*>::iterator f = find(objectives.begin(), objectives.end(), pGO);
-                            if (f != objectives.end())
-                                continue;
-
-                            objectives.push_back(pGO);
-                            //pAttackObjectiveObject = pGO;
-                            attackObjectiveDistance = distance;
-                            //ostringstream out; out << "Possible Attack Point #" << objective.first;
-                            //bot->Say(out.str(), LANG_UNIVERSAL);
-                            //if (attackObjectiveDistance > distance)
-                            //{
-                            //    // do not pick if already in list
-                            //    vector<GameObject*>::iterator f = find(objectives.begin(), objectives.end(), pGO);
-                            //    if (f != objectives.end())
-                            //        continue;
-
-                            //    objectives.push_back(pGO);
-                            //    //pAttackObjectiveObject = pGO;
-                            //    attackObjectiveDistance = distance;
-                            //    //ostringstream out; out << "Possible Attack Point #" << objective.first;
-                            //    //bot->Say(out.str(), LANG_UNIVERSAL);
-                            //}
-                        }
-                    }
+                    uint32 extraTime = (elapsedTime - 60000) / 1000; // Calculate seconds past the 60 seconds mark
+                    probabilityToKeepSameObjective -= (0.01f * extraTime); // Decrease by 1% for each second past 40 seconds
                 }
+
+                float randomValue = float(rand() % 101) / 100.0f;
+
+                if (randomValue <= probabilityToKeepSameObjective)
+                {
+                    BgObjective = botSelectedObjectives[botGUID];
+                }
+                else uniqueObjectives.erase(lastObj);
             }
-            if (!objectives.empty())
+            else
             {
-                // pick random objective
-                BgObjective = objectives[urand(0, objectives.size() - 1)];
+                if (elapsedTime > 40000)
+                {
+                    uint32 extraTime = (elapsedTime - 40000) / 1000; // Calculate seconds past the 40 seconds mark
+                    probabilityToKeepSameObjective -= (0.01f * extraTime); // Decrease by 1% for each second past 40 seconds
+                }
+
+                float randomValue = float(rand() % 101) / 100.0f;
+
+                if (randomValue <= probabilityToKeepSameObjective)
+                {
+                    BgObjective = botSelectedObjectives[botGUID];
+                }
+                else uniqueObjectives.erase(lastObj);
             }
         }
+
+        // If BgObjective is still nullptr at this point, select a new one
+        if (!BgObjective && !uniqueObjectives.empty())
+        {
+            std::vector<GameObject*> objectives(uniqueObjectives.begin(), uniqueObjectives.end());
+
+            // Select a random objective from your unique objectives
+            BgObjective = objectives[urand(0, objectives.size() - 1)];
+            botSelectedObjectives[botGUID] = BgObjective; // Remember this objective for the bot
+            botObjectiveSelectionTime[botGUID] = WorldTimer::getMSTime(); // Remember the time of selection
+        }
+
         if (BgObjective)
         {
             pos.Set(BgObjective->GetPositionX(), BgObjective->GetPositionY(), BgObjective->GetPositionZ(), BgObjective->GetMapId());
             posMap["bg objective"] = pos;
+            string ObjVerbose = "";
+
+            if (std::abs(pos.x - 977.016) <= 10.0) ObjVerbose = "Blacksmith";
+            else if (std::abs(pos.x - 806.182) <= 10.0) ObjVerbose = "Farm";
+            else if (std::abs(pos.x - 856.142) <= 10.0) ObjVerbose = "Lumber Mill";
+            else if (std::abs(pos.x - 1166.79) <= 10.0) ObjVerbose = "Stables";
+            else if (std::abs(pos.x - 1146.92) <= 10.0) ObjVerbose = "Gold Mine";
+
+            // DEBUG SAY
             //ostringstream out;
-            //out << "BG objective set to " << BgObjective->GetName() << " " << pos.x << " " << pos.y;
+            //if(defender) out << "Defending " + ObjVerbose;
+            //else out << "Attacking " + ObjVerbose;
             //bot->Say(out.str(), LANG_UNIVERSAL);
+
+
             return true;
         }
         break;
@@ -4484,10 +4527,10 @@ bool BGTactics::resetObjective()
 
     ai::PositionMap& posMap = context->GetValue<ai::PositionMap&>("position")->Get();
     ai::PositionEntry pos = context->GetValue<ai::PositionMap&>("position")->Get()["bg objective"];
-    // do not switch hiding spots
-    if (teamFlagTaken() && (bot->HasAura(BG_WS_SPELL_WARSONG_FLAG) || bot->HasAura(BG_WS_SPELL_SILVERWING_FLAG)))
-    {
-        return false;
+    // do not switch hiding spots - disabled for now until hiding spots reimplemented since it causes bots to stop moving
+    //if (teamFlagTaken() && (bot->HasAura(BG_WS_SPELL_WARSONG_FLAG) || bot->HasAura(BG_WS_SPELL_SILVERWING_FLAG)))
+    //{
+    //    return false;
 
         /*if (bot->GetTeam() == HORDE)
         {
@@ -4499,7 +4542,7 @@ bool BGTactics::resetObjective()
             if (pos.x != WS_FLAG_POS_HORDE.x && pos.x != WS_FLAG_POS_ALLIANCE.x && pos.y != WS_FLAG_POS_HORDE.y && pos.y != WS_FLAG_POS_ALLIANCE.y)
                 return false;
         }*/
-    }
+    //}
     pos.Reset();
     posMap["bg objective"] = pos;
 
