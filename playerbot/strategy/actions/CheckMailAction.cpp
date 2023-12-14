@@ -13,10 +13,17 @@ bool CheckMailAction::Execute(Event& event)
     bot->GetSession()->HandleQueryNextMailTime(p);   
 
     list<uint32> ids;
+
+    PlayerMails mails;
+
+    //Fetch mails first and then loop over them to prevent needing to check mails sent to self.
     for (PlayerMails::iterator i = bot->GetMailBegin(); i != bot->GetMailEnd(); ++i)
     {
-        Mail* mail = *i;
+        mails.push_back(*i);
+    }
 
+    for (auto & mail : mails)
+    {
         if (!mail || mail->state == MAIL_STATE_DELETED)
             continue;
 
