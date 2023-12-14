@@ -77,6 +77,8 @@ bool RepairAllAction::Execute(Event& event)
                 bot->PlayDistanceSound(1116);
 
             sPlayerbotAIConfig.logEvent(ai, "RepairAllAction", to_string(durability), to_string(totalCost));
+
+            ai->DoSpecificAction("equip upgrades", event, true);
         }
 
         context->GetValue<uint32>("death count")->Set(0);
