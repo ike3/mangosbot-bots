@@ -33,7 +33,7 @@ bool CheckMountStateAction::Execute(Event& event)
 
     if (hasEnemy)
     {
-        float distToTarget = AI_VALUE2(float, "distance", "current target");
+        float distToTarget = AI_VALUE(Unit*, "current target") ? AI_VALUE2(float, "distance", "current target") : 0;
         canAttackTarget = sServerFacade.IsDistanceLessThan(distToTarget, GetAttackDistance());
         shouldChaseTarget = sServerFacade.IsDistanceGreaterThan(distToTarget, 45.0f) && AI_VALUE2(bool, "moving", "current target");
         farFromTarget = sServerFacade.IsDistanceGreaterThan(distToTarget, 40.0f);
