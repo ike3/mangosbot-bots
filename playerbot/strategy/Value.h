@@ -18,7 +18,6 @@ namespace ai
         virtual string Format() { return "?"; }
         virtual string Save() { return "?"; }
         virtual bool Load(string value) { return false; }
-        virtual int32 ExpireTime() { return -99; }
         virtual bool Expired() { return false; }
         virtual bool Expired(uint32 interval) { return false; }
         virtual bool Protected() { return false; }
@@ -76,7 +75,6 @@ namespace ai
         virtual void Set(T value) { this->value = value; }
         virtual void Update() { }
         virtual void Reset() { lastCheckTime = 0; }
-        virtual int32 ExpireTime() { return checkInterval / 2 - (time(0) - lastCheckTime); }
         virtual bool Expired() { return Expired(checkInterval / 2); }
         virtual bool Expired(uint32 interval) { return time(0) - lastCheckTime >= interval; }
     protected:
