@@ -227,7 +227,7 @@ bool EquipUpgradesAction::Execute(Event& event)
                               itemProto->Class == ItemClass::ITEM_CLASS_ARMOR ||
                               itemProto->Class == ItemClass::ITEM_CLASS_CONTAINER))
             {
-                return false;
+                valid = true;
             }
         }
 
