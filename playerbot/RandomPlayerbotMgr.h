@@ -200,6 +200,7 @@ public:
         typedef std::unordered_map <uint32, list<float>> botPerformanceMetric;
         std::unordered_map<string, botPerformanceMetric> botPerformanceMetrics;
         
+        std::vector<std::pair<uint32, uint32>> RpgLocationsNear(WorldLocation pos, uint32 areaId = 0, uint32 radius = 2000);
         void PushMetric(botPerformanceMetric& metric, const uint32 bot, const float value, const uint32 maxNum = 60) const;
         float GetMetricDelta(botPerformanceMetric& metric) const;
 

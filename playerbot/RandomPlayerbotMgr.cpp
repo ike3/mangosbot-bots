@@ -2020,7 +2020,7 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
                     {
                         if (sPlayerbotAIConfig.randomBotTeleportNearPlayerMaxAmount > 0 && sPlayerbotAIConfig.randomBotTeleportNearPlayerMaxAmountRadius > 0.0f)
                         {
-                            int botsNearTeleportPoint = 0;
+                            uint32 botsNearTeleportPoint = 0;
                             for (auto& pair : GetAllBots())
                             {
                                 // Only check the bots that are on the same zone
@@ -2251,6 +2251,45 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot, vector<WorldLocation> &locs
     sLog.outError("Cannot teleport bot %s - no locations available", bot->GetName());
 }
 
+std::vector<std::pair<uint32, uint32>> RandomPlayerbotMgr::RpgLocationsNear(WorldLocation pos, uint32 areaId, uint32 radius)
+{
+    vector<std::pair<uint32, uint32>> results;
+    float minDist = FLT_MAX;
+    string hasZone = "-", wantZone = WorldPosition(pos).getAreaName(true, true);
+    for (uint32 level = 1; level < sPlayerbotAIConfig.randomBotMaxLevel + 1; level++)
+    {
+        for (uint32 r = 1; r < MAX_RACES; r++)
+        {
+            for (auto p : rpgLocsCacheLevel[r][level])
+            {
+                string currentZone = WorldPosition(p).getAreaName(true, true);
+
+                if (currentZone != wantZone && hasZone == wantZone) //If we already have the right id but this location isn't in the right id. Skip it.
+                    continue;
+
+                if (currentZone == wantZone && hasZone != wantZone) //If this is the first spot with a good area id use this now.
+                    minDist = FLT_MAX;
+
+                float dist = WorldPosition(pos).fDist(p);
+
+                if (dist > radius || dist > minDist)
+                    continue;
+
+                if (dist < minDist)
+                    results.clear();
+
+                results.push_back(make_pair(r, level));
+
+                hasZone = currentZone;
+
+                minDist = dist;
+            }
+        }
+    }
+
+    return results;
+}
+
 void RandomPlayerbotMgr::PrepareTeleportCache()
 {
     uint32 maxLevel = sPlayerbotAIConfig.randomBotMaxLevel;
@@ -2303,7 +2342,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
                 level,
                 sPlayerbotAIConfig.randomBotTeleLevel,
                 (uint32)sPlayerbotAIConfig.sightDistance
-                );
+            );
             if (results)
             {
                 do
@@ -2317,7 +2356,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
                     locsPerLevelCache[level].push_back(loc);
 
                     PlayerbotDatabase.PExecute("insert into ai_playerbot_tele_cache (level, map_id, x, y, z) values (%u, %u, %f, %f, %f)",
-                            level, mapId, x, y, z);
+                        level, mapId, x, y, z);
                 } while (results->NextRow());
             }
             bar.step();
@@ -2326,39 +2365,111 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 
     sLog.outString("Preparing RPG teleport caches for %d factions...", sFactionTemplateStore.GetNumRows());
 
-		    results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, "
-				"r.race, r.minl, r.maxl "
-				"from creature c inner join ai_playerbot_rpg_races r on c.id = r.entry "
-				"where r.race < 15");
+    results = WorldDatabase.PQuery("SELECT map, position_x, position_y, position_z, "
+        "r.race, r.minl, r.maxl "
+        "from creature c inner join ai_playerbot_rpg_races r on c.id = r.entry "
+        "where r.race < 15");
 
-	if (results)
-	{
-		do
-		{
-			for (uint32 level = 1; level < sPlayerbotAIConfig.randomBotMaxLevel + 1; level++)
-			{
-				Field* fields = results->Fetch();
-				uint16 mapId = fields[0].GetUInt16();
-				float x = fields[1].GetFloat();
-				float y = fields[2].GetFloat();
-				float z = fields[3].GetFloat();
-				//uint32 faction = fields[4].GetUInt32();
-				//string name = fields[5].GetCppString();
-				uint32 race = fields[4].GetUInt32();
-				uint32 minl = fields[5].GetUInt32();
-				uint32 maxl = fields[6].GetUInt32();
+    if (results)
+    {
+        do
+        {
+            for (uint32 level = 1; level < sPlayerbotAIConfig.randomBotMaxLevel + 1; level++)
+            {
+                Field* fields = results->Fetch();
+                uint16 mapId = fields[0].GetUInt16();
+                float x = fields[1].GetFloat();
+                float y = fields[2].GetFloat();
+                float z = fields[3].GetFloat();
+                //uint32 faction = fields[4].GetUInt32();
+                //string name = fields[5].GetCppString();
+                uint32 race = fields[4].GetUInt32();
+                uint32 minl = fields[5].GetUInt32();
+                uint32 maxl = fields[6].GetUInt32();
 
-				if (level > maxl || level < minl) continue;
+                if (level > maxl || level < minl) continue;
 
-				WorldLocation loc(mapId, x, y, z, 0);
-				for (uint32 r = 1; r < MAX_RACES; r++)
-				{
-					if (race == r || race == 0) rpgLocsCacheLevel[r][level].push_back(loc);
-				}
-			}
-			//bar.step();
-		} while (results->NextRow());
-	}
+                WorldLocation loc(mapId, x, y, z, 0);
+                for (uint32 r = 1; r < MAX_RACES; r++)
+                {
+                    if (race == r || race == 0) rpgLocsCacheLevel[r][level].push_back(loc);
+                }
+            }
+            //bar.step();
+        } while (results->NextRow());
+    }
+
+    sLog.outString("Enhancing RPG teleport cache");
+
+    std::vector<std::pair<std::pair<uint32, uint32>, WorldPosition>> newPoints;
+
+    //Static portals.
+    for (auto& goData : WorldPosition().getGameObjectsNear(0, 0))
+    {
+        GuidPosition go(goData);
+
+        auto data = sGOStorage.LookupEntry<GameObjectInfo>(go.GetEntry());
+
+        if (!data)
+            continue;
+
+        if (data->type != GAMEOBJECT_TYPE_SPELLCASTER)
+            continue;
+
+        const SpellEntry* pSpellInfo = sServerFacade.LookupSpellInfo(data->spellcaster.spellId);
+
+        if (pSpellInfo->EffectTriggerSpell[0])
+            pSpellInfo = sServerFacade.LookupSpellInfo(pSpellInfo->EffectTriggerSpell[0]);
+
+        if (pSpellInfo->Effect[0] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[1] != SPELL_EFFECT_TELEPORT_UNITS && pSpellInfo->Effect[2] != SPELL_EFFECT_TELEPORT_UNITS)
+            continue;
+
+        SpellTargetPosition const* pos = sSpellMgr.GetSpellTargetPosition(pSpellInfo->Id);
+
+        if (!pos)
+            continue;
+
+        std::vector<std::pair<uint32, uint32>> ranges = RpgLocationsNear(WorldPosition(pos));
+
+        for (auto& range : ranges)
+            newPoints.push_back(make_pair(make_pair(range.first, range.second), pos));
+    }
+
+    //Creatures.
+    for (auto& creatureData : WorldPosition().getCreaturesNear(0, 0))
+    {
+        CreatureInfo const* cInfo = ObjectMgr::GetCreatureTemplate(creatureData->second.id);
+
+        if (!cInfo)
+            continue;
+
+        if (cInfo->ExtraFlags & CREATURE_EXTRA_FLAG_INVISIBLE)
+            continue;
+
+        vector<uint32> allowedNpcFlags;
+
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_BATTLEMASTER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_BANKER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_AUCTIONEER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_TRAINER);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_VENDOR);
+        allowedNpcFlags.push_back(UNIT_NPC_FLAG_REPAIR);
+
+        for (auto flag : allowedNpcFlags)
+        {
+            if ((cInfo->NpcFlags & flag) != 0)
+            {
+                std::vector<std::pair<uint32, uint32>> ranges = RpgLocationsNear(WorldPosition(creatureData));
+                
+                for (auto& range : ranges)
+                    newPoints.push_back(make_pair(make_pair(range.first, range.second), creatureData));
+                break;
+            }
+        }
+    }
+
+    for (auto newPoint : newPoints)
+        rpgLocsCacheLevel[newPoint.first.first][newPoint.first.second].push_back(newPoint.second);
 }
 
 void RandomPlayerbotMgr::PrintTeleportCache()
@@ -2373,7 +2484,7 @@ void RandomPlayerbotMgr::PrintTeleportCache()
             ostringstream out;
             out << level << ",";
             WorldPosition(p).printWKT(out);
-            out << "LEVEL" << ",0";
+            out << "LEVEL" << ",0," << WorldPosition(p).getAreaName(true, true);
             sPlayerbotAIConfig.log("telecache.csv", out.str().c_str());
         }
     }
@@ -2389,7 +2500,7 @@ void RandomPlayerbotMgr::PrintTeleportCache()
                 ostringstream out;
                 out << level << ",";
                 WorldPosition(p).printWKT(out);
-                out << "RPG" << "," << race;
+                out << "RPG" << "," << race << "," << WorldPosition(p).getAreaName(true, true);
                 sPlayerbotAIConfig.log("telecache.csv", out.str().c_str());
             }
         }
