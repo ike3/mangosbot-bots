@@ -3497,10 +3497,21 @@ void RandomPlayerbotMgr::ChangeStrategyOnce(Player* player)
 void RandomPlayerbotMgr::RandomTeleportForRpg(Player* bot, bool activeOnly)
 {
     uint32 race = bot->getRace();
-	uint32 level = bot->GetLevel();
+    uint32 level = bot->GetLevel();
     sLog.outDetail("Random teleporting bot %s for RPG (%zu locations available)", bot->GetName(), rpgLocsCacheLevel[race][level].size());
     RandomTeleport(bot, rpgLocsCacheLevel[race][level], true, activeOnly);
-	Refresh(bot);
+    Refresh(bot);
+
+    //Travel cooldown for 10 minutes.
+    if (bot->GetPlayerbotAI())
+    {
+        AiObjectContext* context = bot->GetPlayerbotAI()->GetAiObjectContext();
+        TravelTarget* travelTarget = AI_VALUE(TravelTarget*, "travel target");
+
+        travelTarget->setTarget(sTravelMgr.nullTravelDestination, sTravelMgr.nullWorldPosition, true);
+        travelTarget->setStatus(TravelStatus::TRAVEL_STATUS_COOLDOWN);
+        travelTarget->setExpireIn(10 * MINUTE * IN_MILLISECONDS);
+    }
 }
 
 void RandomPlayerbotMgr::Remove(Player* bot)
