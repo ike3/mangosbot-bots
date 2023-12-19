@@ -85,58 +85,6 @@ bool MovementAction::MoveNear(WorldObject* target, float distance)
     return false;
 }
 
-bool MovementAction::MoveToLOS(WorldObject* target, bool ranged)
-{
-    if (!target)
-        return false;
-
-    //ostringstream out; out << "Moving to LOS!";
-    //bot->Say(out.str(), LANG_UNIVERSAL);
-
-    float x = target->GetPositionX();
-    float y = target->GetPositionY();
-    float z = target->GetPositionZ();
-
-    //Use standard pathfinder to find a route. 
-    PathFinder path(bot);
-    path.calculate(x, y, z, false);
-    PathType type = path.getPathType();
-    if (type != PATHFIND_NORMAL && type != PATHFIND_INCOMPLETE)
-        return false;
-
-    if (!ranged)
-        return MoveTo((Unit*)target, target->GetObjectBoundingRadius());
-
-    float dist = FLT_MAX;
-    PositionEntry dest;
-
-    if (!path.getPath().empty())
-    {
-        for (auto& point : path.getPath())
-        {
-            if (ai->HasStrategy("debug move", BotState::BOT_STATE_NON_COMBAT))
-                CreateWp(bot, point.x, point.y, point.z, 0.0, 2334);
-
-            float distPoint = sqrt(target->GetDistance(point.x, point.y, point.z, DIST_CALC_NONE));
-            if (distPoint < dist && target->IsWithinLOS(point.x, point.y, point.z + bot->GetCollisionHeight()))
-            {
-                dist = distPoint;
-                dest.Set(point.x, point.y, point.z, target->GetMapId());
-
-                if (ranged)
-                    break;
-            }
-        }
-    }
-
-    if (dest.isSet())
-        return MoveTo(dest.mapId, dest.x, dest.y, dest.z);
-    else
-        ai->TellError(GetMaster(), "All paths not in LOS");
-
-    return false;
-}
-
 bool MovementAction::FlyDirect(WorldPosition &startPosition, WorldPosition &endPosition, WorldPosition& movePosition, TravelPath movePath, bool idle)
 {
     //Fly directly.
