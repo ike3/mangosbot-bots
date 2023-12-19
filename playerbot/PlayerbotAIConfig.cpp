@@ -842,3 +842,4 @@ bool PlayerbotAIConfig::CanLogAction(PlayerbotAI* ai, string actionName, bool is
     }
 
     return std::find(debugFilter.begin(), debugFilter.end(), actionName) == debugFilter.end(); 
+}

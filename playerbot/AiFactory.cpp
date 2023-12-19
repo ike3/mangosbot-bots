@@ -1366,4 +1366,4 @@ ReactionEngine* AiFactory::createReactionEngine(Player* player, PlayerbotAI* con
     ReactionEngine* reactionEngine = new ReactionEngine(facade, AiObjectContext, BotState::BOT_STATE_REACTION);
     AddDefaultReactionStrategies(player, facade, reactionEngine);
     return reactionEngine;
-}}
+}
