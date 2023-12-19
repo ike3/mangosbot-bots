@@ -219,11 +219,23 @@ namespace ai
     public:
         SwitchToRangedTrigger(PlayerbotAI* ai) : Trigger(ai, "switch to ranged", 1) {}
 
-        virtual bool IsActive()
+        bool IsActive() override
         {
+#ifdef MANGOSBOT_ZERO
+            bool hasAmmo = ai->HasCheat(BotCheatMask::item) || AI_VALUE2(uint32, "item count", "ammo");
+#else
+            bool hasAmmo = ai->HasCheat(BotCheatMask::item) || bot->HasAura(46699) || AI_VALUE2(uint32, "item count", "ammo");
+#endif
+            if (!hasAmmo)
+                return false;
+
             Unit* target = AI_VALUE(Unit*, "current target");
-            return ai->HasStrategy("close", BotState::BOT_STATE_COMBAT) && target && (target->GetVictim() != bot ||
-                sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"), 8.0f));
+            float distance = AI_VALUE2(float, "distance", "current target");
+            return target && ai->HasStrategy("close", BotState::BOT_STATE_COMBAT) &&
+                (target->GetVictim() != bot ||
+                target->IsImmobilizedState() ||
+                (target->GetSpeed(MOVE_RUN) <= (bot->GetSpeed(MOVE_RUN) / 2) && !((!bot->GetPet() || bot->GetPet()->IsDead()) && target->IsCreature() && target->GetHealthPercent() < 50.f && target->GetHealth() < bot->GetHealth())) ||
+                distance > 8.0f);
         }
     };
 
@@ -232,11 +244,22 @@ namespace ai
     public:
         SwitchToMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "switch to melee", 1) {}
 
-        virtual bool IsActive()
+        bool IsActive() override
         {
+#ifdef MANGOSBOT_ZERO
+            bool hasAmmo = ai->HasCheat(BotCheatMask::item) || AI_VALUE2(uint32, "item count", "ammo");
+#else
+            bool hasAmmo = ai->HasCheat(BotCheatMask::item) || bot->HasAura(46699) || AI_VALUE2(uint32, "item count", "ammo");
+#endif
+            if (!hasAmmo)
+                return true;
+
             Unit* target = AI_VALUE(Unit*, "current target");
-            return ai->HasStrategy("ranged", BotState::BOT_STATE_COMBAT) && target && (target->GetVictim() == bot ||
-                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), 8.0f));
+            return target && ((target->GetSpeed(MOVE_RUN) > (bot->GetSpeed(MOVE_RUN) / 2)) || ((!bot->GetPet() || bot->GetPet()->IsDead()) && target->GetHealthPercent() < 50.f && target->IsCreature() && target->GetHealth() < bot->GetHealth())) &&
+                !target->IsImmobilizedState() &&
+                ai->HasStrategy("ranged", BotState::BOT_STATE_COMBAT) &&
+                target->GetVictim() == bot &&
+                sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), 8.0f);
         }
     };
 

@@ -1622,11 +1622,18 @@ bool MovementAction::Flee(Unit *target)
         return false;
     }
 
+    HostileReference *ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
+    const bool isTarget = ref && ref->getTarget() == bot;
+
     time_t lastFlee = AI_VALUE(LastMovement&, "last movement").lastFlee;
     time_t now = time(0);
     uint32 fleeDelay = urand(2, sPlayerbotAIConfig.returnDelay / 1000);
 
-    if (lastFlee && bot->IsMoving())
+    // let hunter kite mob
+    if (isTarget && bot->getClass() == CLASS_HUNTER)
+        fleeDelay = 1;
+
+    if (lastFlee && sServerFacade.isMoving(bot))
     {
         if ((now - lastFlee) <= fleeDelay)
         {

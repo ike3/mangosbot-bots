@@ -10,6 +10,7 @@ namespace ai
     public:
         SwitchToMeleeAction(PlayerbotAI* ai) : ChangeCombatStrategyAction(ai, "-ranged,+close") {}
         bool isUseful() override;
+        bool Execute(Event& event) override;
     };
 
     class SwitchToRangedAction : public ChangeCombatStrategyAction
@@ -17,5 +18,6 @@ namespace ai
     public:
         SwitchToRangedAction(PlayerbotAI* ai) : ChangeCombatStrategyAction(ai, "-close,+ranged") {}
         bool isUseful() override;
+        bool Execute(Event& event) override;
     };
 }

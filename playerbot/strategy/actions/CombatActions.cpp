@@ -9,28 +9,31 @@ using namespace ai;
 
 bool SwitchToMeleeAction::isUseful()
 {
-    if (bot->getClass() == CLASS_HUNTER)
-    {
-        Unit* target = AI_VALUE(Unit*, "current target");
-        time_t lastFlee = AI_VALUE(LastMovement&, "last movement").lastFlee;
-        return ai->HasStrategy("ranged", BotState::BOT_STATE_COMBAT) && ((sServerFacade.IsInCombat(bot) && target && (target->GetVictim() == bot && (!bot->GetGroup() || lastFlee) &&
-            sServerFacade.IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"), 8.0f))) ||
-            (!sServerFacade.IsInCombat(bot)));
-    }
-
     return ai->HasStrategy("ranged", BotState::BOT_STATE_COMBAT);
+}
+
+bool SwitchToMeleeAction::Execute(Event &event)
+{
+    if (Unit* target = AI_VALUE(Unit*, "current target"))
+    {
+        bot->MeleeAttackStart(target);
+        return ChangeCombatStrategyAction::Execute(event);
+    }
+    return false;
 }
 
 bool SwitchToRangedAction::isUseful()
 {
-    if (bot->getClass() == CLASS_HUNTER)
-    {
-        Unit* target = AI_VALUE(Unit*, "current target");
-        bool hasAmmo = AI_VALUE2(uint32, "item count", "ammo");
-        return ai->HasStrategy("close", BotState::BOT_STATE_COMBAT) && hasAmmo && ((sServerFacade.IsInCombat(bot) && target && ((target->GetVictim() != bot || target->GetTarget() != bot) ||
-            sServerFacade.IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"), 8.0f))) ||
-            (!sServerFacade.IsInCombat(bot)));
-    }
 
     return ai->HasStrategy("close", BotState::BOT_STATE_COMBAT);
+}
+
+bool SwitchToRangedAction::Execute(Event &event)
+{
+    if (Unit* target = AI_VALUE(Unit*, "current target"))
+    {
+        bot->MeleeAttackStop(target);
+        return ChangeCombatStrategyAction::Execute(event);
+    }
+    return false;
 }
