@@ -5950,7 +5950,10 @@ void PlayerbotAI::StopMoving()
     if (IsInVehicle())
         return;
 
-    // interrupt movement as much as we can...
+    if (bot->IsBeingTeleportedFar())
+        return;
+
+    bot->m_movementInfo.SetMovementFlags(MOVEFLAG_NONE);
     bot->InterruptMoving(true);
     MovementInfo mInfo = bot->m_movementInfo;
     float x, y, z;
@@ -5964,8 +5967,11 @@ void PlayerbotAI::StopMoving()
     data << mInfo;
     bot->GetSession()->HandleMovementOpcodes(data);
 
-    bot->GetMotionMaster()->Clear(false, true);
-    bot->GetMotionMaster()->MoveIdle();
+    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType())
+    {
+        bot->GetMotionMaster()->Clear(false, true);
+        bot->GetMotionMaster()->MoveIdle();
+    }
 }
 
 bool PlayerbotAI::IsInRealGuild()
