@@ -3244,9 +3244,14 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
     }
 
     // Fail the cast if the bot is moving and the spell is a casting/channeled spell
-    const bool isMoving = !bot->IsStopped();
+    const bool isMoving = bot->IsStopped() || bot->IsFalling();
     if (isMoving && ((GetSpellCastTime(pSpellInfo, bot, spell) > 0) || (IsChanneledSpell(pSpellInfo) && (GetSpellDuration(pSpellInfo) > 0))))
     {
+        if (IsJumping() || bot->IsFalling())
+        {
+            spell->cancel();
+            return false;
+        }
         StopMoving();
     }
 
@@ -3347,7 +3352,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
         if (bot->GetMotionMaster()->top()->GetMovementGeneratorType() != IDLE_MOTION_TYPE)
             isMoving = true;
 
-    if (!bot->IsStopped())
+    if (!bot->IsStopped() || bot->IsFalling())
         isMoving = true;
 
     if (!sServerFacade.isMoving(bot) || isMoving) bot->SetFacingTo(bot->GetAngleAt(bot->GetPositionX(), bot->GetPositionY(), x, y));
@@ -3451,6 +3456,11 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
 
     if (sServerFacade.isMoving(bot) && spell->GetCastTime())
     {
+        if (IsJumping() || bot->IsFalling())
+        {
+            spell->cancel();
+            return false;
+        }
         bot->StopMoving();
     }
 
