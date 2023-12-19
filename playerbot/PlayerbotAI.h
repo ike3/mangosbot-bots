@@ -342,7 +342,7 @@ public:
     bool TellError(Player* player, string text, PlayerbotSecurityLevel securityLevel = PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL);
     void SpellInterrupted(uint32 spellid);
     int32 CalculateGlobalCooldown(uint32 spellid);
-    void InterruptSpell();
+    void InterruptSpell(bool withMeleeAndAuto = true);
     bool RemoveAura(const std::string& name);
     void RemoveShapeshift();
     void WaitForSpellCast(Spell *spell);
@@ -488,10 +488,13 @@ public:
     static bool IsOpposing(uint8 race1, uint8 race2);
     PlayerbotSecurity* GetSecurity() { return &security; }
 
-    Position GetJumpDestination() { return jumpDestination; }
-    void SetJumpDestination(Position pos) { jumpDestination = pos; }
-    void ResetJumpDestination() { jumpDestination = Position(); }
+    WorldPosition GetJumpDestination() { return jumpDestination; }
+    void SetJumpDestination(const WorldPosition& pos) { jumpDestination = pos; }
+    void ResetJumpDestination() { jumpDestination = WorldPosition(); }
 
+    bool IsJumping() { return jumpTime; }
+    void SetFallAfterJump() { fallAfterJump = true; }
+    void SetJumpTime(uint32 time) { jumpTime = time; }
     bool CanMove();
     void StopMoving();
     bool IsInRealGuild();
@@ -558,7 +561,9 @@ protected:
     bool isMoving = false;
     bool isWaiting = false;
     BotCheatMask cheatMask = BotCheatMask::none;
-    Position jumpDestination = Position();
+    WorldPosition jumpDestination;
+    uint32 jumpTime;
+    bool fallAfterJump;
     uint32 faceTargetUpdateDelay;
     bool isPlayerFriend = false;
     bool isMovingToTransport = false;

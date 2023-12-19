@@ -9,4 +9,14 @@ namespace ai
         RTSCStrategy(PlayerbotAI* ai) : Strategy(ai) {}
         string getName() override { return "rtsc"; }
     };
+
+    class RTSCSJumptrategy : public Strategy
+    {
+    public:
+        RTSCSJumptrategy(PlayerbotAI* ai) : Strategy(ai) {}
+        string getName() override { return "rtsc jump"; }
+
+    protected:
+        virtual void InitNonCombatTriggers(std::list<TriggerNode*> &triggers) override;
+    };
 }

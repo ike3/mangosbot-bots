@@ -493,7 +493,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 #endif
     }
 
-	if (facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player))
+    if (facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player))
 	{
         combatEngine->addStrategy("roll");
 
@@ -530,6 +530,19 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
                 combatEngine->addStrategies("retribution", "close", NULL);
                 combatEngine->removeStrategy("ranged");
             }
+        }
+
+        if ((facade->HasRealPlayerMaster() && sPlayerbotAIConfig.jumpWithPlayer) ||
+            (player->InBattleGround() && sPlayerbotAIConfig.jumpInBg) ||
+            !facade->HasRealPlayerMaster())
+        {
+            if (combatEngine->HasStrategy("close") && frand(0.0f, 1.0f) < sPlayerbotAIConfig.jumpMeleeInCombatChance)
+            {
+                combatEngine->addStrategy("rpg jump");
+            }
+
+            if (sPlayerbotAIConfig.jumpChase)
+                combatEngine->addStrategy("chase jump");
         }
 
         // remove threat for now
@@ -816,6 +829,19 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
     if (!player->InBattleGround())
     {
         nonCombatEngine->addStrategies("racials", "nc", "food", "follow", "default", "quest", "loot", "gather", "duel", "emote", "buff", "mount", NULL);
+    }
+
+    if ((facade->HasRealPlayerMaster() && sPlayerbotAIConfig.jumpWithPlayer) ||
+        (player->InBattleGround() && sPlayerbotAIConfig.jumpInBg) ||
+        !facade->HasRealPlayerMaster())
+    {
+        if (frand(0.0f, 1.0f) < sPlayerbotAIConfig.jumpNoCombatChance)
+        {
+            nonCombatEngine->addStrategy("rpg jump");
+        }
+
+        if (sPlayerbotAIConfig.jumpFollow)
+            nonCombatEngine->addStrategy("follow jump");
     }
 
     if ((facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player)) && !player->InBattleGround())

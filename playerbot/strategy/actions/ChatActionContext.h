@@ -193,6 +193,8 @@ namespace ai
 
             creators["bg free"] = &ChatActionContext::bg_free;
             creators["move style"] = &ChatActionContext::move_style;
+
+            creators["jump"] = &ChatActionContext::jump;
         }
 
     private:
@@ -307,5 +309,6 @@ namespace ai
         static Action* guild_leader(PlayerbotAI* ai) { return new GuildLeaderAction(ai); }
         static Action* bg_free(PlayerbotAI* ai) { return new BGLeaveAction(ai); }
         static Action* move_style(PlayerbotAI* ai) { return new MoveStyleAction(ai); }
+        static Action* jump(PlayerbotAI* ai) { return new JumpAction(ai); }
     };
 };

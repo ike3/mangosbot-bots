@@ -106,7 +106,7 @@ void PacketHandlingHelper::AddPacket(const WorldPacket& packet)
 
 
 PlayerbotAI::PlayerbotAI() : PlayerbotAIBase(), bot(NULL), aiObjectContext(NULL),
-    currentEngine(NULL), chatHelper(this), chatFilter(this), accountId(0), security(NULL), master(NULL), currentState(BotState::BOT_STATE_NON_COMBAT), faceTargetUpdateDelay(0)
+    currentEngine(NULL), chatHelper(this), chatFilter(this), accountId(0), security(NULL), master(NULL), currentState(BotState::BOT_STATE_NON_COMBAT), faceTargetUpdateDelay(0), jumpTime(0), fallAfterJump(false)
 {
     for (uint8 i = 0 ; i < (uint8)BotState::BOT_STATE_ALL; i++)
         engines[i] = NULL;
@@ -119,7 +119,7 @@ PlayerbotAI::PlayerbotAI() : PlayerbotAIBase(), bot(NULL), aiObjectContext(NULL)
 }
 
 PlayerbotAI::PlayerbotAI(Player* bot) :
-    PlayerbotAIBase(), chatHelper(this), chatFilter(this), security(bot), master(NULL), faceTargetUpdateDelay(0)
+    PlayerbotAIBase(), chatHelper(this), chatFilter(this), security(bot), master(NULL), faceTargetUpdateDelay(0), jumpTime(0), fallAfterJump(false)
 {
 	this->bot = bot;    
     if (!bot->isTaxiCheater() && HasCheat(BotCheatMask::taxi))
@@ -312,12 +312,84 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
 
     // force stop if moving but should not
 #ifndef MANGOSBOT_TWO
-    if (!bot->IsStopped() && !CanMove() && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING) && !bot->IsTaxiFlying() && !bot->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING) && !bot->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED))
+    if (!bot->IsStopped() && !IsJumping() && !CanMove() && !bot->IsTaxiFlying() && !bot->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING) && !bot->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED))
 #else
-    if (!bot->IsStopped() && !CanMove() && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING) && !bot->IsTaxiFlying() && !bot->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING) && !bot->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED))
+    if (!bot->IsStopped() && !IsJumping() && !CanMove() && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING) && !bot->IsTaxiFlying() && !bot->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING) && !bot->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED))
 #endif
     {
         StopMoving();
+    }
+
+    // land after knockback/jump
+    uint32 curTime = sWorld.GetCurrentMSTime();
+    if (jumpTime && (jumpTime < curTime || (jumpTime + 10000 < curTime)))
+    {
+        // remove moveflags
+        bot->m_movementInfo.SetMovementFlags(MOVEFLAG_NONE);
+        bot->m_movementInfo.jump = MovementInfo::JumpInfo();
+        if (!fallAfterJump)
+            bot->InterruptMoving(true);
+
+        // might be not needed
+        if (GetJumpDestination())
+        {
+            bot->Relocate(jumpDestination.getX(), jumpDestination.getY(), jumpDestination.getZ());
+        }
+
+        // normal landing
+        if (!fallAfterJump)
+        {
+            WorldPacket land(MSG_MOVE_FALL_LAND);
+#ifdef MANGOSBOT_TWO
+            land << bot->GetObjectGuid().WriteAsPacked();
+#endif
+            land << bot->m_movementInfo;
+            bot->GetSession()->HandleMovementOpcodes(land);
+            sLog.outDetail("%s: Jump: Landed, landTime: %u", bot->GetName(), curTime);
+
+            jumpTime = 0;
+            fallAfterJump = false;
+            ResetJumpDestination();
+        }
+        // falling after hitting something
+        else
+        {
+            bot->SetFallInformation(0, bot->m_movementInfo.pos.z);
+            bot->m_movementInfo.AddMovementFlag(MOVEFLAG_JUMPING);
+            // use motion master (disabled for now, makes bot move to ceiling it just hit)
+            if (false && bot->GetMotionMaster()->MoveFall())
+            {
+                jumpTime = 0;
+                fallAfterJump = false;
+                ResetJumpDestination();
+                sLog.outDetail("%s: Jump: MoveFall activated", bot->GetName());
+            }
+            // simulate falling
+            else
+            {
+                float landingHeight = bot->m_movementInfo.pos.z;
+                bot->UpdateAllowedPositionZ(bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, landingHeight);
+
+                // calculate fall time
+                float gravity = 19.2911f;
+                float terminalVelocity = 60.148f;
+                float time;
+
+                const float terminal_length = float(terminalVelocity* terminalVelocity) / (2.f* gravity);
+                const float terminalFallTime = float(terminalVelocity / gravity);
+
+                float path_length = fabs(bot->m_movementInfo.pos.z - landingHeight);
+                if (path_length >= terminal_length)
+                    time = (path_length - terminal_length) / terminalVelocity + terminalFallTime;
+                else
+                    time = sqrtf(2.f * path_length / gravity);
+
+                SetJumpTime(curTime + uint32(time * IN_MILLISECONDS) + 1000);
+                fallAfterJump = false;
+                jumpDestination = WorldPosition(bot->GetMapId(), bot->m_movementInfo.pos.x, bot->m_movementInfo.pos.y, landingHeight);
+                sLog.outDetail("%s: Jump: Falling simulated, height: %f, timeToLand %u", bot->GetName(), landingHeight, jumpTime);
+            }
+        }
     }
 
     // cheat options
@@ -367,7 +439,14 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             }
             else
             {
+#ifndef MANGOSBOT_ZERO
+                if (!bot->HasAura(46699)) // Thori'dal
+                {
+                    PlayerbotFactory(bot, bot->GetLevel(), 0).InitAmmo();
+                }
+#else
                 PlayerbotFactory(bot, bot->GetLevel(), 0).InitAmmo();
+#endif
             }
         }
     }
@@ -986,6 +1065,10 @@ void PlayerbotAI::Reset(bool full)
 
         StopMoving();
 
+        jumpTime = 0;
+        fallAfterJump = false;
+        ResetJumpDestination();
+
         WorldSession* botWorldSessionPtr = bot->GetSession();
         bool logout = botWorldSessionPtr->ShouldLogOut(time(nullptr));
 
@@ -1419,6 +1502,9 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
     }
     case SMSG_MOVE_KNOCK_BACK: // handle knockbacks
     {
+        if (!sPlayerbotAIConfig.useKnockback || !HasPlayerNearby())
+            return;
+
         WorldPacket p(packet);
         p.rpos(0);
 
@@ -1429,34 +1515,46 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         p >> guid.ReadAsPacked() >> counter >> vcos >> vsin >> horizontalSpeed >> verticalSpeed;
         verticalSpeed = -verticalSpeed;
 
-        // calculate rough knockback time
-        float moveTimeHalf = verticalSpeed / 19.29f;
-
-        float dis = 2 * moveTimeHalf * horizontalSpeed;
-        float max_height = -Movement::computeFallElevation(moveTimeHalf, false, -verticalSpeed);
-        float disHalf = dis / 3.0f;
-        float ox, oy, oz;
-        bot->GetPosition(ox, oy, oz);
-        float fx = ox + dis * vcos;
-        float fy = oy + dis * vsin;
-        float fz = oz + 0.5f;
-#ifdef MANGOSBOT_TWO
-        bot->GetMap()->GetHitPosition(ox, oy, oz + max_height, fx, fy, fz, bot->GetPhaseMask(), -0.5f);
-#else
-        bot->GetMap()->GetHitPosition(ox, oy, oz + max_height, fx, fy, fz, -0.5f);
-#endif
-        bot->UpdateFallInformationIfNeed(bot->m_movementInfo, CMSG_MOVE_KNOCK_BACK_ACK);
-        bot->UpdateAllowedPositionZ(fx, fy, fz);
-
         // stop casting
-        InterruptSpell();
+        InterruptSpell(false);
 
         // stop movement
         StopMoving();
 
-        // set delay based on actual distance
-        float newdis = sqrt(bot->GetDistance2d(fx, fy, DIST_CALC_NONE));
-        SetAIInternalUpdateDelay((uint32)((newdis / dis) * moveTimeHalf * 4 * IN_MILLISECONDS));
+        float timeToLand, distToLand, maxHeight;
+        bool goodLanding = true;
+        float angleRadian = (vsin > 0) ? acos(vcos) : -acos(vcos);
+        float angle = angleRadian;
+        WorldPosition dest_calculated = JumpAction::CalculateJumpParameters(WorldPosition(bot), bot, angle, verticalSpeed, horizontalSpeed, timeToLand, distToLand, maxHeight, goodLanding, 200.f);
+        bool jumpInPlace = horizontalSpeed == 0.f;
+        if (!dest_calculated)
+        {
+            sLog.outDetail("Knockback fail to calculate");
+            return;
+        }
+
+        // fix height
+        if (goodLanding)
+        {
+            float ox = dest_calculated.getX();
+            float oy = dest_calculated.getY();
+            float oz = dest_calculated.getZ();
+            bot->UpdateAllowedPositionZ(ox, oy, oz);
+            // set to fall after land if not at the ground
+            if (fabs(oz - dest_calculated.getZ()) > 5.0f)
+            {
+                SetFallAfterJump();
+            }
+            else
+            {
+                dest_calculated = WorldPosition(dest_calculated.getMapId(), ox, oy, oz);
+                bot->SetFallInformation(0, maxHeight);
+            }
+
+        }
+        else
+            SetFallAfterJump();
+
 
         // add moveflags
 #ifdef MANGOSBOT_TWO
@@ -1465,32 +1563,31 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
         bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
 #else
         bot->m_movementInfo.SetMovementFlags(MOVEFLAG_JUMPING);
-        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
+        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_BACKWARD);
 #endif
-
-        // copy MovementInfo
-        MovementInfo movementInfo = bot->m_movementInfo;
 
         // send ack
         WorldPacket ack(CMSG_MOVE_KNOCK_BACK_ACK);
-        movementInfo.jump.cosAngle = vcos;
-        movementInfo.jump.sinAngle = vsin;
-        movementInfo.jump.zspeed = -verticalSpeed;
-        movementInfo.jump.xyspeed = horizontalSpeed;
+        bot->m_movementInfo.jump.cosAngle = vcos;
+        bot->m_movementInfo.jump.sinAngle = vsin;
+        bot->m_movementInfo.jump.zspeed = -verticalSpeed;
+        bot->m_movementInfo.jump.xyspeed = horizontalSpeed;
 #ifdef MANGOSBOT_TWO
         ack << bot->GetObjectGuid().WriteAsPacked();
 #else
         ack << bot->GetObjectGuid();
 #endif
         ack << uint32(0);
-        ack << movementInfo;
+        ack << bot->m_movementInfo;
         bot->GetSession()->HandleMoveKnockBackAck(ack);
 
-        // set jump destination for MSG_LAND packet
-        SetJumpDestination(Position(fx, fy, fz, bot->GetOrientation()));
-
-        //bot->SendHeartBeat();
-
+        // write jump time
+        uint32 curTime = sWorld.GetCurrentMSTime();
+        jumpTime = curTime + sWorld.GetAverageDiff() + (uint32)(timeToLand * IN_MILLISECONDS) + 1000;
+        SetJumpDestination(dest_calculated);
+        bot->Relocate(dest_calculated.getX(), dest_calculated.getY(), dest_calculated.getZ());
+        //bot->m_movementInfo.ChangePosition(dest_calculated.getX(), dest_calculated.getY(), dest_calculated.getZ(), bot->GetOrientation());
+        sLog.outDetail("%s: KNOCKBACK x: %f, y: %f, z: %f, time: %f, dist: %f, maxHeight: %f inPlace: %u, landTime: %u", bot->GetName(), dest_calculated.getX(), dest_calculated.getY(), dest_calculated.getZ(), timeToLand, distToLand, maxHeight, jumpInPlace, jumpTime);
         return;
     }
 	default:
@@ -1756,140 +1853,9 @@ void PlayerbotAI::DoNextAction(bool min)
     }
 #endif
 
-    // land after knockback/jump
-#ifdef MANGOSBOT_TWO
-    if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
-#else
-    if (bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING))
-#endif
-    {
-        //// stop movement
-        //bot->InterruptMoving(true);
-        //bot->GetMotionMaster()->Clear();
-        //bot->GetMotionMaster()->MoveIdle();
-
-        // remove moveflags
-#ifdef MANGOSBOT_TWO
-        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_FALLING);
-        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_PENDINGSTOP);
-#else
-        bot->m_movementInfo.RemoveMovementFlag(MOVEFLAG_JUMPING);
-#endif
-
-        // set jump destination
-        bot->m_movementInfo.pos = !GetJumpDestination().IsEmpty() ? GetJumpDestination() : bot->GetPosition();
-        bot->m_movementInfo.jump = MovementInfo::JumpInfo();
-
-        WorldPacket land(MSG_MOVE_FALL_LAND);
-#ifdef MANGOSBOT_TWO
-        land << bot->GetObjectGuid().WriteAsPacked();
-#endif
-        land << bot->m_movementInfo;
-        bot->GetSession()->HandleMovementOpcodes(land);
-
-        // move stop
-        WorldPacket stop(MSG_MOVE_STOP);
-#ifdef MANGOSBOT_TWO
-        stop << bot->GetObjectGuid().WriteAsPacked();
-#endif
-        stop << bot->m_movementInfo;
-        bot->GetSession()->HandleMovementOpcodes(stop);
-
-        // stop movement
-        StopMoving();
-
-        ResetJumpDestination();
-    }
-
     if (bot->IsTaxiFlying())
     {        
         return;
-    }
-
-    // random jumping (WIP, not working properly)
-    bool randomJump = false;
-    if (randomJump && !inCombat /*&& (!master || (master && sServerFacade.GetDistance2d(bot, master) < 20.0f)) && !bot->m_movementInfo.HasMovementFlag(MOVEFLAG_JUMPING) && !bot->IsMoving()*/)
-    {
-        if (!urand(0, 50))
-        {
-            //float dx, dy, dz = 0.f;
-            //if (bot->IsMoving())
-            //    bot->GetMotionMaster()->GetDestination(dx, dy, dz);
-
-            float angle = master ? master->GetOrientation() : bot->GetOrientation();
-            //if (angle > M_PI_F)
-            //    angle -= 2.0f * M_PI_F;
-
-            float vsin = 1.f;// sin(angle);
-            float vcos = 0.f;// cos(angle);
-
-            // calculate jump time
-            float moveTimeHalf = 7.96f / 19.29f;
-
-            // calculate jump distance
-            float dis = 0.f;// 2 * moveTimeHalf * bot->GetSpeed(MOVE_RUN);
-            float max_height = -Movement::computeFallElevation(moveTimeHalf, false, -7.96f);
-
-            // calculate jump destination
-            float ox, oy, oz;
-            bot->GetPosition(ox, oy, oz);
-            float fx = ox + dis * vsin;
-            float fy = oy + dis * vcos;
-            float fz = oz +0.5f;
-#ifdef MANGOSBOT_TWO
-            bot->GetMap()->GetHitPosition(ox, oy, oz + 2.5f, fx, fy, fz, bot->GetPhaseMask(), -0.5f);
-#else
-            bot->GetMap()->GetHitPosition(ox, oy, oz + max_height, fx, fy, fz, -0.5f);
-#endif
-            bot->UpdateFallInformationIfNeed(bot->m_movementInfo, MSG_MOVE_JUMP);
-            bot->UpdateAllowedPositionZ(fx, fy, fz);
-            // set jump destination for MSG_LAND packet
-            SetJumpDestination(Position(fx, fy, fz, bot->GetOrientation()));
-
-            // set delay based on actual distance
-            //float newdis = sqrt(bot->GetDistance2d(fx, fy, DIST_CALC_NONE));
-            //SetAIInternalUpdateDelay((uint32)((newdis / dis)* moveTimeHalf * 4 * IN_MILLISECONDS));
-
-            // stop movement
-            StopMoving();
-
-            // set delay based on actual distance
-            float newdis = sqrt(bot->GetDistance2d(fx, fy, DIST_CALC_NONE));
-            SetAIInternalUpdateDelay((uint32)((newdis / dis)* moveTimeHalf * 4 * IN_MILLISECONDS));
-
-            // jump packet
-            WorldPacket jump(MSG_MOVE_JUMP);
-
-            //// add moveflags
-            //bot->m_movementInfo.SetMovementFlags(MOVEFLAG_JUMPING);
-            //bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
-
-            // copy MovementInfo
-            MovementInfo movementInfo = bot->m_movementInfo;
-
-            // write jump info
-            movementInfo.jump.zspeed = -7.96f;
-            movementInfo.jump.cosAngle = vcos;
-            movementInfo.jump.sinAngle = vsin;
-            movementInfo.jump.xyspeed = 0.f;// bot->GetSpeed(MOVE_RUN);
-            //movementInfo.jump.start = movementInfo.pos;
-            //movementInfo.jump.startClientTime = WorldTimer::getMSTime();
-            //movementInfo.pos = bot->GetPosition();
-
-            // write packet info
-#ifndef MANGOSBOT_ZERO
-            jump << bot->GetObjectGuid().WriteAsPacked();
-#endif
-            jump << movementInfo;
-            bot->GetSession()->HandleMovementOpcodes(jump);
-            //bot->SendHeartBeat();
-
-            //bot->m_movementInfo.ChangePosition(fx, fy, fz, bot->GetOrientation());
-
-            // add moveflag
-            //bot->m_movementInfo.AddMovementFlag(MOVEFLAG_PENDINGSTOP);
-            //bot->SendHeartBeat();
-        }
     }
 }
 
@@ -3286,9 +3252,14 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
     }
 
     // Fail the cast if the bot is moving and the spell is a casting/channeled spell
-    const bool isMoving = !bot->IsStopped();
+    const bool isMoving = bot->IsStopped() || bot->IsFalling();
     if (isMoving && ((GetSpellCastTime(pSpellInfo, bot, spell) > 0) || (IsChanneledSpell(pSpellInfo) && (GetSpellDuration(pSpellInfo) > 0))))
     {
+        if (IsJumping() || bot->IsFalling())
+        {
+            spell->cancel();
+            return false;
+        }
         StopMoving();
     }
 
@@ -3389,7 +3360,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
         if (bot->GetMotionMaster()->top()->GetMovementGeneratorType() != IDLE_MOTION_TYPE)
             isMoving = true;
 
-    if (!bot->IsStopped())
+    if (!bot->IsStopped() || bot->IsFalling())
         isMoving = true;
 
     if (!sServerFacade.isMoving(bot) || isMoving) bot->SetFacingTo(bot->GetAngleAt(bot->GetPositionX(), bot->GetPositionY(), x, y));
@@ -3493,6 +3464,11 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
 
     if (sServerFacade.isMoving(bot) && spell->GetCastTime())
     {
+        if (IsJumping() || bot->IsFalling())
+        {
+            spell->cancel();
+            return false;
+        }
         bot->StopMoving();
     }
 
@@ -3873,19 +3849,21 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
     SetAIInternalUpdateDelay(GetSpellCastDuration(spell));
 }
 
-void PlayerbotAI::InterruptSpell()
+void PlayerbotAI::InterruptSpell(bool withMeleeAndAuto)
 {
     for (int type = CURRENT_MELEE_SPELL; type < CURRENT_CHANNELED_SPELL; type++)
     {
-        Spell* spell = bot->GetCurrentSpell((CurrentSpellTypes)type);
-        if (!spell)
-            continue;
-
-        if (IsPositiveSpell(spell->m_spellInfo))
-            continue;
-
-        bot->InterruptSpell((CurrentSpellTypes)type);
-        SpellInterrupted(spell->m_spellInfo->Id);
+        if (!withMeleeAndAuto)
+        {
+            if (type == CURRENT_MELEE_SPELL || type == CURRENT_AUTOREPEAT_SPELL)
+                continue;
+        }
+        Spell* currentSpell = bot->GetCurrentSpell((CurrentSpellTypes)type);
+        if (currentSpell && currentSpell->CanBeInterrupted())
+        {
+            bot->InterruptSpell((CurrentSpellTypes)type);
+            SpellInterrupted(currentSpell->m_spellInfo->Id);
+        }
     }
 }
 
@@ -5958,13 +5936,14 @@ bool PlayerbotAI::CanMove()
         bot->IsTaxiFlying() ||
         (sServerFacade.UnitIsDead(bot) && !bot->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST)) ||
         bot->IsBeingTeleported() ||
-        bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL))
-        //bot->m_movementInfo.HasMovementFlag(MOVEFLAG_FALLING))
+        bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL) ||
+        IsJumping() ||
+        bot->IsFalling())
         return false;
 
     MotionMaster& mm = *bot->GetMotionMaster();
 #ifdef CMANGOS
-    return mm.GetCurrentMovementGeneratorType() != TAXI_MOTION_TYPE;
+    return mm.GetCurrentMovementGeneratorType() != TAXI_MOTION_TYPE && mm.GetCurrentMovementGeneratorType() != FALL_MOTION_TYPE;
 #endif
 #ifdef MANGOS
     return mm.GetCurrentMovementGeneratorType() != FLIGHT_MOTION_TYPE;
@@ -5979,7 +5958,10 @@ void PlayerbotAI::StopMoving()
     if (IsInVehicle())
         return;
 
-    // interrupt movement as much as we can...
+    if (bot->IsBeingTeleportedFar())
+        return;
+
+    bot->m_movementInfo.SetMovementFlags(MOVEFLAG_NONE);
     bot->InterruptMoving(true);
     MovementInfo mInfo = bot->m_movementInfo;
     float x, y, z;
@@ -5993,8 +5975,11 @@ void PlayerbotAI::StopMoving()
     data << mInfo;
     bot->GetSession()->HandleMovementOpcodes(data);
 
-    bot->GetMotionMaster()->Clear(false, true);
-    bot->GetMotionMaster()->MoveIdle();
+    if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType())
+    {
+        bot->GetMotionMaster()->Clear(false, true);
+        bot->GetMotionMaster()->MoveIdle();
+    }
 }
 
 bool PlayerbotAI::IsInRealGuild()

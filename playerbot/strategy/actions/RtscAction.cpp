@@ -136,7 +136,46 @@ bool RTSCAction::Execute(Event& event)
 		WorldPosition spellPosition = AI_VALUE(WorldPosition, "see spell location");
 		if (spellPosition)
 			return MoveToSpell(requester, spellPosition);
-	}	
+	}
+
+    if (command == "jump")
+    {
+        WorldPosition spellPosition = AI_VALUE2(WorldPosition, "RTSC saved location", "jump");
+        if (!spellPosition)
+        {
+            SET_AI_VALUE(string, "RTSC next spell action", command);
+        }
+        else
+        {
+            WorldPosition jumpPosition = AI_VALUE2(WorldPosition, "RTSC saved location", "jump point");
+            if (!jumpPosition)
+            {
+                RESET_AI_VALUE2(WorldPosition, "RTSC saved location", "jump");
+                RESET_AI_VALUE2(WorldPosition, "RTSC saved location", "jump point");
+                ai->ChangeStrategy("-rtsc jump", BotState::BOT_STATE_NON_COMBAT);
+                ostringstream out;
+                out << "Can't finish previous jump! Cancelling...";
+                ai->TellError(requester, out.str());
+            }
+            else
+            {
+                ostringstream out;
+                out << "Another jump is in process! Use 'rtsc jump reset' to stop it";
+                ai->TellError(requester, out.str());
+                return false;
+            }
+        }
+
+        return true;
+    }
+    if (command == "jump reset")
+    {
+        RESET_AI_VALUE2(WorldPosition, "RTSC saved location", "jump");
+        RESET_AI_VALUE2(WorldPosition, "RTSC saved location", "jump point");
+        ai->ChangeStrategy("-rtsc jump", BotState::BOT_STATE_NON_COMBAT);
+
+        return true;
+    }
 
 	return false;
 }

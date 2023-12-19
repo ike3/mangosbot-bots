@@ -234,7 +234,7 @@ namespace ai
         vector<WorldPosition> fromPointsArray(const std::vector<G3D::Vector3>& path) const;
 
         //Pathfinding
-        vector<WorldPosition> getPathStepFrom(const WorldPosition& startPos, const Unit* bot) const;
+        vector<WorldPosition> getPathStepFrom(const WorldPosition& startPos, const Unit* bot, bool forceNormalPath = false) const;
         vector<WorldPosition> getPathFromPath(const vector<WorldPosition>& startPath, const Unit* bot, const uint8 maxAttempt = 40) const;
         vector<WorldPosition> getPathFrom(const WorldPosition& startPos, const Unit* bot) { return getPathFromPath({ startPos }, bot); };
         vector<WorldPosition> getPathTo(WorldPosition endPos, const Unit* bot) const { return endPos.getPathFrom(*this, bot); }

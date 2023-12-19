@@ -220,4 +220,11 @@ namespace ai
         RpgItemTrigger(PlayerbotAI* ai, string name = "rpg item") : RpgTrigger(ai, name) {}
         virtual bool IsActive();
     };
+
+    class RandomJumpTrigger : public Trigger
+    {
+    public:
+        RandomJumpTrigger(PlayerbotAI* ai, string name = "random jump") : Trigger(ai, name, 2) {}
+        bool IsActive() override;
+    };
 }

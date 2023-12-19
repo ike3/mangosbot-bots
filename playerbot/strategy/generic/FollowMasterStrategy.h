@@ -40,4 +40,22 @@ namespace ai
         virtual vector<string> GetRelatedStrategies() { return { "follow", "stay", "runaway","flee from adds", "guard" }; }
 #endif
     };
+
+    class FollowJumpStrategy : public Strategy
+    {
+    public:
+        FollowJumpStrategy(PlayerbotAI* ai) : Strategy(ai) {};
+        string getName() override { return "follow jump"; }
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "follow jump"; } //Must equal iternal name
+        virtual string GetHelpDescription() {
+            return "This strategy makes bot jump when following.\n";
+        }
+        virtual vector<string> GetRelatedStrategies() { return { "follow" }; }
+#endif
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitReactionTriggers(std::list<TriggerNode*>& triggers) override;
+    };
 }

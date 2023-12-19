@@ -683,3 +683,8 @@ bool RpgItemTrigger::IsActive()
 
     return false;
 }
+
+bool RandomJumpTrigger::IsActive()
+{
+    return bot->IsInWorld() && ai->HasPlayerNearby() && !ai->IsJumping() && frand(0.0f, 1.0f) < sPlayerbotAIConfig.jumpRandomChance;
+}

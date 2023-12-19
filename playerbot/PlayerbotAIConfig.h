@@ -201,6 +201,18 @@ public:
 
     bool randomBotLoginWithPlayer;
 
+    bool jumpInBg;
+    bool jumpWithPlayer;
+    bool jumpFollow;
+    bool jumpChase;
+    bool useKnockback;
+    float jumpNoCombatChance;
+    float jumpMeleeInCombatChance;
+    float jumpRandomChance;
+    float jumpInPlaceChance;
+    float jumpBackwardChance;
+    float jumpHeightLimit;
+
     std::mutex m_logMtx;
 
     std::list<string> allowedLogFiles;

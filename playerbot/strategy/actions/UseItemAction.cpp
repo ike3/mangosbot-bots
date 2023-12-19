@@ -250,7 +250,10 @@ bool UseItemAction::UseGameObject(Player* requester, ObjectGuid guid)
         || go->GetGoState() != GO_STATE_READY)
         return false;
 
-   go->Use(bot);
+    std::unique_ptr<WorldPacket> packet(new WorldPacket(CMSG_GAMEOBJ_USE));
+    *packet << guid;
+    bot->GetSession()->QueuePacket(std::move(packet));
+    
    ostringstream out; out << "Using " << chat->formatGameobject(go);
    ai->TellPlayerNoFacing(requester, out.str(), PlayerbotSecurityLevel::PLAYERBOT_SECURITY_ALLOW_ALL, false);
    return true;
@@ -1061,6 +1064,8 @@ bool UseHearthStoneAction::Execute(Event& event)
         {
             WorldPacket emptyPacket;
             bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+            bot->UpdateSpeed(MOVE_RUN, true);
+            bot->UpdateSpeed(MOVE_RUN, false);
 
             if (bot->IsFlying())
                 bot->GetMotionMaster()->MoveFall();

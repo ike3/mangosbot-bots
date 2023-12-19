@@ -141,6 +141,8 @@ bool RpgTaxiAction::Execute(Event& event)
 
     WorldPacket emptyPacket;
     bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+    bot->UpdateSpeed(MOVE_RUN, true);
+    bot->UpdateSpeed(MOVE_RUN, false);
 
     uint32 node = sObjectMgr.GetNearestTaxiNode(guidP.getX(), guidP.getY(), guidP.getZ(), guidP.getMapId(), bot->GetTeam());
 

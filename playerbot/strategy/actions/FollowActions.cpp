@@ -32,6 +32,9 @@ bool FollowAction::Execute(Event& event)
 
 bool FollowAction::isUseful()
 {
+    if (!ai->CanMove())
+        return false;
+
     float distance = 0;
     Unit* followTarget = AI_VALUE(Unit*, "follow target");
     Formation* formation = AI_VALUE(Formation*, "formation");
@@ -138,6 +141,9 @@ bool FleeToMasterAction::Execute(Event& event)
 
 bool FleeToMasterAction::isUseful()
 {
+    if (!ai->CanMove())
+        return false;
+
     if (!ai->GetGroupMaster())
         return false;
 

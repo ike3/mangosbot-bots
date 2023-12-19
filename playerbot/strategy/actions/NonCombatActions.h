@@ -55,6 +55,8 @@ namespace ai
                 {
                     WorldPacket emptyPacket;
                     bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+                    bot->UpdateSpeed(MOVE_RUN, true);
+                    bot->UpdateSpeed(MOVE_RUN, false);
                 }
 
                 ai->CastSpell(24355, bot);
@@ -134,6 +136,8 @@ namespace ai
                 {
                     WorldPacket emptyPacket;
                     bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+                    bot->UpdateSpeed(MOVE_RUN, true);
+                    bot->UpdateSpeed(MOVE_RUN, false);
                 }
 
                 ai->CastSpell(24005, bot);
