@@ -102,6 +102,8 @@ bool AttackAction::Attack(Player* requester, Unit* target)
         {
             WorldPacket emptyPacket;
             bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+            bot->UpdateSpeed(MOVE_RUN, true);
+            bot->UpdateSpeed(MOVE_RUN, false);
             
             if (bot->IsFlying())
             {

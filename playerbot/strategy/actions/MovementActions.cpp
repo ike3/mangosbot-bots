@@ -506,6 +506,8 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
                 WorldPacket emptyPacket;
                 bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+                bot->UpdateSpeed(MOVE_RUN, true);
+                bot->UpdateSpeed(MOVE_RUN, false);
 
                 if (bot->IsFlying())
                     bot->GetMotionMaster()->MoveFall();
