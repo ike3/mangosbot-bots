@@ -3831,19 +3831,21 @@ void PlayerbotAI::WaitForSpellCast(Spell *spell)
     SetAIInternalUpdateDelay(GetSpellCastDuration(spell));
 }
 
-void PlayerbotAI::InterruptSpell()
+void PlayerbotAI::InterruptSpell(bool withMeleeAndAuto)
 {
     for (int type = CURRENT_MELEE_SPELL; type < CURRENT_CHANNELED_SPELL; type++)
     {
-        Spell* spell = bot->GetCurrentSpell((CurrentSpellTypes)type);
-        if (!spell)
-            continue;
-
-        if (IsPositiveSpell(spell->m_spellInfo))
-            continue;
-
-        bot->InterruptSpell((CurrentSpellTypes)type);
-        SpellInterrupted(spell->m_spellInfo->Id);
+        if (!withMeleeAndAuto)
+        {
+            if (type == CURRENT_MELEE_SPELL || type == CURRENT_AUTOREPEAT_SPELL)
+                continue;
+        }
+        Spell* currentSpell = bot->GetCurrentSpell((CurrentSpellTypes)type);
+        if (currentSpell && currentSpell->CanBeInterrupted())
+        {
+            bot->InterruptSpell((CurrentSpellTypes)type);
+            SpellInterrupted(currentSpell->m_spellInfo->Id);
+        }
     }
 }
 
