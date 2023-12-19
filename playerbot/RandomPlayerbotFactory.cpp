@@ -829,7 +829,6 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
             uint32 bot = fields[0].GetUInt32();
             randomBots.push_back(bot);
         } while (results->NextRow());
-        delete results;
     }
 
     if (sPlayerbotAIConfig.deleteRandomBotArenaTeams && !sRandomPlayerbotMgr.arenaTeamsDeleted)
@@ -941,7 +940,6 @@ void RandomPlayerbotFactory::CreateRandomArenaTeams()
 
         Field *fields = results->Fetch();
         uint8 slot = fields[0].GetUInt32();
-        delete results;
 
         std::string arenaTypeName;
         ArenaType type = ARENA_TYPE_2v2;
@@ -1045,7 +1043,6 @@ string RandomPlayerbotFactory::CreateRandomArenaTeamName()
 
     Field *fields = result->Fetch();
     uint32 maxId = fields[0].GetUInt32();
-    delete result;
 
     uint32 id = urand(0, maxId);
     result = CharacterDatabase.PQuery("SELECT n.name FROM ai_playerbot_arena_team_names n "
@@ -1059,7 +1056,6 @@ string RandomPlayerbotFactory::CreateRandomArenaTeamName()
 
     fields = result->Fetch();
     string aname = fields[0].GetString();
-    delete result;
     return aname;
 }
 #endif

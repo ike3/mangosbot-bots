@@ -312,7 +312,6 @@ RandomPlayerbotMgr::RandomPlayerbotMgr() : PlayerbotHolder(), processTicks(0), l
                 uint32 lowguid = fields[0].GetUInt32();
                 arenaTeamMembers.push_back(lowguid);
             } while (results->NextRow());
-            delete results;
         }
 #endif
         // sync event timers
