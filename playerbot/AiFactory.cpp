@@ -540,10 +540,10 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
             {
                 combatEngine->addStrategy("rpg jump");
             }
-
-            if (sPlayerbotAIConfig.jumpChase)
-                combatEngine->addStrategy("chase jump");
         }
+
+        if (sPlayerbotAIConfig.jumpChase)
+            combatEngine->addStrategy("chase jump");
 
         // remove threat for now
         //engine->removeStrategy("threat");
@@ -839,10 +839,10 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         {
             nonCombatEngine->addStrategy("rpg jump");
         }
-
-        if (sPlayerbotAIConfig.jumpFollow)
-            nonCombatEngine->addStrategy("follow jump");
     }
+
+    if (sPlayerbotAIConfig.jumpFollow)
+        nonCombatEngine->addStrategy("follow jump");
 
     if ((facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player)) && !player->InBattleGround())
     {   
