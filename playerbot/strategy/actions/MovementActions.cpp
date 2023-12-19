@@ -319,7 +319,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
 
     if(!isVehicle && !IsMovingAllowed())
     {
-        if(sServerFacade.UnitIsDead(bot) || bot->IsMoving())
+        if(sServerFacade.UnitIsDead(bot) || sServerFacade.isMoving(bot))
         {
             return false;
         }
