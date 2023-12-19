@@ -1064,6 +1064,8 @@ bool UseHearthStoneAction::Execute(Event& event)
         {
             WorldPacket emptyPacket;
             bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
+            bot->UpdateSpeed(MOVE_RUN, true);
+            bot->UpdateSpeed(MOVE_RUN, false);
 
             if (bot->IsFlying())
                 bot->GetMotionMaster()->MoveFall();
