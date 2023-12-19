@@ -19,6 +19,7 @@ namespace ai
         FollowChatShortcutAction(PlayerbotAI* ai) : MovementAction(ai, "follow chat shortcut") {}
         virtual bool Execute(Event& event);
         virtual bool isPossible() { return true; }
+        virtual bool isUseful() { return true; }
     };
 
     class StayChatShortcutAction : public ReturnPositionResetAction

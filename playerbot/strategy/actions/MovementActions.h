@@ -37,7 +37,8 @@ namespace ai
         void ClearIdleState();
         void UpdateMovementState();
 
-        virtual bool isPossible() override;
+        bool isPossible() override;
+        bool isUseful() override;
 
         void CreateWp(Player* wpOwner, float x, float y, float z, float o, uint32 entry, bool important = false);
         float GetAngle(const float x1, const float y1, const float x2, const float y2);

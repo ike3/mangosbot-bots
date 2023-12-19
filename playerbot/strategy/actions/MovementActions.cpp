@@ -37,11 +37,12 @@ void MovementAction::CreateWp(Player* wpOwner, float x, float y, float z, float 
 
 bool MovementAction::isPossible()
 {
-    // Do not move if stay strategy is set
-    if (ai->HasStrategy("stay", ai->GetState()))
-        return false;
+    return ai->CanMove();
+}
 
-    return true;
+bool MovementAction::isUseful()
+{
+    return !ai->HasStrategy("stay", ai->GetState());
 }
 
 bool MovementAction::MoveNear(uint32 mapId, float x, float y, float z, float distance)
@@ -2123,7 +2124,7 @@ bool MoveOutOfEnemyContactAction::Execute(Event& event)
 
 bool MoveOutOfEnemyContactAction::isUseful()
 {
-    return AI_VALUE2(bool, "inside target", "current target");
+    return MovementAction::isUseful() && AI_VALUE2(bool, "inside target", "current target");
 }
 
 bool SetFacingTargetAction::Execute(Event& event)
@@ -2198,6 +2199,9 @@ bool SetBehindTargetAction::Execute(Event& event)
 
 bool SetBehindTargetAction::isUseful()
 {
+    if(!MovementAction::isUseful())
+        return false;
+
     Unit* target = AI_VALUE(Unit*, "current target");
     if (target && !bot->IsFacingTargetsBack(target))
     {
@@ -2243,6 +2247,9 @@ bool MoveOutOfCollisionAction::Execute(Event& event)
 
 bool MoveOutOfCollisionAction::isUseful()
 {
+    if(!MovementAction::isUseful())
+        return false;
+
 #ifdef MANGOSBOT_TWO
     // do not avoid collision on vehicle
     if (ai->IsInVehicle())
