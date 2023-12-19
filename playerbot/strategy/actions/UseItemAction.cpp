@@ -167,6 +167,23 @@ vector<uint32> ParseItems(const string& text)
     return itemIds;
 }
 
+bool IsFoodOrDrink(ItemPrototype const* proto, uint32 spellCategory)
+{
+    return proto->Class == ITEM_CLASS_CONSUMABLE && 
+            (proto->SubClass == ITEM_SUBCLASS_FOOD || proto->SubClass == ITEM_SUBCLASS_CONSUMABLE) && 
+            proto->Spells[0].SpellCategory == spellCategory;
+}
+
+bool IsFood(ItemPrototype const* proto)
+{
+    return IsFoodOrDrink(proto, 11);
+}
+
+bool IsDrink(ItemPrototype const* proto)
+{
+    return IsFoodOrDrink(proto, 59);
+}
+
 bool UseItemAction::Execute(Event& event)
 {
     Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
@@ -197,7 +214,8 @@ bool UseItemAction::Execute(Event& event)
                 itemTarget = tmp;
             }
 
-            if(item->IsPotion() || itemTarget->GetProto() == item->GetProto())
+            ItemPrototype const* proto = item->GetProto();
+            if(item->IsPotion() || IsFood(proto) || IsDrink(proto) || itemTarget->GetProto() == proto)
             {
                 return UseItemAuto(requester, item);
             }
@@ -276,8 +294,8 @@ bool UseItemAction::UseItemAuto(Player* requester, Item* item)
     uint8 unk_flags = 0;
 
     ItemPrototype const* proto = item->GetProto();
-    bool isDrink = proto->Spells[0].SpellCategory == 59;
-    bool isFood = proto->Spells[0].SpellCategory == 11;
+    bool isDrink = IsDrink(proto);
+    bool isFood = IsFood(proto);
 
     for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
     {
@@ -334,8 +352,7 @@ bool UseItemAction::UseItemAuto(Player* requester, Item* item)
     packet.appendPackGUID(bot->GetObjectGuid());
 
     SetDuration(sPlayerbotAIConfig.globalCoolDown);
-    if (proto->Class == ITEM_CLASS_CONSUMABLE && (proto->SubClass == ITEM_SUBCLASS_FOOD || proto->SubClass == ITEM_SUBCLASS_CONSUMABLE) &&
-        (isFood || isDrink))
+    if (isFood || isDrink)
     {
         if (sServerFacade.IsInCombat(bot))
             return false;
@@ -559,7 +576,7 @@ bool UseItemAction::UseItem(Player* requester, Item* item, ObjectGuid goGuid, It
                 break;
             }
         }
-
+        
         if(!needsItemTarget)
         {
             if (unitTarget)
