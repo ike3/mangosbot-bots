@@ -1014,7 +1014,7 @@ bool UseItemIdAction::isUseful()
 {
     if (getQualifier().find_first_not_of("0123456789") != std::string::npos)
     {
-        sLog.outError("UseItemIdAction::isUseful with qualifier %s, should be number.", getQualifier());
+        sLog.outError("UseItemIdAction::isUseful with qualifier %s, should be number.", getQualifier().c_str());
         return false;
     }
 
