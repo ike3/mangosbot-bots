@@ -437,8 +437,16 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
                     break;
                 }
             }
+            else
             {
+#ifndef MANGOSBOT_ZERO
+                if (!bot->HasAura(46699)) // Thori'dal
+                {
+                    PlayerbotFactory(bot, bot->GetLevel(), 0).InitAmmo();
+                }
+#else
                 PlayerbotFactory(bot, bot->GetLevel(), 0).InitAmmo();
+#endif
             }
         }
     }
