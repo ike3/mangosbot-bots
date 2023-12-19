@@ -546,6 +546,9 @@ vector<WorldPosition*> ChooseTravelTargetAction::getLogicalPoints(Player* reques
         return partitions[l];
     }
 
+    if (requester && centerLocation.fDist(bot) > 500.0f) //Try again with bot as center.
+        return getLogicalPoints(nullptr, travelPoints);
+
     return partitions.back();
 }
 
