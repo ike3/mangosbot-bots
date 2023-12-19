@@ -905,10 +905,9 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
         if (!bot->IsStandState())
             bot->SetStandState(UNIT_STAND_STATE_STAND);
 
-        if (bot->IsNonMeleeSpellCasted(true))
+        if (bot->IsNonMeleeSpellCasted(true, false, true))
         {
-            bot->CastStop();
-            ai->InterruptSpell();
+            ai->InterruptSpell(false);
         }
     }
 
