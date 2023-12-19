@@ -116,6 +116,19 @@ bool DebugAction::Execute(Event& event)
         }
         return true;
     }
+    else if (text == "grid" && isMod)
+    {
+        WorldPosition botPos = bot;
+        string loaded = botPos.getMap()->IsLoaded(botPos.getX(), botPos.getY()) ? "loaded" : "unloaded";
+
+        ostringstream out;
+
+        out << "Map: " << botPos.getMapId() << " " << botPos.getAreaName() << " Grid: " << botPos.getGridPair().x_coord << "," << botPos.getGridPair().y_coord << " [" << loaded << "] Cell: " << botPos.getCellPair().x_coord << "," << botPos.getCellPair().y_coord;
+
+        bot->Whisper(out.str().c_str(), LANG_UNIVERSAL, event.getOwner()->GetObjectGuid());
+
+        return true;
+    }
     else if (text.find("test" ) == 0 && isMod)
     {
         string param = "";
