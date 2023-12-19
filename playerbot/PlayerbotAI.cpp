@@ -355,7 +355,11 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         else
         {
             bot->SetFallInformation(0, bot->m_movementInfo.pos.z);
+#ifdef MANGOSBOT_ZERO
             bot->m_movementInfo.AddMovementFlag(MOVEFLAG_JUMPING);
+#else
+            bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FALLING);
+#endif
             // use motion master (disabled for now, makes bot move to ceiling it just hit)
             if (false && bot->GetMotionMaster()->MoveFall())
             {
@@ -1557,12 +1561,11 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
 
 
         // add moveflags
-#ifdef MANGOSBOT_TWO
-        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_PENDINGSTOP);
-        bot->m_movementInfo.SetMovementFlags(MOVEFLAG_FALLING);
-        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FORWARD);
-#else
+#ifdef MANGOSBOT_ZERO
         bot->m_movementInfo.SetMovementFlags(MOVEFLAG_JUMPING);
+        bot->m_movementInfo.AddMovementFlag(MOVEFLAG_BACKWARD);
+#else
+        bot->m_movementInfo.SetMovementFlags(MOVEFLAG_FALLING);
         bot->m_movementInfo.AddMovementFlag(MOVEFLAG_BACKWARD);
 #endif
 
@@ -5938,7 +5941,12 @@ bool PlayerbotAI::CanMove()
         bot->IsBeingTeleported() ||
         bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL) ||
         IsJumping() ||
+#ifdef MANGOSBOT_ZERO
         bot->IsFalling())
+#else
+        bot->IsFalling() ||
+        bot->IsJumping())
+#endif
         return false;
 
     MotionMaster& mm = *bot->GetMotionMaster();

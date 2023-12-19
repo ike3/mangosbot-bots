@@ -2873,7 +2873,7 @@ bool JumpAction::DoJump(WorldPosition &dest, float angle, float vSpeed, float hS
         bot->m_movementInfo.AddMovementFlag(jumpBackward ? MOVEFLAG_BACKWARD : MOVEFLAG_FORWARD);
         WorldPacket move(jumpBackward ? MSG_MOVE_START_BACKWARD : MSG_MOVE_START_FORWARD);
 // write packet info
-#ifndef MANGOSBOT_ZERO
+#ifdef MANGOSBOT_TWO
         move << bot->GetObjectGuid().WriteAsPacked();
 #endif
         move << bot->m_movementInfo;
@@ -2895,11 +2895,15 @@ bool JumpAction::DoJump(WorldPosition &dest, float angle, float vSpeed, float hS
     sLog.outDetail("%s: Jump x: %f, y: %f, z: %f, time: %f, dist: %f, inPlace: %u, landTime: %u, curTime: %u", bot->GetName(), dest.getX(), dest.getY(), dest.getZ(), timeToLand, distanceToLand, jumpInPlace, jumpTime, curTime);
 
     // send jump packet
+#ifdef MANGOSBOT_ZERO
     bot->m_movementInfo.AddMovementFlag(MOVEFLAG_JUMPING);
+#else
+    bot->m_movementInfo.AddMovementFlag(MOVEFLAG_FALLING);
+#endif
 
     WorldPacket jump(MSG_MOVE_JUMP);
     // write packet info
-#ifndef MANGOSBOT_ZERO
+#ifdef MANGOSBOT_TWO
     jump << bot->GetObjectGuid().WriteAsPacked();
 #endif
     jump << bot->m_movementInfo;
