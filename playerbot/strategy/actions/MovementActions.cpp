@@ -2628,7 +2628,7 @@ WorldPosition JumpAction::CalculateJumpParameters(const WorldPosition& src, Unit
 
             WorldPosition destination = WorldPosition(src.getMapId(), fx, fy ,fz);
             distanceToLand = sqrtf(src.sqDistance2d(destination));
-            timeToLand = CalculateJumpTime(src.getZ() + 0.5f - fz, vSpeed, ascending);
+            timeToLand = CalculateJumpTime(fz - (src.getZ() + 0.5f), vSpeed, ascending);
 
             // some error in time calculations - cancel the jump
             if (timeToLand == 0.f)
