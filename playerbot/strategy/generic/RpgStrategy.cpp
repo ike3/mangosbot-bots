@@ -190,3 +190,20 @@ void RpgCraftStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
         "castnc",
         NextAction::array(0, new NextAction("cast custom nc spell", 0.9f), NULL)));
 }
+
+void RpgJumpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
+{
+    triggers.push_back(new TriggerNode(
+        "random jump",
+        NextAction::array(0, new NextAction("jump::random", ACTION_PASSTROUGH), NULL)));
+}
+
+void RpgJumpStrategy::InitCombatTriggers(list<TriggerNode *> &triggers)
+{
+    InitNonCombatTriggers(triggers);
+}
+
+void RpgJumpStrategy::InitReactionTriggers(list<TriggerNode *> &triggers)
+{
+    InitNonCombatTriggers(triggers);
+}

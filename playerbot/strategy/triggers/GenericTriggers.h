@@ -1228,6 +1228,14 @@ namespace ai
     public:
         DispelEnrageOnTargetTrigger(PlayerbotAI* ai, string name = "dispel enrage") : DispelOnTargetTrigger(ai, name, DISPEL_ENRAGE) {}
     };
+
+    class RtscJumpTrigger : public Trigger
+    {
+    public:
+        RtscJumpTrigger(PlayerbotAI* ai) : Trigger(ai, "rtsc jump active") {}
+
+        bool IsActive() override;
+    };
 }
 
 #include "RangeTriggers.h"

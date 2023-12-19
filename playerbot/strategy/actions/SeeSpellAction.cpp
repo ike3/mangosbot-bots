@@ -136,6 +136,45 @@ bool SeeSpellAction::Execute(Event& event)
     {
         return MoveToSpell(requester, spellPosition);
     }
+    else if (nextAction == "jump")
+    {
+        RESET_AI_VALUE(string, "RTSC next spell action");
+        SET_AI_VALUE2(WorldPosition, "RTSC saved location", "jump", spellPosition);
+        bool success = ai->DoSpecificAction("jump::rtsc", Event(), true);
+        if (!success)
+        {
+            RESET_AI_VALUE2(WorldPosition, "RTSC saved location", "jump");
+            RESET_AI_VALUE2(WorldPosition, "RTSC saved location", "jump point");
+            ai->ChangeStrategy("-rtsc jump", BotState::BOT_STATE_NON_COMBAT);
+            ostringstream out;
+            out << "Can't find a way to jump!";
+            ai->TellError(requester, out.str());
+            return false;
+        }
+        else
+        {
+            WorldPosition jumpPosition = AI_VALUE2(WorldPosition, "RTSC saved location", "jump point");
+            if (jumpPosition)
+            {
+                bool couldMove = MoveToSpell(requester, jumpPosition, false);
+                if (couldMove)
+                {
+                    ai->ChangeStrategy("+rtsc jump", BotState::BOT_STATE_NON_COMBAT);
+                    return true;
+                }
+
+                RESET_AI_VALUE2(WorldPosition, "RTSC saved location", "jump");
+                RESET_AI_VALUE2(WorldPosition, "RTSC saved location", "jump point");
+                ai->ChangeStrategy("-rtsc jump", BotState::BOT_STATE_NON_COMBAT);
+                ostringstream out;
+                out << "Can't move to jump position!";
+                ai->TellError(requester, out.str());
+                return false;
+            }
+        }
+
+        return success;
+    }
     else if (nextAction.find("save ") != std::string::npos)
     {
         string locationName;

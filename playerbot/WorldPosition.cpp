@@ -787,7 +787,7 @@ vector<WorldPosition> WorldPosition::fromPointsArray(const std::vector<G3D::Vect
 }
 
 //A single pathfinding attempt from one position to another. Returns pathfinding status and path.
-vector<WorldPosition> WorldPosition::getPathStepFrom(const WorldPosition& startPos, const Unit* bot) const
+vector<WorldPosition> WorldPosition::getPathStepFrom(const WorldPosition& startPos, const Unit* bot, bool forceNormalPath) const
 {
     std::hash<std::thread::id> hasher;
     uint32 instanceId;
@@ -863,7 +863,7 @@ vector<WorldPosition> WorldPosition::getPathStepFrom(const WorldPosition& startP
         sPlayerbotAIConfig.log("pathfind_attempt.csv", out.str().c_str());
     }    
 
-    if (type == PATHFIND_INCOMPLETE || type == PATHFIND_NORMAL)
+    if ((!forceNormalPath && type == PATHFIND_INCOMPLETE) || type == PATHFIND_NORMAL)
         return fromPointsArray(points);
     else
         return {};

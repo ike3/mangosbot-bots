@@ -132,4 +132,28 @@ namespace ai
         MoveToAction(PlayerbotAI* ai, string name = "move to") : MovementAction(ai, "name"), Qualified() {}
         virtual bool Execute(Event& event);
     };
+
+    class JumpAction : public MovementAction, public Qualified
+    {
+    public:
+        JumpAction(PlayerbotAI* ai) : MovementAction(ai, "jump"), Qualified() {}
+        bool Execute(Event& event) override;
+        bool isUseful() override;
+
+        static WorldPosition CalculateJumpParameters(const WorldPosition& src, Unit* jumper, float angle, float vSpeed, float hSpeed, float &timeToLand, float &distanceToLand, float &maxHeight, bool &goodLanding, float maxJumpHeight);
+
+    private:
+        bool DoJump(WorldPosition& dest, float angle, float vSpeed, float hSpeed, float timeToLand, float distanceToLand, float maxHeight, bool goodLanding, bool jumpInPlace, bool jumpBackward, bool showOnly);
+        bool JumpTowards(const WorldPosition& src, const WorldPosition& dest, Unit* jumper, float jumpSpeed);
+        static float CalculateJumpTime(float srcZ, float destZ, float vSpeed, float hSpeed, float distance);
+        static float CalculateJumpTime(float z_diff, float vSpeed, bool ascending);
+
+        WorldPosition GetPossibleJumpStartFor(const WorldPosition& src, const WorldPosition& dest, Unit* jumper, float &requiredSpeed, float distanceTo, float distanceFrom);
+        bool CanJumpTo(const WorldPosition& src, const WorldPosition& dest, Unit* jumper, float jumpSpeed, float maxDistace = 10.0f);
+        bool CanWalkTo(const WorldPosition& src, const WorldPosition& dest, Unit* jumper, float maxDistance = sPlayerbotAIConfig.sightDistance);
+
+        static bool IsJumpSafe(const WorldPosition& src, const WorldPosition& dest, Unit* jumper);
+        static bool CanLand(const WorldPosition& dest, Unit* jumper);
+        static bool IsNotMagmaSlime(const WorldPosition& dest, Unit* jumper);
+    };
 }

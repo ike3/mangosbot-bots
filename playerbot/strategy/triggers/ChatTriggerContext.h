@@ -129,6 +129,7 @@ namespace ai
             creators["guild leader"] = &ChatTriggerContext::guild_leader;
             creators["bg free"] = &ChatTriggerContext::bg_free;
             creators["move style"] = &ChatTriggerContext::move_style;
+            creators["jump"] = &ChatTriggerContext::jump;
         }
 
     private:
@@ -245,5 +246,6 @@ namespace ai
         static Trigger* guild_leader(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "guild leader"); }
         static Trigger* bg_free(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "bg free"); }
         static Trigger* move_style(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "move style"); }
+        static Trigger* jump(PlayerbotAI* ai) { return new ChatCommandTrigger(ai, "jump"); }
     };
 };

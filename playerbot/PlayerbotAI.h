@@ -488,10 +488,13 @@ public:
     static bool IsOpposing(uint8 race1, uint8 race2);
     PlayerbotSecurity* GetSecurity() { return &security; }
 
-    Position GetJumpDestination() { return jumpDestination; }
-    void SetJumpDestination(Position pos) { jumpDestination = pos; }
-    void ResetJumpDestination() { jumpDestination = Position(); }
+    WorldPosition GetJumpDestination() { return jumpDestination; }
+    void SetJumpDestination(const WorldPosition& pos) { jumpDestination = pos; }
+    void ResetJumpDestination() { jumpDestination = WorldPosition(); }
 
+    bool IsJumping() { return jumpTime; }
+    void SetFallAfterJump() { fallAfterJump = true; }
+    void SetJumpTime(uint32 time) { jumpTime = time; }
     bool CanMove();
     void StopMoving();
     bool IsInRealGuild();
@@ -558,7 +561,9 @@ protected:
     bool isMoving = false;
     bool isWaiting = false;
     BotCheatMask cheatMask = BotCheatMask::none;
-    Position jumpDestination = Position();
+    WorldPosition jumpDestination;
+    uint32 jumpTime;
+    bool fallAfterJump;
     uint32 faceTargetUpdateDelay;
     bool isPlayerFriend = false;
     bool isMovingToTransport = false;

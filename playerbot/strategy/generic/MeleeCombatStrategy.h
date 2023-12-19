@@ -25,4 +25,22 @@ namespace ai
     private:
         void InitCombatTriggers(std::list<TriggerNode*> &triggers) override;
     };
+
+    class ChaseJumpStrategy : public Strategy
+    {
+    public:
+        ChaseJumpStrategy(PlayerbotAI* ai) : Strategy(ai) {};
+        string getName() override { return "chase jump"; }
+#ifdef GenerateBotHelp
+        virtual string GetHelpName() { return "chase jump"; } //Must equal iternal name
+        virtual string GetHelpDescription() {
+            return "This strategy makes bot jump when chasing enemies they can't reach.\n";
+        }
+        virtual vector<string> GetRelatedStrategies() { return { "melee" }; }
+#endif
+    private:
+        void InitNonCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitCombatTriggers(std::list<TriggerNode*>& triggers) override;
+        void InitReactionTriggers(std::list<TriggerNode*>& triggers) override;
+    };
 }

@@ -852,3 +852,8 @@ bool DispelOnTargetTrigger::IsActive()
 
     return false;
 }
+
+bool RtscJumpTrigger::IsActive()
+{
+    return AI_VALUE2(WorldPosition, "RTSC saved location", "jump point") && AI_VALUE2(WorldPosition, "RTSC saved location", "jump");
+}

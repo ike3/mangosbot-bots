@@ -239,6 +239,9 @@ namespace ai
             creators["rpg duel"] = &TriggerContext::rpg_duel;
             creators["rpg item"] = &TriggerContext::rpg_item;
 
+            creators["random jump"] = &TriggerContext::random_jump;
+            creators["rtsc jump active"] = &TriggerContext::rtsc_jump_active;
+
             // racials
             creators["berserking"] = &TriggerContext::berserking;
             creators["blood fury"] = &TriggerContext::blood_fury;
@@ -490,6 +493,9 @@ namespace ai
         static Trigger* rpg_trade_useful(PlayerbotAI* ai) { return new RpgTradeUsefulTrigger(ai); }
         static Trigger* rpg_duel(PlayerbotAI* ai) { return new RpgDuelTrigger(ai); }
         static Trigger* rpg_item(PlayerbotAI* ai) { return new RpgItemTrigger(ai); }
+
+        static Trigger* random_jump(PlayerbotAI* ai) { return new RandomJumpTrigger(ai); }
+        static Trigger* rtsc_jump_active(PlayerbotAI* ai) { return new RtscJumpTrigger(ai); }
 
         // Dungeon Triggers
         static Trigger* onyxias_lair_enter(PlayerbotAI* ai) { return new OnyxiasLairEnterDungeonTrigger(ai); }
