@@ -1622,7 +1622,7 @@ bool MovementAction::Flee(Unit *target)
         return false;
     }
 
-    HostileReference *ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
+    HostileReference* ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
     const bool isTarget = ref && ref->getTarget() == bot;
 
     time_t lastFlee = AI_VALUE(LastMovement&, "last movement").lastFlee;
@@ -1631,7 +1631,9 @@ bool MovementAction::Flee(Unit *target)
 
     // let hunter kite mob
     if (isTarget && bot->getClass() == CLASS_HUNTER)
+    {
         fleeDelay = 1;
+    }
 
     if (lastFlee && sServerFacade.isMoving(bot))
     {
@@ -1646,9 +1648,6 @@ bool MovementAction::Flee(Unit *target)
     const bool isDps = !isHealer && !isTank;
     const bool isRanged = ai->IsRanged(bot);
     const bool needHealer = !isHealer && AI_VALUE2(uint8, "health", "self target") < 50;
-
-    HostileReference *ref = sServerFacade.GetThreatManager(target).getCurrentVictim();
-    const bool isTarget = ref && ref->getTarget() == bot;
 
     Unit* fleeTarget = nullptr;
     Group* group = bot->GetGroup();
