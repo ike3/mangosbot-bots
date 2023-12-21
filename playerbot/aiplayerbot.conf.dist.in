@@ -1673,6 +1673,72 @@ AiPlayerbot.GearProgressionSystem.1.4.2.16 = 12939	# Off Hand
 AiPlayerbot.GearProgressionSystem.1.4.2.17 = 2100	# Ranged
 AiPlayerbot.GearProgressionSystem.1.4.2.18 = 5976	# Tabard
 
+# Level 1 (1) Priest (5) Discipline (0)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAMy4CAEkjAwBW2gUAN0oGAEeXBwBH0ggAVkQJAEhBCgBQ7QsAM3oMAFc-DQBIJQ4AVvwPAEhOEAAukxEAVy8SAFbu
+AiPlayerbot.GearProgressionSystem.1.5.0.0 = 13102	# Head
+AiPlayerbot.GearProgressionSystem.1.5.0.1 = 18723	# Neck
+AiPlayerbot.GearProgressionSystem.1.5.0.2 = 22234	# Shoulder
+AiPlayerbot.GearProgressionSystem.1.5.0.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.1.5.0.4 = 14154	# Chest
+AiPlayerbot.GearProgressionSystem.1.5.0.5 = 18327	# Waist
+AiPlayerbot.GearProgressionSystem.1.5.0.6 = 18386	# Legs
+AiPlayerbot.GearProgressionSystem.1.5.0.7 = 22084	# Feet
+AiPlayerbot.GearProgressionSystem.1.5.0.8 = 18497	# Wrists
+AiPlayerbot.GearProgressionSystem.1.5.0.9 = 20717	# Hands
+AiPlayerbot.GearProgressionSystem.1.5.0.10 = 13178	# Finger 1
+AiPlayerbot.GearProgressionSystem.1.5.0.11 = 22334	# Finger 2
+AiPlayerbot.GearProgressionSystem.1.5.0.12 = 18469	# Trinket 1
+AiPlayerbot.GearProgressionSystem.1.5.0.13 = 22268	# Trinket 2
+AiPlayerbot.GearProgressionSystem.1.5.0.14 = 18510	# Back
+AiPlayerbot.GearProgressionSystem.1.5.0.15 = 11923	# Main Hand
+AiPlayerbot.GearProgressionSystem.1.5.0.16 = 22319	# Off Hand
+AiPlayerbot.GearProgressionSystem.1.5.0.17 = 22254	# Ranged
+AiPlayerbot.GearProgressionSystem.1.5.0.18 = 5976	# Tabard
+
+# Level 1 (1) Priest (5) Holy (1)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAMy4CAEkjAwBW2gUAN0oGAEeXBwBH0ggAVkQJAEhBCgBQ7QsAM3oMAFc-DQBIJQ4AVvwPAEhOEAAukxEAVy8SAFbu
+AiPlayerbot.GearProgressionSystem.1.5.1.0 = 13102	# Head
+AiPlayerbot.GearProgressionSystem.1.5.1.1 = 18723	# Neck
+AiPlayerbot.GearProgressionSystem.1.5.1.2 = 22234	# Shoulder
+AiPlayerbot.GearProgressionSystem.1.5.1.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.1.5.1.4 = 14154	# Chest
+AiPlayerbot.GearProgressionSystem.1.5.1.5 = 18327	# Waist
+AiPlayerbot.GearProgressionSystem.1.5.1.6 = 18386	# Legs
+AiPlayerbot.GearProgressionSystem.1.5.1.7 = 22084	# Feet
+AiPlayerbot.GearProgressionSystem.1.5.1.8 = 18497	# Wrists
+AiPlayerbot.GearProgressionSystem.1.5.1.9 = 20717	# Hands
+AiPlayerbot.GearProgressionSystem.1.5.1.10 = 13178	# Finger 1
+AiPlayerbot.GearProgressionSystem.1.5.1.11 = 22334	# Finger 2
+AiPlayerbot.GearProgressionSystem.1.5.1.12 = 18469	# Trinket 1
+AiPlayerbot.GearProgressionSystem.1.5.1.13 = 22268	# Trinket 2
+AiPlayerbot.GearProgressionSystem.1.5.1.14 = 18510	# Back
+AiPlayerbot.GearProgressionSystem.1.5.1.15 = 11923	# Main Hand
+AiPlayerbot.GearProgressionSystem.1.5.1.16 = 22319	# Off Hand
+AiPlayerbot.GearProgressionSystem.1.5.1.17 = 22254	# Ranged
+AiPlayerbot.GearProgressionSystem.1.5.1.18 = 5976	# Tabard
+
+# Level 1 (1) Priest (5) Shadow (2)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAVvsCAFeDAwA3IAUANzgGAC2OBwBXRggASS8JAEhBCgBH5wsAV0MMADLJDQAygg4AVvwPAEeuEAA0JREAVzkSADRU
+AiPlayerbot.GearProgressionSystem.1.5.2.0 = 22267	# Head
+AiPlayerbot.GearProgressionSystem.1.5.2.1 = 22403	# Neck
+AiPlayerbot.GearProgressionSystem.1.5.2.2 = 14112	# Shoulder
+AiPlayerbot.GearProgressionSystem.1.5.2.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.1.5.2.4 = 14136	# Chest
+AiPlayerbot.GearProgressionSystem.1.5.2.5 = 11662	# Waist
+AiPlayerbot.GearProgressionSystem.1.5.2.6 = 22342	# Legs
+AiPlayerbot.GearProgressionSystem.1.5.2.7 = 18735	# Feet
+AiPlayerbot.GearProgressionSystem.1.5.2.8 = 18497	# Wrists
+AiPlayerbot.GearProgressionSystem.1.5.2.9 = 18407	# Hands
+AiPlayerbot.GearProgressionSystem.1.5.2.10 = 22339	# Finger 1
+AiPlayerbot.GearProgressionSystem.1.5.2.11 = 13001	# Finger 2
+AiPlayerbot.GearProgressionSystem.1.5.2.12 = 12930	# Trinket 1
+AiPlayerbot.GearProgressionSystem.1.5.2.13 = 22268	# Trinket 2
+AiPlayerbot.GearProgressionSystem.1.5.2.14 = 18350	# Back
+AiPlayerbot.GearProgressionSystem.1.5.2.15 = 13349	# Main Hand
+AiPlayerbot.GearProgressionSystem.1.5.2.16 = 22329	# Off Hand
+AiPlayerbot.GearProgressionSystem.1.5.2.17 = 13396	# Ranged
+AiPlayerbot.GearProgressionSystem.1.5.2.18 = 5976	# Tabard
+
 # Level 1 (1) Mage (8) Arcane (0)
 # https://www.wowhead.com/classic/gear-planner/mage/gnome/AzwAAAFW-wIvRwNI-QVM4gYtjgdM4whM5AlIQQozxQtXQwxXoQ0ygg5W_A9Q2RBXPxI2cg
 AiPlayerbot.GearProgressionSystem.1.8.0.0 = 22267	# Head
@@ -2160,6 +2226,72 @@ AiPlayerbot.GearProgressionSystem.2.4.1.15 = 17075	# Main Hand
 AiPlayerbot.GearProgressionSystem.2.4.1.16 = 18832	# Off Hand
 AiPlayerbot.GearProgressionSystem.2.4.1.17 = 17069	# Ranged
 AiPlayerbot.GearProgressionSystem.2.4.1.18 = 5976	# Tabard
+
+# Level 2 (2) Priest (5) Discipline (0)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAQhkCAE2tAwBBsAUAN0oGAEGxBwBBrggAQasJAEGzCgBBrAsASsQMAFc-DQBIJQ4ASYQPAEhOEABIsBIAVu4
+AiPlayerbot.GearProgressionSystem.2.5.0.0 = 16921	# Head
+AiPlayerbot.GearProgressionSystem.2.5.0.1 = 19885	# Neck
+AiPlayerbot.GearProgressionSystem.2.5.0.2 = 16816	# Shoulder
+AiPlayerbot.GearProgressionSystem.2.5.0.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.2.5.0.4 = 14154	# Chest
+AiPlayerbot.GearProgressionSystem.2.5.0.5 = 16817	# Waist
+AiPlayerbot.GearProgressionSystem.2.5.0.6 = 16814	# Legs
+AiPlayerbot.GearProgressionSystem.2.5.0.7 = 16811	# Feet
+AiPlayerbot.GearProgressionSystem.2.5.0.8 = 16819	# Wrists
+AiPlayerbot.GearProgressionSystem.2.5.0.9 = 16812	# Hands
+AiPlayerbot.GearProgressionSystem.2.5.0.10 = 19140	# Finger 1
+AiPlayerbot.GearProgressionSystem.2.5.0.11 = 22334	# Finger 2
+AiPlayerbot.GearProgressionSystem.2.5.0.12 = 18469	# Trinket 1
+AiPlayerbot.GearProgressionSystem.2.5.0.13 = 18820	# Trinket 2
+AiPlayerbot.GearProgressionSystem.2.5.0.14 = 18510	# Back
+AiPlayerbot.GearProgressionSystem.2.5.0.15 = 18608	# Main Hand
+AiPlayerbot.GearProgressionSystem.2.5.0.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.2.5.0.17 = 22254	# Ranged
+AiPlayerbot.GearProgressionSystem.2.5.0.18 = 5976	# Tabard
+
+# Level 2 (2) Priest (5) Holy (1)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAQhkCAE2tAwBBsAUAN0oGAEGxBwBBrggAQasJAEGzCgBBrAsASsQMAFc-DQBIJQ4ASYQPAEhOEABIsBIAVu4
+AiPlayerbot.GearProgressionSystem.2.5.1.0 = 16921	# Head
+AiPlayerbot.GearProgressionSystem.2.5.1.1 = 19885	# Neck
+AiPlayerbot.GearProgressionSystem.2.5.1.2 = 16816	# Shoulder
+AiPlayerbot.GearProgressionSystem.2.5.1.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.2.5.1.4 = 14154	# Chest
+AiPlayerbot.GearProgressionSystem.2.5.1.5 = 16817	# Waist
+AiPlayerbot.GearProgressionSystem.2.5.1.6 = 16814	# Legs
+AiPlayerbot.GearProgressionSystem.2.5.1.7 = 16811	# Feet
+AiPlayerbot.GearProgressionSystem.2.5.1.8 = 16819	# Wrists
+AiPlayerbot.GearProgressionSystem.2.5.1.9 = 16812	# Hands
+AiPlayerbot.GearProgressionSystem.2.5.1.10 = 19140	# Finger 1
+AiPlayerbot.GearProgressionSystem.2.5.1.11 = 22334	# Finger 2
+AiPlayerbot.GearProgressionSystem.2.5.1.12 = 18469	# Trinket 1
+AiPlayerbot.GearProgressionSystem.2.5.1.13 = 18820	# Trinket 2
+AiPlayerbot.GearProgressionSystem.2.5.1.14 = 18510	# Back
+AiPlayerbot.GearProgressionSystem.2.5.1.15 = 18608	# Main Hand
+AiPlayerbot.GearProgressionSystem.2.5.1.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.2.5.1.17 = 22254	# Ranged
+AiPlayerbot.GearProgressionSystem.2.5.1.18 = 5976	# Tabard
+
+# Level 2 (2) Priest (5) Shadow (2)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAVvsCAEl-AwA3IAUANzgGAEl5BwBXRggASS8JAEhBCgBH5wsASssMADLJDQAygg4ASYQPAEK2EABIsRIANFQ
+AiPlayerbot.GearProgressionSystem.2.5.3.0 = 22267	# Head
+AiPlayerbot.GearProgressionSystem.2.5.3.1 = 18814	# Neck
+AiPlayerbot.GearProgressionSystem.2.5.3.2 = 14112	# Shoulder
+AiPlayerbot.GearProgressionSystem.2.5.3.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.2.5.3.4 = 14136	# Chest
+AiPlayerbot.GearProgressionSystem.2.5.3.5 = 18809	# Waist
+AiPlayerbot.GearProgressionSystem.2.5.3.6 = 22342	# Legs
+AiPlayerbot.GearProgressionSystem.2.5.3.7 = 18735	# Feet
+AiPlayerbot.GearProgressionSystem.2.5.3.8 = 18497	# Wrists
+AiPlayerbot.GearProgressionSystem.2.5.3.9 = 18407	# Hands
+AiPlayerbot.GearProgressionSystem.2.5.3.10 = 19147	# Finger 1
+AiPlayerbot.GearProgressionSystem.2.5.3.11 = 13001	# Finger 2
+AiPlayerbot.GearProgressionSystem.2.5.3.12 = 12930	# Trinket 1
+AiPlayerbot.GearProgressionSystem.2.5.3.13 = 18820	# Trinket 2
+AiPlayerbot.GearProgressionSystem.2.5.3.14 = 17078	# Back
+AiPlayerbot.GearProgressionSystem.2.5.3.15 = 18609	# Main Hand
+AiPlayerbot.GearProgressionSystem.2.5.3.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.2.5.3.17 = 13396	# Ranged
+AiPlayerbot.GearProgressionSystem.2.5.3.18 = 5976	# Tabard
 
 # Level 2 (2) Mage (8) Arcane (0)
 # https://www.wowhead.com/classic/gear-planner/mage/gnome/AzwAAAFBmwIvR0NQzghvBUziBi2OB0zjCEzkCUGfCkGhC0rLDFdDDUmEDjKCD0K2EFc_EjZy
@@ -2649,6 +2781,72 @@ AiPlayerbot.GearProgressionSystem.3.4.2.16 = 19351	# Off Hand
 AiPlayerbot.GearProgressionSystem.3.4.2.17 = 17069	# Ranged
 AiPlayerbot.GearProgressionSystem.3.4.2.18 = 5976	# Tabard
 
+# Level 3 (3) Priest (5) Discipline (0)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAQhkCAE2tAwBCHAUAQhsGAEIdBwBCGggAQhcJAEIeCgBCGAsASsQMAEu2DQBQnA4AS8MPAEhOEABIsBIAS-s
+AiPlayerbot.GearProgressionSystem.3.5.0.0 = 16921	# Head
+AiPlayerbot.GearProgressionSystem.3.5.0.1 = 19885	# Neck
+AiPlayerbot.GearProgressionSystem.3.5.0.2 = 16924	# Shoulder
+AiPlayerbot.GearProgressionSystem.3.5.0.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.3.5.0.4 = 16923	# Chest
+AiPlayerbot.GearProgressionSystem.3.5.0.5 = 16925	# Waist
+AiPlayerbot.GearProgressionSystem.3.5.0.6 = 16922	# Legs
+AiPlayerbot.GearProgressionSystem.3.5.0.7 = 16919	# Feet
+AiPlayerbot.GearProgressionSystem.3.5.0.8 = 16926	# Wrists
+AiPlayerbot.GearProgressionSystem.3.5.0.9 = 16920	# Hands
+AiPlayerbot.GearProgressionSystem.3.5.0.10 = 19140	# Finger 1
+AiPlayerbot.GearProgressionSystem.3.5.0.11 = 19382	# Finger 2
+AiPlayerbot.GearProgressionSystem.3.5.0.12 = 20636	# Trinket 1
+AiPlayerbot.GearProgressionSystem.3.5.0.13 = 19395	# Trinket 2
+AiPlayerbot.GearProgressionSystem.3.5.0.14 = 18510	# Back
+AiPlayerbot.GearProgressionSystem.3.5.0.15 = 18608	# Main Hand
+AiPlayerbot.GearProgressionSystem.3.5.0.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.3.5.0.17 = 19435	# Ranged
+AiPlayerbot.GearProgressionSystem.3.5.0.18 = 5976	# Tabard
+
+# Level 3 (3) Priest (5) Holy (1)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAQhkCAE2tAwBCHAUAQhsGAEIdBwBCGggAQhcJAEIeCgBCGAsASsQMAEu2DQBQnA4AS8MPAEhOEABIsBIAS-s
+AiPlayerbot.GearProgressionSystem.3.5.1.0 = 16921	# Head
+AiPlayerbot.GearProgressionSystem.3.5.1.1 = 19885	# Neck
+AiPlayerbot.GearProgressionSystem.3.5.1.2 = 16924	# Shoulder
+AiPlayerbot.GearProgressionSystem.3.5.1.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.3.5.1.4 = 16923	# Chest
+AiPlayerbot.GearProgressionSystem.3.5.1.5 = 16925	# Waist
+AiPlayerbot.GearProgressionSystem.3.5.1.6 = 16922	# Legs
+AiPlayerbot.GearProgressionSystem.3.5.1.7 = 16919	# Feet
+AiPlayerbot.GearProgressionSystem.3.5.1.8 = 16926	# Wrists
+AiPlayerbot.GearProgressionSystem.3.5.1.9 = 16920	# Hands
+AiPlayerbot.GearProgressionSystem.3.5.1.10 = 19140	# Finger 1
+AiPlayerbot.GearProgressionSystem.3.5.1.11 = 19382	# Finger 2
+AiPlayerbot.GearProgressionSystem.3.5.1.12 = 20636	# Trinket 1
+AiPlayerbot.GearProgressionSystem.3.5.1.13 = 19395	# Trinket 2
+AiPlayerbot.GearProgressionSystem.3.5.1.14 = 18510	# Back
+AiPlayerbot.GearProgressionSystem.3.5.1.15 = 18608	# Main Hand
+AiPlayerbot.GearProgressionSystem.3.5.1.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.3.5.1.17 = 19435	# Ranged
+AiPlayerbot.GearProgressionSystem.3.5.1.18 = 5976	# Tabard
+
+# Level 3 (3) Priest (5) Shadow (2)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAS68CAEl-AwBLqgUANzgGAEvIBwBKvQgASrsJAEuuCgBLzwsAS8sMAEvqDQBLsw4ASYQPAEuyEABIsRIANFQ
+AiPlayerbot.GearProgressionSystem.3.5.2.0 = 19375	# Head
+AiPlayerbot.GearProgressionSystem.3.5.2.1 = 18814	# Neck
+AiPlayerbot.GearProgressionSystem.3.5.2.2 = 19370	# Shoulder
+AiPlayerbot.GearProgressionSystem.3.5.2.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.3.5.2.4 = 14136	# Chest
+AiPlayerbot.GearProgressionSystem.3.5.2.5 = 19400	# Waist
+AiPlayerbot.GearProgressionSystem.3.5.2.6 = 19133	# Legs
+AiPlayerbot.GearProgressionSystem.3.5.2.7 = 19131	# Feet
+AiPlayerbot.GearProgressionSystem.3.5.2.8 = 19374	# Wrists
+AiPlayerbot.GearProgressionSystem.3.5.2.9 = 19407	# Hands
+AiPlayerbot.GearProgressionSystem.3.5.2.10 = 19403	# Finger 1
+AiPlayerbot.GearProgressionSystem.3.5.2.11 = 19434	# Finger 2
+AiPlayerbot.GearProgressionSystem.3.5.2.12 = 19379	# Trinket 1
+AiPlayerbot.GearProgressionSystem.3.5.2.13 = 18820	# Trinket 2
+AiPlayerbot.GearProgressionSystem.3.5.2.14 = 19378	# Back
+AiPlayerbot.GearProgressionSystem.3.5.2.15 = 18609	# Main Hand
+AiPlayerbot.GearProgressionSystem.3.5.2.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.3.5.2.17 = 13396	# Ranged
+AiPlayerbot.GearProgressionSystem.3.5.2.18 = 5976	# Tabard
+
 # Level 3 (3) Mage (8) Arcane (0)
 # https://www.wowhead.com/classic/gear-planner/mage/gnome/AzwAAAFLrwIvRwNLqgVM4gYtjgdM4whM5AlLrgpCEQtKywxXQw1Liw5Lsw9LshBLnBI2cg
 AiPlayerbot.GearProgressionSystem.3.8.0.0 = 19375	# Head
@@ -3137,6 +3335,72 @@ AiPlayerbot.GearProgressionSystem.4.4.2.16 = 19352	# Off Hand
 AiPlayerbot.GearProgressionSystem.4.4.2.17 = 21459	# Ranged
 AiPlayerbot.GearProgressionSystem.4.4.2.18 = 5976	# Tabard
 
+# Level 4 (4) Priest (5) Discipline (0)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAVG8CAFTQAwBUvgUAVJ8GAFROBwBLuQgAQhcJAFRkCgBUcwsAVHQMAEu2DQBQnA4AS8MPAFRPEABVTxEAS6YSAEvr
+AiPlayerbot.GearProgressionSystem.4.5.0.0 = 21615	# Head
+AiPlayerbot.GearProgressionSystem.4.5.0.1 = 21712	# Neck
+AiPlayerbot.GearProgressionSystem.4.5.0.2 = 21694	# Shoulder
+AiPlayerbot.GearProgressionSystem.4.5.0.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.4.5.0.4 = 21663	# Chest
+AiPlayerbot.GearProgressionSystem.4.5.0.5 = 21582	# Waist
+AiPlayerbot.GearProgressionSystem.4.5.0.6 = 19385	# Legs
+AiPlayerbot.GearProgressionSystem.4.5.0.7 = 16919	# Feet
+AiPlayerbot.GearProgressionSystem.4.5.0.8 = 21604	# Wrists
+AiPlayerbot.GearProgressionSystem.4.5.0.9 = 21619	# Hands
+AiPlayerbot.GearProgressionSystem.4.5.0.10 = 21620	# Finger 1
+AiPlayerbot.GearProgressionSystem.4.5.0.11 = 19382	# Finger 2
+AiPlayerbot.GearProgressionSystem.4.5.0.12 = 20636	# Trinket 1
+AiPlayerbot.GearProgressionSystem.4.5.0.13 = 19395	# Trinket 2
+AiPlayerbot.GearProgressionSystem.4.5.0.14 = 21583	# Back
+AiPlayerbot.GearProgressionSystem.4.5.0.15 = 21839	# Main Hand
+AiPlayerbot.GearProgressionSystem.4.5.0.16 = 19366	# Off Hand
+AiPlayerbot.GearProgressionSystem.4.5.0.17 = 19435	# Ranged
+AiPlayerbot.GearProgressionSystem.4.5.0.18 = 5976	# Tabard
+
+# Level 4 (4) Priest (5) Holy (1)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAVG8CAFTQAwBUvgUAVJ8GAFROBwBLuQgAQhcJAFRkCgBUcwsAVHQMAEu2DQBQnA4AS8MPAFRPEABVTxEAS6YSAEvr
+AiPlayerbot.GearProgressionSystem.4.5.1.0 = 21615	# Head
+AiPlayerbot.GearProgressionSystem.4.5.1.1 = 21712	# Neck
+AiPlayerbot.GearProgressionSystem.4.5.1.2 = 21694	# Shoulder
+AiPlayerbot.GearProgressionSystem.4.5.1.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.4.5.1.4 = 21663	# Chest
+AiPlayerbot.GearProgressionSystem.4.5.1.5 = 21582	# Waist
+AiPlayerbot.GearProgressionSystem.4.5.1.6 = 19385	# Legs
+AiPlayerbot.GearProgressionSystem.4.5.1.7 = 16919	# Feet
+AiPlayerbot.GearProgressionSystem.4.5.1.8 = 21604	# Wrists
+AiPlayerbot.GearProgressionSystem.4.5.1.9 = 21619	# Hands
+AiPlayerbot.GearProgressionSystem.4.5.1.10 = 21620	# Finger 1
+AiPlayerbot.GearProgressionSystem.4.5.1.11 = 19382	# Finger 2
+AiPlayerbot.GearProgressionSystem.4.5.1.12 = 20636	# Trinket 1
+AiPlayerbot.GearProgressionSystem.4.5.1.13 = 19395	# Trinket 2
+AiPlayerbot.GearProgressionSystem.4.5.1.14 = 21583	# Back
+AiPlayerbot.GearProgressionSystem.4.5.1.15 = 21839	# Main Hand
+AiPlayerbot.GearProgressionSystem.4.5.1.16 = 19366	# Off Hand
+AiPlayerbot.GearProgressionSystem.4.5.1.17 = 19435	# Ranged
+AiPlayerbot.GearProgressionSystem.4.5.1.18 = 5976	# Tabard
+
+# Level 4 (4) Priest (5) Shadow (2)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAU2QCAEl-AwBLqgUAVU4GAFjKBwBKvQgASrsJAFLCCgBUUQsAS8sMAFTNDQBLsw4ASYQPAFjLEABIsRIAVGM
+AiPlayerbot.GearProgressionSystem.4.5.2.0 = 21348	# Head
+AiPlayerbot.GearProgressionSystem.4.5.2.1 = 18814	# Neck
+AiPlayerbot.GearProgressionSystem.4.5.2.2 = 19370	# Shoulder
+AiPlayerbot.GearProgressionSystem.4.5.2.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.4.5.2.4 = 21838	# Chest
+AiPlayerbot.GearProgressionSystem.4.5.2.5 = 22730	# Waist
+AiPlayerbot.GearProgressionSystem.4.5.2.6 = 19133	# Legs
+AiPlayerbot.GearProgressionSystem.4.5.2.7 = 19131	# Feet
+AiPlayerbot.GearProgressionSystem.4.5.2.8 = 21186	# Wrists
+AiPlayerbot.GearProgressionSystem.4.5.2.9 = 21585	# Hands
+AiPlayerbot.GearProgressionSystem.4.5.2.10 = 19403	# Finger 1
+AiPlayerbot.GearProgressionSystem.4.5.2.11 = 21709	# Finger 2
+AiPlayerbot.GearProgressionSystem.4.5.2.12 = 19379	# Trinket 1
+AiPlayerbot.GearProgressionSystem.4.5.2.13 = 18820	# Trinket 2
+AiPlayerbot.GearProgressionSystem.4.5.2.14 = 22731	# Back
+AiPlayerbot.GearProgressionSystem.4.5.2.15 = 18609	# Main Hand
+AiPlayerbot.GearProgressionSystem.4.5.2.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.4.5.2.17 = 21603	# Ranged
+AiPlayerbot.GearProgressionSystem.4.5.2.18 = 5976	# Tabard
+
 # Level 4 (4) Mage (8) Arcane (0)
 # https://www.wowhead.com/classic/gear-planner/mage/gnome/AzwAAAFTYwJUaANLqgVTXwZYygdT1QhTYAlSwgpUUQtUzQxVTA1Liw5Lsw9YyxBTGRJUYw
 AiPlayerbot.GearProgressionSystem.4.8.0.0 = 21347	# Head
@@ -3624,6 +3888,72 @@ AiPlayerbot.GearProgressionSystem.5.4.2.15 = 23054	# Main Hand
 AiPlayerbot.GearProgressionSystem.5.4.2.16 = 23577	# Off Hand
 AiPlayerbot.GearProgressionSystem.5.4.2.17 = 21459	# Ranged
 AiPlayerbot.GearProgressionSystem.5.4.2.18 = 5976	# Tabard
+
+# Level 5 (5) Priest (5) Discipline (0)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAV_ICAFTQAwBX8wUAV_AGAFf2BwBX8QgAV_QJAFf3CgBX9QsAWhUMAFmbDQBZ8w4AWgcPAFmwEABaEBEAWggSAFnh
+AiPlayerbot.GearProgressionSystem.5.5.0.0 = 22514	# Head
+AiPlayerbot.GearProgressionSystem.5.5.0.1 = 21712	# Neck
+AiPlayerbot.GearProgressionSystem.5.5.0.2 = 22515	# Shoulder
+AiPlayerbot.GearProgressionSystem.5.5.0.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.5.5.0.4 = 22512	# Chest
+AiPlayerbot.GearProgressionSystem.5.5.0.5 = 22518	# Waist
+AiPlayerbot.GearProgressionSystem.5.5.0.6 = 22513	# Legs
+AiPlayerbot.GearProgressionSystem.5.5.0.7 = 22516	# Feet
+AiPlayerbot.GearProgressionSystem.5.5.0.8 = 22519	# Wrists
+AiPlayerbot.GearProgressionSystem.5.5.0.9 = 22517	# Hands
+AiPlayerbot.GearProgressionSystem.5.5.0.10 = 23061	# Finger 1
+AiPlayerbot.GearProgressionSystem.5.5.0.11 = 22939	# Finger 2
+AiPlayerbot.GearProgressionSystem.5.5.0.12 = 23027	# Trinket 1
+AiPlayerbot.GearProgressionSystem.5.5.0.13 = 23047	# Trinket 2
+AiPlayerbot.GearProgressionSystem.5.5.0.14 = 22960	# Back
+AiPlayerbot.GearProgressionSystem.5.5.0.15 = 23056	# Main Hand
+AiPlayerbot.GearProgressionSystem.5.5.0.16 = 23048	# Off Hand
+AiPlayerbot.GearProgressionSystem.5.5.0.17 = 23009	# Ranged
+AiPlayerbot.GearProgressionSystem.5.5.0.18 = 5976	# Tabard
+
+# Level 5 (5) Priest (5) Holy (1)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAV_ICAFTQAwBX8wUAV_AGAFf2BwBX8QgAV_QJAFf3CgBX9QsAWhUMAFmbDQBZ8w4AWgcPAFmwEABaEBEAWggSAFnh
+AiPlayerbot.GearProgressionSystem.5.5.1.0 = 22514	# Head
+AiPlayerbot.GearProgressionSystem.5.5.1.1 = 21712	# Neck
+AiPlayerbot.GearProgressionSystem.5.5.1.2 = 22515	# Shoulder
+AiPlayerbot.GearProgressionSystem.5.5.1.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.5.5.1.4 = 22512	# Chest
+AiPlayerbot.GearProgressionSystem.5.5.1.5 = 22518	# Waist
+AiPlayerbot.GearProgressionSystem.5.5.1.6 = 22513	# Legs
+AiPlayerbot.GearProgressionSystem.5.5.1.7 = 22516	# Feet
+AiPlayerbot.GearProgressionSystem.5.5.1.8 = 22519	# Wrists
+AiPlayerbot.GearProgressionSystem.5.5.1.9 = 22517	# Hands
+AiPlayerbot.GearProgressionSystem.5.5.1.10 = 23061	# Finger 1
+AiPlayerbot.GearProgressionSystem.5.5.1.11 = 22939	# Finger 2
+AiPlayerbot.GearProgressionSystem.5.5.1.12 = 23027	# Trinket 1
+AiPlayerbot.GearProgressionSystem.5.5.1.13 = 23047	# Trinket 2
+AiPlayerbot.GearProgressionSystem.5.5.1.14 = 22960	# Back
+AiPlayerbot.GearProgressionSystem.5.5.1.15 = 23056	# Main Hand
+AiPlayerbot.GearProgressionSystem.5.5.1.16 = 23048	# Off Hand
+AiPlayerbot.GearProgressionSystem.5.5.1.17 = 23009	# Ranged
+AiPlayerbot.GearProgressionSystem.5.5.1.18 = 5976	# Tabard
+
+# Level 5 (5) Priest (5) Shadow (2)
+# https://www.wowhead.com/classic/gear-planner/priest/dwarf/BDwAAAEAWfsCAEl-AwBZxwUAVU4GAFjKBwBKvQgASrsJAFLCCgBUUQsAWfcMAFTNDQBLsw4AWgYPAFjLEABZDxIAVGM
+AiPlayerbot.GearProgressionSystem.5.5.2.0 = 23035	# Head
+AiPlayerbot.GearProgressionSystem.5.5.2.1 = 18814	# Neck
+AiPlayerbot.GearProgressionSystem.5.5.2.2 = 22983	# Shoulder
+AiPlayerbot.GearProgressionSystem.5.5.2.3 = 0		# Shirt
+AiPlayerbot.GearProgressionSystem.5.5.2.4 = 21838	# Chest
+AiPlayerbot.GearProgressionSystem.5.5.2.5 = 22730	# Waist
+AiPlayerbot.GearProgressionSystem.5.5.2.6 = 19133	# Legs
+AiPlayerbot.GearProgressionSystem.5.5.2.7 = 19131	# Feet
+AiPlayerbot.GearProgressionSystem.5.5.2.8 = 21186	# Wrists
+AiPlayerbot.GearProgressionSystem.5.5.2.9 = 21585	# Hands
+AiPlayerbot.GearProgressionSystem.5.5.2.10 = 23031	# Finger 1
+AiPlayerbot.GearProgressionSystem.5.5.2.11 = 21709	# Finger 2
+AiPlayerbot.GearProgressionSystem.5.5.2.12 = 19379	# Trinket 1
+AiPlayerbot.GearProgressionSystem.5.5.2.13 = 23046	# Trinket 2
+AiPlayerbot.GearProgressionSystem.5.5.2.14 = 22731	# Back
+AiPlayerbot.GearProgressionSystem.5.5.2.15 = 22799	# Main Hand
+AiPlayerbot.GearProgressionSystem.5.5.2.16 = 0		# Off Hand
+AiPlayerbot.GearProgressionSystem.5.5.2.17 = 21603	# Ranged
+AiPlayerbot.GearProgressionSystem.5.5.2.18 = 5976	# Tabard
 
 # Level 5 (5) Mage (8) Arcane (0)
 # https://www.wowhead.com/classic/gear-planner/mage/gnome/AzwAAAFX4gJaEQNZxwVX4AZYygdaHghX5AlSwgpUUQtUzQxaFg1Liw5Lsw9aChBZFxFaCRJZJQ
