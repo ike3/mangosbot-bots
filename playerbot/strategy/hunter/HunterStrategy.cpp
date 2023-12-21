@@ -367,7 +367,7 @@ void HunterCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "target of attacker close",
-        NextAction::array(0, new NextAction("scatter shot", ACTION_INTERRUPT + 2), NULL)));
+        NextAction::array(0, new NextAction("scatter shot on closest attacker targeting me", ACTION_INTERRUPT + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy fifteen yards",
@@ -385,7 +385,7 @@ void HunterCcPveStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "target of attacker close",
-        NextAction::array(0, new NextAction("scatter shot", ACTION_INTERRUPT + 2), NULL)));
+        NextAction::array(0, new NextAction("scatter shot on closest attacker targeting me", ACTION_INTERRUPT + 2), NULL)));
 
     triggers.push_back(new TriggerNode(
         "enemy fifteen yards",
@@ -796,7 +796,7 @@ void HunterCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "target of attacker close",
-        NextAction::array(0, new NextAction("scatter shot", ACTION_INTERRUPT + 2), NULL)));
+        NextAction::array(0, new NextAction("scatter shot on closest attacker targeting me", ACTION_INTERRUPT + 2), NULL)));
 
     // Traps must be on ACTION_INTERRUPT or higher due to its movements and chained actions
     triggers.push_back(new TriggerNode(
@@ -1244,7 +1244,7 @@ void HunterCcStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 
     triggers.push_back(new TriggerNode(
         "target of attacker close",
-        NextAction::array(0, new NextAction("scatter shot", ACTION_INTERRUPT + 2), NULL)));
+        NextAction::array(0, new NextAction("scatter shot on closest attacker targeting me", ACTION_INTERRUPT + 2), NULL)));
 
     // Traps must be on ACTION_INTERRUPT or higher due to its movements and chained actions
     triggers.push_back(new TriggerNode(

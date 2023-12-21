@@ -230,6 +230,8 @@ namespace ai
             creators["balance"] = &ValueContext::balance;
             creators["possible attack targets"] = &ValueContext::possible_attack_targets;
             creators["attackers"] = &ValueContext::attackers;
+            creators["attackers targeting me"] = &ValueContext::attackers_targeting_me;
+            creators["closest attacker targeting me"] = &ValueContext::closest_attacker_targeting_me;
             creators["add hazard"] = &ValueContext::add_hazard;
             creators["stored hazards"] = &ValueContext::stored_hazards;
             creators["hazards"] = &ValueContext::hazards;
@@ -418,6 +420,8 @@ namespace ai
         static UntypedValue* incoming_damage(PlayerbotAI* ai) { return new IncomingDamageValue(ai); }
         static UntypedValue* possible_attack_targets(PlayerbotAI* ai) { return new PossibleAttackTargetsValue(ai); }
         static UntypedValue* attackers(PlayerbotAI* ai) { return new AttackersValue(ai); }
+        static UntypedValue* attackers_targeting_me(PlayerbotAI* ai) { return new AttackersTargetingMeValue(ai); }
+        static UntypedValue* closest_attacker_targeting_me(PlayerbotAI* ai) { return new ClosestAttackerTargetingMeTargetValue(ai); }
         static UntypedValue* add_hazard(PlayerbotAI* ai) { return new AddHazardValue(ai); }
         static UntypedValue* stored_hazards(PlayerbotAI* ai) { return new StoredHazardsValue(ai); }
         static UntypedValue* hazards(PlayerbotAI* ai) { return new HazardsValue(ai); }

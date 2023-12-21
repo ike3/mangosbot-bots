@@ -19,11 +19,12 @@ namespace ai
         };
 
 	public:
-        AttackersValue(PlayerbotAI* ai) : ObjectGuidListCalculatedValue(ai, "attackers", 2), Qualified() {}
-        list<ObjectGuid> Calculate();
+        AttackersValue(PlayerbotAI* ai, string name = "attackers", int interval = 2) : ObjectGuidListCalculatedValue(ai, name, interval), Qualified() {}
+        virtual list<ObjectGuid> Calculate() override;
 
         static bool IsValid(Unit* target, Player* player, Player* owner = nullptr, bool checkInCombat = true, bool validatePossibleTarget = true);
         virtual string Format();
+
 #ifdef GenerateBotHelp
         virtual string GetHelpName() { return "attackers"; } //Must equal iternal name
         virtual string GetHelpTypeName() { return "combat"; }
@@ -32,7 +33,8 @@ namespace ai
             return "This value contains all the units attacking the player, it's group or those the player or group is attacking.";
         }
         virtual vector<string> GetUsedValues() { return {"possible targets", "current target" , "attack target" ,  "pull target" }; }
-#endif 
+#endif
+
 	private:
         void AddTargetsOf(Group* group, set<Unit*>& targets, set<ObjectGuid>& invalidTargets, bool getOne = false);
         void AddTargetsOf(Player* player, set<Unit*>& targets, set<ObjectGuid>& invalidTargets, bool getOne = false);
@@ -41,5 +43,13 @@ namespace ai
         static bool InCombat(Unit* target, Player* player, bool checkPullTargets = true);
 
         WorldPosition calculatePos;
+    };
+
+    // List of attackers that are currently targeting the bot
+    class AttackersTargetingMeValue : public AttackersValue
+    {
+    public:
+        AttackersTargetingMeValue(PlayerbotAI* ai, string name = "attackers targeting me") : AttackersValue(ai, name) {}
+        list<ObjectGuid> Calculate() override;
     };
 }

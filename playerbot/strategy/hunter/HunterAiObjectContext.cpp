@@ -440,6 +440,7 @@ namespace ai
                 creators["scare beast on cc"] = &AiObjectContextInternal::scare_beast_on_cc;
                 creators["remove feign death"] = &AiObjectContextInternal::remove_feign_death;
                 creators["scatter shot"] = &AiObjectContextInternal::scatter_shot;
+                creators["scatter shot on closest attacker targeting me"] = &AiObjectContextInternal::scatter_shot_closest_attacker_targeting_me;
                 creators["intimidation"] = &AiObjectContextInternal::intimidation;
                 creators["deterrence"] = &AiObjectContextInternal::deterrence;
                 creators["counterattack"] = &AiObjectContextInternal::counterattack;
@@ -483,6 +484,7 @@ namespace ai
             static Action* deterrence(PlayerbotAI* ai) { return new DeterrenceAction(ai); }
             static Action* intimidation(PlayerbotAI* ai) { return new IntimidationAction(ai); }
             static Action* scatter_shot(PlayerbotAI* ai) { return new CastScatterShotAction(ai); }
+            static Action* scatter_shot_closest_attacker_targeting_me(PlayerbotAI* ai) { return new CastScatterShotAction(ai); }
             static Action* scare_beast(PlayerbotAI* ai) { return new CastScareBeastAction(ai); }
             static Action* scare_beast_on_cc(PlayerbotAI* ai) { return new CastScareBeastCcAction(ai); }
             static Action* bestial_wrath(PlayerbotAI* ai) { return new CastBestialWrathAction(ai); }

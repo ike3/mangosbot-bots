@@ -389,3 +389,19 @@ string AttackersValue::Format()
     return out.str().c_str();
 }
 
+std::list<ObjectGuid> AttackersTargetingMeValue::Calculate()
+{
+    std::list<ObjectGuid> result;
+
+    const list<ObjectGuid>& attackers = AttackersValue::Calculate();
+    for (const ObjectGuid& attackerGuid : attackers)
+    {
+        Unit* attacker = ai->GetUnit(attackerGuid);
+        if (attacker && (attacker->GetTarget() == bot || attacker->GetVictim() == bot))
+        {
+            result.push_back(attackerGuid);
+        }
+    }
+
+    return result;
+}

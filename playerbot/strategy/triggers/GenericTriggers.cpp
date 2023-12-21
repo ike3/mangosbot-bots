@@ -732,38 +732,13 @@ bool GreaterBuffOnPartyTrigger::IsActive()
 
 bool TargetOfAttacker::IsActive()
 {
-    return !GetAttackers().empty();
-}
-
-std::list<Unit*> TargetOfAttacker::GetAttackers()
-{
-    std::list<Unit*> result;
-    const list<ObjectGuid>& attackers = AI_VALUE(list<ObjectGuid>, "attackers");
-    for (const ObjectGuid& attackerGuid : attackers)
-    {
-        // Check against the given creature id
-        Unit* attacker = ai->GetUnit(attackerGuid);
-        if (attacker && (attacker->GetTarget() == bot || attacker->GetVictim() == bot))
-        {
-            result.push_back(attacker);
-        }
-    }
-
-    return result;
+    return !AI_VALUE(list<ObjectGuid>, "target of attackers").empty();
 }
 
 bool TargetOfAttackerInRange::IsActive()
 {
-    std::list<Unit*> attackers = GetAttackers();
-    for (Unit* attacker : attackers)
-    {
-        if (bot->GetDistance(attacker, true, DIST_CALC_COMBAT_REACH) <= (distance - sPlayerbotAIConfig.contactDistance))
-        {
-            return true;
-        }
-    }
-
-    return false;
+    const Unit* closestAttacker = AI_VALUE(Unit*, "closest attacker targeting me");
+    return closestAttacker && bot->GetDistance(closestAttacker, true, DIST_CALC_COMBAT_REACH) <= (distance - sPlayerbotAIConfig.contactDistance);
 }
 
 bool TargetOfCastedAuraTypeTrigger::IsActive()

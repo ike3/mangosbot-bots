@@ -137,4 +137,11 @@ namespace ai
     public:
         ManualFollowTargetValue(PlayerbotAI* ai, string name = "manual follow target") : UnitManualSetValue(ai, nullptr, name) {}
     };
+
+    class ClosestAttackerTargetingMeTargetValue : public UnitCalculatedValue
+    {
+    public:
+        ClosestAttackerTargetingMeTargetValue(PlayerbotAI* ai, string name = "closest attacker targeting me") : UnitCalculatedValue(ai, name) {}
+        Unit* Calculate() override;
+    };
 }

@@ -144,9 +144,6 @@ namespace ai
     public:
         TargetOfAttacker(PlayerbotAI* ai, string name = "target of attacker", int checkInterval = 1) : Trigger(ai, name, checkInterval) {}
         virtual bool IsActive() override;
-
-    protected:
-        std::list<Unit*> GetAttackers();
     };
 
     class TargetOfAttackerInRange : public TargetOfAttacker

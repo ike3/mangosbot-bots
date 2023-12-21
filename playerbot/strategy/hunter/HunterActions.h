@@ -38,6 +38,13 @@ namespace ai
     BEGIN_RANGED_DEBUFF_ACTION(CastScatterShotAction, "scatter shot")
     END_SPELL_ACTION()
 
+    class CastScatterShotOnClosestAttackerTargetingMeAction : public CastRangedDebuffSpellAction
+    {
+    public:
+        CastScatterShotOnClosestAttackerTargetingMeAction(PlayerbotAI* ai) : CastRangedDebuffSpellAction(ai, "scatter shot") {}
+        string GetTargetName() override { return "closest attacker targeting me target"; }
+    };
+
     BEGIN_RANGED_SPELL_ACTION(CastDistractingShotAction, "distracting shot")
     END_SPELL_ACTION()
 

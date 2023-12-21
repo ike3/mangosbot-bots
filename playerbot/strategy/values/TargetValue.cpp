@@ -148,3 +148,26 @@ Unit* FollowTargetValue::Calculate()
 
     return followTarget;
 }
+
+Unit* ClosestAttackerTargetingMeTargetValue::Calculate()
+{
+    Unit* result = nullptr;
+    float closest = 9999.0f;
+
+    const std::list<ObjectGuid>& attackers = AI_VALUE(list<ObjectGuid>, "attackers targeting me");
+    for (const ObjectGuid& attackerGuid : attackers)
+    {
+        Unit* attacker = ai->GetUnit(attackerGuid);
+        if (attacker)
+        {
+            const float distance = bot->GetDistance(attacker, true, DIST_CALC_COMBAT_REACH);
+            if (distance < closest)
+            {
+                closest = distance;
+                result = attacker;
+            }
+        }
+    }
+
+    return result;
+}
