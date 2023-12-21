@@ -2534,14 +2534,14 @@ WorldPosition JumpAction::CalculateJumpParameters(const WorldPosition& src, Unit
             // hit object above
             goodLanding = false;
             timeToLand = JumpAction::CalculateJumpTime(fz - oz, vSpeed, true);
-            maxHeight += fz;
+            maxHeight = fz;
             return WorldPosition(src.getMapId(), fx, fy, fz - CONTACT_DISTANCE - jumper->GetCollisionHeight());
         }
         else
         {
             // can jump full height and back
             goodLanding = true;
-            maxHeight += fz;
+            maxHeight = fz;
             return src;
         }
     }
@@ -2652,7 +2652,7 @@ WorldPosition JumpAction::CalculateJumpParameters(const WorldPosition& src, Unit
                 }
             }
 
-            maxHeight += fz;
+            maxHeight = fz;
             return destination;
         }
 

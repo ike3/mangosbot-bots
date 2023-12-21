@@ -354,7 +354,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
         // falling after hitting something
         else
         {
-            bot->SetFallInformation(0, bot->m_movementInfo.pos.z);
+            //bot->SetFallInformation(0, bot->m_movementInfo.pos.z);
 #ifdef MANGOSBOT_ZERO
             bot->m_movementInfo.AddMovementFlag(MOVEFLAG_JUMPING);
 #else
@@ -1537,6 +1537,9 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
             return;
         }
 
+        // set fall height for fall damage calculations
+        bot->SetFallInformation(0, maxHeight);
+
         // fix height
         if (goodLanding)
         {
@@ -1552,7 +1555,6 @@ void PlayerbotAI::HandleBotOutgoingPacket(const WorldPacket& packet)
             else
             {
                 dest_calculated = WorldPosition(dest_calculated.getMapId(), ox, oy, oz);
-                bot->SetFallInformation(0, maxHeight);
             }
 
         }
