@@ -46,10 +46,10 @@ namespace ai
     };
 
     // List of attackers that are currently targeting the bot
-    class AttackersTargetingMeValue : public AttackersValue
+    class AttackersTargetingMeValue : public ObjectGuidListCalculatedValue
     {
     public:
-        AttackersTargetingMeValue(PlayerbotAI* ai, string name = "attackers targeting me") : AttackersValue(ai, name) {}
+        AttackersTargetingMeValue(PlayerbotAI* ai, string name = "attackers targeting me") : ObjectGuidListCalculatedValue(ai, name) {}
         list<ObjectGuid> Calculate() override;
     };
 }

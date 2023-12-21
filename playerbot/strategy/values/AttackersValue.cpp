@@ -393,7 +393,7 @@ std::list<ObjectGuid> AttackersTargetingMeValue::Calculate()
 {
     std::list<ObjectGuid> result;
 
-    const list<ObjectGuid>& attackers = AttackersValue::Calculate();
+    const list<ObjectGuid>& attackers = AI_VALUE(list<ObjectGuid>, "attackers");
     for (const ObjectGuid& attackerGuid : attackers)
     {
         Unit* attacker = ai->GetUnit(attackerGuid);
