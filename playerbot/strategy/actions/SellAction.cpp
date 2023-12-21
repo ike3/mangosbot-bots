@@ -30,7 +30,7 @@ bool SellAction::Execute(Event& event)
 
     string text = event.getParam();
 
-    if (text == "*")
+    if (text == "*" || text.empty())
         text = "gray";
 
     list<Item*> items = ai->InventoryParseItems(text, IterateItemsMask::ITERATE_ITEMS_IN_BAGS);
