@@ -447,10 +447,6 @@ void HunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void HunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "target of attacker close",
-        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "aspect of the hawk",
         NextAction::array(0, new NextAction("aspect of the hawk", ACTION_HIGH + 5), NULL)));
 }
@@ -465,7 +461,7 @@ void HunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
 void HunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "has attackers",
+        "target of attacker",
         NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -476,7 +472,7 @@ void HunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void HunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "has attackers",
+        "target of attacker",
         NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -895,10 +891,6 @@ void HunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void HunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "target of attacker close",
-        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "aspect of the hawk",
         NextAction::array(0, new NextAction("aspect of the hawk", ACTION_HIGH + 5), NULL)));
 }
@@ -912,8 +904,15 @@ void HunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
 
 void HunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    // TO DO: This needs to be done better, currently it spams unnecessarily
+    /*
     triggers.push_back(new TriggerNode(
-        "has attackers",
+        "target of attacker close",
+        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
+    */
+
+    triggers.push_back(new TriggerNode(
+        "target of attacker",
         NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -924,7 +923,7 @@ void HunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void HunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "has attackers",
+        "target of attacker",
         NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -1343,10 +1342,6 @@ void HunterStingRaidStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void HunterAspectStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "target of attacker close",
-        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
-
-    triggers.push_back(new TriggerNode(
         "aspect of the dragonhawk",
         NextAction::array(0, new NextAction("aspect of the dragonhawk", ACTION_HIGH + 5), NULL)));
 }
@@ -1360,8 +1355,15 @@ void HunterAspectStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& trigge
 
 void HunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
+    // TO DO: This needs to be done better, currently it spams unnecessarily
+    /*
     triggers.push_back(new TriggerNode(
-        "has attackers",
+        "target of attacker close",
+        NextAction::array(0, new NextAction("aspect of the monkey", ACTION_EMERGENCY), NULL)));
+    */
+
+    triggers.push_back(new TriggerNode(
+        "target of attacker",
         NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
 
     triggers.push_back(new TriggerNode(
@@ -1372,7 +1374,7 @@ void HunterAspectPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& trigge
 void HunterAspectPvpStrategy::InitNonCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     triggers.push_back(new TriggerNode(
-        "has attackers",
+        "target of attacker",
         NextAction::array(0, new NextAction("remove aspect of the cheetah", ACTION_HIGH + 7), NULL)));
 
     triggers.push_back(new TriggerNode(
