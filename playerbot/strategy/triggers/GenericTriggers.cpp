@@ -732,7 +732,7 @@ bool GreaterBuffOnPartyTrigger::IsActive()
 
 bool TargetOfAttacker::IsActive()
 {
-    return !AI_VALUE(list<ObjectGuid>, "target of attackers").empty();
+    return !AI_VALUE(list<ObjectGuid>, "attackers targeting me").empty();
 }
 
 bool TargetOfAttackerInRange::IsActive()
