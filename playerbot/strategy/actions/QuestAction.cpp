@@ -29,7 +29,23 @@ bool QuestAction::Execute(Event& event)
         return ProcessQuests(guid);
     }
 
-    return false;
+    bool result = false;
+    list<ObjectGuid> npcs = AI_VALUE(list<ObjectGuid>, "nearest npcs");
+    for (list<ObjectGuid>::iterator i = npcs.begin(); i != npcs.end(); i++)
+    {
+        Unit* unit = ai->GetUnit(*i);
+        if (unit && bot->GetDistance(unit) <= INTERACTION_DISTANCE)
+            result |= ProcessQuests(unit);
+    }
+    list<ObjectGuid> gos = AI_VALUE(list<ObjectGuid>, "nearest game objects");
+    for (list<ObjectGuid>::iterator i = gos.begin(); i != gos.end(); i++)
+    {
+        GameObject* go = ai->GetGameObject(*i);
+        if (go && bot->GetDistance(go) <= INTERACTION_DISTANCE)
+            result |= ProcessQuests(go);
+    }
+
+    return result;
 }
 
 bool QuestAction::CompleteQuest(Player* player, uint32 entry)
