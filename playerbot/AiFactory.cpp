@@ -534,7 +534,7 @@ void AiFactory::AddDefaultCombatStrategies(Player* player, PlayerbotAI* const fa
 
         if ((facade->HasRealPlayerMaster() && sPlayerbotAIConfig.jumpWithPlayer) ||
             (player->InBattleGround() && sPlayerbotAIConfig.jumpInBg) ||
-            !facade->HasRealPlayerMaster())
+            (!player->InBattleGround() && !facade->HasRealPlayerMaster()))
         {
             if (combatEngine->HasStrategy("close") && frand(0.0f, 1.0f) < sPlayerbotAIConfig.jumpMeleeInCombatChance)
             {
@@ -833,7 +833,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
 
     if ((facade->HasRealPlayerMaster() && sPlayerbotAIConfig.jumpWithPlayer) ||
         (player->InBattleGround() && sPlayerbotAIConfig.jumpInBg) ||
-        !facade->HasRealPlayerMaster())
+        (!player->InBattleGround() && !facade->HasRealPlayerMaster()))
     {
         if (frand(0.0f, 1.0f) < sPlayerbotAIConfig.jumpNoCombatChance)
         {
@@ -841,7 +841,7 @@ void AiFactory::AddDefaultNonCombatStrategies(Player* player, PlayerbotAI* const
         }
     }
 
-    if (sPlayerbotAIConfig.jumpFollow)
+    if (!player->InBattleGround() && sPlayerbotAIConfig.jumpFollow)
         nonCombatEngine->addStrategy("follow jump");
 
     if ((facade->IsRealPlayer() || sRandomPlayerbotMgr.IsFreeBot(player)) && !player->InBattleGround())
