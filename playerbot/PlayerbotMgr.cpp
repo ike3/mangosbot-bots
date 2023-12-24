@@ -467,7 +467,7 @@ string PlayerbotHolder::ProcessBotCommand(string cmd, ObjectGuid guid, ObjectGui
 
         Player* master = sObjectMgr.GetPlayer(masterguid);
         uint32 guildId = Player::GetGuildIdFromDB(guid);
-        if (master && (isMasterAccount || sPlayerbotAIConfig.allowGuildBots && masterGuildId && guildId == masterGuildId))
+        if (master && (isMasterAccount || (sPlayerbotAIConfig.allowGuildBots && masterGuildId && guildId == masterGuildId) || admin))
         {
             if (isRandomAccount)
                 sRandomPlayerbotMgr.Remove(player);
