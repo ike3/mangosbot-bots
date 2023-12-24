@@ -429,6 +429,7 @@ namespace ai
                 creators["call of the spirits"] = &TriggerFactoryInternal::call_of_the_spirits;
                 creators["totemic recall"] = &TriggerFactoryInternal::totemic_recall;
                 creators["earth shield on party tank"] = &TriggerFactoryInternal::earth_shield_on_party_tank;
+                creators["chain lightning"] = &TriggerFactoryInternal::chain_lightning;
             }
 
         private:
@@ -467,15 +468,8 @@ namespace ai
             static Trigger* call_of_the_spirits(PlayerbotAI* ai) { return new TotemsAreNotSummonedTrigger(ai); }
             static Trigger* totemic_recall(PlayerbotAI* ai) { return new ReadyToRemoveTotemsTrigger(ai); }
             static Trigger* earth_shield_on_party_tank(PlayerbotAI* ai) { return new PartyTankEarthShieldTrigger(ai); }
+            static Trigger* chain_lightning(PlayerbotAI* ai) { return new ChainLightningTrigger(ai); }
         };
-    };
-};
-
-namespace ai
-{
-    namespace shaman
-    {
-        using namespace ai;
 
         class AiObjectContextInternal : public NamedObjectContext<Action>
         {
