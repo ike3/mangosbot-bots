@@ -430,6 +430,7 @@ namespace ai
                 creators["totemic recall"] = &TriggerFactoryInternal::totemic_recall;
                 creators["earth shield on party tank"] = &TriggerFactoryInternal::earth_shield_on_party_tank;
                 creators["chain lightning"] = &TriggerFactoryInternal::chain_lightning;
+                creators["stormstrike"] = &TriggerFactoryInternal::stormstrike;
             }
 
         private:
@@ -469,6 +470,7 @@ namespace ai
             static Trigger* totemic_recall(PlayerbotAI* ai) { return new ReadyToRemoveTotemsTrigger(ai); }
             static Trigger* earth_shield_on_party_tank(PlayerbotAI* ai) { return new PartyTankEarthShieldTrigger(ai); }
             static Trigger* chain_lightning(PlayerbotAI* ai) { return new ChainLightningTrigger(ai); }
+            static Trigger* stormstrike(PlayerbotAI* ai) { return new StormstrikeTrigger(ai); }
         };
 
         class AiObjectContextInternal : public NamedObjectContext<Action>
