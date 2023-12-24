@@ -107,16 +107,6 @@ bool ChangeAllStrategyAction::Execute(Event& event)
     string text = event.getParam();
     string strategyName = text.empty() ? strategy : text;
 
-    uint32 account = sObjectMgr.GetPlayerAccountIdByGUID(bot->GetObjectGuid());
-    if (sPlayerbotAIConfig.IsInRandomAccountList(account) && ai->GetMaster() && ai->GetMaster()->GetSession()->GetSecurity() < SEC_GAMEMASTER)
-    {
-        if (strategyName.find("loot") != string::npos || strategyName.find("gather") != string::npos)
-        {
-            ai->TellError(requester, "You can change any strategy except loot and gather");
-            return false;
-        }
-    }
-
     ai->ChangeStrategy(strategyName, BotState::BOT_STATE_ALL);
 
     if (event.getSource() == "nc" || event.getSource() == "co")
@@ -130,8 +120,10 @@ bool ChangeAllStrategyAction::Execute(Event& event)
                 case '+':
                 case '-':
                 case '~':
+                {
                     sPlayerbotDbStore.Save(ai);
                     break;
+                }
             }
         }
     }
