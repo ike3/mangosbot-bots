@@ -611,7 +611,7 @@ void PlayerbotFactory::InitPet()
             pet->SetLoyaltyLevel(BEST_FRIEND);
 #endif
             pet->SetPower(POWER_HAPPINESS, HAPPINESS_LEVEL_SIZE * 2);
-            pet->GetCharmInfo()->SetPetNumber(sObjectMgr.GeneratePetNumber(), true);
+            pet->GetCharmInfo()->SetPetNumber(pet->GetObjectGuid().GetEntry(), true);
             pet->GetMap()->Add((Creature*)pet);
             pet->AIM_Initialize();
             pet->InitPetCreateSpells();
