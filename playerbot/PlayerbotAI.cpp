@@ -1796,19 +1796,29 @@ void PlayerbotAI::DoNextAction(bool min)
             }
 
         if (!newMaster && playerMaster)
+        {
             newMaster = playerMaster;
+        }
 
         if (newMaster && (!master || master != newMaster) && bot != newMaster)
         {
             master = newMaster;
             ai->SetMaster(newMaster);
             ai->ResetStrategies();
-            ai->ChangeStrategy("+follow", BotState::BOT_STATE_NON_COMBAT);
+
+            if (sRandomPlayerbotMgr.IsFreeBot(bot))
+            {
+                ai->ChangeStrategy("+follow", BotState::BOT_STATE_NON_COMBAT);
+            }
 
             if (ai->GetMaster() == ai->GetGroupMaster())
+            {
                 ai->TellPlayer(master, BOT_TEXT("hello_follow"));
+            }
             else
+            {
                 ai->TellPlayer(master, BOT_TEXT("hello"));
+            }
         }
     }
 

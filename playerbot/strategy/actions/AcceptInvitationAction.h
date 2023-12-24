@@ -40,16 +40,20 @@ namespace ai
             if (!bot->GetGroup() || !bot->GetGroup()->IsMember(inviter->GetObjectGuid()))
                 return false;
 
-            if (sRandomPlayerbotMgr.IsFreeBot(bot))
-                ai->SetMaster(inviter);
-
-            Player* master = inviter;
-
             ai->ResetStrategies();
-            ai->ChangeStrategy("+follow,-lfg,-bg", BotState::BOT_STATE_NON_COMBAT);
+
+            if (sRandomPlayerbotMgr.IsFreeBot(bot))
+            {
+                ai->SetMaster(inviter);
+                ai->ChangeStrategy("+follow", BotState::BOT_STATE_NON_COMBAT);
+            }
+            
+            ai->ChangeStrategy("-lfg,-bg", BotState::BOT_STATE_NON_COMBAT);
             ai->Reset();
 
             sPlayerbotAIConfig.logEvent(ai, "AcceptInvitationAction", grp->GetLeaderName(), to_string(grp->GetMembersCount()));
+
+            Player* master = inviter;
 
             if (master->GetPlayerbotAI()) //Copy formation from bot master.
             {
