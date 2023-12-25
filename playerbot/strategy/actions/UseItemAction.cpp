@@ -1048,7 +1048,7 @@ bool UseItemIdAction::CastItemSpell(uint32 itemId, Unit* target, GameObject* goT
 
 bool UseItemIdAction::isUseful()
 {
-    if (getQualifier().find_first_not_of("0123456789") != std::string::npos)
+    if (!getQualifier().empty() && (getMultiQualifierStr(getQualifier(), 0, ",").find_first_not_of("0123456789") != std::string::npos))
     {
         sLog.outError("UseItemIdAction::isUseful with qualifier %s, should be number.", getQualifier().c_str());
         return false;
