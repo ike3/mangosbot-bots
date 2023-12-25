@@ -89,14 +89,19 @@ void GossipHelloAction::TellGossipMenus(Player* requester)
 {
     if (!bot->GetPlayerMenu())
         return;
+ 
+     GossipMenu& menu = bot->GetPlayerMenu()->GetGossipMenu();
 
-    Creature *pCreature = bot->GetNPCIfCanInteractWith(GetMaster()->GetSelectionGuid(), UNIT_NPC_FLAG_NONE);
-    GossipMenu& menu = bot->GetPlayerMenu()->GetGossipMenu();
-    if (pCreature)
-    {
-        uint32 textId = bot->GetGossipTextId(menu.GetMenuId(), pCreature);
-        TellGossipText(requester, textId);
-    }
+     if (requester)
+     {
+         Creature* pCreature = bot->GetNPCIfCanInteractWith(requester->GetSelectionGuid(), UNIT_NPC_FLAG_NONE);
+
+         if (pCreature)
+         {
+             uint32 textId = bot->GetGossipTextId(menu.GetMenuId(), pCreature);
+             TellGossipText(requester, textId);
+         }
+     }
 
     for (unsigned int i = 0; i < menu.MenuItemCount(); i++)
     {
