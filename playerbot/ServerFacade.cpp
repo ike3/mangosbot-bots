@@ -172,10 +172,10 @@ bool ServerFacade::isMoving(Unit *unit)
     return unit->m_movementInfo.HasMovementFlag(movementFlagsMask);
 #endif
 #ifdef CMANGOS
-#ifdef MANGOSBOT_ZERO
-    return !unit->IsStopped() || unit->IsFalling() || (!unit->GetMotionMaster()->empty() && unit->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE);
-#else
+#ifdef MANGOSBOT_ONE
     return !unit->IsStopped() || unit->IsFalling() || unit->IsJumping() || (!unit->GetMotionMaster()->empty() && unit->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE);
+#else
+    return !unit->IsStopped() || unit->IsFalling() || (!unit->GetMotionMaster()->empty() && unit->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE);
 #endif
 #endif
 }

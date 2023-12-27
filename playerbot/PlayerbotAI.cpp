@@ -5953,11 +5953,11 @@ bool PlayerbotAI::CanMove()
         bot->IsBeingTeleported() ||
         bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL) ||
         IsJumping() ||
-#ifdef MANGOSBOT_ZERO
-        bot->IsFalling())
-#else
+#ifdef MANGOSBOT_ONE
         bot->IsFalling() ||
         bot->IsJumping())
+#else
+        bot->IsFalling())
 #endif
         return false;
 
