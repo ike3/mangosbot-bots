@@ -26,7 +26,7 @@ namespace ai
 	{
 	public:
 		SealTrigger(PlayerbotAI* ai) : BuffTrigger(ai, "seal") {}
-		virtual bool IsActive();
+		bool IsActive() override;
 	};
 
     // judgements
