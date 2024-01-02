@@ -2526,7 +2526,7 @@ WorldPosition JumpAction::CalculateJumpParameters(const WorldPosition& src, Unit
         float fy = oy;
         float fz = oz + maxHeight + jumper->GetCollisionHeight();
 #ifdef MANGOSBOT_TWO
-        if (bot->GetMap()->GetHitPosition(ox, oy, oz + max_height, fx, fy, fz, bot->GetPhaseMask(), -0.5f))
+        if (jumper->GetMap()->GetHitPosition(ox, oy, oz, fx, fy, fz, jumper->GetPhaseMask(), -0.5f))
 #else
         if (jumper->GetMap()->GetHitPosition(ox, oy, oz, fx, fy, fz, -0.5f))
 #endif
@@ -2754,7 +2754,11 @@ bool JumpAction::CanWalkTo(const WorldPosition &src, const WorldPosition &dest, 
 bool JumpAction::CanLand(const ai::WorldPosition &dest, Unit *jumper)
 {
     // do not let jump to abyss
+#ifdef MANGOSBOT_TWO
+    float mapHeightCheck = jumper->GetMap()->GetHeight(jumper->GetPhaseMask(), dest.getX(), dest.getY(), dest.getZ() + 0.5f);
+#else
     float mapHeightCheck = jumper->GetMap()->GetHeight(dest.getX(), dest.getY(), dest.getZ() + 0.5f);
+#endif
     if (mapHeightCheck <= INVALID_HEIGHT)
     {
         sLog.outDetail("%s: Jump Fail! Invalid landing height: %f", jumper->GetName(), mapHeightCheck);

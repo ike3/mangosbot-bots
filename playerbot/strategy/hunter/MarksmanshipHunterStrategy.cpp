@@ -987,7 +987,7 @@ void MarksmanshipHunterCcPveStrategy::InitNonCombatTriggers(std::list<TriggerNod
     HunterCcPveStrategy::InitNonCombatTriggers(triggers);
 }
 
-void MarksmanshipHunterCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)MarksmanshipHunterStingStrategy
+void MarksmanshipHunterCcPvpStrategy::InitCombatTriggers(std::list<TriggerNode*>& triggers)
 {
     MarksmanshipHunterCcStrategy::InitCombatTriggers(triggers);
     HunterCcPvpStrategy::InitCombatTriggers(triggers);

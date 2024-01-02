@@ -611,7 +611,7 @@ void PlayerbotFactory::InitPet()
             pet->SetLoyaltyLevel(BEST_FRIEND);
 #endif
             pet->SetPower(POWER_HAPPINESS, HAPPINESS_LEVEL_SIZE * 2);
-            pet->GetCharmInfo()->SetPetNumber(sObjectMgr.GeneratePetNumber(), true);
+            pet->GetCharmInfo()->SetPetNumber(pet->GetObjectGuid().GetEntry(), true);
             pet->GetMap()->Add((Creature*)pet);
             pet->AIM_Initialize();
             pet->InitPetCreateSpells();
@@ -3332,6 +3332,37 @@ void PlayerbotFactory::InitReagents()
                 sLog.outDetail("Bot %d got totem %s x%d", bot->GetGUIDLow(), proto->Name1, 1);
             }
         }
+#ifndef MANGOSBOT_ZERO
+        for (const auto& totemCat : pSpellInfo->TotemCategory)
+        {
+            if (totemCat && !bot->HasItemTotemCategory(totemCat))
+            {
+                uint32 itemId = 0;
+                if (totemCat == 2)
+                    itemId = 5175; // earth totem
+                if (totemCat == 3)
+                    itemId = 5178; // air totem
+                if (totemCat == 4)
+                    itemId = 5176; // fire totem
+                if (totemCat == 5)
+                    itemId = 5177; // water totem
+
+                if (itemId)
+                {
+                    ItemPrototype const* proto = sObjectMgr.GetItemPrototype(itemId);
+                    if (!proto)
+                    {
+                        sLog.outError("No totem (ItemId %d) found for bot %d (Class:%d)", itemId, bot->GetGUIDLow(), bot->getClass());
+                        continue;
+                    }
+
+                    Item* newItem = bot->StoreNewItemInInventorySlot(itemId, 1);
+
+                    sLog.outDetail("Bot %d got totem %s x%d", bot->GetGUIDLow(), proto->Name1, 1);
+                }
+            }
+        }
+#endif
     }
 }
 

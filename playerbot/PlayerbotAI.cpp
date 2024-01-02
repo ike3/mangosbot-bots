@@ -3267,7 +3267,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget, bool
     }
 
     // Fail the cast if the bot is moving and the spell is a casting/channeled spell
-    const bool isMoving = bot->IsStopped() || bot->IsFalling();
+    const bool isMoving = !bot->IsStopped() || bot->IsFalling();
     if (isMoving && ((GetSpellCastTime(pSpellInfo, bot, spell) > 0) || (IsChanneledSpell(pSpellInfo) && (GetSpellDuration(pSpellInfo) > 0))))
     {
         if (IsJumping() || bot->IsFalling())
@@ -5953,11 +5953,11 @@ bool PlayerbotAI::CanMove()
         bot->IsBeingTeleported() ||
         bot->hasUnitState(UNIT_STAT_CAN_NOT_REACT_OR_LOST_CONTROL) ||
         IsJumping() ||
-#ifdef MANGOSBOT_ZERO
-        bot->IsFalling())
-#else
+#ifdef MANGOSBOT_ONE
         bot->IsFalling() ||
         bot->IsJumping())
+#else
+        bot->IsFalling())
 #endif
         return false;
 
