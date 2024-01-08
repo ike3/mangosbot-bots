@@ -37,21 +37,25 @@ bool TellItemCountAction::Execute(Event& event)
             itemMap[proto->ItemId] += (*i)->GetCount();
             soulbound[proto->ItemId] = (*i)->IsSoulBound();
             equiped[proto->ItemId] = (*i)->GetBagSlot() == INVENTORY_SLOT_BAG_0 && (*i)->GetSlot() < EQUIPMENT_SLOT_END;
+            if (hasEquip == false && equiped[proto->ItemId])
+                ai->TellPlayer(requester, "=== Equipment ===");
+
             hasEquip = hasEquip || equiped[proto->ItemId];
-        }
 
-        if (hasEquip)
-        {
-            ai->TellPlayer(requester, "=== Equipment ===");
-            for (map<uint32, uint32>::iterator i = itemMap.begin(); i != itemMap.end(); ++i)
+            if ((*i)->GetBagSlot() == INVENTORY_SLOT_BAG_0 && (*i)->GetSlot() < EQUIPMENT_SLOT_END)
             {
-                if (!equiped[i->first])
-                    continue;
+                ItemQualifier itemQ = ItemQualifier((*i));
+                ostringstream out;
+                out << chat->formatItem(itemQ);
+                if ((*i)->IsSoulBound())
+                    out << " (soulbound)";
 
-                ItemPrototype const* proto = sItemStorage.LookupEntry<ItemPrototype>(i->first);
-                ai->InventoryTellItem(requester, proto, i->second, soulbound[i->first]);
+                ai->TellPlayer(requester, out.str());
             }
         }
+
+        if (text == "equip")
+            return true;
 
         ai->TellPlayer(requester, "=== Inventory ===");
         for (map<uint32, uint32>::iterator i = itemMap.begin(); i != itemMap.end(); ++i)
